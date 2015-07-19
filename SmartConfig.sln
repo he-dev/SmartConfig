@@ -3,9 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartConfig", "FlatConfig\SmartConfig.csproj", "{B499D748-D867-4939-929B-BAE2BBAE6336}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartConfig", "SmartConfig\SmartConfig.csproj", "{B499D748-D867-4939-929B-BAE2BBAE6336}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartConfig.Tests", "FlatConfig.Tests\SmartConfig.Tests.csproj", "{31CF8B56-2577-4FC9-B711-14CFAA524A2A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartConfig.Tests", "SmartConfig.Tests\SmartConfig.Tests.csproj", "{31CF8B56-2577-4FC9-B711-14CFAA524A2A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{5BE43E93-16F3-4E04-B910-672E6F664D4D}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.config = .nuget\NuGet.config
+		.nuget\pack-SmartConfig.ps1 = .nuget\pack-SmartConfig.ps1
+		.nuget\push-SmartConfig.ps1 = .nuget\push-SmartConfig.ps1
+		.nuget\SmartConfig.nuspec = .nuget\SmartConfig.nuspec
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6CBCB87A-F42A-4436-958C-988889A22509}"
+	ProjectSection(SolutionItems) = preProject
+		build.ps1 = build.ps1
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

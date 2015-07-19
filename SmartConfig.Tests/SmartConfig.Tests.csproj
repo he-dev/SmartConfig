@@ -104,7 +104,7 @@
     <Compile Include="Converters\ValueTypeConverterTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FlatConfig\SmartConfig.csproj">
+    <ProjectReference Include="..\SmartConfig\SmartConfig.csproj">
       <Project>{b499d748-d867-4939-929b-bae2bbae6336}</Project>
       <Name>SmartConfig</Name>
     </ProjectReference>
