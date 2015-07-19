@@ -82,7 +82,7 @@ namespace SmartConfig
                 return;
             }
 
-            var smartConfigAttr = typeof(TConfig).GetCustomAttribute<SmartConfigAttribute>();
+            var smartConfigAttr = typeof(TConfig).CustomAttribute<SmartConfigAttribute>();
             if (smartConfigAttr == null)
             {
                 throw new InvalidOperationException("SmartConfigAttribute not found.");
@@ -100,7 +100,11 @@ namespace SmartConfig
 
             // Update the data source property:
             var propertyInfo = dataSource.GetType().GetProperty(propertyName);
+#if NET40
+            propertyInfo.SetValue(dataSource, connectionString, null);
+#else
             propertyInfo.SetValue(dataSource, connectionString);
+#endif
         }
 
         public static void Update<TField>(Expression<Func<TField>> expression, TField value)
@@ -208,13 +212,18 @@ namespace SmartConfig
             }
             else
             {
+#if NET40
+                var objectConverterAttr = fieldInfo.GetCustomAttributes(typeof(ObjectConverterAttribute), false).SingleOrDefault() as ObjectConverterAttribute;
+#else
                 var objectConverterAttr = fieldInfo.GetCustomAttribute<ObjectConverterAttribute>();
+#endif
                 if (objectConverterAttr != null)
                 {
                     converterType = objectConverterAttr.ObjectConverterType;
                 }
 
             }
+
             var converter = Converters.SingleOrDefault(c => c.GetType() == converterType);
             if (converter == null)
             {

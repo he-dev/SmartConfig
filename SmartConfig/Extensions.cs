@@ -56,7 +56,7 @@ namespace SmartConfig
 
         public static string ConfigName(this Type type)
         {
-            var smartConfigAttribute = type.GetCustomAttribute<SmartConfigAttribute>();
+            var smartConfigAttribute = type.CustomAttribute<SmartConfigAttribute>();
             if (smartConfigAttribute == null)
             {
                 throw new InvalidOperationException("Config type is not marked with SmartConfigAttribute.");
@@ -74,7 +74,7 @@ namespace SmartConfig
 
         public static SemanticVersion Version(this Type type)
         {
-            var version = type.GetCustomAttribute<SmartConfigAttribute>().Version;
+            var version = type.CustomAttribute<SmartConfigAttribute>().Version;
             if (string.IsNullOrEmpty(version))
             {
                 return null;
@@ -83,11 +83,24 @@ namespace SmartConfig
             return semVer;
         }
 
+        public static T CustomAttribute<T>(this Type type) where T : Attribute
+        {
+#if NET40
+            return (T)type.GetCustomAttributes(typeof(T), false).SingleOrDefault();
+#else
+            return type.GetCustomAttribute<T>(false);
+#endif
+        }      
+
         #endregion
 
         public static bool HasAttribute<T>(this FieldInfo fieldInfo) where T : Attribute
         {
-            return fieldInfo.GetCustomAttribute<T>() != null;
+#if NET40
+            return fieldInfo.GetCustomAttributes(typeof(T), false).SingleOrDefault() != null;
+#else
+            return fieldInfo.GetCustomAttribute<T>(false) != null;
+#endif
         }
 
         #region Object extensions.
