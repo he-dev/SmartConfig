@@ -97,9 +97,9 @@
     <Compile Include="_Attributes\AllowNullAttribute.cs" />
     <Compile Include="Converters\ObjectConverterBase.cs" />
     <Compile Include="Data\SelfConfig.cs" />
-    <Compile Include="SemanticVersion.cs" />
+    <Compile Include="_Types\SemanticVersion.cs" />
     <Compile Include="SmartConfig.cs" />
-    <Compile Include="ElementName.cs" />
+    <Compile Include="ConfigElementName.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="_Attributes\SmartConfigAttribute.cs" />
