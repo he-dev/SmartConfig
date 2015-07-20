@@ -6,7 +6,7 @@ namespace SmartConfig.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("ConfigElement")]
+    //[Table("ConfigElement")]
     public partial class ConfigElement
     {
         [Key]

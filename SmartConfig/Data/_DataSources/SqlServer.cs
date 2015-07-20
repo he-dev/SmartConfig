@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
 using System.Data.SqlClient;
 using System.Linq;
@@ -22,7 +23,12 @@ namespace SmartConfig.Data
         /// <summary>
         /// Gets or sets the config table name.
         /// </summary>
-        public string TableName { get; set; }
+        public string ConfigTableName { get; set; }
+
+        static SqlServer()
+        {
+            Database.SetInitializer<SmartConfigEntities>(null);
+        }
 
         public override IEnumerable<ConfigElement> Select(string name)
         {
@@ -38,17 +44,15 @@ namespace SmartConfig.Data
 
             // >
 
-            using (var context = new SmartConfigEntities(ConnectionString))
-            using (var cmdBuilder = SqlClientFactory.Instance.CreateCommandBuilder())
+            using (var context = new SmartConfigEntities(ConnectionString)
             {
-                var tableName = cmdBuilder.QuoteIdentifier(TableName);
-
+                ConfigElementTableName = ConfigTableName
+            })
+            {
                 var result =
                     context
                     .ConfigElements
-                    .SqlQuery(
-                        "SELECT * FROM " + tableName + " WHERE [Name] = @Name",
-                        new SqlParameter("@Name", name))
+                    .Where(ce => ce.Name == name)
                     .ToList();
                 return result;
             };
@@ -66,10 +70,24 @@ namespace SmartConfig.Data
                 throw new InvalidOperationException("ConnectionString must not be empty.");
             }
 
-            using (var context = new SmartConfigEntities(ConnectionString))
+            // >
+
+            using (var context = new SmartConfigEntities(ConnectionString)
             {
-                //context.ConfigElements.Add(configElement);
-                //context.SaveChanges();
+                ConfigElementTableName = ConfigTableName
+            })
+            {
+                var _configElement =
+                    context
+                    .ConfigElements
+                    .Where(ce =>
+                        ce.Environment == configElement.Environment
+                        && ce.Version == configElement.Version
+                        && ce.Name == configElement.Name)
+                    .FirstOrDefault();
+
+                _configElement.Value = configElement.Value;
+                context.SaveChanges();
             };
         }
     }

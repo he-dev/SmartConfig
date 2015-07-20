@@ -32,9 +32,9 @@ namespace SmartConfig
             var configName = From(smartConfigType.ConfigName(), elementName);
 
             // Remove invalid "." at the beginning. It's easier and cleaner to remove it here then to prevent it above.
-            elementName = Regex.Replace(elementName, @"^\.", string.Empty);
+            //elementName = Regex.Replace(elementName, @"^\.", string.Empty);
 
-            return elementName;
+            return configName;
         }
 
         /// <summary>

@@ -210,10 +210,23 @@ namespace SmartConfig.Tests
             var dataSource = new SqlServer()
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["SmartConfigEntities"].ConnectionString,
-                TableName = "TestConfig"
+                ConfigTableName = "TestConfig"
             };
             SmartConfig.Initialize<SqlServerTestConfig>(dataSource);
             Assert.AreEqual(1, SqlServerTestConfig.Int32Field);
+        }
+
+        [TestMethod]
+        public void TestSqlServerUpdate()
+        {
+            var dataSource = new SqlServer()
+            {
+                ConnectionString = ConfigurationManager.ConnectionStrings["SmartConfigEntities"].ConnectionString,
+                ConfigTableName = "TestConfig"
+            };
+            SmartConfig.Initialize<SqlServerTestConfig>(dataSource);
+            Assert.AreEqual(1, SqlServerTestConfig.Int32Field);
+            SmartConfig.Update(() => SqlServerTestConfig.Int32Field, 2);
         }
     }
 }

@@ -15,6 +15,8 @@ namespace SmartConfig.Data
         {
         }
 
+        public string ConfigElementTableName { get; set; }
+
         /// <summary>
         /// Gets or sets config elements.
         /// </summary>
@@ -22,6 +24,7 @@ namespace SmartConfig.Data
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ConfigElement>().ToTable(ConfigElementTableName);
         }
     }
 }
