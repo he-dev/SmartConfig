@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Tests.TestConfigs
 {
-    [SmartConfig(ConnectionStringName = "SmartConfigEntities", Version = "1.0.0")]
+    [SmartConfig(Name = "ABCD", Version = "1.0.0")]
     public class SqlServerTestConfig
     {
         public static int Int32Field;

@@ -82,6 +82,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\_DataSources\AppConfig.cs" />
     <Compile Include="_Types\Color32.cs" />
     <Compile Include="Converters\ColorConverter.cs" />
     <Compile Include="Converters\StringConverter.cs" />
@@ -89,9 +90,8 @@
     <Compile Include="_Exceptions\ConverterNotFoundException.cs" />
     <Compile Include="Converters\JsonConverter.cs" />
     <Compile Include="Converters\ValueTypeConverter.cs" />
-    <Compile Include="Data\_DataSources\AppConfig.cs" />
-    <Compile Include="Data\ConfigElement.cs" />
-    <Compile Include="Data\SmartConfigEntities.cs" />
+    <Compile Include="Data\_Entity\ConfigElement.cs" />
+    <Compile Include="Data\_Entity\SmartConfigEntities.cs" />
     <Compile Include="Data\_DataSources\SqlServer.cs" />
     <Compile Include="_Attributes\ObjectConverterAttribute.cs" />
     <Compile Include="_Attributes\AllowNullAttribute.cs" />
@@ -103,7 +103,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="_Attributes\SmartConfigAttribute.cs" />
-    <Compile Include="Data\DataSource.cs" />
+    <Compile Include="Data\DataSourceBase.cs" />
     <Compile Include="_Exceptions\SmartConfigTypeNotFoundException.cs" />
   </ItemGroup>
   <ItemGroup>

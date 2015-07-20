@@ -95,10 +95,11 @@
     <Compile Include="SemanticVersionTests.cs" />
     <Compile Include="TestConfigs\MissingAttributeTestConfig.cs" />
     <Compile Include="TestConfigs\NullValueTestConfig.cs" />
+    <Compile Include="TestConfigs\AppConfigTestConfig.cs" />
     <Compile Include="TestConfigs\SingleNestedFields.cs" />
     <Compile Include="TestConfigs\SqlServerTestConfig.cs" />
     <Compile Include="TestConfigs\MultipleNestedFields.cs" />
-    <Compile Include="TestConfigs\UseConfigNameTestConfig.cs" />
+    <Compile Include="TestConfigs\ConfigNameTestConfig.cs" />
     <Compile Include="TestConfigs\RootFields.cs" />
     <Compile Include="TestConfigs\VersionTestConfig.cs" />
     <Compile Include="Converters\ValueTypeConverterTests.cs" />

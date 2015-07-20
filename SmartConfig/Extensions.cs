@@ -54,20 +54,26 @@ namespace SmartConfig
             return type.GetCustomAttributes(typeof(T), false).Any();
         }
 
+        /// <summary>
+        /// Gets the config name from the config type if specified.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public static string ConfigName(this Type type)
         {
             var smartConfigAttribute = type.CustomAttribute<SmartConfigAttribute>();
             if (smartConfigAttribute == null)
             {
-                throw new InvalidOperationException("Config type is not marked with SmartConfigAttribute.");
+                throw new InvalidOperationException("Type is not marked with SmartConfigAttribute.");
             }
-            if (smartConfigAttribute.UseConfigName)
+
+            if (!string.IsNullOrEmpty(smartConfigAttribute.Name))
             {
-                var configName = type.FullName.Split('.').Last();
+                //var configName = type.FullName.Split('.').Last();
 
                 // Remove "Config(uration)" suffix:
-                configName = Regex.Replace(type.Name, "Config(uration)?$", string.Empty);
-                return configName;
+                //configName = Regex.Replace(type.Name, "Config(uration)?$", string.Empty);
+                return smartConfigAttribute.Name;
             }
             return string.Empty;
         }
@@ -90,7 +96,7 @@ namespace SmartConfig
 #else
             return type.GetCustomAttribute<T>(false);
 #endif
-        }      
+        }
 
         #endregion
 

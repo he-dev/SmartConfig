@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SmartConfig
@@ -12,21 +13,36 @@ namespace SmartConfig
     [AttributeUsage(AttributeTargets.Class)]
     public class SmartConfigAttribute : Attribute
     {
+        private string name;
+
         public SmartConfigAttribute()
         {
             Version = string.Empty;
         }
 
         /// <summary>
-        /// Indicates whether to use config name to prefix element names.
+        /// Gets or sets a custom config name. The name must be a valid CLR identifier.
         /// </summary>
-        public bool UseConfigName { get; set; }
+        public string Name
+        {
+            get { return name; }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    name = value;
+                }
+
+                // https://regex101.com/r/dW3gF3/1
+                if (!Regex.IsMatch(value, @"^[A-Z_][A-Z0-9_]+"))
+                {
+                    throw new ArgumentOutOfRangeException("Name", "Config name must a valid CLR identifier.");
+                }
+
+                name = value;
+            }
+        }
 
         public string Version { get; set; }
-
-        /// <summary>
-        /// Gets or sets the connection string name if required by the data source.
-        /// </summary>
-        public string ConnectionStringName { get; set; }
     }
 }

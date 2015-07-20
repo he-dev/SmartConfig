@@ -24,7 +24,7 @@ namespace SmartConfig.Data
         [StringLength(255)]
         public string Name { get; set; }
 
-        [StringLength(50)]
-        public string Data { get; set; }
+        [MaxLength]
+        public string Value { get; set; }
     }
 }

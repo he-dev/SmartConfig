@@ -8,22 +8,50 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Data
 {
-    public class AppConfig : DataSource
+    public class AppConfig : DataSourceBase
     {
-        public override IEnumerable<ConfigElement> Select(string key)
-        {
-            var appConfigKey = ConfigurationManager.AppSettings.Keys.Cast<string>().Where(k => k.Equals(key, StringComparison.OrdinalIgnoreCase)).SingleOrDefault();
+        // https://regex101.com/r/vA9kR5/3
+        private static readonly string SectionNamePattern = @"^(?:[A-Z0-9_]+\.)?(?:(?<SectionName>ConnectionStrings|AppSettings)\.)";
 
-            return new List<ConfigElement>(){ new ConfigElement()
+        private class SectionNames
+        {
+            public const string ConnectionStrings = "ConnectionStrings";
+            public const string AppSettings = "AppSettings";
+        }
+
+        public override IEnumerable<ConfigElement> Select(string name)
+        {
+            var sectionNameMatch = Regex.Match(name, SectionNamePattern, RegexOptions.IgnoreCase);
+            if (!sectionNameMatch.Success)
             {
-                Name = key,
-                Data = ConfigurationManager.AppSettings[appConfigKey]
-            }};
+                yield break;
+            }
+
+            // Remove the section name:
+            name = Regex.Replace(name, SectionNamePattern, string.Empty, RegexOptions.IgnoreCase);
+
+            string value = null;
+
+            switch (sectionNameMatch.Groups["SectionName"].Value)
+            {
+            case SectionNames.ConnectionStrings:
+                value = ConfigurationManager.ConnectionStrings[name].ConnectionString;
+                break;
+            case SectionNames.AppSettings:
+                value = ConfigurationManager.AppSettings[name];
+                break;
+            }
+
+            yield return new ConfigElement()
+            {
+                Name = name,
+                Value = value
+            };
         }
 
         public override void Update(ConfigElement configElement)
         {
-            throw new NotSupportedException("AppConfig data source does not support updating.");
+            throw new NotSupportedException("AppConfig data source does not support updating (yet).");
         }
     }
 }

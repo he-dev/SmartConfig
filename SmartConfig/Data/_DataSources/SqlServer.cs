@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Entity.Core.Objects;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,8 +12,18 @@ namespace SmartConfig.Data
     /// <summary>
     /// Implements sql server data source.
     /// </summary>
-    public class SqlServer : DataSource
+    public class SqlServer : DataSourceBase
     {
+        /// <summary>
+        /// Gets or sets the connection string where the config table can be found.
+        /// </summary>
+        public string ConnectionString { get; set; }
+
+        /// <summary>
+        /// Gets or sets the config table name.
+        /// </summary>
+        public string TableName { get; set; }
+
         public override IEnumerable<ConfigElement> Select(string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -28,8 +39,18 @@ namespace SmartConfig.Data
             // >
 
             using (var context = new SmartConfigEntities(ConnectionString))
+            using (var cmdBuilder = SqlClientFactory.Instance.CreateCommandBuilder())
             {
-                return context.ConfigElements.Where(ce => ce.Name == name).ToList();
+                var tableName = cmdBuilder.QuoteIdentifier(TableName);
+
+                var result =
+                    context
+                    .ConfigElements
+                    .SqlQuery(
+                        "SELECT * FROM " + tableName + " WHERE [Name] = @Name",
+                        new SqlParameter("@Name", name))
+                    .ToList();
+                return result;
             };
         }
 
@@ -47,8 +68,8 @@ namespace SmartConfig.Data
 
             using (var context = new SmartConfigEntities(ConnectionString))
             {
-                context.ConfigElements.Add(configElement);
-                context.SaveChanges();
+                //context.ConfigElements.Add(configElement);
+                //context.SaveChanges();
             };
         }
     }
