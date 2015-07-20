@@ -122,7 +122,7 @@ namespace SmartConfig
             var smartConfigType = GetSmartConfigType(memberInfo);
             var smartConfig = smartConfigs[smartConfigType];
 
-            var elementName = ElementName.From(expression);
+            var elementName = ConfigElementName.From(expression);
             smartConfig.DataSource.Update(new ConfigElement()
             {
                 Environment = SelfConfig.AppSettings.Environment,
@@ -150,7 +150,7 @@ namespace SmartConfig
             var nestedTypes = type.GetNestedTypes();
             foreach (var nestedType in nestedTypes)
             {
-                var fieldKey = ElementName.Combine(typeName, nestedType.Name);
+                var fieldKey = ConfigElementName.From(typeName, nestedType.Name);
                 RecursiveLoad<TConfig>(nestedType, fieldKey);
             }
         }
@@ -158,7 +158,7 @@ namespace SmartConfig
         private static void Load<TConfig>(Type type, string typeName, FieldInfo fieldInfo)
         {
             var dataSource = smartConfigs[typeof(TConfig)].DataSource;
-            var elementName = ElementName.Combine(typeName, fieldInfo.Name);
+            var elementName = ConfigElementName.From(typeName, fieldInfo.Name);
             var configElements = dataSource.Select(elementName);
 
             configElements = FilterConfigElements<TConfig>(configElements);
