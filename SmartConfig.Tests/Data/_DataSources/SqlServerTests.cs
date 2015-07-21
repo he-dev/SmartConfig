@@ -10,8 +10,6 @@ namespace SmartConfig.Tests.Data
     [TestClass]
     public class SqlServerTests
     {
-        public TestContext TextContext { get; set; }
-
         [TestInitialize]
         public void TestInitialize()
         {
@@ -37,5 +35,7 @@ namespace SmartConfig.Tests.Data
             Assert.AreEqual<string>("ABCD.Int32Field", configElement.Name);
             Assert.AreEqual<string>("2", configElement.Value);
         }
+
+        // TODO: Add update test.
     }
 }
