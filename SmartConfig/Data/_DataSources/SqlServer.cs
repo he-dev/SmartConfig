@@ -23,7 +23,7 @@ namespace SmartConfig.Data
         /// <summary>
         /// Gets or sets the config table name.
         /// </summary>
-        public string ConfigTableName { get; set; }
+        public string TableName { get; set; }
 
         static SqlServer()
         {
@@ -44,10 +44,7 @@ namespace SmartConfig.Data
 
             // >
 
-            using (var context = new SmartConfigEntities(ConnectionString)
-            {
-                ConfigElementTableName = ConfigTableName
-            })
+            using (var context = new SmartConfigEntities(ConnectionString, TableName))
             {
                 var result =
                     context
@@ -72,10 +69,7 @@ namespace SmartConfig.Data
 
             // >
 
-            using (var context = new SmartConfigEntities(ConnectionString)
-            {
-                ConfigElementTableName = ConfigTableName
-            })
+            using (var context = new SmartConfigEntities(ConnectionString, TableName))
             {
                 var _configElement =
                     context

@@ -34,7 +34,7 @@ namespace SmartConfig
                 }
 
                 // https://regex101.com/r/dW3gF3/1
-                if (!Regex.IsMatch(value, @"^[A-Z_][A-Z0-9_]+"))
+                if (!Regex.IsMatch(value, @"^[A-Z_][A-Z0-9_]+", RegexOptions.IgnoreCase))
                 {
                     throw new ArgumentOutOfRangeException("Name", "Config name must a valid CLR identifier.");
                 }

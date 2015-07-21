@@ -10,12 +10,17 @@ namespace SmartConfig.Data
     /// </summary>
     public partial class SmartConfigEntities : DbContext
     {
-        public SmartConfigEntities(string connectionString)
+        private string tableName;
+
+        public SmartConfigEntities(string connectionString, string tableName)
             : base(connectionString)
         {
+            if (string.IsNullOrEmpty(tableName))
+            {
+                throw new ArgumentNullException("tableName");
+            }
+            this.tableName = tableName;
         }
-
-        public string ConfigElementTableName { get; set; }
 
         /// <summary>
         /// Gets or sets config elements.
@@ -24,7 +29,7 @@ namespace SmartConfig.Data
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ConfigElement>().ToTable(ConfigElementTableName);
+            modelBuilder.Entity<ConfigElement>().ToTable(tableName);
         }
     }
 }
