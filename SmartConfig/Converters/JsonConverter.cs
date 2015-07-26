@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,13 +9,7 @@ namespace SmartConfig.Converters
 {
     public class JsonConverter : ObjectConverterBase
     {
-        protected override bool CanConvert(Type type)
-        {
-            // It can convert everything.
-            return true;
-        }
-
-        public override object DeserializeObject(string value, Type type)
+        public override object DeserializeObject(string value, Type type, IEnumerable<ValueContraintAttribute> constraints)
         {
             if (string.IsNullOrEmpty(value))
             {
@@ -25,7 +20,7 @@ namespace SmartConfig.Converters
             return result;
         }
 
-        public override string SerializeObject(object value)
+        public override string SerializeObject(object value, Type type, IEnumerable<ValueContraintAttribute> constraints)
         {
             if (value == null)
             {

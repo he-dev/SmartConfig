@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Converters;
 
@@ -9,7 +10,7 @@ namespace SmartConfig.Tests.Converters
     {
         [TestMethod]
         public void TestDeserializeObject()
-        {
+        {            
             var valueTypeConverter = new ValueTypeConverter();
             Assert.AreEqual(123, valueTypeConverter.DeserializeObject("123", typeof(Int32)));
             Assert.AreEqual(123, valueTypeConverter.DeserializeObject("123", typeof(Int32?)));

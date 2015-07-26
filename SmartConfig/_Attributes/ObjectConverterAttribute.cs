@@ -13,12 +13,14 @@ namespace SmartConfig
     [AttributeUsage(AttributeTargets.Field)]
     public class ObjectConverterAttribute : Attribute
     {
+        public ObjectConverterAttribute(Type type)
+        {
+            Type = type;
+        }
+
         /// <summary>
         /// Gets or sets the object converter type.
         /// </summary>
-        public Type ObjectConverterType { get; set; }
+        public Type Type { get; private set; }
     }
-
-    
-
 }

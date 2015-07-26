@@ -85,14 +85,15 @@ namespace SmartConfig
         public static void Update<TField>(Expression<Func<TField>> expression, TField value)
         {
             var memberInfo = GetMemberInfo(expression);
+            var fieldInfo = memberInfo as FieldInfo;
 
             // Update the field:
-            ((FieldInfo)memberInfo).SetValue(null, value);
+            fieldInfo.SetValue(null, value);
 
             //TField data = expression.Compile()();
 
-            var converter = GetConverter((FieldInfo)memberInfo);
-            var serializedData = converter.SerializeObject(value);
+            var converter = GetConverter(fieldInfo);
+            var serializedData = converter.SerializeObject(value, fieldInfo.FieldType, fieldInfo.GetCustomAttributes<ValueContraintAttribute>(true));
 
             var smartConfigType = GetSmartConfigType(memberInfo);
             var smartConfig = SmartConfigManagers[smartConfigType];
@@ -168,7 +169,7 @@ namespace SmartConfig
             }
 
             var converter = GetConverter(fieldInfo);
-            var obj = converter.DeserializeObject(element.Value, fieldInfo.FieldType);
+            var obj = converter.DeserializeObject(element.Value, fieldInfo.FieldType, fieldInfo.GetCustomAttributes<ValueContraintAttribute>(true));
             fieldInfo.SetValue(null, obj);
         }
 
@@ -183,13 +184,13 @@ namespace SmartConfig
             else
             {
 #if NET40
-            var objectConverterAttr = fieldInfo.GetCustomAttributes(typeof(ObjectConverterAttribute), false).SingleOrDefault() as ObjectConverterAttribute;
+                var objectConverterAttr = fieldInfo.GetCustomAttributes(typeof(ObjectConverterAttribute), false).SingleOrDefault() as ObjectConverterAttribute;
 #else
                 var objectConverterAttr = fieldInfo.GetCustomAttribute<ObjectConverterAttribute>();
 #endif
                 if (objectConverterAttr != null)
                 {
-                    type = objectConverterAttr.ObjectConverterType;
+                    type = objectConverterAttr.Type;
                 }
             }
 

@@ -45,8 +45,7 @@ namespace SmartConfig.Converters
         //}
 
         public ValueTypeConverter()
-        {
-            FieldTypes = new HashSet<Type>()
+            : base(new[]
             {
                 typeof(char),
                 typeof(char?),
@@ -56,20 +55,13 @@ namespace SmartConfig.Converters
                 typeof(int?),
                 typeof(long),
                 typeof(long?),
-            };
+            })
+        {
         }
 
-        protected override bool CanConvert(Type type)
+        public override object DeserializeObject(string value, Type type, IEnumerable<ValueContraintAttribute> constraints)
         {
-            return type.IsValueType || type.IsNullable();
-        }
-
-        public override object DeserializeObject(string value, Type type)
-        {
-            if (!CanConvert(type))
-            {
-                throw new InvalidOperationException(string.Format("Type [{0}] is not supported.", type.Name));
-            }
+            ValidateType(type);
 
             if (type.IsNullable())
             {
@@ -99,18 +91,14 @@ namespace SmartConfig.Converters
             throw new Exception("Parse method not found.");
         }
 
-        public override string SerializeObject(object value)
+        public override string SerializeObject(object value, Type type, IEnumerable<ValueContraintAttribute> constraints)
         {
+            ValidateType(type);
+
             if (value == null)
             {
                 // It is ok to return null for null objects.
                 return null;
-            }
-
-            var type = value.GetType();
-            if (!CanConvert(type))
-            {
-                throw new InvalidOperationException(string.Format("Type [{0}] is not supported.", type.Name));
             }
 
             var toStringMethod = type.GetMethod("ToString", new Type[] { typeof(IFormatProvider) });

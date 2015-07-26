@@ -21,7 +21,7 @@ namespace SmartConfig.Tests.TestConfigs
 
         public static TestEnum EnumField;
 
-        [ObjectConverter(ObjectConverterType = typeof(JsonConverter))]
+        [ObjectConverter(typeof(JsonConverter))]
         public static List<Int32> ListInt32Field;
     }
 

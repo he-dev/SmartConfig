@@ -24,7 +24,7 @@ namespace SmartConfig.Collections
         {
             if (objectConverter.IsDirectConverter)
             {
-                foreach (var fieldType in objectConverter.FieldTypes)
+                foreach (var fieldType in objectConverter.SupportedTypes)
                 {
                     _converters[fieldType] = objectConverter;
                 }

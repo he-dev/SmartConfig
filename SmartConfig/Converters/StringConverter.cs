@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,41 +9,27 @@ namespace SmartConfig.Converters
 {
     public class StringConverter : ObjectConverterBase
     {
-        public StringConverter()
-        {
-            FieldTypes = new HashSet<Type>()
-            {
-                typeof(string)
-            };
-        }
+        public StringConverter() : base(new[] { typeof(string) }) { }
 
-        protected override bool CanConvert(Type type)
+        public override object DeserializeObject(string value, Type type, IEnumerable<ValueContraintAttribute> constraints)
         {
-            return type == typeof(string);
-        }
+            ValidateType(type);
 
-        public override object DeserializeObject(string value, Type type)
-        {
-            if (!CanConvert(type))
+            if (string.IsNullOrEmpty(value) && !constraints.AllowNull())
             {
-                throw new InvalidOperationException(string.Format("Type [{0}] is not supported.", type.Name));
+                throw new ArgumentNullException("value", "Value must not be null.");
             }
 
             return value;
         }
 
-        public override string SerializeObject(object value)
+        public override string SerializeObject(object value, Type type, IEnumerable<ValueContraintAttribute> constraints)
         {
-            if (value == null)
-            {
-                // It is ok to return null for null objects.
-                return null;
-            }
+            ValidateType(type);
 
-            var type = value.GetType();
-            if (!CanConvert(type))
+            if (string.IsNullOrEmpty((string)value) && !constraints.AllowNull())
             {
-                throw new InvalidOperationException(string.Format("Type [{0}] is not supported.", type.Name));
+                throw new ArgumentNullException("value", "Value must not be null.");
             }
 
             return (string)value;
