@@ -14,7 +14,7 @@ using SmartConfig.Tests.TestConfigs;
 namespace SmartConfig.Tests
 {
     [TestClass]
-    public class SmartConfigTests
+    public class SmartConfigManagerTests
     {
         [TestMethod]
         public void TestRootFields()
@@ -66,7 +66,7 @@ namespace SmartConfig.Tests
                 }
             };
 
-            SmartConfig.Initialize<RootFields>(dataSource);
+            SmartConfigManager.Load<RootFields>(dataSource);
 
             // Check values:
 
@@ -80,13 +80,13 @@ namespace SmartConfig.Tests
             Assert.IsFalse(RootFields.NullableInt32Field.HasValue);
             Assert.IsFalse(RootFields.NullableInt64Field.HasValue);
 
-            CollectionAssert.AreEqual(new Int32[] { 1, 2, 3 }, RootFields.ListInt32Field);
+            CollectionAssert.AreEqual(new [] { 1, 2, 3 }, RootFields.ListInt32Field);
 
-            SmartConfig.Update(() => RootFields.StringField, "abcd");
-            SmartConfig.Update(() => RootFields.ListInt32Field, new List<Int32>() { 4, 5, 6 });
+            SmartConfigManager.Update(() => RootFields.StringField, "abcd");
+            SmartConfigManager.Update(() => RootFields.ListInt32Field, new List<Int32>() { 4, 5, 6 });
 
             Assert.AreEqual("abcd", RootFields.StringField);
-            CollectionAssert.AreEqual(new Int32[] { 4, 5, 6 }, RootFields.ListInt32Field);
+            CollectionAssert.AreEqual(new [] { 4, 5, 6 }, RootFields.ListInt32Field);
 
         }
 
@@ -107,7 +107,7 @@ namespace SmartConfig.Tests
                     return elements;
                 }
             };
-            SmartConfig.Initialize<SingleNestedFields>(dataSource);
+            SmartConfigManager.Load<SingleNestedFields>(dataSource);
 
             Assert.AreEqual("abc", SingleNestedFields.SubConfig.StringField);
         }
@@ -129,7 +129,7 @@ namespace SmartConfig.Tests
                     return elements;
                 }
             };
-            SmartConfig.Initialize<MultipleNestedFields>(dataSource);
+            SmartConfigManager.Load<MultipleNestedFields>(dataSource);
 
             Assert.AreEqual("abc", MultipleNestedFields.SubConfig.SubSubConfig.StringField);
         }
@@ -145,7 +145,7 @@ namespace SmartConfig.Tests
                     return Enumerable.Empty<ConfigElement>();
                 }
             };
-            SmartConfig.Initialize<ConfigNameTestConfig>(dataSource);
+            SmartConfigManager.Load<ConfigNameTestConfig>(dataSource);
         }
 
         [TestMethod]
@@ -167,7 +167,7 @@ namespace SmartConfig.Tests
                     return elements;
                 }
             };
-            SmartConfig.Initialize<VersionTestConfig>(dataSource);
+            SmartConfigManager.Load<VersionTestConfig>(dataSource);
 
             Assert.AreEqual("def", VersionTestConfig.StringField);
         }
@@ -184,7 +184,7 @@ namespace SmartConfig.Tests
                     return Enumerable.Empty<ConfigElement>();
                 }
             };
-            SmartConfig.Initialize<NullValueTestConfig>(dataSource);
+            SmartConfigManager.Load<NullValueTestConfig>(dataSource);
             Assert.Fail("Exception was not thrown.");
         }
 
@@ -200,7 +200,7 @@ namespace SmartConfig.Tests
                     return Enumerable.Empty<ConfigElement>();
                 }
             };
-            SmartConfig.Initialize<MissingAttributeTestConfig>(dataSource);
+            SmartConfigManager.Load<MissingAttributeTestConfig>(dataSource);
             Assert.Fail("Exception was not thrown.");
         }
 
@@ -212,7 +212,7 @@ namespace SmartConfig.Tests
                 ConnectionString = ConfigurationManager.ConnectionStrings["SmartConfigEntities"].ConnectionString,
                 TableName = "TestConfig"
             };
-            SmartConfig.Initialize<SqlServerTestConfig>(dataSource);
+            SmartConfigManager.Load<SqlServerTestConfig>(dataSource);
             Assert.AreEqual(1, SqlServerTestConfig.Int32Field);
         }
 
@@ -224,9 +224,9 @@ namespace SmartConfig.Tests
                 ConnectionString = ConfigurationManager.ConnectionStrings["SmartConfigEntities"].ConnectionString,
                 TableName = "TestConfig"
             };
-            SmartConfig.Initialize<SqlServerTestConfig>(dataSource);
+            SmartConfigManager.Load<SqlServerTestConfig>(dataSource);
             Assert.AreEqual(3, SqlServerTestConfig.Int32Field);
-            SmartConfig.Update(() => SqlServerTestConfig.Int32Field, 4);
+            SmartConfigManager.Update(() => SqlServerTestConfig.Int32Field, 4);
         }
     }
 }

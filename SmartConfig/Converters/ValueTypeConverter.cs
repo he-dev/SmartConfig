@@ -19,7 +19,7 @@ namespace SmartConfig.Converters
 
         //    //    typeof(Byte),
         //    //    typeof(Byte?),
-                
+
         //    //    typeof(SByte),
         //    //    typeof(SByte?),
 
@@ -29,7 +29,7 @@ namespace SmartConfig.Converters
         //    //    typeof(Int32?),
         //    //    typeof(Int64),
         //    //    typeof(Int64?),
-                
+
         //    //    typeof(UInt16),
         //    //    typeof(UInt16?),
         //    //    typeof(UInt32),
@@ -43,6 +43,21 @@ namespace SmartConfig.Converters
         //    //.Select(t => SupportedTypes.Add(t))
         //    //.ToList();
         //}
+
+        public ValueTypeConverter()
+        {
+            FieldTypes = new HashSet<Type>()
+            {
+                typeof(char),
+                typeof(char?),
+                typeof(short),
+                typeof(short?),
+                typeof(int),
+                typeof(int?),
+                typeof(long),
+                typeof(long?),
+            };
+        }
 
         protected override bool CanConvert(Type type)
         {

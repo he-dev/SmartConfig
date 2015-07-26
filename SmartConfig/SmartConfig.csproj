@@ -82,12 +82,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\SmartDictionary.cs" />
     <Compile Include="Data\_DataSources\AppConfig.cs" />
+    <Compile Include="Collections\ObjectConverterCollection.cs" />
+    <Compile Include="Collections\TypeConverterDictionary.cs" />
     <Compile Include="_Types\Color32.cs" />
     <Compile Include="Converters\ColorConverter.cs" />
     <Compile Include="Converters\StringConverter.cs" />
     <Compile Include="Converters\XmlConverter.cs" />
-    <Compile Include="_Exceptions\ConverterNotFoundException.cs" />
+    <Compile Include="_Exceptions\ObjectConverterNotFoundException.cs" />
     <Compile Include="Converters\JsonConverter.cs" />
     <Compile Include="Converters\ValueTypeConverter.cs" />
     <Compile Include="Data\_Entity\ConfigElement.cs" />
@@ -98,7 +101,7 @@
     <Compile Include="Converters\ObjectConverterBase.cs" />
     <Compile Include="Data\SelfConfig.cs" />
     <Compile Include="_Types\SemanticVersion.cs" />
-    <Compile Include="SmartConfig.cs" />
+    <Compile Include="SmartConfigManager.cs" />
     <Compile Include="ConfigElementName.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

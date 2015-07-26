@@ -9,6 +9,14 @@ namespace SmartConfig.Converters
 {
     public class ColorConverter : ObjectConverterBase
     {
+        public ColorConverter()
+        {
+            FieldTypes = new HashSet<Type>()
+            {
+                typeof(System.Drawing.Color)
+            };
+        }
+
         protected override bool CanConvert(Type type)
         {
             return type == typeof(Color);

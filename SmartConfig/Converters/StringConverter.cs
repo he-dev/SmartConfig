@@ -8,6 +8,14 @@ namespace SmartConfig.Converters
 {
     public class StringConverter : ObjectConverterBase
     {
+        public StringConverter()
+        {
+            FieldTypes = new HashSet<Type>()
+            {
+                typeof(string)
+            };
+        }
+
         protected override bool CanConvert(Type type)
         {
             return type == typeof(string);

@@ -9,6 +9,15 @@ namespace SmartConfig.Converters
 {
     public class XmlConverter : ObjectConverterBase
     {
+        public XmlConverter()
+        {
+            FieldTypes = new HashSet<Type>()
+            {
+                typeof(XDocument),
+                typeof(XElement)
+            };
+        }
+
         protected override bool CanConvert(Type type)
         {
             return type == typeof(XDocument) || type == typeof(XElement);

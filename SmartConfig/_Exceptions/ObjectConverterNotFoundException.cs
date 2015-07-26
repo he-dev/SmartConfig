@@ -5,15 +5,15 @@ using System.Text;
 
 namespace SmartConfig
 {
-    public class ConverterNotFoundException : Exception
+    public class ObjectConverterNotFoundException : Exception
     {
-        public ConverterNotFoundException(Type type)
+        public ObjectConverterNotFoundException(Type type)
         {
             Type = type;
         }
 
         /// <summary>
-        /// Gets the type of the converter that could not be found.
+        /// Gets the type for which a converter could not be found.
         /// </summary>
         public Type Type { get; private set; }
     }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using SmartConfig.Collections;
 using SmartConfig.Converters;
 using SmartConfig.Data;
 
@@ -17,20 +17,25 @@ namespace SmartConfig
     /// <summary>
     /// Provides all the <c>SmartConfig</c> functionality.
     /// </summary>
-    public class SmartConfig
+    public class SmartConfigManager
     {
         // Stores smart configs by type.
-        private static readonly Dictionary<Type, SmartConfig> smartConfigs = new Dictionary<Type, SmartConfig>();
+        private static readonly Dictionary<Type, SmartConfigManager> SmartConfigManagers;
 
-        public static readonly HashSet<ObjectConverterBase> Converters = new HashSet<ObjectConverterBase>();
+        public static readonly ObjectConverterCollection Converters;
 
-        static SmartConfig()
+        static SmartConfigManager()
         {
-            Converters.Add(new StringConverter());
-            Converters.Add(new ValueTypeConverter());
-            Converters.Add(new JsonConverter());
-            Converters.Add(new XmlConverter());
-            Converters.Add(new global::SmartConfig.Converters.ColorConverter());
+            SmartConfigManagers = new Dictionary<Type, SmartConfigManager>();
+
+            Converters = new ObjectConverterCollection
+            {
+                new StringConverter(),
+                new ValueTypeConverter(),
+                new JsonConverter(),
+                new XmlConverter(),
+                new ColorConverter()
+            };
         }
 
         /// <summary>
@@ -41,28 +46,30 @@ namespace SmartConfig
         /// <summary>
         /// Initializes a smart config.
         /// </summary>
-        /// <typeparam name="T">Type that is marked with the <c>SmartCofnigAttribute</c> and specifies the configuration.</typeparam>
+        /// <typeparam name="TConfig">Type that is marked with the <c>SmartCofnigAttribute</c> and specifies the configuration.</typeparam>
         /// <param name="dataSource">Custom data source that provides data. If null <c>AppConfig</c> is used.</param>
-        public static void Initialize<T>(DataSourceBase dataSource = null)
+        public static void Load<TConfig>(DataSourceBase dataSource)
         {
             #region SelfConfig initialization.
-            var isSelfConfig = typeof(T) == typeof(SelfConfig);
+
+            var isSelfConfig = typeof(TConfig) == typeof(SelfConfig);
             if (!isSelfConfig)
             {
-                var isSelfConfigInitialized = smartConfigs.ContainsKey(typeof(SelfConfig));
+                var isSelfConfigInitialized = SmartConfigManagers.ContainsKey(typeof(SelfConfig));
                 if (!isSelfConfigInitialized)
                 {
-                    Initialize<SelfConfig>();
+                    Load<SelfConfig>();
                 }
             }
+
             #endregion
 
-            if (dataSource == null)
-            {
-                dataSource = new AppConfig();
-            }
+            //if (dataSource == null)
+            //{
+            //    dataSource = new AppConfig();
+            //}
 
-            var smartConfig = new SmartConfig()
+            var smartConfig = new SmartConfigManager()
             {
                 DataSource = dataSource
             };
@@ -70,42 +77,9 @@ namespace SmartConfig
             //InitializeConnectionString<TConfig>(dataSource);
 
             // Add new smart config.
-            smartConfigs[typeof(T)] = smartConfig;
-            Load<T>();
-        }      
-
-        // Initializes the connection string if its name is specified by the SmartConfigAttribute.
-//        private static void InitializeConnectionString<TConfig>(DataSource dataSource)
-//        {
-//            if (typeof(TConfig) == typeof(SelfConfig))
-//            {
-//                return;
-//            }
-
-//            var smartConfigAttr = typeof(TConfig).CustomAttribute<SmartConfigAttribute>();
-//            if (smartConfigAttr == null)
-//            {
-//                throw new InvalidOperationException("SmartConfigAttribute not found.");
-//            }
-
-//            // ConnectionStringName is not specified...
-//            if (string.IsNullOrEmpty(smartConfigAttr.ConnectionStringName))
-//            {
-//                //... so ignore the rest.
-//                return;
-//            }
-
-//            const string propertyName = "ConnectionString";
-//            var connectionString = ConfigurationManager.ConnectionStrings[smartConfigAttr.ConnectionStringName].ConnectionString;
-
-//            // Update the data source property:
-//            var propertyInfo = dataSource.GetType().GetProperty(propertyName);
-//#if NET40
-//            propertyInfo.SetValue(dataSource, connectionString, null);
-//#else
-//            propertyInfo.SetValue(dataSource, connectionString);
-//#endif
-//        }
+            SmartConfigManagers[typeof(TConfig)] = smartConfig;
+            Load<TConfig>();
+        }
 
         public static void Update<TField>(Expression<Func<TField>> expression, TField value)
         {
@@ -120,7 +94,7 @@ namespace SmartConfig
             var serializedData = converter.SerializeObject(value);
 
             var smartConfigType = GetSmartConfigType(memberInfo);
-            var smartConfig = smartConfigs[smartConfigType];
+            var smartConfig = SmartConfigManagers[smartConfigType];
 
             var elementName = ConfigElementName.From(expression);
             smartConfig.DataSource.Update(new ConfigElement()
@@ -157,7 +131,7 @@ namespace SmartConfig
 
         private static void Load<TConfig>(Type type, string typeName, FieldInfo fieldInfo)
         {
-            var dataSource = smartConfigs[typeof(TConfig)].DataSource;
+            var dataSource = SmartConfigManagers[typeof(TConfig)].DataSource;
             var elementName = ConfigElementName.From(typeName, fieldInfo.Name);
             var configElements = dataSource.Select(elementName);
 
@@ -199,37 +173,25 @@ namespace SmartConfig
 
         private static ObjectConverterBase GetConverter(FieldInfo fieldInfo)
         {
-            // Default converter:
-            var converterType = typeof(ValueTypeConverter);
+            var type = fieldInfo.FieldType;
 
-            if (fieldInfo.FieldType == typeof(string))
-            {
-                converterType = typeof(StringConverter);
-            }
-            else if (fieldInfo.FieldType == typeof(Color))
-            {
-                converterType = typeof(global::SmartConfig.Converters.ColorConverter);
-            }
-            else
-            {
 #if NET40
-                var objectConverterAttr = fieldInfo.GetCustomAttributes(typeof(ObjectConverterAttribute), false).SingleOrDefault() as ObjectConverterAttribute;
+            var objectConverterAttr = fieldInfo.GetCustomAttributes(typeof(ObjectConverterAttribute), false).SingleOrDefault() as ObjectConverterAttribute;
 #else
-                var objectConverterAttr = fieldInfo.GetCustomAttribute<ObjectConverterAttribute>();
+            var objectConverterAttr = fieldInfo.GetCustomAttribute<ObjectConverterAttribute>();
 #endif
-                if (objectConverterAttr != null)
-                {
-                    converterType = objectConverterAttr.ObjectConverterType;
-                }
-
-            }
-
-            var converter = Converters.SingleOrDefault(c => c.GetType() == converterType);
-            if (converter == null)
+            if (objectConverterAttr != null)
             {
-                throw new ConverterNotFoundException(converterType);
+                type = objectConverterAttr.ObjectConverterType;
             }
-            return converter;
+
+            var objectConverter = Converters[type];
+            if (objectConverter == null)
+            {
+                throw new ObjectConverterNotFoundException(type);
+            }
+
+            return objectConverter;
         }
 
         private static IEnumerable<ConfigElement> FilterConfigElements<TConfig>(IEnumerable<ConfigElement> configElements)

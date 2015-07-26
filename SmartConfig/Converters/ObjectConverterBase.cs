@@ -14,6 +14,25 @@ namespace SmartConfig.Converters
     /// </summary>
     public abstract class ObjectConverterBase
     {
+        protected ObjectConverterBase()
+        {
+            FieldTypes = new HashSet<Type>();
+        }
+
+        /// <summary>
+        /// Gets field types directly supported by the converter. 
+        /// If left empty the conveter type will by used and you need to set the <c>ObjectConverterAttributes</c> on your field(s).
+        /// </summary>
+        public HashSet<Type> FieldTypes { get; protected set; }
+
+        /// <summary>
+        /// Gets a value indicating whether this converter can directly convert field values.
+        /// </summary>
+        internal bool IsDirectConverter
+        {
+            get { return FieldTypes.Count > 0; }
+        }
+
         protected abstract bool CanConvert(Type type);
 
         /// <summary>
@@ -29,6 +48,6 @@ namespace SmartConfig.Converters
         /// </summary>
         /// <param name="value">Value to be serialized.</param>
         /// <returns></returns>
-        public abstract string SerializeObject(object value);      
+        public abstract string SerializeObject(object value);
     }
 }
