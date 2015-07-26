@@ -8,26 +8,16 @@ using SmartConfig.Converters;
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    public class RootFields
+    public class ValueTypeFields
     {
+        public static bool BooleanField;
         public static char CharField;
         public static string StringField;
         public static short Int16Field;
-        public static short? NullableInt16Field;
         public static int Int32Field;
-        public static int? NullableInt32Field;
         public static long Int64Field;
-        public static long? NullableInt64Field;
-
-        public static TestEnum EnumField;
-
-        [ObjectConverter(typeof(JsonConverter))]
-        public static List<Int32> ListInt32Field;
-    }
-
-    public enum TestEnum
-    {
-        TestValue1,
-        TestValue2
+        public static float SingleField;
+        public static double DoubleField;
+        public static decimal DecimalField;
     }
 }

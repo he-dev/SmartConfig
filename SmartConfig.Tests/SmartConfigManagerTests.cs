@@ -16,79 +16,102 @@ namespace SmartConfig.Tests
     public class SmartConfigManagerTests
     {
         [TestMethod]
-        public void TestRootFields()
+        public void Load_ValueTypeFields()
         {
-            // TODO: Add other data type tests.
-            var configElements = new List<ConfigElement>
+            var testConfig = new[]
             {
-                // Nullable fields are deactivated:
+                "ABC||BooleanField|true",
+                "ABC||CharField|a",
+                "ABC||StringField|abc",
+                "ABC||Int16Field|123",
+                "ABC||Int32Field|123",
+                "ABC||Int64Field|123",
+                "ABC||SingleField|1.2",
+                "ABC||DoubleField|1.2",
+                "ABC||DecimalField|1.2",
+            }
+            .ToConfigElements();
 
-                new ConfigElement(){ Name = "CharField", Value = "a" },
-                new ConfigElement(){ Name = "StringField", Value = "abc" },
-                new ConfigElement(){ Name = "Int16Field", Value = "123" },
-                //new ConfigElement(){ Name = "Nullable16Field", Value = "123" },
-                new ConfigElement(){ Name = "Int32Field", Value = "123" },
-                //new ConfigElement(){ Name = "NullableInt32Field", Value = "123" },
-                new ConfigElement(){ Name = "Int64Field", Value = "123" },
-                //new ConfigElement(){ Name = "NullableInt64Field", Value = "123" },
-                new ConfigElement(){ Name = "EnumField", Value = "TestValue2" },
-                
-                new ConfigElement(){ Name = "ListInt32Field", Value = "[1, 2, 3]" },
+            var dataSource = new StubDataSourceBase()
+            {
+                SelectString = (name) =>
+                {
+                    var elements = testConfig.Where(ce => ce.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                    return elements;
+                }
             };
 
-            // Set the same environment and version for all config elements:
-            configElements.ForEach(ce => { ce.Environment = "ABC"; ce.Version = string.Empty; });
+            SmartConfigManager.Load<ValueTypeFields>(dataSource);
+
+            Assert.AreEqual(true, ValueTypeFields.BooleanField);
+            Assert.AreEqual('a', ValueTypeFields.CharField);
+            Assert.AreEqual("abc", ValueTypeFields.StringField);
+            Assert.AreEqual(123, ValueTypeFields.Int16Field);
+            Assert.AreEqual(123, ValueTypeFields.Int32Field);
+            Assert.AreEqual(123, ValueTypeFields.Int64Field);
+            Assert.AreEqual(1.2f, ValueTypeFields.SingleField);
+            Assert.AreEqual(1.2, ValueTypeFields.DoubleField);
+            Assert.AreEqual(1.2m, ValueTypeFields.DecimalField);
+        }
+
+        public void Load_NullableValueTypeFields()
+        {
+            var testConfig = new[]
+            {
+                "ABC||BooleanField|true",
+                "ABC||CharField|a",
+                "ABC||StringField|abc",
+                "ABC||Int16Field|123",
+                "ABC||Int32Field|123",
+                "ABC||Int64Field|123",
+                "ABC||FloatField|1.2",
+                "ABC||DoubleField|1.2",
+                "ABC||DecimalField|1.2",
+            }.ToConfigElements();
 
             // Create stub data source:
             var dataSource = new StubDataSourceBase()
             {
                 SelectString = (name) =>
                 {
-                    var configElement = configElements.SingleOrDefault(ce => ce.Name == name);
+                    var configElement = testConfig.SingleOrDefault(ce => ce.Name == name);
                     if (configElement == null)
                     {
                         Assert.IsTrue(name.StartsWith("Nullable"));
                         return Enumerable.Empty<ConfigElement>();
                     }
-                    var elements = configElements.Where(ce => ce.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                    var elements = testConfig.Where(ce => ce.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
                     return elements;
-                },
-                UpdateConfigElement = (configElement) =>
-                {
-                    var updateConfigElement =
-                        configElements
-                        .SingleOrDefault(ce =>
-                            ce.Environment == configElement.Environment
-                            && ce.Version == configElement.Version
-                            && ce.Name == configElement.Name);
-
-                    Assert.IsNotNull(updateConfigElement, "ConfigElement to update not found.");
                 }
             };
 
-            SmartConfigManager.Load<RootFields>(dataSource);
+            SmartConfigManager.Load<ValueTypeFields>(dataSource);
 
             // Check values:
 
-            Assert.AreEqual('a', RootFields.CharField);
-            Assert.AreEqual("abc", RootFields.StringField);
-            Assert.AreEqual(123, RootFields.Int16Field);
-            Assert.AreEqual(123, RootFields.Int32Field);
-            Assert.AreEqual(123, RootFields.Int64Field);
+            Assert.AreEqual(true, ValueTypeFields.BooleanField);
+            Assert.AreEqual('a', ValueTypeFields.CharField);
+            Assert.AreEqual("abc", ValueTypeFields.StringField);
+            Assert.AreEqual(123, ValueTypeFields.Int16Field);
+            Assert.AreEqual(123, ValueTypeFields.Int32Field);
+            Assert.AreEqual(123, ValueTypeFields.Int64Field);
+            Assert.AreEqual(1.2f, ValueTypeFields.SingleField);
+            Assert.AreEqual(1.2, ValueTypeFields.DoubleField);
+            Assert.AreEqual(1.2m, ValueTypeFields.DecimalField);
 
-            Assert.IsFalse(RootFields.NullableInt16Field.HasValue);
-            Assert.IsFalse(RootFields.NullableInt32Field.HasValue);
-            Assert.IsFalse(RootFields.NullableInt64Field.HasValue);
+            //Assert.IsFalse(ValueFields.NullableInt16Field.HasValue);
+            //Assert.IsFalse(ValueFields.NullableInt32Field.HasValue);
+            //Assert.IsFalse(ValueFields.NullableInt64Field.HasValue);
 
-            Assert.AreEqual(TestEnum.TestValue2, RootFields.EnumField);
+            //Assert.AreEqual(TestEnum.TestValue2, ValueFields.EnumField);
 
-            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, RootFields.ListInt32Field);
+            //CollectionAssert.AreEqual(new[] { 1, 2, 3 }, ValueFields.ListInt32Field);
 
-            SmartConfigManager.Update(() => RootFields.StringField, "abcd");
-            SmartConfigManager.Update(() => RootFields.ListInt32Field, new List<Int32>() { 4, 5, 6 });
+            SmartConfigManager.Update(() => ValueTypeFields.StringField, "abcd");
+            //SmartConfigManager.Update(() => ValueFields.ListInt32Field, new List<Int32>() { 4, 5, 6 });
 
-            Assert.AreEqual("abcd", RootFields.StringField);
-            CollectionAssert.AreEqual(new[] { 4, 5, 6 }, RootFields.ListInt32Field);
+            Assert.AreEqual("abcd", ValueTypeFields.StringField);
+            //CollectionAssert.AreEqual(new[] { 4, 5, 6 }, ValueFields.ListInt32Field);
 
         }
 

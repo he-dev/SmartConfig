@@ -80,6 +80,10 @@
     <Compile Include="Global.cs" />
     <Compile Include="SmartConfigManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestConfigHelper.cs" />
+    <Compile Include="TestConfigs\JsonFields.cs" />
+    <Compile Include="TestConfigs\EnumFields.cs" />
+    <Compile Include="TestEnum.cs" />
     <Compile Include="_Types\SemanticVersionTests.cs" />
     <Compile Include="TestConfigs\MissingAttributeTestConfig.cs" />
     <Compile Include="TestConfigs\NullValueTestConfig.cs" />
@@ -88,7 +92,7 @@
     <Compile Include="TestConfigs\SqlServerTestConfig.cs" />
     <Compile Include="TestConfigs\MultipleNestedFields.cs" />
     <Compile Include="TestConfigs\ConfigNameTestConfig.cs" />
-    <Compile Include="TestConfigs\RootFields.cs" />
+    <Compile Include="TestConfigs\ValueTypeFields.cs" />
     <Compile Include="TestConfigs\VersionTestConfig.cs" />
     <Compile Include="Converters\ValueTypeConverterTests.cs" />
     <Compile Include="TestDbInitializer.cs" />

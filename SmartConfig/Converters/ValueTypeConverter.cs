@@ -47,6 +47,8 @@ namespace SmartConfig.Converters
         public ValueTypeConverter()
             : base(new[]
             {
+                typeof(bool),
+                typeof(bool?),
                 typeof(char),
                 typeof(char?),
                 typeof(short),
@@ -55,6 +57,12 @@ namespace SmartConfig.Converters
                 typeof(int?),
                 typeof(long),
                 typeof(long?),
+                typeof(float),
+                typeof(float?),
+                typeof(double),
+                typeof(double?),
+                typeof(decimal),
+                typeof(decimal?)
             })
         {
         }
