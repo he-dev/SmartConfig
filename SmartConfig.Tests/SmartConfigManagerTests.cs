@@ -267,43 +267,7 @@ namespace SmartConfig.Tests
 
         #endregion
 
-        [TestMethod]
-        public void TestMultiConfigEnabled()
-        {
-            var dataSource = new StubDataSourceBase()
-            {
-                SelectString = (name) =>
-                {
-                    Assert.AreEqual("ABCD.StringField", name);
-                    return Enumerable.Empty<ConfigElement>();
-                }
-            };
-            SmartConfigManager.Load<ConfigNameTestConfig>(dataSource);
-        }
-
-        [TestMethod]
-        public void TestVersion()
-        {
-            var testConfig = new List<ConfigElement>
-            {
-                new ConfigElement(){ Name = "StringField", Value = "abc", Version = "1.0.0", Environment = "ABC" },
-                new ConfigElement(){ Name = "StringField", Value = "def", Version = "2.1.1", Environment = "ABC" },
-                new ConfigElement(){ Name = "StringField", Value = "ghi", Version = "3.2.4", Environment = "ABC" },
-            };
-
-            var dataSource = new StubDataSourceBase()
-            {
-                SelectString = (name) =>
-                {
-                    Assert.IsTrue(testConfig.Any(ce => ce.Name == name));
-                    var elements = testConfig.Where(ce => ce.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-                    return elements;
-                }
-            };
-            SmartConfigManager.Load<VersionTestConfig>(dataSource);
-
-            Assert.AreEqual("def", VersionTestConfig.StringField);
-        }
+        #region Exception tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -337,6 +301,56 @@ namespace SmartConfig.Tests
             Assert.Fail("Exception was not thrown.");
         }
 
+        #endregion
+
+#region Config name tests
+
+        [TestMethod]
+        public void TestMultiConfigEnabled()
+        {
+            var dataSource = new StubDataSourceBase()
+            {
+                SelectString = (name) =>
+                {
+                    Assert.AreEqual("ABCD.StringField", name);
+                    return Enumerable.Empty<ConfigElement>();
+                }
+            };
+            SmartConfigManager.Load<ConfigNameTestConfig>(dataSource);
+        }
+
+#endregion
+        
+#region Version tests
+        
+        [TestMethod]
+        public void TestVersion()
+        {
+            var testConfig = new List<ConfigElement>
+            {
+                new ConfigElement(){ Name = "StringField", Value = "abc", Version = "1.0.0", Environment = "ABC" },
+                new ConfigElement(){ Name = "StringField", Value = "def", Version = "2.1.1", Environment = "ABC" },
+                new ConfigElement(){ Name = "StringField", Value = "ghi", Version = "3.2.4", Environment = "ABC" },
+            };
+
+            var dataSource = new StubDataSourceBase()
+            {
+                SelectString = (name) =>
+                {
+                    Assert.IsTrue(testConfig.Any(ce => ce.Name == name));
+                    var elements = testConfig.Where(ce => ce.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                    return elements;
+                }
+            };
+            SmartConfigManager.Load<VersionTestConfig>(dataSource);
+
+            Assert.AreEqual("def", VersionTestConfig.StringField);
+        }
+
+#endregion
+
+        #region Database tests
+
         [TestMethod]
         public void TestSqlServer()
         {
@@ -361,5 +375,7 @@ namespace SmartConfig.Tests
             Assert.AreEqual(3, SqlServerTestConfig.Int32Field);
             SmartConfigManager.Update(() => SqlServerTestConfig.Int32Field, 4);
         }
+
+        #endregion
     }
 }
