@@ -231,49 +231,41 @@ namespace SmartConfig.Tests
 
         #endregion
 
+        #region Nesting tests
+
         [TestMethod]
-        public void TestSingleNestedFields()
+        public void Load_OneSubClass()
         {
-            var testConfig = new List<ConfigElement>
+            var testConfig = new[]
             {
-                new ConfigElement(){ Name = "SubConfig.StringField", Value = "abc", Environment = "ABC" },
-            };
+                "ABC||StringField|abc",
+                "ABC||SubClass.StringField|xyz",
+            }
+            .ToConfigElements();
 
             var dataSource = new StubDataSourceBase()
             {
-                SelectString = (name) =>
-                {
-                    Assert.IsNotNull(testConfig.SingleOrDefault(ce => ce.Name == name));
-                    var elements = testConfig.Where(ce => ce.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-                    return elements;
-                }
+                SelectString = (name) => testConfig.Where(ce => ce.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
             };
-            SmartConfigManager.Load<SingleNestedFields>(dataSource);
+            SmartConfigManager.Load<OneNestedClass>(dataSource);
 
-            Assert.AreEqual("abc", SingleNestedFields.SubConfig.StringField);
+            Assert.AreEqual("abc", OneNestedClass.StringField);
+            Assert.AreEqual("xyz", OneNestedClass.SubClass.StringField);
         }
 
         [TestMethod]
-        public void TestMultipleNestedFields()
+        public void Load_TwoSubClasses()
         {
-            var testConfig = new List<ConfigElement>
-            {
-                new ConfigElement(){ Name = "SubConfig.SubSubConfig.StringField", Value = "abc", Environment = "ABC" },
-            };
-
             var dataSource = new StubDataSourceBase()
             {
-                SelectString = (name) =>
-                {
-                    Assert.IsNotNull(testConfig.SingleOrDefault(ce => ce.Name == name));
-                    var elements = testConfig.Where(ce => ce.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-                    return elements;
-                }
+                SelectString = (name) => new[] { "ABC||SubClass.SubSubClass.StringField|abc" }.ToConfigElements()
             };
-            SmartConfigManager.Load<MultipleNestedFields>(dataSource);
+            SmartConfigManager.Load<TwoNestedClasses>(dataSource);
 
-            Assert.AreEqual("abc", MultipleNestedFields.SubConfig.SubSubConfig.StringField);
+            Assert.AreEqual("abc", TwoNestedClasses.SubClass.SubSubClass.StringField);
         }
+
+        #endregion
 
         [TestMethod]
         public void TestMultiConfigEnabled()

@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    public class SingleNestedFields
+    public class OneNestedClass
     {
-        public class SubConfig
+        public static string StringField;
+
+        public class SubClass
         {
             public static string StringField;
         }
