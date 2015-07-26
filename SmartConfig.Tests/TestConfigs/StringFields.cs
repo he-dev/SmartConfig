@@ -8,9 +8,8 @@ using SmartConfig.Converters;
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    public class JsonFields
+    public class StringFields
     {
-        [ObjectConverter(typeof(JsonConverter))]
-        public static List<int> ListInt32Field;
-    }
+        public static string StringField;
+    }    
 }

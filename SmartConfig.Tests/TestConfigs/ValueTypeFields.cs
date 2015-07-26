@@ -12,7 +12,6 @@ namespace SmartConfig.Tests.TestConfigs
     {
         public static bool BooleanField;
         public static char CharField;
-        public static string StringField;
         public static short Int16Field;
         public static int Int32Field;
         public static long Int64Field;

@@ -10,8 +10,8 @@ namespace SmartConfig
     {
         public static bool AllowNull(this IEnumerable<ValueContraintAttribute> constraints)
         {
-            var allowNull = constraints.OfType<AllowNullAttribute>().SingleOrDefault();
-            return allowNull == null;
+            var allowNull = constraints.OfType<AllowNullAttribute>().SingleOrDefault() != null;
+            return allowNull;
         }
     }
 }

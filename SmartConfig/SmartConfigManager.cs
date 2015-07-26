@@ -75,37 +75,9 @@ namespace SmartConfig
                 DataSource = dataSource
             };
 
-            //InitializeConnectionString<TConfig>(dataSource);
-
             // Add new smart config.
             SmartConfigManagers[typeof(TConfig)] = smartConfig;
             Load<TConfig>();
-        }
-
-        public static void Update<TField>(Expression<Func<TField>> expression, TField value)
-        {
-            var memberInfo = GetMemberInfo(expression);
-            var fieldInfo = memberInfo as FieldInfo;
-
-            // Update the field:
-            fieldInfo.SetValue(null, value);
-
-            //TField data = expression.Compile()();
-
-            var converter = GetConverter(fieldInfo);
-            var serializedData = converter.SerializeObject(value, fieldInfo.FieldType, fieldInfo.GetCustomAttributes<ValueContraintAttribute>(true));
-
-            var smartConfigType = GetSmartConfigType(memberInfo);
-            var smartConfig = SmartConfigManagers[smartConfigType];
-
-            var elementName = ConfigElementName.From(expression);
-            smartConfig.DataSource.Update(new ConfigElement()
-            {
-                Environment = SelfConfig.AppSettings.Environment,
-                Version = smartConfigType.Version().ToStringOrEmpty(),
-                Name = elementName,
-                Value = serializedData
-            });
         }
 
         private static void Load<TConfig>()
@@ -136,6 +108,7 @@ namespace SmartConfig
             var dataSource = SmartConfigManagers[typeof(TConfig)].DataSource;
             var elementName = ConfigElementName.From(typeName, fieldInfo.Name);
             var configElements = dataSource.Select(elementName);
+            var constraints = fieldInfo.GetCustomAttributes<ValueContraintAttribute>(true);
 
             configElements = FilterConfigElements<TConfig>(configElements);
 
@@ -156,9 +129,9 @@ namespace SmartConfig
                     throw new ArgumentNullException(elementName, "Non nullable value type element does not allow null.");
                 }
 
+
                 // null is not ok if the attribute does not explicitly allow it:
-                var allowNullData = fieldInfo.HasAttribute<AllowNullAttribute>();
-                if (!allowNullData)
+                if (!constraints.AllowNull())
                 {
                     throw new ArgumentNullException(elementName, "This field does not allow null data.");
                 }
@@ -169,8 +142,34 @@ namespace SmartConfig
             }
 
             var converter = GetConverter(fieldInfo);
-            var obj = converter.DeserializeObject(element.Value, fieldInfo.FieldType, fieldInfo.GetCustomAttributes<ValueContraintAttribute>(true));
+            var obj = converter.DeserializeObject(element.Value, fieldInfo.FieldType, constraints);
             fieldInfo.SetValue(null, obj);
+        }
+
+        public static void Update<TField>(Expression<Func<TField>> expression, TField value)
+        {
+            var memberInfo = GetMemberInfo(expression);
+            var fieldInfo = memberInfo as FieldInfo;
+
+            // Update the field:
+            fieldInfo.SetValue(null, value);
+
+            //TField data = expression.Compile()();
+
+            var converter = GetConverter(fieldInfo);
+            var serializedData = converter.SerializeObject(value, fieldInfo.FieldType, fieldInfo.GetCustomAttributes<ValueContraintAttribute>(true));
+
+            var smartConfigType = GetSmartConfigType(memberInfo);
+            var smartConfig = SmartConfigManagers[smartConfigType];
+
+            var elementName = ConfigElementName.From(expression);
+            smartConfig.DataSource.Update(new ConfigElement()
+            {
+                Environment = SelfConfig.AppSettings.Environment,
+                Version = smartConfigType.Version().ToStringOrEmpty(),
+                Name = elementName,
+                Value = serializedData
+            });
         }
 
         private static ObjectConverterBase GetConverter(FieldInfo fieldInfo)

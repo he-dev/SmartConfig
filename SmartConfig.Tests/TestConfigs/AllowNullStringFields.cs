@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SmartConfig.Converters;
 
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    public class JsonFields
+    public class AllowNullStringFields
     {
-        [ObjectConverter(typeof(JsonConverter))]
-        public static List<int> ListInt32Field;
+        [AllowNull]
+        public static string NullableStringField;
     }
 }
