@@ -32,6 +32,7 @@ namespace SmartConfig
             {
                 new StringConverter(),
                 new ValueTypeConverter(),
+                new EnumConverter(),
                 new JsonConverter(),
                 new XmlConverter(),
                 new ColorConverter()
@@ -58,16 +59,16 @@ namespace SmartConfig
                 var isSelfConfigInitialized = SmartConfigManagers.ContainsKey(typeof(SelfConfig));
                 if (!isSelfConfigInitialized)
                 {
+                    var selfConfig = new SmartConfigManager()
+                    {
+                        DataSource = new AppConfig()
+                    };
+                    SmartConfigManagers[typeof(SelfConfig)] = selfConfig;
                     Load<SelfConfig>();
                 }
             }
 
             #endregion
-
-            //if (dataSource == null)
-            //{
-            //    dataSource = new AppConfig();
-            //}
 
             var smartConfig = new SmartConfigManager()
             {
@@ -175,14 +176,21 @@ namespace SmartConfig
         {
             var type = fieldInfo.FieldType;
 
+            if (type.BaseType == typeof(Enum))
+            {
+                type = typeof(Enum);
+            }
+            else
+            {
 #if NET40
             var objectConverterAttr = fieldInfo.GetCustomAttributes(typeof(ObjectConverterAttribute), false).SingleOrDefault() as ObjectConverterAttribute;
 #else
-            var objectConverterAttr = fieldInfo.GetCustomAttribute<ObjectConverterAttribute>();
+                var objectConverterAttr = fieldInfo.GetCustomAttribute<ObjectConverterAttribute>();
 #endif
-            if (objectConverterAttr != null)
-            {
-                type = objectConverterAttr.ObjectConverterType;
+                if (objectConverterAttr != null)
+                {
+                    type = objectConverterAttr.ObjectConverterType;
+                }
             }
 
             var objectConverter = Converters[type];

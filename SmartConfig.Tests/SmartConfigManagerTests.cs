@@ -8,7 +8,6 @@ using Microsoft.QualityTools.Testing.Fakes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Data;
 using SmartConfig.Data.Fakes;
-using SmartConfig.Fakes;
 using SmartConfig.Tests.TestConfigs;
 
 namespace SmartConfig.Tests
@@ -32,6 +31,7 @@ namespace SmartConfig.Tests
                 //new ConfigElement(){ Name = "NullableInt32Field", Value = "123" },
                 new ConfigElement(){ Name = "Int64Field", Value = "123" },
                 //new ConfigElement(){ Name = "NullableInt64Field", Value = "123" },
+                new ConfigElement(){ Name = "EnumField", Value = "TestValue2" },
                 
                 new ConfigElement(){ Name = "ListInt32Field", Value = "[1, 2, 3]" },
             };
@@ -80,13 +80,15 @@ namespace SmartConfig.Tests
             Assert.IsFalse(RootFields.NullableInt32Field.HasValue);
             Assert.IsFalse(RootFields.NullableInt64Field.HasValue);
 
-            CollectionAssert.AreEqual(new [] { 1, 2, 3 }, RootFields.ListInt32Field);
+            Assert.AreEqual(TestEnum.TestValue2, RootFields.EnumField);
+
+            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, RootFields.ListInt32Field);
 
             SmartConfigManager.Update(() => RootFields.StringField, "abcd");
             SmartConfigManager.Update(() => RootFields.ListInt32Field, new List<Int32>() { 4, 5, 6 });
 
             Assert.AreEqual("abcd", RootFields.StringField);
-            CollectionAssert.AreEqual(new [] { 4, 5, 6 }, RootFields.ListInt32Field);
+            CollectionAssert.AreEqual(new[] { 4, 5, 6 }, RootFields.ListInt32Field);
 
         }
 

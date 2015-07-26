@@ -19,7 +19,15 @@ namespace SmartConfig.Tests.TestConfigs
         public static long Int64Field;
         public static long? NullableInt64Field;
 
+        public static TestEnum EnumField;
+
         [ObjectConverter(ObjectConverterType = typeof(JsonConverter))]
         public static List<Int32> ListInt32Field;
+    }
+
+    public enum TestEnum
+    {
+        TestValue1,
+        TestValue2
     }
 }
