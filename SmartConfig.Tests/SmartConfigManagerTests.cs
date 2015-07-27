@@ -265,48 +265,12 @@ namespace SmartConfig.Tests
             Assert.AreEqual("abc", TwoNestedClasses.SubClass.SubSubClass.StringField);
         }
 
-        #endregion
+        #endregion     
 
-        #region Exception tests
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void TestNullValueType()
-        {
-            var dataSource = new StubDataSourceBase()
-            {
-                SelectString = (name) =>
-                {
-                    Assert.AreEqual("Int32Field", name);
-                    return Enumerable.Empty<ConfigElement>();
-                }
-            };
-            SmartConfigManager.Load<NullValueTestConfig>(dataSource);
-            Assert.Fail("Exception was not thrown.");
-        }
+        #region Config name tests
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void TestSmartConfigAttributeMissing()
-        {
-            var dataSource = new StubDataSourceBase()
-            {
-                SelectString = (name) =>
-                {
-                    Assert.AreEqual("Int32Field", name);
-                    return Enumerable.Empty<ConfigElement>();
-                }
-            };
-            SmartConfigManager.Load<MissingAttributeTestConfig>(dataSource);
-            Assert.Fail("Exception was not thrown.");
-        }
-
-        #endregion
-
-#region Config name tests
-
-        [TestMethod]
-        public void TestMultiConfigEnabled()
+        public void Load_TestMultiConfigEnabled()
         {
             var dataSource = new StubDataSourceBase()
             {
@@ -316,38 +280,34 @@ namespace SmartConfig.Tests
                     return Enumerable.Empty<ConfigElement>();
                 }
             };
-            SmartConfigManager.Load<ConfigNameTestConfig>(dataSource);
+            SmartConfigManager.Load<ConfigName>(dataSource);
         }
 
-#endregion
-        
-#region Version tests
-        
+        #endregion
+
+        #region Version tests
+
         [TestMethod]
         public void TestVersion()
         {
-            var testConfig = new List<ConfigElement>
+            var testConfig = new []
             {
-                new ConfigElement(){ Name = "StringField", Value = "abc", Version = "1.0.0", Environment = "ABC" },
-                new ConfigElement(){ Name = "StringField", Value = "def", Version = "2.1.1", Environment = "ABC" },
-                new ConfigElement(){ Name = "StringField", Value = "ghi", Version = "3.2.4", Environment = "ABC" },
-            };
+                "ABC|1.0.0|StringField|abc",
+                "ABC|2.1.1|StringField|jkl",
+                "ABC|3.2.4|StringField|xyz",
+            }
+            .ToConfigElements();
 
             var dataSource = new StubDataSourceBase()
             {
-                SelectString = (name) =>
-                {
-                    Assert.IsTrue(testConfig.Any(ce => ce.Name == name));
-                    var elements = testConfig.Where(ce => ce.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-                    return elements;
-                }
+                SelectString = (name) => testConfig
             };
             SmartConfigManager.Load<VersionTestConfig>(dataSource);
 
-            Assert.AreEqual("def", VersionTestConfig.StringField);
+            Assert.AreEqual("jkl", VersionTestConfig.StringField);
         }
 
-#endregion
+        #endregion
 
         #region Database tests
 
@@ -374,6 +334,50 @@ namespace SmartConfig.Tests
             SmartConfigManager.Load<SqlServerTestConfig>(dataSource);
             Assert.AreEqual(3, SqlServerTestConfig.Int32Field);
             SmartConfigManager.Update(() => SqlServerTestConfig.Int32Field, 4);
+        }
+
+        #endregion
+
+        #region Exception tests
+
+        [TestMethod]
+        [ExpectedException(typeof(ConfigElementNotFounException))]
+        public void Load_NullReferenceTypeFields()
+        {
+            var dataSource = new StubDataSourceBase()
+            {
+                SelectString = (name) => Enumerable.Empty<ConfigElement>()
+            };
+            SmartConfigManager.Load<NullReferenceTypeFields>(dataSource);
+            Assert.Fail("Exception was not thrown.");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ConfigElementNotFounException))]
+        public void Load_NullValueTypeFields()
+        {
+            var dataSource = new StubDataSourceBase()
+            {
+                SelectString = (name) => Enumerable.Empty<ConfigElement>()
+            };
+            SmartConfigManager.Load<NullValueTypeFields>(dataSource);
+            Assert.Fail("Exception was not thrown.");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void TestSmartConfigAttributeMissing()
+        {
+            var dataSource = new StubDataSourceBase()
+            {
+                SelectString = (name) =>
+                {
+                    Assert.AreEqual("Int32Field", name);
+                    return Enumerable.Empty<ConfigElement>();
+                }
+            };
+            SmartConfigManager.Load<MissingAttributeTestConfig>(dataSource);
+            Assert.Fail("Exception was not thrown.");
         }
 
         #endregion

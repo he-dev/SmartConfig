@@ -22,5 +22,10 @@ namespace SmartConfig
             return fieldInfo.GetCustomAttributes(typeof(T), inherit).SingleOrDefault() != null;
         }    
 #endif
+
+        public static IEnumerable<ValueContraintAttribute> Contraints(this FieldInfo fieldInfo)
+        {
+            return fieldInfo.GetCustomAttributes<ValueContraintAttribute>(true);
+        }
     }
 }

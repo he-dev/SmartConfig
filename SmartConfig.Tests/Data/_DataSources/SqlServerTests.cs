@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SmartConfig.Data;
 
 namespace SmartConfig.Tests.Data
 {
@@ -14,28 +15,36 @@ namespace SmartConfig.Tests.Data
         public void TestInitialize()
         {
             AppDomain.CurrentDomain.SetData("DataDirectory", AppDomain.CurrentDomain.BaseDirectory);
-            using (var context = new global::SmartConfig.Data.SmartConfigEntities(ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString, "TestConfig"))
+            using (var context = new SmartConfigEntities(ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString, "TestConfig"))
             {
                 context.Database.Initialize(true);
             }
         }
 
         [TestMethod]
-        public void Select_TestExistingName()
+        public void Select_Values()
         {
-            var sqlServer = new global::SmartConfig.Data.SqlServer()
+            var sqlServer = new SqlServer()
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
                 TableName = "TestConfig"
             };
-            var configElement = sqlServer.Select("ABCD.Int32Field").SingleOrDefault();
-            Assert.IsNotNull(configElement);
-            Assert.AreEqual<string>("ABC", configElement.Environment);
-            Assert.AreEqual<string>("1.0.0", configElement.Version);
-            Assert.AreEqual<string>("ABCD.Int32Field", configElement.Name);
-            Assert.AreEqual<string>("2", configElement.Value);
+            var configElements = sqlServer.Select("StringField").ToList();
+            Assert.AreEqual(3, configElements.Count);
         }
 
-        // TODO: Add update test.
+        [TestMethod]
+        public void Update_ExistingConfigElement()
+        {
+            var sqlServer = new SqlServer()
+            {
+                ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
+                TableName = "TestConfig"
+            };
+            sqlServer.Update(new ConfigElement() { Environment = "JKL", Version = "3.2.4", Name = "StringField", Value = "jkl" });
+            var configElements = sqlServer.Select("StringField").ToList();
+            Assert.AreEqual(3, configElements.Count);
+            Assert.AreEqual("jkl", configElements[2].Value);
+        }
     }
 }

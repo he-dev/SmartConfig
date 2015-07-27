@@ -108,41 +108,32 @@ namespace SmartConfig
             var dataSource = SmartConfigManagers[typeof(TConfig)].DataSource;
             var elementName = ConfigElementName.From(typeName, fieldInfo.Name);
             var configElements = dataSource.Select(elementName);
-            var constraints = fieldInfo.GetCustomAttributes<ValueContraintAttribute>(true);
 
-            configElements = FilterConfigElements<TConfig>(configElements);
+            var canFilterConfigElements = !(dataSource is AppConfig);
+            if (canFilterConfigElements)
+            {
+                configElements = FilterConfigElements<TConfig>(configElements);
+
+            }
+
+            object obj = null;
 
             // Get the last element:
             var element = configElements.LastOrDefault();
             if (element == null)
             {
-                // null is ok if the field is nullable:
-                if (fieldInfo.FieldType.IsNullable())
+                // null is not ok if the field is a nullable value type or a reference type with the AllowNull attribute
+                var isNullable = (fieldInfo.FieldType.IsValueType && fieldInfo.FieldType.IsNullable()) || fieldInfo.Contraints().AllowNull();
+                if (!isNullable)
                 {
-                    fieldInfo.SetValue(null, null);
-                    return;
+                    throw new ConfigElementNotFounException(typeof(TConfig), elementName);
                 }
-
-                // null is not ok if the field is a value type:
-                if (fieldInfo.FieldType.IsValueType)
-                {
-                    throw new ArgumentNullException(elementName, "Non nullable value type element does not allow null.");
-                }
-
-
-                // null is not ok if the attribute does not explicitly allow it:
-                if (!constraints.AllowNull())
-                {
-                    throw new ArgumentNullException(elementName, "This field does not allow null data.");
-                }
-
-                // null is ok for reference types if allowed:
-                fieldInfo.SetValue(null, null);
-                return;
             }
-
-            var converter = GetConverter(fieldInfo);
-            var obj = converter.DeserializeObject(element.Value, fieldInfo.FieldType, constraints);
+            else
+            {
+                var converter = GetConverter(fieldInfo);
+                obj = converter.DeserializeObject(element.Value, fieldInfo.FieldType, fieldInfo.Contraints());
+            }
             fieldInfo.SetValue(null, obj);
         }
 
@@ -204,15 +195,8 @@ namespace SmartConfig
 
         private static IEnumerable<ConfigElement> FilterConfigElements<TConfig>(IEnumerable<ConfigElement> configElements)
         {
-            // Do not check the environment and version for SelfConfig because SelfConfig does not support it.
-            var isSelfConfig = typeof(TConfig) == typeof(SelfConfig);
-            if (isSelfConfig)
-            {
-                return configElements;
-            }
-
-            // Filter by Environment:
-            if (!string.IsNullOrEmpty(SelfConfig.AppSettings.Environment))
+            var canFilterByEnvironment = !string.IsNullOrEmpty(SelfConfig.AppSettings.Environment);
+            if (canFilterByEnvironment)
             {
                 configElements =
                     configElements
@@ -221,7 +205,8 @@ namespace SmartConfig
 
             // Filter by version:
             var version = typeof(TConfig).Version();
-            if (version != null)
+            var canFilterByVersion = version != null;
+            if (canFilterByVersion)
             {
                 configElements =
                     configElements

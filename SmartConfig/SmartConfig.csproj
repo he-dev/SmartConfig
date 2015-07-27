@@ -70,6 +70,8 @@
     <Compile Include="_Attributes\_Constraints\DateTimeFormatAttribute.cs" />
     <Compile Include="_Attributes\_Constraints\ValueContraintAttribute.cs" />
     <Compile Include="_Exceptions\InvalidTypeException.cs" />
+    <Compile Include="_Exceptions\ConfigElementNotFounException.cs" />
+    <Compile Include="_Exceptions\ValueNullException.cs" />
     <Compile Include="_Extensions\FieldInfoExtensions.cs" />
     <Compile Include="_Extensions\IEnumerableExtensions.cs" />
     <Compile Include="_Types\Color32.cs" />
