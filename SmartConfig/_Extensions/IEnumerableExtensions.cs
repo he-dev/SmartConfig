@@ -6,12 +6,8 @@ using System.Threading.Tasks;
 
 namespace SmartConfig
 {
-    internal static class IEnumerableExtensions
+    internal static class EnumerableExtensions
     {
-        public static bool AllowNull(this IEnumerable<ValueContraintAttribute> constraints)
-        {
-            var allowNull = constraints.OfType<AllowNullAttribute>().SingleOrDefault() != null;
-            return allowNull;
-        }
+       
     }
 }

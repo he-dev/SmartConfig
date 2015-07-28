@@ -8,7 +8,7 @@ using SmartConfig.Converters;
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    public class NullableValueTypeFields
+    public static class NullableValueTypeFields
     {
         public static bool? NullableBooleanField;
         public static char? NullableCharField;

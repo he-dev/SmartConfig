@@ -15,9 +15,9 @@ namespace SmartConfig.Tests
         {
             var testConfig = new[]
             {
-                "XYZ|1.0.0|StringField|abc",
-                "XYZ|2.1.1|StringField|jkl",
-                "XYZ|3.2.4|Int32Field|123",
+                "ABC|1.0.0|StringField|abc",
+                "ABC|1.2.0|Int32Field|123",
+                "ABC|2.1.1|StringField|jkl",
                 "JKL|3.2.4|StringField|xyz",
             }
             .ToConfigElements();

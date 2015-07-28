@@ -10,7 +10,7 @@ namespace SmartConfig
     public class ValueNullException : Exception
     {
         public ValueNullException(Type configType, string elementName)
-            : base("message")
+            : base(string.Format("Config element [{0}] found in [{1}] is null. If you want this field to be nuallable add the NullableAttribute.", elementName, configType.Name))
         {
             ConfigType = configType;
             ElementName = elementName;

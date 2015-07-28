@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 namespace SmartConfig
 {
     /// <summary>
-    /// Specifies that a reference type field can be null.
+    /// Indicates that a it is optional to provide a value for this field.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
-    public class AllowNullAttribute : ValueContraintAttribute
+    public class OptionalAttribute : ValueContraintAttribute
     {
     }
 }

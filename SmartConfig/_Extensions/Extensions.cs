@@ -52,31 +52,7 @@ namespace SmartConfig
         public static bool HasAttribute<T>(this Type type) where T : Attribute
         {
             return type.GetCustomAttributes(typeof(T), false).Any();
-        }
-
-        /// <summary>
-        /// Gets the config name from the config type if specified.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public static string ConfigName(this Type type)
-        {
-            var smartConfigAttribute = type.CustomAttribute<SmartConfigAttribute>();
-            if (smartConfigAttribute == null)
-            {
-                throw new InvalidOperationException("Type is not marked with SmartConfigAttribute.");
-            }
-
-            if (!string.IsNullOrEmpty(smartConfigAttribute.Name))
-            {
-                //var configName = type.FullName.Split('.').Last();
-
-                // Remove "Config(uration)" suffix:
-                //configName = Regex.Replace(type.Name, "Config(uration)?$", string.Empty);
-                return smartConfigAttribute.Name;
-            }
-            return string.Empty;
-        }
+        }      
 
         public static SemanticVersion Version(this Type type)
         {

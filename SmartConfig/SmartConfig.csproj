@@ -67,13 +67,16 @@
     <Compile Include="Converters\EnumConverter.cs" />
     <Compile Include="Data\_DataSources\AppConfig.cs" />
     <Compile Include="Collections\ObjectConverterCollection.cs" />
+    <Compile Include="Utilities.cs" />
+    <Compile Include="_Attributes\_Constraints\OptionalAttribute.cs" />
     <Compile Include="_Attributes\_Constraints\DateTimeFormatAttribute.cs" />
     <Compile Include="_Attributes\_Constraints\ValueContraintAttribute.cs" />
-    <Compile Include="_Exceptions\InvalidTypeException.cs" />
+    <Compile Include="_Exceptions\UnsupportedTypeException.cs" />
     <Compile Include="_Exceptions\ConfigElementNotFounException.cs" />
     <Compile Include="_Exceptions\ValueNullException.cs" />
     <Compile Include="_Extensions\FieldInfoExtensions.cs" />
     <Compile Include="_Extensions\IEnumerableExtensions.cs" />
+    <Compile Include="_Extensions\TypeExtensions.cs" />
     <Compile Include="_Types\Color32.cs" />
     <Compile Include="Converters\ColorConverter.cs" />
     <Compile Include="Converters\StringConverter.cs" />
@@ -85,7 +88,7 @@
     <Compile Include="Data\_Entity\SmartConfigEntities.cs" />
     <Compile Include="Data\_DataSources\SqlServer.cs" />
     <Compile Include="_Attributes\ObjectConverterAttribute.cs" />
-    <Compile Include="_Attributes\_Constraints\AllowNullAttribute.cs" />
+    <Compile Include="_Attributes\_Constraints\NullableAttribute.cs" />
     <Compile Include="Converters\ObjectConverterBase.cs" />
     <Compile Include="Data\SelfConfig.cs" />
     <Compile Include="_Types\SemanticVersion.cs" />

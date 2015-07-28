@@ -8,7 +8,7 @@ using SmartConfig.Converters;
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    public class ValueTypeFields
+    public static class ValueTypeFields
     {
         public static bool BooleanField;
         public static char CharField;

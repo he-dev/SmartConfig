@@ -16,8 +16,8 @@ namespace SmartConfig
     {
         public static string From<T>(Expression<Func<T>> expression)
         {
-            var memberInfo = SmartConfigManager.GetMemberInfo(expression);
-            var smartConfigType = SmartConfigManager.GetSmartConfigType(memberInfo);
+            var memberInfo = Utilities.GetMemberInfo(expression);
+            var smartConfigType = Utilities.GetSmartConfigType(memberInfo);
 
             // Replace config namespace and class name with application name.
             var elementName = Regex.Replace(memberInfo.ReflectedType.FullName, @"^" + smartConfigType.FullName + @"\.?", string.Empty);
@@ -26,10 +26,10 @@ namespace SmartConfig
             elementName = Regex.Replace(elementName, @"\+", ".");
 
             // Add member name.
-            elementName = From(elementName, memberInfo.Name);
+            elementName = Combine(elementName, memberInfo.Name);
 
             // Add application name if available.
-            var configName = From(smartConfigType.ConfigName(), elementName);
+            var configName = Combine(Utilities.ConfigName(smartConfigType), elementName);
 
             // Remove invalid "." at the beginning. It's easier and cleaner to remove it here then to prevent it above.
             //elementName = Regex.Replace(elementName, @"^\.", string.Empty);
@@ -42,7 +42,7 @@ namespace SmartConfig
         /// </summary>
         /// <param name="names"></param>
         /// <returns></returns>
-        public static string From(params string[] names)
+        public static string Combine(params string[] names)
         {
             return string.Join(".", names.Where(name => !string.IsNullOrEmpty(name)));
         }        

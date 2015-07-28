@@ -59,7 +59,7 @@ namespace SmartConfig.Converters
             var isSupportedType = SupportsAllTypes || SupportedTypes.Contains(type);
             if (!isSupportedType)
             {
-                throw new InvalidTypeException(type);
+                throw new UnsupportedTypeException(type);
             }
         }
 

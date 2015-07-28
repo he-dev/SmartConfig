@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    public class NullValueTypeFields
+    public static class NullValueTypeFields
     {
         public static int Int32Fields;
     }

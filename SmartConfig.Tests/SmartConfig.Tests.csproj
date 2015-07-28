@@ -81,7 +81,8 @@
     <Compile Include="SmartConfigManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestConfigHelper.cs" />
-    <Compile Include="TestConfigs\_Contraint tests\AllowNullStringFields.cs" />
+    <Compile Include="TestConfigs\_Contraint tests\OptionalFields.cs" />
+    <Compile Include="TestConfigs\_Contraint tests\NullableFields.cs" />
     <Compile Include="TestConfigs\_Basic tests\JsonFields.cs" />
     <Compile Include="TestConfigs\_Basic tests\EnumFields.cs" />
     <Compile Include="TestConfigs\_Basic tests\StringFields.cs" />

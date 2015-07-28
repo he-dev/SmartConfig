@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SmartConfig
 {
-    public class InvalidTypeException : Exception
+    public class UnsupportedTypeException : Exception
     {
-        public InvalidTypeException(Type type)
+        public UnsupportedTypeException(Type type)
             : base(string.Format("Type [{0}] is not supported.", type.Name))
         {
             Type = type;

@@ -8,7 +8,7 @@ using SmartConfig.Converters;
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    public class StringFields
+    public static class StringFields
     {
         public static string StringField;
     }    

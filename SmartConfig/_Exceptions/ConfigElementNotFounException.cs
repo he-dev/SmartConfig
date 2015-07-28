@@ -10,7 +10,7 @@ namespace SmartConfig
     public class ConfigElementNotFounException : Exception
     {
         public ConfigElementNotFounException(Type configType, string elementName)
-            : base(string.Format("Config element [{0}] not found in [{1}].", elementName, configType.Name))
+            : base(string.Format("Config element [{0}] not found in [{1}]. If you want this field to be optional add the OptionalAttribute.", elementName, configType.Name))
         {
             ConfigType = configType;
             ElementName = elementName;

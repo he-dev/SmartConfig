@@ -44,28 +44,37 @@ namespace SmartConfig
         /// </summary>
         private DataSourceBase DataSource { get; set; }
 
+        #region Loading
+
         /// <summary>
         /// Initializes a smart config.
         /// </summary>
         /// <typeparam name="TConfig">Type that is marked with the <c>SmartCofnigAttribute</c> and specifies the configuration.</typeparam>
+        /// <param name="configType"></param>
         /// <param name="dataSource">Custom data source that provides data. If null <c>AppConfig</c> is used.</param>
-        public static void Load<TConfig>(DataSourceBase dataSource)
+        public static void Load(Type configType, DataSourceBase dataSource)
         {
-            #region SelfConfig initialization.
-
-            var isSelfConfig = typeof(TConfig) == typeof(SelfConfig);
-            if (!isSelfConfig)
+            if (!configType.IsStatic())
             {
-                var isSelfConfigInitialized = SmartConfigManagers.ContainsKey(typeof(SelfConfig));
-                if (!isSelfConfigInitialized)
+                throw new InvalidOperationException("Config type must be a static class.");
+            }
+
+            if (!configType.HasAttribute<SmartConfigAttribute>())
+            {
+                throw new InvalidOperationException("Config type does not have the SmartConfigAttribute.");
+            }
+
+            #region SelfConfig initialization
+
+            var selfConfiInitializationRequired = !SmartConfigManagers.ContainsKey(typeof(SelfConfig)) && configType == typeof(SelfConfig);
+            if (selfConfiInitializationRequired)
+            {
+                var selfConfig = new SmartConfigManager()
                 {
-                    var selfConfig = new SmartConfigManager()
-                    {
-                        DataSource = new AppConfig()
-                    };
-                    SmartConfigManagers[typeof(SelfConfig)] = selfConfig;
-                    Load<SelfConfig>();
-                }
+                    DataSource = new AppConfig()
+                };
+                SmartConfigManagers[typeof(SelfConfig)] = selfConfig;
+                LoadTree(typeof(SelfConfig), typeof(SelfConfig), Utilities.ConfigName(typeof(SelfConfig)));
             }
 
             #endregion
@@ -76,84 +85,83 @@ namespace SmartConfig
             };
 
             // Add new smart config.
-            SmartConfigManagers[typeof(TConfig)] = smartConfig;
-            Load<TConfig>();
+            SmartConfigManagers[configType] = smartConfig;
+            LoadTree(configType, configType, Utilities.ConfigName(configType));
         }
 
-        private static void Load<TConfig>()
+        private static void LoadTree(Type configType, Type currentType, string currentClassName)
         {
-            var configName = (typeof(TConfig)).ConfigName();
-            RecursiveLoad<TConfig>(typeof(TConfig), configName);
-        }
-
-        private static void RecursiveLoad<TConfig>(Type type, string typeName)
-        {
-            // Get and load fields:
-            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Static);
+            var fields = currentType.GetFields(BindingFlags.Public | BindingFlags.Static);
             foreach (var field in fields)
             {
-                Load<TConfig>(type, typeName, field);
+                LoadValue(configType, currentType, currentClassName, field);
             }
 
-            var nestedTypes = type.GetNestedTypes();
+            var nestedTypes = currentType.GetNestedTypes();
             foreach (var nestedType in nestedTypes)
             {
-                var fieldKey = ConfigElementName.From(typeName, nestedType.Name);
-                RecursiveLoad<TConfig>(nestedType, fieldKey);
+                var nestedClassElementName = ConfigElementName.Combine(currentClassName, nestedType.Name);
+                LoadTree(configType, nestedType, nestedClassElementName);
             }
         }
 
-        private static void Load<TConfig>(Type type, string typeName, FieldInfo fieldInfo)
+        private static void LoadValue(Type configType, Type currentType, string currentClassName, FieldInfo field)
         {
-            var dataSource = SmartConfigManagers[typeof(TConfig)].DataSource;
-            var elementName = ConfigElementName.From(typeName, fieldInfo.Name);
+            var dataSource = SmartConfigManagers[configType].DataSource;
+            var elementName = ConfigElementName.Combine(currentClassName, field.Name);
             var configElements = dataSource.Select(elementName);
 
             var canFilterConfigElements = !(dataSource is AppConfig);
             if (canFilterConfigElements)
             {
-                configElements = FilterConfigElements<TConfig>(configElements);
-
+                configElements = FilterConfigElements(configType, configElements);
             }
 
-            object obj = null;
-
-            // Get the last element:
+            // Get the last element because it is the latest version.
             var element = configElements.LastOrDefault();
             if (element == null)
             {
-                // null is not ok if the field is a nullable value type or a reference type with the AllowNull attribute
-                var isNullable = (fieldInfo.FieldType.IsValueType && fieldInfo.FieldType.IsNullable()) || fieldInfo.Contraints().AllowNull();
-                if (!isNullable)
+                if (!field.IsOptional())
                 {
-                    throw new ConfigElementNotFounException(typeof(TConfig), elementName);
+                    throw new ConfigElementNotFounException(configType, elementName);
                 }
             }
             else
             {
-                var converter = GetConverter(fieldInfo);
-                obj = converter.DeserializeObject(element.Value, fieldInfo.FieldType, fieldInfo.Contraints());
+                var converter = GetConverter(field);
+                var obj = converter.DeserializeObject(element.Value, field.FieldType, field.Contraints());
+                if (obj == null && !field.IsNullable())
+                {
+                    throw new ValueNullException(configType, elementName);
+                }
+                field.SetValue(null, obj);
             }
-            fieldInfo.SetValue(null, obj);
         }
+
+        #endregion
 
         public static void Update<TField>(Expression<Func<TField>> expression, TField value)
         {
-            var memberInfo = GetMemberInfo(expression);
-            var fieldInfo = memberInfo as FieldInfo;
+            var memberInfo = Utilities.GetMemberInfo(expression);
+            var configType = Utilities.GetSmartConfigType(memberInfo);
+            var elementName = ConfigElementName.From(expression);
+            var field = memberInfo as FieldInfo;
 
-            // Update the field:
-            fieldInfo.SetValue(null, value);
+            if (!field.IsNullable() && value == null)
+            {
+                throw new ValueNullException(configType, elementName);
+            }
+
+            field.SetValue(null, value);
 
             //TField data = expression.Compile()();
 
-            var converter = GetConverter(fieldInfo);
-            var serializedData = converter.SerializeObject(value, fieldInfo.FieldType, fieldInfo.GetCustomAttributes<ValueContraintAttribute>(true));
+            var converter = GetConverter(field);
+            var serializedData = converter.SerializeObject(value, field.FieldType, field.GetCustomAttributes<ValueContraintAttribute>(true));
 
-            var smartConfigType = GetSmartConfigType(memberInfo);
+            var smartConfigType = Utilities.GetSmartConfigType(memberInfo);
             var smartConfig = SmartConfigManagers[smartConfigType];
 
-            var elementName = ConfigElementName.From(expression);
             smartConfig.DataSource.Update(new ConfigElement()
             {
                 Environment = SelfConfig.AppSettings.Environment,
@@ -173,11 +181,7 @@ namespace SmartConfig
             }
             else
             {
-#if NET40
-                var objectConverterAttr = fieldInfo.GetCustomAttributes(typeof(ObjectConverterAttribute), false).SingleOrDefault() as ObjectConverterAttribute;
-#else
-                var objectConverterAttr = fieldInfo.GetCustomAttribute<ObjectConverterAttribute>();
-#endif
+                var objectConverterAttr = fieldInfo.GetCustomAttribute<ObjectConverterAttribute>(true);
                 if (objectConverterAttr != null)
                 {
                     type = objectConverterAttr.Type;
@@ -193,7 +197,7 @@ namespace SmartConfig
             return objectConverter;
         }
 
-        private static IEnumerable<ConfigElement> FilterConfigElements<TConfig>(IEnumerable<ConfigElement> configElements)
+        private static IEnumerable<ConfigElement> FilterConfigElements(Type configType, IEnumerable<ConfigElement> configElements)
         {
             var canFilterByEnvironment = !string.IsNullOrEmpty(SelfConfig.AppSettings.Environment);
             if (canFilterByEnvironment)
@@ -204,7 +208,7 @@ namespace SmartConfig
             }
 
             // Filter by version:
-            var version = typeof(TConfig).Version();
+            var version = configType.Version();
             var canFilterByVersion = version != null;
             if (canFilterByVersion)
             {
@@ -218,37 +222,6 @@ namespace SmartConfig
             return configElements;
         }
 
-        internal static Type GetSmartConfigType(MemberInfo memberInfo)
-        {
-            if (memberInfo.ReflectedType.HasAttribute<SmartConfigAttribute>())
-            {
-                return memberInfo.ReflectedType;
-            }
-
-            var type = memberInfo.DeclaringType;
-            while (type != null)
-            {
-                if (type.HasAttribute<SmartConfigAttribute>())
-                {
-                    return type;
-                }
-                type = type.DeclaringType;
-            }
-
-            throw new SmartConfigAttributeNotFoundException("Neither the specified type nor any declaring type is marked with the SmartConfigAttribute.");
-        }
-
-        internal static MemberInfo GetMemberInfo<TField>(Expression<Func<TField>> expression)
-        {
-            var memberExpression = expression.Body as MemberExpression;
-            if (memberExpression == null)
-            {
-                var unaryExpression = expression.Body as UnaryExpression;
-                memberExpression = unaryExpression.Operand as MemberExpression;
-            }
-
-            return memberExpression.Member;
-        }
 
     }
 }

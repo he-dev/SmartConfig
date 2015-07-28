@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Tests.TestConfigs
 {
-    [SmartConfig(Version = "v2.1.1")]
-    public static class VersionTestConfig
+    [SmartConfig]
+    public static class NullableFields
     {
-        public static string StringField;
+        [Nullable]
+        public static string NullableStringField;
     }
 }

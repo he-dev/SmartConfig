@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    public class AllowNullStringFields
+    public static class OptionalFields
     {
-        [AllowNull]
-        public static string NullableStringField;
+        [Optional]
+        public static string OptionalStringField = "xyz";
     }
 }

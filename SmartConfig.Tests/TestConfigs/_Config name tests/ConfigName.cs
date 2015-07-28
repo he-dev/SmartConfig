@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig(Name = "ABCD")]
-    public class ConfigName
+    public static class ConfigName
     {
-        [AllowNull]
+        [Nullable]
         public static string StringField;
     }
 }

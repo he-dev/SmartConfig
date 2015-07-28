@@ -14,24 +14,12 @@ namespace SmartConfig.Converters
         public override object DeserializeObject(string value, Type type, IEnumerable<ValueContraintAttribute> constraints)
         {
             ValidateType(type);
-
-            if (string.IsNullOrEmpty(value) && !constraints.AllowNull())
-            {
-                throw new ArgumentNullException("value", "Value must not be null.");
-            }
-
             return value;
         }
 
         public override string SerializeObject(object value, Type type, IEnumerable<ValueContraintAttribute> constraints)
         {
             ValidateType(type);
-
-            if (string.IsNullOrEmpty((string)value) && !constraints.AllowNull())
-            {
-                throw new ArgumentNullException("value", "Value must not be null.");
-            }
-
             return (string)value;
         }
     }
