@@ -89,6 +89,7 @@
     <Compile Include="TestConfigs\_Basic tests\NullableValueTypeFields.cs" />
     <Compile Include="TestConfigs\_Exeption tests\NullValueTypeFields.cs" />
     <Compile Include="TestEnum.cs" />
+    <Compile Include="_Attributes\_Constraints\RangeAttributeTests.cs" />
     <Compile Include="_Types\SemanticVersionTests.cs" />
     <Compile Include="TestConfigs\_Exeption tests\MissingAttributeTestConfig.cs" />
     <Compile Include="TestConfigs\_Exeption tests\NullReferenceTypeFields.cs" />

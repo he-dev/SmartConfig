@@ -115,6 +115,7 @@ namespace SmartConfig
 
             constraints.Check<OptionalAttribute>(attribute =>
             {
+                // TODO: Convert to OptionalException
                 if (element == null) throw new ConfigElementNotFounException(configType, elementName);
             });
 
