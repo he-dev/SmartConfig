@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace SmartConfig
 {
-    internal static class EnumerableExtensions
+    [AttributeUsage(AttributeTargets.Field)]
+    public abstract class ValueConstraintAttribute : Attribute
     {
-       
+
     }
 }

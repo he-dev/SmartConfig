@@ -108,24 +108,26 @@ namespace SmartConfig
                 configElements = FilterConfigElements(configType, configElements);
             }
 
+            var constraints = field.Contraints();
+
             // Get the last element because it is the latest version.
             var element = configElements.LastOrDefault();
-            if (element == null)
+
+            constraints.Check<OptionalAttribute>(attribute =>
             {
-                if (!field.IsOptional())
-                {
-                    throw new ConfigElementNotFounException(configType, elementName);
-                }
-            }
-            else
+                if (element == null) throw new ConfigElementNotFounException(configType, elementName);
+            });
+
+            try
             {
+
                 var converter = GetConverter(field);
                 var obj = converter.DeserializeObject(element.Value, field.FieldType, field.Contraints());
-                if (obj == null && !field.IsNullable())
-                {
-                    throw new ValueNullException(configType, elementName);
-                }
                 field.SetValue(null, obj);
+            }
+            catch (Exception ex)
+            {
+                throw new ObjectConverterException(configType, elementName, ex);
             }
         }
 
@@ -138,28 +140,30 @@ namespace SmartConfig
             var elementName = ConfigElementName.From(expression);
             var field = memberInfo as FieldInfo;
 
-            if (!field.IsNullable() && value == null)
-            {
-                throw new ValueNullException(configType, elementName);
-            }
-
             field.SetValue(null, value);
 
             //TField data = expression.Compile()();
 
-            var converter = GetConverter(field);
-            var serializedData = converter.SerializeObject(value, field.FieldType, field.GetCustomAttributes<ValueContraintAttribute>(true));
-
-            var smartConfigType = Utilities.GetSmartConfigType(memberInfo);
-            var dataSource = ConfigDataSources[smartConfigType];
-
-            dataSource.Update(new ConfigElement()
+            try
             {
-                Environment = SelfConfig.AppSettings.Environment,
-                Version = smartConfigType.Version().ToStringOrEmpty(),
-                Name = elementName,
-                Value = serializedData
-            });
+                var converter = GetConverter(field);
+                var serializedData = converter.SerializeObject(value, field.FieldType, field.GetCustomAttributes<ValueConstraintAttribute>(true));
+
+                var smartConfigType = Utilities.GetSmartConfigType(memberInfo);
+                var dataSource = ConfigDataSources[smartConfigType];
+
+                dataSource.Update(new ConfigElement()
+                {
+                    Environment = SelfConfig.AppSettings.Environment,
+                    Version = smartConfigType.Version().ToStringOrEmpty(),
+                    Name = elementName,
+                    Value = serializedData
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new ObjectConverterException(configType, elementName, ex);
+            }
         }
 
         private static ObjectConverterBase GetConverter(FieldInfo fieldInfo)

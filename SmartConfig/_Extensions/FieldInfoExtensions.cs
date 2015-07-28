@@ -33,9 +33,9 @@ namespace SmartConfig
 
         #region Constraint shortcuts
 
-        public static IEnumerable<ValueContraintAttribute> Contraints(this FieldInfo fieldInfo)
+        public static IEnumerable<ValueConstraintAttribute> Contraints(this FieldInfo fieldInfo)
         {
-            return fieldInfo.GetCustomAttributes<ValueContraintAttribute>(true);
+            return fieldInfo.GetCustomAttributes<ValueConstraintAttribute>(true);
         }
 
         public static bool IsNullable(this FieldInfo fieldInfo)
@@ -48,8 +48,14 @@ namespace SmartConfig
 
         public static bool IsOptional(this FieldInfo fieldInfo)
         {
-            var allowsNull = fieldInfo.Contraints().OfType<OptionalAttribute>().SingleOrDefault() != null;
-            return allowsNull;
+            var isOptional = fieldInfo.Contraints().OfType<OptionalAttribute>().SingleOrDefault() != null;
+            return isOptional;
+        }
+
+        public static string Pattern(this FieldInfo fieldInfo)
+        {
+            var pattern = fieldInfo.Contraints().OfType<PatternAttribute>().SingleOrDefault();
+            return pattern;
         }
 
 

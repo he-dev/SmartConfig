@@ -10,7 +10,7 @@ namespace SmartConfig
     /// Indicates that a it is optional to provide a value for this field.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
-    public class OptionalAttribute : ValueContraintAttribute
+    public class OptionalAttribute : ValueConstraintAttribute
     {
     }
 }

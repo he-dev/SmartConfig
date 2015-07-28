@@ -7,10 +7,12 @@ using SmartConfig.Data;
 
 namespace SmartConfig
 {
-    public class ValueNullException : Exception
+    public class ObjectConverterException : Exception
     {
-        public ValueNullException(Type configType, string elementName)
-            : base(string.Format("Config element [{0}] found in [{1}] is null. If you want this field to be nuallable add the NullableAttribute.", elementName, configType.Name))
+        public ObjectConverterException(Type configType, string elementName, Exception innerException)
+            : base(
+                string.Format("Config element [{0}] not found in [{1}]. If you want this field to be optional add the OptionalAttribute.", elementName, configType.Name),
+                innerException)
         {
             ConfigType = configType;
             ElementName = elementName;

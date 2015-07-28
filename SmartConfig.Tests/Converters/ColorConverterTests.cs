@@ -13,9 +13,9 @@ namespace SmartConfig.Tests.Converters
         public void TestDeserializeObject()
         {
             var converter = new global::SmartConfig.Converters.ColorConverter();
-            Assert.AreEqual(Color.FromArgb(255, 0, 0), (Color)(Color32)converter.DeserializeObject("Red", typeof(Color), Enumerable.Empty<ValueContraintAttribute>()));
-            Assert.AreEqual(Color.FromArgb(1, 2, 3), (Color)(Color32)converter.DeserializeObject("1,2,3", typeof(Color), Enumerable.Empty<ValueContraintAttribute>()));
-            Assert.AreEqual(Color.FromArgb(255, 1, 2), (Color)(Color32)converter.DeserializeObject("#FF0102", typeof(Color), Enumerable.Empty<ValueContraintAttribute>()));
+            Assert.AreEqual(Color.FromArgb(255, 0, 0), (Color)(Color32)converter.DeserializeObject("Red", typeof(Color), Enumerable.Empty<ValueConstraintAttribute>()));
+            Assert.AreEqual(Color.FromArgb(1, 2, 3), (Color)(Color32)converter.DeserializeObject("1,2,3", typeof(Color), Enumerable.Empty<ValueConstraintAttribute>()));
+            Assert.AreEqual(Color.FromArgb(255, 1, 2), (Color)(Color32)converter.DeserializeObject("#FF0102", typeof(Color), Enumerable.Empty<ValueConstraintAttribute>()));
         }
 
         [TestMethod]

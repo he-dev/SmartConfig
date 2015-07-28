@@ -17,8 +17,8 @@ namespace SmartConfig.Tests.Converters
             const string xElement = @"<testXml></testXml>";
 
             var converter = new XmlConverter();
-            Assert.AreEqual(XDocument.Parse(xDocument).ToString(), converter.DeserializeObject(xDocument, typeof(XDocument), Enumerable.Empty<ValueContraintAttribute>()).ToString());
-            Assert.AreEqual(XElement.Parse(xElement).ToString(), converter.DeserializeObject(xElement, typeof(XElement), Enumerable.Empty<ValueContraintAttribute>()).ToString());
+            Assert.AreEqual(XDocument.Parse(xDocument).ToString(), converter.DeserializeObject(xDocument, typeof(XDocument), Enumerable.Empty<ValueConstraintAttribute>()).ToString());
+            Assert.AreEqual(XElement.Parse(xElement).ToString(), converter.DeserializeObject(xElement, typeof(XElement), Enumerable.Empty<ValueConstraintAttribute>()).ToString());
         }
 
         [TestMethod]

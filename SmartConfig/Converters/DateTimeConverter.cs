@@ -18,7 +18,7 @@ namespace SmartConfig.Converters
         {
         }
 
-        public override object DeserializeObject(string value, Type type, IEnumerable<ValueContraintAttribute> constraints)
+        public override object DeserializeObject(string value, Type type, IEnumerable<ValueConstraintAttribute> constraints)
         {
             ValidateType(type);
 
@@ -35,7 +35,7 @@ namespace SmartConfig.Converters
             }
         }
 
-        public override string SerializeObject(object value, Type type, IEnumerable<ValueContraintAttribute> constraints)
+        public override string SerializeObject(object value, Type type, IEnumerable<ValueConstraintAttribute> constraints)
         {
             ValidateType(type);
 

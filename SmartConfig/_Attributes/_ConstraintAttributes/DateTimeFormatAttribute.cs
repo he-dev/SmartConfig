@@ -9,7 +9,7 @@ namespace SmartConfig
     /// <summary>
     /// Allows to define an exact date time format.
     /// </summary>
-    public class DateTimeFormatAttribute : ValueContraintAttribute
+    public class DateTimeFormatAttribute : ValueConstraintAttribute
     {
         public DateTimeFormatAttribute(string format)
         {

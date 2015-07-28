@@ -13,14 +13,14 @@ namespace SmartConfig.Tests.Converters
         public void TestDeserializeObject()
         {
             var converter = new JsonConverter();
-            CollectionAssert.AreEqual(new Int32[] { 1, 2, 3 }, (List<Int32>)converter.DeserializeObject("[1, 2, 3]", typeof(List<Int32>), Enumerable.Empty<ValueContraintAttribute>()));
+            CollectionAssert.AreEqual(new Int32[] { 1, 2, 3 }, (List<Int32>)converter.DeserializeObject("[1, 2, 3]", typeof(List<Int32>), Enumerable.Empty<ValueConstraintAttribute>()));
         }
 
         [TestMethod]
         public void TestSerializeObject()
         {
             var converter = new JsonConverter();
-            Assert.AreEqual("[1,2,3]", converter.SerializeObject(new Int32[] { 1, 2, 3 }, null, Enumerable.Empty<ValueContraintAttribute>()));
+            Assert.AreEqual("[1,2,3]", converter.SerializeObject(new Int32[] { 1, 2, 3 }, null, Enumerable.Empty<ValueConstraintAttribute>()));
         }
     }
 }
