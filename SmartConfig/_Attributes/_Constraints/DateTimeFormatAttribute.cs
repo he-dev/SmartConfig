@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace SmartConfig
 {
+    /// <summary>
+    /// Allows to define an exact date time format.
+    /// </summary>
     public class DateTimeFormatAttribute : ValueContraintAttribute
     {
         public DateTimeFormatAttribute(string format)

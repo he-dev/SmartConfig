@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Converters
 {
+    /// <summary>
+    /// Converts JSON data from and to a string.
+    /// </summary>
     public class JsonConverter : ObjectConverterBase
     {
         public override object DeserializeObject(string value, Type type, IEnumerable<ValueContraintAttribute> constraints)

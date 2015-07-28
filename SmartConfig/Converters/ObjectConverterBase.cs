@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 namespace SmartConfig.Converters
 {
     /// <summary>
-    /// Converts objects to and from <c>string</c>.
+    /// Base class for converters. Provides a helper method for type verification.
     /// </summary>
     public abstract class ObjectConverterBase
     {

@@ -15,6 +15,9 @@ namespace SmartConfig.Example
 
             Console.WriteLine(ExampleConfig.AppSettings.Greeting);
             Console.WriteLine(ExampleConfig.AppSettings.Farewell);
+
+            SmartConfigManager.Update(() => ExampleConfig.AppSettings.Farewell, "Bye!");
+            Console.WriteLine(ExampleConfig.AppSettings.Farewell);
         }
     }
 }

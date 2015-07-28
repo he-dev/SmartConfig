@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Converters
 {
+    /// <summary>
+    /// Converts enums from and to a string.
+    /// </summary>
     public class EnumConverter : ObjectConverterBase
     {
         public EnumConverter()

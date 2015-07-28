@@ -8,6 +8,9 @@ using System.Xml.Linq;
 
 namespace SmartConfig.Converters
 {
+    /// <summary>
+    /// Converts XML from and to a string.
+    /// </summary>
     public class XmlConverter : ObjectConverterBase
     {
         public XmlConverter()

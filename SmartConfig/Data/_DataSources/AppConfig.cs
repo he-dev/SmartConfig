@@ -56,7 +56,8 @@ namespace SmartConfig.Data
 
         public override void Update(ConfigElement configElement)
         {
-            throw new NotSupportedException("AppConfig data source does not support updating (yet).");
+            //ConfigurationManager.AppSettings[configElement.Name] = configElement.Value;
+            //throw new NotSupportedException("AppConfig data source does not support updating (yet).");
         }
     }
 }

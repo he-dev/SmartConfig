@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Converters
 {
+    /// <summary>
+    /// Dummy string converter.
+    /// </summary>
     public class StringConverter : ObjectConverterBase
     {
         public StringConverter() : base(new[] { typeof(string) }) { }
