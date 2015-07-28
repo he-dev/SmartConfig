@@ -38,6 +38,11 @@ namespace SmartConfig.Data
                 value = ConfigurationManager.ConnectionStrings[name].ConnectionString;
                 break;
             case SectionNames.AppSettings:
+                name = ConfigurationManager.AppSettings.Keys.Cast<string>().SingleOrDefault(k => k.Equals(name, StringComparison.OrdinalIgnoreCase));
+                if (string.IsNullOrEmpty(name))
+                {
+                    yield break;
+                }
                 value = ConfigurationManager.AppSettings[name];
                 break;
             }

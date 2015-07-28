@@ -20,13 +20,13 @@ namespace SmartConfig
     public class SmartConfigManager
     {
         // Stores smart configs by type.
-        private static readonly Dictionary<Type, SmartConfigManager> SmartConfigManagers;
+        private static readonly Dictionary<Type, DataSourceBase> ConfigDataSources;
 
         public static readonly ObjectConverterCollection Converters;
 
         static SmartConfigManager()
         {
-            SmartConfigManagers = new Dictionary<Type, SmartConfigManager>();
+            ConfigDataSources = new Dictionary<Type, DataSourceBase>();
 
             Converters = new ObjectConverterCollection
             {
@@ -66,26 +66,17 @@ namespace SmartConfig
 
             #region SelfConfig initialization
 
-            var selfConfiInitializationRequired = !SmartConfigManagers.ContainsKey(typeof(SelfConfig)) && configType == typeof(SelfConfig);
+            var selfConfiInitializationRequired = !ConfigDataSources.ContainsKey(typeof(SelfConfig)) && configType == typeof(SelfConfig);
             if (selfConfiInitializationRequired)
             {
-                var selfConfig = new SmartConfigManager()
-                {
-                    DataSource = new AppConfig()
-                };
-                SmartConfigManagers[typeof(SelfConfig)] = selfConfig;
+                ConfigDataSources[typeof(SelfConfig)] = new AppConfig();
                 LoadTree(typeof(SelfConfig), typeof(SelfConfig), Utilities.ConfigName(typeof(SelfConfig)));
             }
 
             #endregion
 
-            var smartConfig = new SmartConfigManager()
-            {
-                DataSource = dataSource
-            };
-
             // Add new smart config.
-            SmartConfigManagers[configType] = smartConfig;
+            ConfigDataSources[configType] = dataSource;
             LoadTree(configType, configType, Utilities.ConfigName(configType));
         }
 
@@ -107,7 +98,7 @@ namespace SmartConfig
 
         private static void LoadValue(Type configType, Type currentType, string currentClassName, FieldInfo field)
         {
-            var dataSource = SmartConfigManagers[configType].DataSource;
+            var dataSource = ConfigDataSources[configType];
             var elementName = ConfigElementName.Combine(currentClassName, field.Name);
             var configElements = dataSource.Select(elementName);
 
@@ -160,9 +151,9 @@ namespace SmartConfig
             var serializedData = converter.SerializeObject(value, field.FieldType, field.GetCustomAttributes<ValueContraintAttribute>(true));
 
             var smartConfigType = Utilities.GetSmartConfigType(memberInfo);
-            var smartConfig = SmartConfigManagers[smartConfigType];
+            var dataSource = ConfigDataSources[smartConfigType];
 
-            smartConfig.DataSource.Update(new ConfigElement()
+            dataSource.Update(new ConfigElement()
             {
                 Environment = SelfConfig.AppSettings.Environment,
                 Version = smartConfigType.Version().ToStringOrEmpty(),
@@ -221,7 +212,5 @@ namespace SmartConfig
             }
             return configElements;
         }
-
-
     }
 }
