@@ -18,16 +18,21 @@ namespace SmartConfig
 
 #if NET40
 
-        public static bool GetCustomAttributes<T>(this FieldInfo fieldInfo, bool inherit) where T : Attribute
+        public static IEnumerable<T> GetCustomAttributes<T>(this FieldInfo fieldInfo, bool inherit = true) where T : Attribute
         {
-            return fieldInfo.GetCustomAttributes(typeof(T), inherit).SingleOrDefault() != null;
-        }    
+            return fieldInfo.GetCustomAttributes(typeof (T), inherit).Cast<T>();
+        }
 
 
-        public static TAttribute GetCustomAttribute<TAttribute>(this FieldInfo fieldInfo, bool inherit) where TAttribute : Attribute
+        public static TAttribute GetCustomAttribute<TAttribute>(this FieldInfo fieldInfo, bool inherit = true) where TAttribute : Attribute
         {
             return fieldInfo.GetCustomAttributes<TAttribute>(inherit).SingleOrDefault();
-        }   
+        }
+
+        public static T GetCustomAttribute<T>(this Type type, bool inherit = true) where T : Attribute
+        {
+            return type.GetCustomAttributes(typeof(T), inherit).Cast<T>().SingleOrDefault();
+        }
 
 #endif
 
