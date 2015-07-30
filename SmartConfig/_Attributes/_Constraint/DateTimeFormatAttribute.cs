@@ -16,6 +16,9 @@ namespace SmartConfig
             Format = format;
         }
 
+        /// <summary>
+        /// Gets the format set in the constructor.
+        /// </summary>
         public string Format { get; private set; }
 
         public override string ToString()

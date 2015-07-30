@@ -50,22 +50,28 @@ namespace SmartConfig.Converters
                 type = Nullable.GetUnderlyingType(type);
             }
 
-            var parseMethod = type.GetMethod("Parse", new Type[] { typeof(string), typeof(IFormatProvider) });
+            object result = null;
+
+            var parseMethod = type.GetMethod("Parse", new[] { typeof(string), typeof(IFormatProvider) });
             if (parseMethod != null)
             {
-                var result = parseMethod.Invoke(null, new object[] { value, CultureInfo.InvariantCulture });
-                return result;
+                result = parseMethod.Invoke(null, new object[] { value, CultureInfo.InvariantCulture });
             }
             else
             {
-                parseMethod = type.GetMethod("Parse", new Type[] { typeof(string) });
+                parseMethod = type.GetMethod("Parse", new[] { typeof(string) });
                 if (parseMethod != null)
                 {
-                    var result = parseMethod.Invoke(null, new object[] { value });
-                    return result;
+                    result = parseMethod.Invoke(null, new object[] { value });
                 }
             }
-            throw new Exception("Parse method not found.");
+
+            constraints.Check<RangeAttribute>(range =>
+            {
+                if (!range.IsValid((IComparable)result)) throw new RangeException(type, value, range.Min, range.Max);
+            });
+
+            return result;
         }
 
         public override string SerializeObject(object value, Type type, IEnumerable<ValueConstraintAttribute> constraints)
@@ -78,7 +84,7 @@ namespace SmartConfig.Converters
                 return null;
             }
 
-            var toStringMethod = type.GetMethod("ToString", new Type[] { typeof(IFormatProvider) });
+            var toStringMethod = type.GetMethod("ToString", new[] { typeof(IFormatProvider) });
             if (toStringMethod != null)
             {
                 var result = toStringMethod.Invoke(value, new object[] { CultureInfo.InvariantCulture });
@@ -87,8 +93,11 @@ namespace SmartConfig.Converters
             else
             {
                 toStringMethod = type.GetMethod("ToString", new Type[] { });
-                var result = toStringMethod.Invoke(value, null);
-                return (string)result;
+                if (toStringMethod != null)
+                {
+                    var result = toStringMethod.Invoke(value, null);
+                    return (string)result;
+                }
             }
 
             throw new Exception("ToString method not found.");

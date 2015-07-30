@@ -15,15 +15,8 @@ namespace SmartConfig
             if (constraint != null)
             {
                 checkAction(constraint);
-                
             }
         }
-
-        //public static void IfNotExists<T>(this IEnumerable<ValueConstraintAttribute> contraints, Action checkAction) where T : ValueConstraintAttribute
-        //{
-        //    var constraint = contraints.OfType<T>().SingleOrDefault();
-        //    if (constraint == null) checkAction();
-        //}
 
         #region ConfigElement Filters
 
