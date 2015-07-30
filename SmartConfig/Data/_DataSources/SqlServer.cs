@@ -25,12 +25,18 @@ namespace SmartConfig.Data
         /// </summary>
         public string TableName { get; set; }
 
-        static SqlServer()
+        //static SqlServer()
+        //{
+        //    Database.SetInitializer<SmartConfigEntities>(null);
+        //}
+
+        public SqlServer()
         {
-            Database.SetInitializer<SmartConfigEntities>(null);
+            FilterByEnvironment = EnumerableExtensions.FilterByEnvironment;
+            FilterByVersion = EnumerableExtensions.FilterBySemanticVersion;
         }
 
-        public override IEnumerable<ConfigElement> Select(string name)
+        public override IEnumerable<ConfigElement> Select(string environment, string version, string name)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -46,12 +52,10 @@ namespace SmartConfig.Data
 
             using (var context = new SmartConfigEntities(ConnectionString, TableName))
             {
-                var result =
-                    context
-                    .ConfigElements
-                    .Where(ce => ce.Name == name)
-                    .ToList();
-                return result;
+                var elements = context.ConfigElements.Where(ce => ce.Name == name).ToList() as IEnumerable<ConfigElement>;
+                elements = FilterByEnvironment(elements, environment);
+                elements = FilterByVersion(elements, version);
+                return elements;
             };
         }
 

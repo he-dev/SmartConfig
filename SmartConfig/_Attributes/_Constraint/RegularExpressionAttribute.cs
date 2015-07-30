@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace SmartConfig
 {
-    public class PatternAttribute : ValueConstraintAttribute
+    public class RegularExpressionAttribute : ValueConstraintAttribute
     {
         private readonly string _pattern;
 
-        public PatternAttribute(string pattern, bool ignoreCase = false)
+        public RegularExpressionAttribute(string pattern, bool ignoreCase = false)
         {
             _pattern = pattern;
             IgnoreCase = ignoreCase;
@@ -24,7 +24,7 @@ namespace SmartConfig
             return Regex.IsMatch(value, this, IgnoreCase ? RegexOptions.IgnoreCase : RegexOptions.None);
         }
 
-        public static implicit operator string(PatternAttribute pattern)
+        public static implicit operator string(RegularExpressionAttribute pattern)
         {
             return pattern._pattern;
         }

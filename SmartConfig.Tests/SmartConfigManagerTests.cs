@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.Entity;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -35,7 +36,7 @@ namespace SmartConfig.Tests
 
             var dataSource = new StubDataSourceBase()
             {
-                SelectString = (name) =>
+                SelectStringStringString = (environment, version, name) =>
                 {
                     var elements = testConfig.Where(ce => ce.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
                     return elements;
@@ -59,7 +60,7 @@ namespace SmartConfig.Tests
         {
             var dataSource = new StubDataSourceBase()
             {
-                SelectString = (name) => Enumerable.Repeat(new ConfigElement() { Environment = "ABC", Name = name, Value = null }, 1)
+                SelectStringStringString = (environment, version, name) => Enumerable.Repeat(new ConfigElement() { Environment = "ABC", Name = name, Value = null }, 1)
             };
 
             SmartConfigManager.Load(typeof(NullableValueTypeFields), dataSource);
@@ -91,7 +92,7 @@ namespace SmartConfig.Tests
 
             dataSource = new StubDataSourceBase()
             {
-                SelectString = (name) => testConfig.Where(ce => ce.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                SelectStringStringString = (environment, version, name) => testConfig.Where(ce => ce.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
             };
 
             SmartConfigManager.Load(typeof(NullableValueTypeFields), dataSource);
@@ -122,7 +123,7 @@ namespace SmartConfig.Tests
 
             var dataSource = new StubDataSourceBase()
             {
-                SelectString = (name) => new[] { "ABC||EnumField1|TestValue2" }.ToConfigElements()
+                SelectStringStringString = (environment, version, name) => new[] { "ABC||EnumField1|TestValue2" }.ToConfigElements()
             };
 
             SmartConfigManager.Load(typeof(EnumFields), dataSource);
@@ -167,7 +168,7 @@ namespace SmartConfig.Tests
 
             var dataSource = new StubDataSourceBase()
             {
-                SelectString = (name) => new[] { "ABC||StringField|abcd" }.ToConfigElements()
+                SelectStringStringString = (environment, version, name) => new[] { "ABC||StringField|abcd" }.ToConfigElements()
             };
 
             SmartConfigManager.Load(typeof(StringFields), dataSource);
@@ -186,7 +187,7 @@ namespace SmartConfig.Tests
         {
             var dataSource = new StubDataSourceBase()
             {
-                SelectString = (name) => new[] { "ABC||ListInt32Field|[1, 2, 3]" }.ToConfigElements()
+                SelectStringStringString = (environment, version, name) => new[] { "ABC||ListInt32Field|[1, 2, 3]" }.ToConfigElements()
             };
 
             SmartConfigManager.Load(typeof(JsonFields), dataSource);
@@ -206,7 +207,13 @@ namespace SmartConfig.Tests
             var dataSource = new StubDataSourceBase()
             {
                 // Return null value for all names.
-                SelectString = (name) => Enumerable.Repeat(new ConfigElement() { Environment = "ABC", Name = name, Value = null }, 1)
+                SelectStringStringString = (environment, version, name) => Enumerable.Repeat(new ConfigElement()
+                {
+                    Environment = environment, 
+                    Version = version, 
+                    Name = name, 
+                    Value = null
+                }, 1)
             };
 
             SmartConfigManager.Load(typeof(NullableFields), dataSource);
@@ -219,7 +226,13 @@ namespace SmartConfig.Tests
 
             dataSource = new StubDataSourceBase()
             {
-                SelectString = (name) => new[] { "ABC||NullableStringField|abcd" }.ToConfigElements()
+                SelectStringStringString = (environment, version, name) => Enumerable.Repeat(new ConfigElement()
+                {
+                    Environment = environment,
+                    Version = version,
+                    Name = name,
+                    Value = "abcd"
+                }, 1)
             };
 
             SmartConfigManager.Load(typeof(NullableFields), dataSource);
@@ -238,7 +251,7 @@ namespace SmartConfig.Tests
             var dataSource = new StubDataSourceBase()
             {
                 // Return null value for all names.
-                SelectString = (name) => Enumerable.Empty<ConfigElement>()
+                SelectStringStringString = (environment, version, name) => Enumerable.Empty<ConfigElement>()
             };
 
             SmartConfigManager.Load(typeof(OptionalFields), dataSource);
@@ -251,7 +264,7 @@ namespace SmartConfig.Tests
 
             dataSource = new StubDataSourceBase()
             {
-                SelectString = (name) => new[] { "ABC||OptionalStringField|abcd" }.ToConfigElements()
+                SelectStringStringString = (environment, version, name) => new[] { "ABC||OptionalStringField|abcd" }.ToConfigElements()
             };
 
             SmartConfigManager.Load(typeof(OptionalFields), dataSource);
@@ -278,7 +291,7 @@ namespace SmartConfig.Tests
 
             var dataSource = new StubDataSourceBase()
             {
-                SelectString = (name) => testConfig.Where(ce => ce.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                SelectStringStringString = (environment, version, name) => testConfig.Where(ce => ce.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
             };
             SmartConfigManager.Load(typeof(OneNestedClass), dataSource);
 
@@ -291,7 +304,7 @@ namespace SmartConfig.Tests
         {
             var dataSource = new StubDataSourceBase()
             {
-                SelectString = (name) => new[] { "ABC||SubClass.SubSubClass.StringField|abc" }.ToConfigElements()
+                SelectStringStringString = (environment, version, name) => new[] { "ABC||SubClass.SubSubClass.StringField|abc" }.ToConfigElements()
             };
             SmartConfigManager.Load(typeof(TwoNestedClasses), dataSource);
 
@@ -307,7 +320,7 @@ namespace SmartConfig.Tests
         {
             var dataSource = new StubDataSourceBase()
             {
-                SelectString = (name) =>
+                SelectStringStringString = (environment, version, name) =>
                 {
                     Assert.AreEqual("ABCD.StringField", name);
                     return Enumerable.Empty<ConfigElement>();
@@ -323,50 +336,16 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void TestVersion()
         {
-            var testConfig = new[]
-            {
-                "ABC|1.0.0|StringField|abc",
-                "ABC|2.1.1|StringField|jkl",
-                "ABC|3.2.4|StringField|xyz",
-            }
-            .ToConfigElements();
-
             var dataSource = new StubDataSourceBase()
             {
-                SelectString = (name) => testConfig
+                SelectStringStringString = (environment, version, name) =>
+                {
+                    Assert.AreEqual("2.2.1", version);
+                    return Enumerable.Empty<ConfigElement>();
+                }
             };
             SmartConfigManager.Load(typeof(VersionTestConfig), dataSource);
-
-            Assert.AreEqual("jkl", VersionTestConfig.StringField);
-        }
-
-        #endregion
-
-        #region Database tests
-
-        [TestMethod]
-        public void TestSqlServer()
-        {
-            var dataSource = new SqlServer()
-            {
-                ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
-                TableName = "TestConfig"
-            };
-            SmartConfigManager.Load(typeof(SqlServerTestConfig), dataSource);
-            Assert.AreEqual(1, SqlServerTestConfig.Int32Field);
-        }
-
-        [TestMethod]
-        public void TestSqlServerUpdate()
-        {
-            var dataSource = new SqlServer()
-            {
-                ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
-                TableName = "TestConfig"
-            };
-            SmartConfigManager.Load(typeof(SqlServerTestConfig), dataSource);
-            Assert.AreEqual(3, SqlServerTestConfig.Int32Field);
-            SmartConfigManager.Update(() => SqlServerTestConfig.Int32Field, 4);
+            
         }
 
         #endregion
@@ -374,26 +353,32 @@ namespace SmartConfig.Tests
         #region Exception tests
 
         [TestMethod]
-        [ExpectedException(typeof(ConfigElementNotFounException))]
-        public void Load_NullReferenceTypeFields()
+        [ExpectedException(typeof(NullableException))]
+        public void Load_MissingNullableAttributeConfig()
         {
             var dataSource = new StubDataSourceBase()
             {
-                SelectString = (name) => Enumerable.Empty<ConfigElement>()
+                SelectStringStringString = (environment, version, name) => Enumerable.Repeat(new ConfigElement()
+                {
+                    Environment = environment,
+                    Version = version,
+                    Name = name,
+                    Value = null
+                }, 1)
             };
-            SmartConfigManager.Load(typeof(NullReferenceTypeFields), dataSource);
+            SmartConfigManager.Load(typeof(MissingNullableAttributeConfig), dataSource);
             Assert.Fail("Exception was not thrown.");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ConfigElementNotFounException))]
-        public void Load_NullValueTypeFields()
+        [ExpectedException(typeof(OptionalException))]
+        public void Load_MissingOptionalAttributeConfig()
         {
             var dataSource = new StubDataSourceBase()
             {
-                SelectString = (name) => Enumerable.Empty<ConfigElement>()
+                SelectStringStringString = (environment, version, name) => Enumerable.Empty<ConfigElement>()
             };
-            SmartConfigManager.Load(typeof(NullValueTypeFields), dataSource);
+            SmartConfigManager.Load(typeof(MissingOptionalAttributeConfig), dataSource);
             Assert.Fail("Exception was not thrown.");
         }
 
@@ -403,7 +388,7 @@ namespace SmartConfig.Tests
         {
             var dataSource = new StubDataSourceBase()
             {
-                SelectString = (name) =>
+                SelectStringStringString = (environment, version, name) =>
                 {
                     Assert.AreEqual("Int32Field", name);
                     return Enumerable.Empty<ConfigElement>();
@@ -414,5 +399,41 @@ namespace SmartConfig.Tests
         }
 
         #endregion
+
+        [TestClass]
+        public class DatabaseTests
+        {
+            [TestInitialize]
+            public void TestInitialize()
+            {
+                Database.SetInitializer<SmartConfigEntities>(null);
+            }
+
+            [TestMethod]
+            public void Select_Int32Field()
+            {
+                var dataSource = new SqlServer()
+                {
+                    ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
+                    TableName = "TestConfig"
+                };
+                SmartConfigManager.Load(typeof(SqlServerTestConfig), dataSource);
+                Assert.AreEqual(123, SqlServerTestConfig.Int32Field);
+            }
+
+            [TestMethod]
+            public void Update_Int32Fields()
+            {
+                var dataSource = new SqlServer()
+                {
+                    ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
+                    TableName = "TestConfig"
+                };
+                SmartConfigManager.Load(typeof(SqlServerTestConfig), dataSource);
+                Assert.AreEqual(123, SqlServerTestConfig.Int32Field);
+                SmartConfigManager.Update(() => SqlServerTestConfig.Int32Field, 4);
+            }
+
+        }
     }
 }

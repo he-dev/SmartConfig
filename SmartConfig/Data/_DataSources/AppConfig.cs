@@ -19,7 +19,7 @@ namespace SmartConfig.Data
             public const string AppSettings = "AppSettings";
         }
 
-        public override IEnumerable<ConfigElement> Select(string name)
+        public override IEnumerable<ConfigElement> Select(string environment, string version, string name)
         {
             var sectionNameMatch = Regex.Match(name, SectionNamePattern, RegexOptions.IgnoreCase);
             if (!sectionNameMatch.Success)
@@ -59,5 +59,7 @@ namespace SmartConfig.Data
             //ConfigurationManager.AppSettings[configElement.Name] = configElement.Value;
             //throw new NotSupportedException("AppConfig data source does not support updating (yet).");
         }
+
+
     }
 }

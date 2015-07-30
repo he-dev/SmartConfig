@@ -29,8 +29,8 @@ namespace SmartConfig.Tests.Data
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
                 TableName = "TestConfig"
             };
-            var configElements = sqlServer.Select("StringField").ToList();
-            Assert.AreEqual(3, configElements.Count);
+            var configElements = sqlServer.Select("ABC", "2.2.0", "StringField").ToList();
+            Assert.AreEqual(1, configElements.Count);
         }
 
         [TestMethod]
@@ -41,10 +41,16 @@ namespace SmartConfig.Tests.Data
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
                 TableName = "TestConfig"
             };
-            sqlServer.Update(new ConfigElement() { Environment = "JKL", Version = "3.2.4", Name = "StringField", Value = "jkl" });
-            var configElements = sqlServer.Select("StringField").ToList();
-            Assert.AreEqual(3, configElements.Count);
-            Assert.AreEqual("jkl", configElements[2].Value);
+            sqlServer.Update(new ConfigElement()
+            {
+                Environment = "JKL",
+                Version = "3.2.4",
+                Name = "StringField",
+                Value = "jkl"
+            });
+            var configElements = sqlServer.Select("JKL", "3.2.4", "StringField").ToList();
+            Assert.AreEqual(1, configElements.Count);
+            Assert.AreEqual("jkl", configElements[0].Value);
         }
     }
 }

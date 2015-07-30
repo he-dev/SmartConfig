@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 namespace SmartConfig
 {
     /// <summary>
-    /// Indicates that a it is optional to provide a value for this field.
+    /// Indicates that the value of the field can be null.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
-    public class OptionalAttribute : ValueConstraintAttribute
+    public class NullableAttribute : Attribute
     {
     }
 }

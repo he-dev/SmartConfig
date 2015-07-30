@@ -4,11 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartConfig.Example
+namespace SmartConfig.Example.Data
 {
     [SmartConfig]
-    static class ExampleConfig
+    static class ExampleAppConfig
     {
+        public static class ConnectionStrings
+        {
+            public static string ExampleDb;
+        }
+
         public static class AppSettings
         {
             public static string Greeting;

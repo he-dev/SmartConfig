@@ -9,8 +9,8 @@ namespace SmartConfig
     /// <summary>
     /// Is thrown if there is no type marked with the <c>SmartConfigAttribute</c>.
     /// </summary>
-    public class SmartConfigAttributeNotFoundException : Exception
+    public class SmartConfigTypeNotFoundException : Exception
     {
-        public SmartConfigAttributeNotFoundException(string message) : base(message) { }
+        public SmartConfigTypeNotFoundException(string message) : base(message) { }
     }
 }

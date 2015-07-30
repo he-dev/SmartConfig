@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SmartConfig
 {
-    public class PatternException : ConstraintException
+    public class RegularExpressionException : ConstraintException
     {
-        public PatternException(string value, string pattern)
+        public RegularExpressionException(string value, string pattern)
             : base(value, string.Format("Value [{0}] does not match the pattern [{1}].", value, pattern))
         {
             Value = value;

@@ -38,26 +38,23 @@ namespace SmartConfig
             return fieldInfo.GetCustomAttributes<ValueConstraintAttribute>(true);
         }
 
+        #endregion
+
+        #region 
+
         public static bool IsNullable(this FieldInfo fieldInfo)
         {
             var isNullable =
                 (fieldInfo.FieldType.IsValueType && fieldInfo.FieldType.IsNullable())
-                || fieldInfo.Contraints().OfType<NullableAttribute>().SingleOrDefault() != null;
+                || fieldInfo.GetCustomAttribute<NullableAttribute>() != null;
             return isNullable;
         }
 
         public static bool IsOptional(this FieldInfo fieldInfo)
         {
-            var isOptional = fieldInfo.Contraints().OfType<OptionalAttribute>().SingleOrDefault() != null;
+            var isOptional = fieldInfo.GetCustomAttribute<OptionalAttribute>() != null;
             return isOptional;
         }
-
-        public static string Pattern(this FieldInfo fieldInfo)
-        {
-            var pattern = fieldInfo.Contraints().OfType<PatternAttribute>().SingleOrDefault();
-            return pattern;
-        }
-
 
         #endregion
     }

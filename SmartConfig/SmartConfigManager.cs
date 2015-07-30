@@ -19,30 +19,25 @@ namespace SmartConfig
     /// </summary>
     public class SmartConfigManager
     {
-        // Stores smart configs by type.
-        private static readonly Dictionary<Type, DataSourceBase> ConfigDataSources;
+        private static readonly Dictionary<Type, DataSourceBase> DataSources;
 
         public static readonly ObjectConverterCollection Converters;
 
         static SmartConfigManager()
         {
-            ConfigDataSources = new Dictionary<Type, DataSourceBase>();
+            DataSources = new Dictionary<Type, DataSourceBase>();
 
             Converters = new ObjectConverterCollection
             {
-                new StringConverter(),
-                new ValueTypeConverter(),
+                new ColorConverter(),
+                new DateTimeConverter(),
                 new EnumConverter(),
                 new JsonConverter(),
+                new StringConverter(),
+                new ValueTypeConverter(),
                 new XmlConverter(),
-                new ColorConverter()
             };
         }
-
-        /// <summary>
-        /// Gets or sets the data source for the <c>SmartConfig</c>.
-        /// </summary>
-        private DataSourceBase DataSource { get; set; }
 
         #region Loading
 
@@ -61,74 +56,81 @@ namespace SmartConfig
 
             if (!configType.HasAttribute<SmartConfigAttribute>())
             {
-                throw new InvalidOperationException("Config type does not have the SmartConfigAttribute.");
+                throw new InvalidOperationException("Config type must have the SmartConfigAttribute.");
             }
 
-            #region SelfConfig initialization
-
-            var selfConfiInitializationRequired = !ConfigDataSources.ContainsKey(typeof(SelfConfig)) && configType == typeof(SelfConfig);
-            if (selfConfiInitializationRequired)
+            var isSelfConfigInitialized = DataSources.ContainsKey(typeof(SelfConfig));
+            if (!isSelfConfigInitialized)
             {
-                ConfigDataSources[typeof(SelfConfig)] = new AppConfig();
-                LoadTree(typeof(SelfConfig), typeof(SelfConfig), Utilities.ConfigName(typeof(SelfConfig)));
+                _Load(typeof(SelfConfig), new AppConfig());
             }
-
-            #endregion
-
-            // Add new smart config.
-            ConfigDataSources[configType] = dataSource;
-            LoadTree(configType, configType, Utilities.ConfigName(configType));
+            _Load(configType, dataSource);
         }
 
-        private static void LoadTree(Type configType, Type currentType, string currentClassName)
+        private static void _Load(Type configType, DataSourceBase dataSource)
         {
-            var fields = currentType.GetFields(BindingFlags.Public | BindingFlags.Static);
+            DataSources[configType] = dataSource;
+
+            var fields = GetConfigFields(configType);
             foreach (var field in fields)
             {
-                LoadValue(configType, currentType, currentClassName, field);
-            }
-
-            var nestedTypes = currentType.GetNestedTypes();
-            foreach (var nestedType in nestedTypes)
-            {
-                var nestedClassElementName = ConfigElementName.Combine(currentClassName, nestedType.Name);
-                LoadTree(configType, nestedType, nestedClassElementName);
+                LoadValue(field);
             }
         }
 
-        private static void LoadValue(Type configType, Type currentType, string currentClassName, FieldInfo field)
+        private static IEnumerable<FieldInfo> GetConfigFields(Type type)
         {
-            var dataSource = ConfigDataSources[configType];
-            var elementName = ConfigElementName.Combine(currentClassName, field.Name);
-            var configElements = dataSource.Select(elementName);
-
-            var canFilterConfigElements = !(dataSource is AppConfig);
-            if (canFilterConfigElements)
+            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Static);
+            foreach (var field in fields)
             {
-                configElements = FilterConfigElements(configType, configElements);
+                yield return field;
             }
 
-            var constraints = field.Contraints();
-
-            // Get the last element because it is the latest version.
-            var element = configElements.LastOrDefault();
-
-            constraints.Check<OptionalAttribute>(attribute =>
+            foreach (var field in type.GetNestedTypes().SelectMany(GetConfigFields))
             {
-                // TODO: Convert to OptionalException
-                if (element == null) throw new ConfigElementNotFounException(configType, elementName);
-            });
+                yield return field;
+            }
+        }
+
+        private static void LoadFields(IEnumerable<FieldInfo> fields)
+        {
+            foreach (var field in fields)
+            {
+                LoadValue(field);
+            }
+        }
+
+        private static void LoadValue(FieldInfo field)
+        {
+            var configFieldInfo = Utilities.GetConfigFieldInfo(field);
+            var element =
+                DataSources[configFieldInfo.SmartConfigType]
+                .Select(SelfConfig.AppSettings.Environment, configFieldInfo.Version, configFieldInfo.Name)
+                .SingleOrDefault();
+
+            if (element == null)
+            {
+                if (field.IsOptional())
+                {
+                    return;
+                }
+                throw new OptionalException(configFieldInfo.SmartConfigType, configFieldInfo.Name);
+            }
+
+            if (string.IsNullOrEmpty(element.Value) && !field.IsNullable())
+            {
+                throw new NullableException(configFieldInfo.SmartConfigType, configFieldInfo.Name);
+            }
 
             try
             {
-
                 var converter = GetConverter(field);
                 var obj = converter.DeserializeObject(element.Value, field.FieldType, field.Contraints());
                 field.SetValue(null, obj);
             }
             catch (Exception ex)
             {
-                throw new ObjectConverterException(configType, elementName, ex);
+                throw new ObjectConverterException(configFieldInfo.SmartConfigType, configFieldInfo.Name, ex);
             }
         }
 
@@ -137,7 +139,7 @@ namespace SmartConfig
         public static void Update<TField>(Expression<Func<TField>> expression, TField value)
         {
             var memberInfo = Utilities.GetMemberInfo(expression);
-            var configType = Utilities.GetSmartConfigType(memberInfo);
+            var configType = Utilities.GetConfigType(memberInfo);
             var elementName = ConfigElementName.From(expression);
             var field = memberInfo as FieldInfo;
 
@@ -145,13 +147,18 @@ namespace SmartConfig
 
             //TField data = expression.Compile()();
 
+            if (value == null && !field.IsNullable())
+            {
+                throw new NullableException(configType, elementName);
+            }
+
             try
             {
                 var converter = GetConverter(field);
                 var serializedData = converter.SerializeObject(value, field.FieldType, field.GetCustomAttributes<ValueConstraintAttribute>(true));
 
-                var smartConfigType = Utilities.GetSmartConfigType(memberInfo);
-                var dataSource = ConfigDataSources[smartConfigType];
+                var smartConfigType = Utilities.GetConfigType(memberInfo);
+                var dataSource = DataSources[smartConfigType];
 
                 dataSource.Update(new ConfigElement()
                 {
@@ -193,29 +200,5 @@ namespace SmartConfig
             return objectConverter;
         }
 
-        private static IEnumerable<ConfigElement> FilterConfigElements(Type configType, IEnumerable<ConfigElement> configElements)
-        {
-            var canFilterByEnvironment = !string.IsNullOrEmpty(SelfConfig.AppSettings.Environment);
-            if (canFilterByEnvironment)
-            {
-                configElements =
-                    configElements
-                    .Where(e => e.Environment.Equals(SelfConfig.AppSettings.Environment, StringComparison.OrdinalIgnoreCase));
-            }
-
-            // Filter by version:
-            var version = configType.Version();
-            var canFilterByVersion = version != null;
-            if (canFilterByVersion)
-            {
-                configElements =
-                    configElements
-                    // Get versions that are less or equal current:
-                    .Where(e => SemanticVersion.Parse(e.Version) <= version)
-                    // Sort by version:
-                    .OrderBy(e => SemanticVersion.Parse(e.Version));
-            }
-            return configElements;
-        }
     }
 }

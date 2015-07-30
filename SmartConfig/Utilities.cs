@@ -31,7 +31,7 @@ namespace SmartConfig
             return string.IsNullOrEmpty(smartConfigAttribute.Name) ? string.Empty : smartConfigAttribute.Name;
         }
 
-        internal static Type GetSmartConfigType(MemberInfo memberInfo)
+        internal static Type GetConfigType(MemberInfo memberInfo)
         {
             if (memberInfo.ReflectedType.HasAttribute<SmartConfigAttribute>())
             {
@@ -48,7 +48,34 @@ namespace SmartConfig
                 type = type.DeclaringType;
             }
 
-            throw new SmartConfigAttributeNotFoundException("Neither the specified type nor any declaring type is marked with the SmartConfigAttribute.");
+            throw new SmartConfigTypeNotFoundException("Neither the specified type nor any declaring type is marked with the SmartConfigAttribute.");
+        }
+
+        internal static ConfigFieldInfo GetConfigFieldInfo(MemberInfo memberInfo)
+        {
+            var path = new List<string> { memberInfo.Name };
+
+            var type = memberInfo.DeclaringType;
+            while (type != null)
+            {
+                var smartConfigAttribute = type.GetCustomAttribute<SmartConfigAttribute>();
+                if (smartConfigAttribute != null)
+                {
+                    path.Add(smartConfigAttribute.Name);
+                    var result = new ConfigFieldInfo()
+                    {
+                        SmartConfigType = type,
+                        Version = smartConfigAttribute.Version,
+                        Name = ConfigElementName.Combine(path, true),
+                        Constraints = ((FieldInfo)memberInfo).GetCustomAttributes<ValueConstraintAttribute>()
+                    };
+                    return result;
+                }
+                path.Add(type.Name);
+                type = type.DeclaringType;
+            }
+
+            throw new SmartConfigTypeNotFoundException("Neither the specified type nor any declaring type is marked with the SmartConfigAttribute.");
         }
 
         internal static MemberInfo GetMemberInfo<TField>(Expression<Func<TField>> expression)

@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    public static class NullValueTypeFields
+    public static class MissingNullableAttributeConfig
     {
-        public static int Int32Fields;
+        public static List<int> ListInt32Field;
     }
 }

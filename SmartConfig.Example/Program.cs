@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SmartConfig.Data;
+using SmartConfig.Example.Data;
 
 namespace SmartConfig.Example
 {
@@ -11,13 +12,21 @@ namespace SmartConfig.Example
     {
         static void Main(string[] args)
         {
-            SmartConfigManager.Load(typeof(ExampleConfig), new AppConfig());
+            SmartConfigManager.Load(typeof(ExampleAppConfig), new AppConfig());
 
-            Console.WriteLine(ExampleConfig.AppSettings.Greeting);
-            Console.WriteLine(ExampleConfig.AppSettings.Farewell);
+            Console.WriteLine(ExampleAppConfig.AppSettings.Greeting);
+            Console.WriteLine(ExampleAppConfig.AppSettings.Farewell);
 
-            SmartConfigManager.Update(() => ExampleConfig.AppSettings.Farewell, "Bye!");
-            Console.WriteLine(ExampleConfig.AppSettings.Farewell);
+            SmartConfigManager.Update(() => ExampleAppConfig.AppSettings.Farewell, "Bye!");
+            Console.WriteLine(ExampleAppConfig.AppSettings.Farewell);
+
+            SmartConfigManager.Load(typeof(ExampleDbConfig), new SqlServer()
+            {
+                ConnectionString = ExampleAppConfig.ConnectionStrings.ExampleDb,
+                TableName = "ExampleConfigTable"
+            });
+
+            Console.WriteLine(ExampleDbConfig.Colors.FontColor);
         }
     }
 }

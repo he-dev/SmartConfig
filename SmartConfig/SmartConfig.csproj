@@ -63,22 +63,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigFieldInfo.cs" />
     <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\EnumConverter.cs" />
     <Compile Include="Data\_DataSources\AppConfig.cs" />
     <Compile Include="Collections\ObjectConverterCollection.cs" />
     <Compile Include="Utilities.cs" />
-    <Compile Include="_Attributes\_Constraint\OptionalAttribute.cs" />
+    <Compile Include="_Attributes\_Requirements\OptionalAttribute.cs" />
     <Compile Include="_Attributes\_Constraint\DateTimeFormatAttribute.cs" />
-    <Compile Include="_Attributes\_Constraint\PatternAttribute.cs" />
+    <Compile Include="_Attributes\_Constraint\RegularExpressionAttribute.cs" />
     <Compile Include="_Attributes\_Constraint\RangeAttribute.cs" />
     <Compile Include="_Attributes\_Constraint\ValueConstraintAttribute.cs" />
+    <Compile Include="_Exceptions\OptionalException.cs" />
     <Compile Include="_Exceptions\ObjectConverterException.cs" />
     <Compile Include="_Exceptions\_Constraints\ConstraintException.cs" />
-    <Compile Include="_Exceptions\_Constraints\PatternException.cs" />
+    <Compile Include="_Exceptions\_Constraints\RegularExpressionException.cs" />
     <Compile Include="_Exceptions\UnsupportedTypeException.cs" />
     <Compile Include="_Exceptions\ConfigElementNotFounException.cs" />
-    <Compile Include="_Exceptions\_Constraints\NullableException.cs" />
+    <Compile Include="_Exceptions\NullableException.cs" />
     <Compile Include="_Extensions\FieldInfoExtensions.cs" />
     <Compile Include="_Extensions\EnumerableExtensions.cs" />
     <Compile Include="_Extensions\TypeExtensions.cs" />
@@ -93,7 +95,7 @@
     <Compile Include="Data\_Entity\SmartConfigEntities.cs" />
     <Compile Include="Data\_DataSources\SqlServer.cs" />
     <Compile Include="_Attributes\ObjectConverterAttribute.cs" />
-    <Compile Include="_Attributes\_Constraint\NullableAttribute.cs" />
+    <Compile Include="_Attributes\_Requirements\NullableAttribute.cs" />
     <Compile Include="Converters\ObjectConverterBase.cs" />
     <Compile Include="Data\SelfConfig.cs" />
     <Compile Include="_Types\SemanticVersion.cs" />
@@ -115,6 +117,7 @@
   <ItemGroup>
     <Content Include="LICENSE.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
