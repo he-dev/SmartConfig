@@ -80,23 +80,21 @@ namespace SmartConfig
 
         private static IEnumerable<FieldInfo> GetConfigFields(Type type)
         {
-            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Static);
+            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Static).Where(f => f.GetCustomAttribute<IgnoreAttribute>() == null);
             foreach (var field in fields)
             {
                 yield return field;
             }
 
-            foreach (var field in type.GetNestedTypes().SelectMany(GetConfigFields))
+            var nestedTypes =
+                type
+                .GetNestedTypes()
+                .Where(t => t.GetCustomAttribute<IgnoreAttribute>() == null)
+                .SelectMany(GetConfigFields);
+
+            foreach (var field in nestedTypes)
             {
                 yield return field;
-            }
-        }
-
-        private static void LoadFields(IEnumerable<FieldInfo> fields)
-        {
-            foreach (var field in fields)
-            {
-                LoadValue(field);
             }
         }
 

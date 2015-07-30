@@ -69,7 +69,8 @@
     <Compile Include="Data\_DataSources\AppConfig.cs" />
     <Compile Include="Collections\ObjectConverterCollection.cs" />
     <Compile Include="Utilities.cs" />
-    <Compile Include="_Attributes\_Requirements\OptionalAttribute.cs" />
+    <Compile Include="_Attributes\IgnoreAttribute.cs" />
+    <Compile Include="_Attributes\OptionalAttribute.cs" />
     <Compile Include="_Attributes\_Constraint\DateTimeFormatAttribute.cs" />
     <Compile Include="_Attributes\_Constraint\RegularExpressionAttribute.cs" />
     <Compile Include="_Attributes\_Constraint\RangeAttribute.cs" />
@@ -95,7 +96,7 @@
     <Compile Include="Data\_Entity\SmartConfigEntities.cs" />
     <Compile Include="Data\_DataSources\SqlServer.cs" />
     <Compile Include="_Attributes\ObjectConverterAttribute.cs" />
-    <Compile Include="_Attributes\_Requirements\NullableAttribute.cs" />
+    <Compile Include="_Attributes\NullableAttribute.cs" />
     <Compile Include="Converters\ObjectConverterBase.cs" />
     <Compile Include="Data\SelfConfig.cs" />
     <Compile Include="_Types\SemanticVersion.cs" />
