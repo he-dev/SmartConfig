@@ -19,12 +19,14 @@ namespace SmartConfig.Data
             public const string AppSettings = "AppSettings";
         }
 
-        public override IEnumerable<ConfigElement> Select(string environment, string version, string name)
+        public override string Select(IDictionary<string, string> keys)
         {
+            var name = keys["Name"];
             var sectionNameMatch = Regex.Match(name, SectionNamePattern, RegexOptions.IgnoreCase);
             if (!sectionNameMatch.Success)
             {
-                yield break;
+                // TODO: Create an exception for this.
+                throw new Exception("Config section not found.");
             }
 
             // Remove the section name:
@@ -41,20 +43,16 @@ namespace SmartConfig.Data
                 name = ConfigurationManager.AppSettings.Keys.Cast<string>().SingleOrDefault(k => k.Equals(name, StringComparison.OrdinalIgnoreCase));
                 if (string.IsNullOrEmpty(name))
                 {
-                    yield break;
+                    return null;
                 }
                 value = ConfigurationManager.AppSettings[name];
                 break;
             }
 
-            yield return new ConfigElement()
-            {
-                Name = name,
-                Value = value
-            };
+            return value;
         }
 
-        public override void Update(ConfigElement configElement)
+        public override void Update(IDictionary<string, string> keys, string value)
         {
             //ConfigurationManager.AppSettings[configElement.Name] = configElement.Value;
             //throw new NotSupportedException("AppConfig data source does not support updating (yet).");

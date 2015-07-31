@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SmartConfig
 {
-    internal static class Utilities
+    public static class Utilities
     {
         /// <summary>
         /// Gets the config name from the config type if specified.
@@ -59,15 +59,16 @@ namespace SmartConfig
             while (type != null)
             {
                 var smartConfigAttribute = type.GetCustomAttribute<SmartConfigAttribute>();
-                if (smartConfigAttribute != null)
+                var isSmartConfigType = smartConfigAttribute != null;
+                if (isSmartConfigType)
                 {
                     path.Add(smartConfigAttribute.Name);
                     var result = new ConfigFieldInfo()
                     {
-                        SmartConfigType = type,
-                        Version = smartConfigAttribute.Version,
-                        Name = ConfigElementName.Combine(path, true),
-                        Constraints = ((FieldInfo)memberInfo).GetCustomAttributes<ValueConstraintAttribute>()
+                        ConfigType = type,
+                        Keys = type.GetCustomAttributes<CustomKeyAttribute>(true).ToDictionary(x => x.Key, x => x.Value),
+                        ElementName = ConfigElementName.Combine(path, true),
+                        ElementConstraints = ((FieldInfo)memberInfo).GetCustomAttributes<ValueConstraintAttribute>()
                     };
                     return result;
                 }
@@ -90,5 +91,9 @@ namespace SmartConfig
             return memberExpression.Member;
         }
 
+        public static Dictionary<string, string> CombineDictionariesWithoutName(IDictionary<string, string> dic1, IDictionary<string, string> dic2)
+        {
+            return dic1.Concat(dic2).Where(x => x.Key != "Name").ToDictionary(x => x.Key, x => x.Value);
+        }
     }
 }

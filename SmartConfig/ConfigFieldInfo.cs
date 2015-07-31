@@ -8,9 +8,9 @@ namespace SmartConfig
 {
     internal class ConfigFieldInfo
     {
-        public Type SmartConfigType;
-        public string Version;
-        public string Name;
-        public IEnumerable<ValueConstraintAttribute> Constraints;
+        public Type ConfigType;
+        public IDictionary<string, string> Keys;
+        public string ElementName;
+        public IEnumerable<ValueConstraintAttribute> ElementConstraints;
     }
 }

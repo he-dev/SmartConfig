@@ -59,16 +59,6 @@ namespace SmartConfig
                 throw new InvalidOperationException("Config type must have the SmartConfigAttribute.");
             }
 
-            var isSelfConfigInitialized = DataSources.ContainsKey(typeof(SelfConfig));
-            if (!isSelfConfigInitialized)
-            {
-                _Load(typeof(SelfConfig), new AppConfig());
-            }
-            _Load(configType, dataSource);
-        }
-
-        private static void _Load(Type configType, DataSourceBase dataSource)
-        {
             DataSources[configType] = dataSource;
 
             var fields = GetConfigFields(configType);
@@ -101,34 +91,28 @@ namespace SmartConfig
         private static void LoadValue(FieldInfo field)
         {
             var configFieldInfo = Utilities.GetConfigFieldInfo(field);
-            var element =
-                DataSources[configFieldInfo.SmartConfigType]
-                .Select(SelfConfig.AppSettings.Environment, configFieldInfo.Version, configFieldInfo.Name)
-                .SingleOrDefault();
+            var value =
+                DataSources[configFieldInfo.ConfigType]
+                .Select(new Dictionary<string, string>(configFieldInfo.Keys) { { "Name", configFieldInfo.ElementName } });
 
-            if (element == null)
+            if (string.IsNullOrEmpty(value))
             {
                 if (field.IsOptional())
                 {
                     return;
                 }
-                throw new OptionalException(configFieldInfo.SmartConfigType, configFieldInfo.Name);
-            }
-
-            if (string.IsNullOrEmpty(element.Value) && !field.IsNullable())
-            {
-                throw new NullableException(configFieldInfo.SmartConfigType, configFieldInfo.Name);
+                throw new OptionalException(configFieldInfo.ConfigType, configFieldInfo.ElementName);
             }
 
             try
             {
                 var converter = GetConverter(field);
-                var obj = converter.DeserializeObject(element.Value, field.FieldType, field.Contraints());
+                var obj = converter.DeserializeObject(value, field.FieldType, field.Contraints());
                 field.SetValue(null, obj);
             }
             catch (Exception ex)
             {
-                throw new ObjectConverterException(configFieldInfo.SmartConfigType, configFieldInfo.Name, ex);
+                throw new ObjectConverterException(configFieldInfo.ConfigType, configFieldInfo.ElementName, ex);
             }
         }
 
@@ -153,18 +137,13 @@ namespace SmartConfig
             try
             {
                 var converter = GetConverter(field);
-                var serializedData = converter.SerializeObject(value, field.FieldType, field.GetCustomAttributes<ValueConstraintAttribute>(true));
+                var valueSerialized = converter.SerializeObject(value, field.FieldType, field.GetCustomAttributes<ValueConstraintAttribute>(true));
 
-                var smartConfigType = Utilities.GetConfigType(memberInfo);
-                var dataSource = DataSources[smartConfigType];
-
-                dataSource.Update(new ConfigElement()
-                {
-                    Environment = SelfConfig.AppSettings.Environment,
-                    Version = smartConfigType.Version().ToStringOrEmpty(),
-                    Name = elementName,
-                    Value = serializedData
-                });
+                var configFieldInfo = Utilities.GetConfigFieldInfo(memberInfo);
+                DataSources[configFieldInfo.ConfigType]
+                    .Update(
+                        new Dictionary<string, string>(configFieldInfo.Keys) { { "Name", configFieldInfo.ElementName } },
+                        valueSerialized);
             }
             catch (Exception ex)
             {
