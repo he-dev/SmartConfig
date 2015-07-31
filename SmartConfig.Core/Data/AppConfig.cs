@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Configuration;
 using System.Linq;
 using System.Text;
@@ -11,9 +12,9 @@ namespace SmartConfig.Data
     public class AppConfig : DataSourceBase
     {
         // https://regex101.com/r/vA9kR5/3
-        private static readonly string SectionNamePattern = @"^(?:[A-Z0-9_]+\.)?(?:(?<SectionName>ConnectionStrings|AppSettings)\.)";
+        //private static readonly string SectionNamePattern = @"^(?:[A-Z0-9_]+\.)?(?:(?<SectionName>ConnectionStrings|AppSettings)\.)";
 
-        private class SectionNames
+        private static class SectionNames
         {
             public const string ConnectionStrings = "ConnectionStrings";
             public const string AppSettings = "AppSettings";
@@ -22,29 +23,24 @@ namespace SmartConfig.Data
         public override string Select(IDictionary<string, string> keys)
         {
             var name = keys["Name"];
-            var sectionNameMatch = Regex.Match(name, SectionNamePattern, RegexOptions.IgnoreCase);
-            if (!sectionNameMatch.Success)
-            {
-                // TODO: Create an exception for this.
-                throw new Exception("Config section not found.");
-            }
+            var sectionName = name.Split('.').First();
 
-            // Remove the section name:
-            name = Regex.Replace(name, SectionNamePattern, string.Empty, RegexOptions.IgnoreCase);
+            // Experiments.
+            //var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            //var actualSectionName = exeConfig.Sections.Keys.Cast<string>().Single(x => x.Equals(sectionName, StringComparison.OrdinalIgnoreCase));
+            //var section = exeConfig.Sections[actualSectionName] as NameValueCollection;
+            //var section = ConfigurationManager.GetSection(actualSectionName) as NameValueCollection;
+
+            name = name.Substring(name.IndexOf('.') + 1);
 
             string value = null;
-
-            switch (sectionNameMatch.Groups["SectionName"].Value)
+            switch (sectionName)
             {
             case SectionNames.ConnectionStrings:
                 value = ConfigurationManager.ConnectionStrings[name].ConnectionString;
                 break;
             case SectionNames.AppSettings:
-                name = ConfigurationManager.AppSettings.Keys.Cast<string>().SingleOrDefault(k => k.Equals(name, StringComparison.OrdinalIgnoreCase));
-                if (string.IsNullOrEmpty(name))
-                {
-                    return null;
-                }
+                //var actualName = ConfigurationManager.AppSettings.Keys.Cast<string>().SingleOrDefault(k => k.Equals(name, StringComparison.OrdinalIgnoreCase));
                 value = ConfigurationManager.AppSettings[name];
                 break;
             }
