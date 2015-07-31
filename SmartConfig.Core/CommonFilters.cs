@@ -7,10 +7,8 @@ using SmartConfig.Data;
 
 namespace SmartConfig
 {
-    public static class Filters
+    public static class CommonFilters
     {
-        #region ConfigElement Filters
-
         public static IEnumerable<IEnvironment> FilterByEnvironment(IEnumerable<IEnvironment> elements, string environment)
         {
             return elements.Where(e => e.Environment.Equals(environment, StringComparison.OrdinalIgnoreCase));
@@ -28,7 +26,5 @@ namespace SmartConfig
                .Take(1);
             return result;
         }
-
-        #endregion
     }
 }

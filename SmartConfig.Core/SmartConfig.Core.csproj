@@ -86,13 +86,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigFieldInfo.cs" />
+    <Compile Include="CommonKeys.cs" />
     <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\EnumConverter.cs" />
     <Compile Include="Data\AppConfig.cs" />
     <Compile Include="Collections\ObjectConverterCollection.cs" />
     <Compile Include="Data\IVersion.cs" />
     <Compile Include="Data\IEnvironment.cs" />
-    <Compile Include="Filters.cs" />
+    <Compile Include="CommonFilters.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="_Attributes\IgnoreAttribute.cs" />
     <Compile Include="_Attributes\OptionalAttribute.cs" />
