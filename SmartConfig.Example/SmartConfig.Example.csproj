@@ -79,16 +79,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SmartConfig.Data.SqlServer\SmartConfig.Data.SqlClient.csproj">
-      <Project>{401bf0f1-d489-4e25-80e7-86ce46fdd1e3}</Project>
-      <Name>SmartConfig.Data.SqlClient</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SmartConfig\SmartConfig.csproj">
-      <Project>{b499d748-d867-4939-929b-bae2bbae6336}</Project>
-      <Name>SmartConfig</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Data\ExampleDb.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

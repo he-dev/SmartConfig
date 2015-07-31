@@ -56,9 +56,9 @@
     <Compile Include="SmartConfigEntities.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SmartConfig\SmartConfig.csproj">
+    <ProjectReference Include="..\SmartConfig.Core\SmartConfig.Core.csproj">
       <Project>{b499d748-d867-4939-929b-bae2bbae6336}</Project>
-      <Name>SmartConfig</Name>
+      <Name>SmartConfig.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

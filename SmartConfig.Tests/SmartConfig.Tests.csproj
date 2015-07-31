@@ -104,12 +104,6 @@
     <Compile Include="TestDbInitializer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SmartConfig\SmartConfig.csproj">
-      <Project>{b499d748-d867-4939-929b-bae2bbae6336}</Project>
-      <Name>SmartConfig</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="App.config" />
     <Fakes Include="Fakes\SmartConfig.fakes" />
     <None Include="packages.config" />
