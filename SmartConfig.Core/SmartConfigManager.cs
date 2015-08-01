@@ -56,7 +56,7 @@ namespace SmartConfig
 
             if (!configType.HasAttribute<SmartConfigAttribute>())
             {
-                throw new InvalidOperationException("Config type must have the SmartConfigAttribute.");
+                throw new SmartConfigTypeNotFoundException("Config type must have the SmartConfigAttribute.");
             }
 
             DataSources[configType] = dataSource;
