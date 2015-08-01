@@ -19,13 +19,13 @@ namespace SmartConfig
     /// </summary>
     public class SmartConfigManager
     {
-        private static readonly Dictionary<Type, DataSourceBase> DataSources;
+        private static readonly Dictionary<Type, IDataSource> DataSources;
 
         public static readonly ObjectConverterCollection Converters;
 
         static SmartConfigManager()
         {
-            DataSources = new Dictionary<Type, DataSourceBase>();
+            DataSources = new Dictionary<Type, IDataSource>();
 
             Converters = new ObjectConverterCollection
             {
@@ -47,7 +47,7 @@ namespace SmartConfig
         /// <typeparam name="TConfig">Type that is marked with the <c>SmartCofnigAttribute</c> and specifies the configuration.</typeparam>
         /// <param name="configType"></param>
         /// <param name="dataSource">Custom data source that provides data. If null <c>AppConfig</c> is used.</param>
-        public static void Load(Type configType, DataSourceBase dataSource)
+        public static void Load(Type configType, IDataSource dataSource)
         {
             if (!configType.IsStatic())
             {
@@ -137,7 +137,7 @@ namespace SmartConfig
             try
             {
                 var converter = GetConverter(field);
-                var valueSerialized = converter.SerializeObject(value, field.FieldType, field.GetCustomAttributes<ValueConstraintAttribute>(true));
+                var valueSerialized = converter.SerializeObject(value, field.FieldType, field.GetCustomAttributes<ValueConstraintAttribute>(false));
 
                 var configFieldInfo = Utilities.GetConfigFieldInfo(memberInfo);
                 DataSources[configFieldInfo.ConfigType]

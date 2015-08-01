@@ -14,23 +14,19 @@ namespace SmartConfig.Converters
     {
         public override object DeserializeObject(string value, Type type, IEnumerable<ValueConstraintAttribute> constraints)
         {
-            if (string.IsNullOrEmpty(value))
-            {
-                return null;
-            }
-
-            var result = Newtonsoft.Json.JsonConvert.DeserializeObject(value, type);
+            var result =
+                !string.IsNullOrEmpty(value)
+                ? Newtonsoft.Json.JsonConvert.DeserializeObject(value, type)
+                : null;
             return result;
         }
 
         public override string SerializeObject(object value, Type type, IEnumerable<ValueConstraintAttribute> constraints)
         {
-            if (value == null)
-            {
-                return null;
-            }
-
-            var result = Newtonsoft.Json.JsonConvert.SerializeObject(value);
+            var result =
+                value != null
+                ? Newtonsoft.Json.JsonConvert.SerializeObject(value)
+                : null;
             return result;
         }
     }

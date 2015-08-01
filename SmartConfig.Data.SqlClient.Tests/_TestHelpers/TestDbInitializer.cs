@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SmartConfig.Data;
+using SmartConfig.Data.SqlClient.Tests;
 
-namespace SmartConfig.Tests
+namespace SmartConfig.Data.SqlClient.Tests
 {
     // http://stackoverflow.com/a/13992028/235671
 
-    class TestDbInitializer : System.Data.Entity.DropCreateDatabaseAlways<SmartConfigEntities>
+    class TestDbInitializer : System.Data.Entity.DropCreateDatabaseAlways<SmartConfigEntities<TestConfigElement>>
     {
-        protected override void Seed(SmartConfigEntities context)
+        protected override void Seed(SmartConfigEntities<TestConfigElement> context)
         {
             var testConfig = new[]
             {
@@ -20,7 +21,7 @@ namespace SmartConfig.Tests
                 "ABC|2.1.1|StringField|jkl",
                 "JKL|3.2.4|StringField|xyz",
             }
-            .ToConfigElements();
+            .Select(x => new TestConfigElement(x));
 
             foreach (var configElement in testConfig)
             {

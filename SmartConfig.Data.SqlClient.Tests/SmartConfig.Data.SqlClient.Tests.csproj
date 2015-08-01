@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{31CF8B56-2577-4FC9-B711-14CFAA524A2A}</ProjectGuid>
+    <ProjectGuid>{1D57D13C-91A7-4BB7-99E8-FCCEA1630488}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SmartConfig.Tests</RootNamespace>
-    <AssemblyName>SmartConfig.Tests</AssemblyName>
+    <RootNamespace>SmartConfig.Data.SqlClient.Tests</RootNamespace>
+    <AssemblyName>SmartConfig.Data.SqlClient.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -44,20 +44,9 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="SmartConfig.Fakes">
-      <HintPath>FakesAssemblies\SmartConfig.Fakes.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.XML" />
-    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.configuration" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -72,43 +61,28 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="AppConfigTests.cs" />
-    <Compile Include="Converters\ColorConverterTests.cs" />
-    <Compile Include="Converters\XmlConverterTests.cs" />
-    <Compile Include="Converters\JsonConverterTests.cs" />
-    <Compile Include="Data\_DataSources\SqlServerTests.cs" />
-    <Compile Include="Global.cs" />
-    <Compile Include="SmartConfigManagerTests.cs" />
+    <Compile Include="_TestHelpers\TestConfigElement.cs" />
+    <Compile Include="_TestHelpers\Global.cs" />
+    <Compile Include="SqlClientTests.cs" />
+    <Compile Include="_TestHelpers\TestDbInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestConfigHelper.cs" />
-    <Compile Include="TestConfigs\_Contraint tests\OptionalFields.cs" />
-    <Compile Include="TestConfigs\_Contraint tests\NullableFields.cs" />
-    <Compile Include="TestConfigs\_Basic tests\JsonFields.cs" />
-    <Compile Include="TestConfigs\_Basic tests\EnumFields.cs" />
-    <Compile Include="TestConfigs\_Basic tests\StringFields.cs" />
-    <Compile Include="TestConfigs\_Basic tests\NullableValueTypeFields.cs" />
-    <Compile Include="TestConfigs\_Exeption tests\MissingOptionalAttributeConfig.cs" />
-    <Compile Include="TestEnum.cs" />
-    <Compile Include="_Attributes\_Constraints\RangeAttributeTests.cs" />
-    <Compile Include="_Types\SemanticVersionTests.cs" />
-    <Compile Include="TestConfigs\_Exeption tests\MissingAttributeTestConfig.cs" />
-    <Compile Include="TestConfigs\_Exeption tests\MissingNullableAttributeConfig.cs" />
-    <Compile Include="TestConfigs\_AppConfig tests\AppConfigTestConfig.cs" />
-    <Compile Include="TestConfigs\_Nesting tests\OneNestedClass.cs" />
-    <Compile Include="TestConfigs\_Database tests\SqlServerTestConfig.cs" />
-    <Compile Include="TestConfigs\_Nesting tests\TwoNestedClasses.cs" />
-    <Compile Include="TestConfigs\_Config name tests\ConfigName.cs" />
-    <Compile Include="TestConfigs\_Basic tests\ValueTypeFields.cs" />
-    <Compile Include="TestConfigs\_Version tests\VersionTestConfig.cs" />
-    <Compile Include="Converters\ValueTypeConverterTests.cs" />
-    <Compile Include="TestDbInitializer.cs" />
+    <Compile Include="_TestConfigs\BasicConfig.cs" />
+    <Compile Include="_TestHelpers\TestDataSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <Fakes Include="Fakes\SmartConfig.fakes" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SmartConfig.Core\SmartConfig.Core.csproj">
+      <Project>{b499d748-d867-4939-929b-bae2bbae6336}</Project>
+      <Name>SmartConfig.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SmartConfig.Data.SqlClient\SmartConfig.Data.SqlClient.csproj">
+      <Project>{401bf0f1-d489-4e25-80e7-86ce46fdd1e3}</Project>
+      <Name>SmartConfig.Data.SqlClient</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

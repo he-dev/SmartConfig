@@ -8,7 +8,7 @@ namespace SmartConfig.Data
     /// <summary>
     /// Provides <c>DbContext</c> for retreiving configuration from a database.
     /// </summary>
-    internal partial class SmartConfigEntities<TConfigElement> : DbContext where TConfigElement : class 
+    public partial class SmartConfigEntities<TConfigElement> : DbContext where TConfigElement : class 
     {
         private readonly string _tableName;
 

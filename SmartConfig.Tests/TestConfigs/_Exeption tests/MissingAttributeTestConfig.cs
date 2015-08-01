@@ -10,6 +10,5 @@ namespace SmartConfig.Tests.TestConfigs
     //[SmartConfig]
     public static class MissingAttributeTestConfig
     {
-        public static int Int32Field;
     }
 }

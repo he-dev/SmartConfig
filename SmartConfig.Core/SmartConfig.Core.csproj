@@ -129,7 +129,7 @@
     <Compile Include="_Extensions\Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="_Attributes\SmartConfigAttribute.cs" />
-    <Compile Include="Data\DataSourceBase.cs" />
+    <Compile Include="Data\IDataSource.cs" />
     <Compile Include="_Exceptions\SmartConfigTypeNotFoundException.cs" />
   </ItemGroup>
   <ItemGroup>

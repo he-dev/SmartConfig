@@ -10,6 +10,7 @@ namespace SmartConfig
     {
         public const string Environment = "Environment";
         public const string MachineName = "MachineName";
+        public const string Name = "Name";
         public const string UserName = "UserName";
         public const string Version = "Version";
     }

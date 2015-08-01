@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace SmartConfig.Tests
+namespace SmartConfig.Data.SqlClient.Tests
 {
     [TestClass]
     public class Global

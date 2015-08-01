@@ -17,21 +17,21 @@ namespace SmartConfig.Converters
             : base(new[]
             {
                 typeof(bool),
-                typeof(bool?),
+                //typeof(bool?),
                 typeof(char),
-                typeof(char?),
+                //typeof(char?),
                 typeof(short),
-                typeof(short?),
+                //typeof(short?),
                 typeof(int),
-                typeof(int?),
+                //typeof(int?),
                 typeof(long),
-                typeof(long?),
+                //typeof(long?),
                 typeof(float),
-                typeof(float?),
+                //typeof(float?),
                 typeof(double),
-                typeof(double?),
+                //typeof(double?),
                 typeof(decimal),
-                typeof(decimal?)
+                //typeof(decimal?)
             })
         {
         }

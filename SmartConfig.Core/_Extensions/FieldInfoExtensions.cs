@@ -11,7 +11,7 @@ namespace SmartConfig
 {
     internal static class FieldInfoExtensions
     {
-        public static bool HasAttribute<T>(this FieldInfo fieldInfo, bool inherit) where T : Attribute
+        public static bool HasAttribute<T>(this FieldInfo fieldInfo, bool inherit = false) where T : Attribute
         {
             return fieldInfo.GetCustomAttribute<T>(inherit) != null;
         }
@@ -40,7 +40,7 @@ namespace SmartConfig
 
         public static IEnumerable<ValueConstraintAttribute> Contraints(this FieldInfo fieldInfo)
         {
-            return fieldInfo.GetCustomAttributes<ValueConstraintAttribute>(true);
+            return fieldInfo.GetCustomAttributes<ValueConstraintAttribute>(false);
         }
 
         #endregion

@@ -58,7 +58,7 @@ namespace SmartConfig
             var type = memberInfo.DeclaringType;
             while (type != null)
             {
-                var smartConfigAttribute = type.GetCustomAttribute<SmartConfigAttribute>();
+                var smartConfigAttribute = type.GetCustomAttribute<SmartConfigAttribute>(false);
                 var isSmartConfigType = smartConfigAttribute != null;
                 if (isSmartConfigType)
                 {
@@ -68,7 +68,7 @@ namespace SmartConfig
                         ConfigType = type,
                         Keys = type.GetCustomAttributes<CustomKeyAttribute>(true).ToDictionary(x => x.Key, x => x.Value),
                         ElementName = ConfigElementName.Combine(path, true),
-                        ElementConstraints = ((FieldInfo)memberInfo).GetCustomAttributes<ValueConstraintAttribute>()
+                        ElementConstraints = ((FieldInfo)memberInfo).GetCustomAttributes<ValueConstraintAttribute>(false)
                     };
                     return result;
                 }
@@ -91,9 +91,9 @@ namespace SmartConfig
             return memberExpression.Member;
         }
 
-        public static Dictionary<string, string> CombineDictionariesWithoutName(IDictionary<string, string> dic1, IDictionary<string, string> dic2)
+        public static Dictionary<string, string> CombineDictionaries(IDictionary<string, string> dic1, IDictionary<string, string> dic2)
         {
-            return dic1.Concat(dic2).Where(x => x.Key != "Name").ToDictionary(x => x.Key, x => x.Value);
+            return dic1.Concat(dic2).ToDictionary(x => x.Key, x => x.Value);
         }
     }
 }

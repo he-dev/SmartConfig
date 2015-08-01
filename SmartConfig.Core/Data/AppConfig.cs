@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Data
 {
-    public class AppConfig : DataSourceBase
+    public class AppConfig : IDataSource
     {
         // https://regex101.com/r/vA9kR5/3
         //private static readonly string SectionNamePattern = @"^(?:[A-Z0-9_]+\.)?(?:(?<SectionName>ConnectionStrings|AppSettings)\.)";
@@ -20,7 +20,7 @@ namespace SmartConfig.Data
             public const string AppSettings = "AppSettings";
         }
 
-        public override string Select(IDictionary<string, string> keys)
+        public string Select(IDictionary<string, string> keys)
         {
             var name = keys["Name"];
             var sectionName = name.Split('.').First();
@@ -48,7 +48,7 @@ namespace SmartConfig.Data
             return value;
         }
 
-        public override void Update(IDictionary<string, string> keys, string value)
+        public void Update(IDictionary<string, string> keys, string value)
         {
             //ConfigurationManager.AppSettings[configElement.Name] = configElement.Value;
             //throw new NotSupportedException("AppConfig data source does not support updating (yet).");

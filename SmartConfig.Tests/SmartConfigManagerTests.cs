@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.Entity;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Microsoft.QualityTools.Testing.Fakes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Data;
-using SmartConfig.Data.Fakes;
 using SmartConfig.Tests.TestConfigs;
 
 namespace SmartConfig.Tests
@@ -23,23 +21,23 @@ namespace SmartConfig.Tests
         {
             var testConfig = new[]
             {
-                "ABC||BooleanField|true",
-                "ABC||CharField|a",
-                "ABC||Int16Field|123",
-                "ABC||Int32Field|123",
-                "ABC||Int64Field|123",
-                "ABC||SingleField|1.2",
-                "ABC||DoubleField|1.2",
-                "ABC||DecimalField|1.2",
+                "BooleanField|true",
+                "CharField|a",
+                "Int16Field|123",
+                "Int32Field|123",
+                "Int64Field|123",
+                "SingleField|1.2",
+                "DoubleField|1.2",
+                "DecimalField|1.2",
             }
-            .ToConfigElements();
+            .Select(x => new TestConfigElement2(x));
 
-            var dataSource = new StubDataSourceBase()
+            var dataSource = new TestDataSource()
             {
-                SelectStringStringString = (environment, version, name) =>
+                SelectFunc = (keys) =>
                 {
-                    var elements = testConfig.Where(ce => ce.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-                    return elements;
+                    var element = testConfig.SingleOrDefault(ce => ce.Name.Equals(keys[CommonKeys.Name], StringComparison.OrdinalIgnoreCase));
+                    return element == null ? null : element.Value;
                 }
             };
 
@@ -55,127 +53,89 @@ namespace SmartConfig.Tests
             Assert.AreEqual(1.2m, ValueTypeFields.DecimalField);
         }
 
-        [TestMethod]
-        public void Load_NullableValueTypeFields()
-        {
-            var dataSource = new StubDataSourceBase()
-            {
-                SelectStringStringString = (environment, version, name) => Enumerable.Repeat(new ConfigElement() { Environment = "ABC", Name = name, Value = null }, 1)
-            };
+        //[TestMethod]
+        //public void Load_NullableValueTypeFields()
+        //{
+        //    var dataSource = new TestDataSource()
+        //    {
+        //        SelectFunc = (keys) => Enumerable.Repeat(new TestConfigElement2(""), 1)
+        //    };
 
-            SmartConfigManager.Load(typeof(NullableValueTypeFields), dataSource);
+        //    SmartConfigManager.Load(typeof(NullableValueTypeFields), dataSource);
 
-            // Assert fields do not have values:
+        //    // Assert fields do not have values:
 
-            Assert.IsFalse(NullableValueTypeFields.NullableBooleanField.HasValue);
-            Assert.IsFalse(NullableValueTypeFields.NullableCharField.HasValue);
-            Assert.IsFalse(NullableValueTypeFields.NullableInt16Field.HasValue);
-            Assert.IsFalse(NullableValueTypeFields.NullableInt32Field.HasValue);
-            Assert.IsFalse(NullableValueTypeFields.NullableInt64Field.HasValue);
-            Assert.IsFalse(NullableValueTypeFields.NullableSingleField.HasValue);
-            Assert.IsFalse(NullableValueTypeFields.NullableDoubleField.HasValue);
-            Assert.IsFalse(NullableValueTypeFields.NullableDecimalField.HasValue);
+        //    Assert.IsFalse(NullableValueTypeFields.NullableBooleanField.HasValue);
+        //    Assert.IsFalse(NullableValueTypeFields.NullableCharField.HasValue);
+        //    Assert.IsFalse(NullableValueTypeFields.NullableInt16Field.HasValue);
+        //    Assert.IsFalse(NullableValueTypeFields.NullableInt32Field.HasValue);
+        //    Assert.IsFalse(NullableValueTypeFields.NullableInt64Field.HasValue);
+        //    Assert.IsFalse(NullableValueTypeFields.NullableSingleField.HasValue);
+        //    Assert.IsFalse(NullableValueTypeFields.NullableDoubleField.HasValue);
+        //    Assert.IsFalse(NullableValueTypeFields.NullableDecimalField.HasValue);
 
 
-            var testConfig = new[]
-            {
-                "ABC||NullableBooleanField|true",
-                "ABC||NullableCharField|a",
-                "ABC||NullableInt16Field|123",
-                "ABC||NullableInt32Field|123",
-                "ABC||NullableInt64Field|123",
-                "ABC||NullableSingleField|1.2",
-                "ABC||NullableDoubleField|1.2",
-                "ABC||NullableDecimalField|1.2",
-            }
-            .ToConfigElements();
+        //    var testConfig = new[]
+        //    {
+        //        "ABC||NullableBooleanField|true",
+        //        "ABC||NullableCharField|a",
+        //        "ABC||NullableInt16Field|123",
+        //        "ABC||NullableInt32Field|123",
+        //        "ABC||NullableInt64Field|123",
+        //        "ABC||NullableSingleField|1.2",
+        //        "ABC||NullableDoubleField|1.2",
+        //        "ABC||NullableDecimalField|1.2",
+        //    }
+        //    .ToConfigElements();
 
-            dataSource = new StubDataSourceBase()
-            {
-                SelectStringStringString = (environment, version, name) => testConfig.Where(ce => ce.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
-            };
+        //    dataSource = new StubDataSourceBase()
+        //    {
+        //        SelectStringStringString = (environment, version, name) => testConfig.Where(ce => ce.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+        //    };
 
-            SmartConfigManager.Load(typeof(NullableValueTypeFields), dataSource);
+        //    SmartConfigManager.Load(typeof(NullableValueTypeFields), dataSource);
 
-            Assert.IsTrue(NullableValueTypeFields.NullableBooleanField.HasValue);
-            Assert.IsTrue(NullableValueTypeFields.NullableCharField.HasValue);
-            Assert.IsTrue(NullableValueTypeFields.NullableInt16Field.HasValue);
-            Assert.IsTrue(NullableValueTypeFields.NullableInt32Field.HasValue);
-            Assert.IsTrue(NullableValueTypeFields.NullableInt64Field.HasValue);
-            Assert.IsTrue(NullableValueTypeFields.NullableSingleField.HasValue);
-            Assert.IsTrue(NullableValueTypeFields.NullableDoubleField.HasValue);
-            Assert.IsTrue(NullableValueTypeFields.NullableDecimalField.HasValue);
+        //    Assert.IsTrue(NullableValueTypeFields.NullableBooleanField.HasValue);
+        //    Assert.IsTrue(NullableValueTypeFields.NullableCharField.HasValue);
+        //    Assert.IsTrue(NullableValueTypeFields.NullableInt16Field.HasValue);
+        //    Assert.IsTrue(NullableValueTypeFields.NullableInt32Field.HasValue);
+        //    Assert.IsTrue(NullableValueTypeFields.NullableInt64Field.HasValue);
+        //    Assert.IsTrue(NullableValueTypeFields.NullableSingleField.HasValue);
+        //    Assert.IsTrue(NullableValueTypeFields.NullableDoubleField.HasValue);
+        //    Assert.IsTrue(NullableValueTypeFields.NullableDecimalField.HasValue);
 
-            Assert.AreEqual(true, NullableValueTypeFields.NullableBooleanField.Value);
-            Assert.AreEqual('a', NullableValueTypeFields.NullableCharField.Value);
-            Assert.AreEqual(123, NullableValueTypeFields.NullableInt16Field.Value);
-            Assert.AreEqual(123, NullableValueTypeFields.NullableInt32Field.Value);
-            Assert.AreEqual(123, NullableValueTypeFields.NullableInt64Field.Value);
-            Assert.AreEqual(1.2f, NullableValueTypeFields.NullableSingleField.Value);
-            Assert.AreEqual(1.2, NullableValueTypeFields.NullableDoubleField.Value);
-            Assert.AreEqual(1.2m, NullableValueTypeFields.NullableDecimalField.Value);
-        }
+        //    Assert.AreEqual(true, NullableValueTypeFields.NullableBooleanField.Value);
+        //    Assert.AreEqual('a', NullableValueTypeFields.NullableCharField.Value);
+        //    Assert.AreEqual(123, NullableValueTypeFields.NullableInt16Field.Value);
+        //    Assert.AreEqual(123, NullableValueTypeFields.NullableInt32Field.Value);
+        //    Assert.AreEqual(123, NullableValueTypeFields.NullableInt64Field.Value);
+        //    Assert.AreEqual(1.2f, NullableValueTypeFields.NullableSingleField.Value);
+        //    Assert.AreEqual(1.2, NullableValueTypeFields.NullableDoubleField.Value);
+        //    Assert.AreEqual(1.2m, NullableValueTypeFields.NullableDecimalField.Value);
+        //}
 
         [TestMethod]
         public void Load_EnumFields()
         {
-            #region Case-1 - normal field
-
-            var dataSource = new StubDataSourceBase()
+            var dataSource = new TestDataSource()
             {
-                SelectStringStringString = (environment, version, name) => new[] { "ABC||EnumField1|TestValue2" }.ToConfigElements()
+                SelectFunc = (keys) => "TestValue2"
             };
 
             SmartConfigManager.Load(typeof(EnumFields), dataSource);
 
             Assert.AreEqual(TestEnum.TestValue2, EnumFields.EnumField1);
-
-            #endregion
-
-            #region Case-2 - nullable field without value
-
-            //dataSource = new StubDataSourceBase()
-            //{
-            //    SelectString = (name) => Enumerable.Empty<ConfigElement>()
-            //};
-
-            //SmartConfigManager.Load<EnumFields>(dataSource);
-
-            //Assert.IsFalse(EnumFields.EnumField2.HasValue);
-
-            #endregion
-
-            #region Case-3 - nullable field with value
-
-            //dataSource = new StubDataSourceBase()
-            //{
-            //    SelectString = (name) => new[] { "ABC||EnumField2|TestValue3" }.ToConfigElements()
-            //};
-
-            //SmartConfigManager.Load<EnumFields>(dataSource);
-
-            //Assert.IsTrue(EnumFields.EnumField2.HasValue);
-            //Assert.AreEqual(TestEnum.TestValue3, EnumFields.EnumField2.Value);
-
-            #endregion
-
         }
 
         [TestMethod]
         public void Load_StringFields()
         {
-            #region Case-1 - normal field
-
-            var dataSource = new StubDataSourceBase()
+            var dataSource = new TestDataSource()
             {
-                SelectStringStringString = (environment, version, name) => new[] { "ABC||StringField|abcd" }.ToConfigElements()
+                SelectFunc = (keys) => "abcd"
             };
-
             SmartConfigManager.Load(typeof(StringFields), dataSource);
-
             Assert.AreEqual("abcd", StringFields.StringField);
-
-            #endregion
         }
 
         #endregion
@@ -185,13 +145,11 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void Load_JsonField()
         {
-            var dataSource = new StubDataSourceBase()
+            var dataSource = new TestDataSource()
             {
-                SelectStringStringString = (environment, version, name) => new[] { "ABC||ListInt32Field|[1, 2, 3]" }.ToConfigElements()
+                SelectFunc = (keys) => "[1, 2, 3]"
             };
-
             SmartConfigManager.Load(typeof(JsonFields), dataSource);
-
             CollectionAssert.AreEqual(new[] { 1, 2, 3 }, JsonFields.ListInt32Field);
         }
 
@@ -199,78 +157,71 @@ namespace SmartConfig.Tests
 
         #region Constraint tests
 
-        [TestMethod]
-        public void Load_NullableFields()
-        {
-            #region Case-1 - nullable field without value
+        //[TestMethod]
+        //public void Load_NullableFields()
+        //{
+        //    #region Case-1 - nullable field without value
 
-            var dataSource = new StubDataSourceBase()
-            {
-                // Return null value for all names.
-                SelectStringStringString = (environment, version, name) => Enumerable.Repeat(new ConfigElement()
-                {
-                    Environment = environment, 
-                    Version = version, 
-                    Name = name, 
-                    Value = null
-                }, 1)
-            };
+        //    var dataSource = new TestDataSource()
+        //    {
+        //        SelectFunc = (keys) => Enumerable.Repeat(new ConfigElement()
+        //        {
+        //            Environment = environment,
+        //            Version = version,
+        //            Name = name,
+        //            Value = null
+        //        }, 1)
+        //    };
 
-            SmartConfigManager.Load(typeof(NullableFields), dataSource);
+        //    SmartConfigManager.Load(typeof(NullableFields), dataSource);
 
-            Assert.IsNull(NullableFields.NullableStringField);
+        //    Assert.IsNull(NullableFields.NullableStringField);
 
-            #endregion
+        //    #endregion
 
-            #region Case-2 - nullable field with value
+        //    #region Case-2 - nullable field with value
 
-            dataSource = new StubDataSourceBase()
-            {
-                SelectStringStringString = (environment, version, name) => Enumerable.Repeat(new ConfigElement()
-                {
-                    Environment = environment,
-                    Version = version,
-                    Name = name,
-                    Value = "abcd"
-                }, 1)
-            };
+        //    dataSource = new TestDataSource()
+        //    {
+        //        SelectFunc = (keys) => Enumerable.Repeat(new ConfigElement()
+        //        {
+        //            Environment = environment,
+        //            Version = version,
+        //            Name = name,
+        //            Value = "abcd"
+        //        }, 1)
+        //    };
 
-            SmartConfigManager.Load(typeof(NullableFields), dataSource);
+        //    SmartConfigManager.Load(typeof(NullableFields), dataSource);
 
-            Assert.IsNotNull(NullableFields.NullableStringField);
-            Assert.AreEqual("abcd", NullableFields.NullableStringField);
+        //    Assert.IsNotNull(NullableFields.NullableStringField);
+        //    Assert.AreEqual("abcd", NullableFields.NullableStringField);
 
-            #endregion
-        }
+        //    #endregion
+        //}
 
         [TestMethod]
         public void Load_OptionalFields()
         {
             #region Case 1 - optional field without value
 
-            var dataSource = new StubDataSourceBase()
+            var dataSource = new TestDataSource()
             {
-                // Return null value for all names.
-                SelectStringStringString = (environment, version, name) => Enumerable.Empty<ConfigElement>()
+                SelectFunc = (keys) => null
             };
-
             SmartConfigManager.Load(typeof(OptionalFields), dataSource);
-
-            Assert.AreEqual("xyz", OptionalFields.OptionalStringField);
+            Assert.AreEqual("xyz", OptionalFields.OptionalStringField, "Invalid defualt value.");
 
             #endregion
 
             #region Case 2 - optional field with value
 
-            dataSource = new StubDataSourceBase()
+            dataSource = new TestDataSource()
             {
-                SelectStringStringString = (environment, version, name) => new[] { "ABC||OptionalStringField|abcd" }.ToConfigElements()
+                SelectFunc = (keys) => "abcd"
             };
-
             SmartConfigManager.Load(typeof(OptionalFields), dataSource);
-
-            Assert.IsNotNull(OptionalFields.OptionalStringField);
-            Assert.AreEqual("abcd", OptionalFields.OptionalStringField);
+            Assert.AreEqual("abcd", OptionalFields.OptionalStringField, "Invalid config value.");
 
             #endregion
         }
@@ -284,14 +235,18 @@ namespace SmartConfig.Tests
         {
             var testConfig = new[]
             {
-                "ABC||StringField|abc",
-                "ABC||SubClass.StringField|xyz",
+                "StringField|abc",
+                "SubClass.StringField|xyz",
             }
-            .ToConfigElements();
+            .Select(x => new TestConfigElement2(x));
 
-            var dataSource = new StubDataSourceBase()
+            var dataSource = new TestDataSource()
             {
-                SelectStringStringString = (environment, version, name) => testConfig.Where(ce => ce.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                SelectFunc = (keys) =>
+                {
+                    var element = testConfig.SingleOrDefault(ce => ce.Name.Equals(keys[CommonKeys.Name], StringComparison.OrdinalIgnoreCase));
+                    return element == null ? null : element.Value;
+                }
             };
             SmartConfigManager.Load(typeof(OneNestedClass), dataSource);
 
@@ -302,13 +257,16 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void Load_TwoSubClasses()
         {
-            var dataSource = new StubDataSourceBase()
+            var dataSource = new TestDataSource()
             {
-                SelectStringStringString = (environment, version, name) => new[] { "ABC||SubClass.SubSubClass.StringField|abc" }.ToConfigElements()
+                SelectFunc = (keys) =>
+                {
+                    Assert.AreEqual("SubClass.SubSubClass.SubSubStringField", keys[CommonKeys.Name], "Invalid element name.");
+                    return "abc";
+                }
             };
             SmartConfigManager.Load(typeof(TwoNestedClasses), dataSource);
-
-            Assert.AreEqual("abc", TwoNestedClasses.SubClass.SubSubClass.StringField);
+            Assert.AreEqual("abc", TwoNestedClasses.SubClass.SubSubClass.SubSubStringField);
         }
 
         #endregion
@@ -318,12 +276,12 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void Load_TestMultiConfigEnabled()
         {
-            var dataSource = new StubDataSourceBase()
+            var dataSource = new TestDataSource()
             {
-                SelectStringStringString = (environment, version, name) =>
+                SelectFunc = (keys) =>
                 {
-                    Assert.AreEqual("ABCD.StringField", name);
-                    return Enumerable.Empty<ConfigElement>();
+                    Assert.AreEqual("ABCD.StringField", keys[CommonKeys.Name], "Invalid element name.");
+                    return null;
                 }
             };
             SmartConfigManager.Load(typeof(ConfigName), dataSource);
@@ -336,104 +294,58 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void TestVersion()
         {
-            var dataSource = new StubDataSourceBase()
+            var dataSource = new TestDataSource()
             {
-                SelectStringStringString = (environment, version, name) =>
+                SelectFunc = (keys) =>
                 {
-                    Assert.AreEqual("2.2.1", version);
-                    return Enumerable.Empty<ConfigElement>();
+                    Assert.AreEqual("2.2.1", keys[CommonKeys.Version], "Invalid version.");
+                    return null;
                 }
             };
             SmartConfigManager.Load(typeof(VersionTestConfig), dataSource);
-            
+
         }
 
         #endregion
 
         #region Exception tests
 
-        [TestMethod]
-        [ExpectedException(typeof(NullableException))]
-        public void Load_MissingNullableAttributeConfig()
-        {
-            var dataSource = new StubDataSourceBase()
-            {
-                SelectStringStringString = (environment, version, name) => Enumerable.Repeat(new ConfigElement()
-                {
-                    Environment = environment,
-                    Version = version,
-                    Name = name,
-                    Value = null
-                }, 1)
-            };
-            SmartConfigManager.Load(typeof(MissingNullableAttributeConfig), dataSource);
-            Assert.Fail("Exception was not thrown.");
-        }
+        //[TestMethod]
+        //[ExpectedException(typeof(NullableException))]
+        //public void Load_MissingNullableAttributeConfig()
+        //{
+        //    var dataSource = new TestDataSource()
+        //    {
+        //        SelectFunc = (keys) => null
+        //    };
+        //    SmartConfigManager.Load(typeof(MissingNullableAttributeConfig), dataSource);
+        //    Assert.Fail("Exception was not thrown.");
+        //}
 
         [TestMethod]
         [ExpectedException(typeof(OptionalException))]
         public void Load_MissingOptionalAttributeConfig()
         {
-            var dataSource = new StubDataSourceBase()
+            var dataSource = new TestDataSource()
             {
-                SelectStringStringString = (environment, version, name) => Enumerable.Empty<ConfigElement>()
+                SelectFunc = (keys) => null
             };
             SmartConfigManager.Load(typeof(MissingOptionalAttributeConfig), dataSource);
-            Assert.Fail("Exception was not thrown.");
+            Assert.Fail("OptionalException was not thrown.");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(SmartConfigTypeNotFoundException))]
         public void TestSmartConfigAttributeMissing()
         {
-            var dataSource = new StubDataSourceBase()
+            var dataSource = new TestDataSource()
             {
-                SelectStringStringString = (environment, version, name) =>
-                {
-                    Assert.AreEqual("Int32Field", name);
-                    return Enumerable.Empty<ConfigElement>();
-                }
+                SelectFunc = (keys) => null
             };
             SmartConfigManager.Load(typeof(MissingAttributeTestConfig), dataSource);
-            Assert.Fail("Exception was not thrown.");
+            Assert.Fail("SmartConfigTypeNotFoundException was not thrown.");
         }
 
-        #endregion
-
-        [TestClass]
-        public class DatabaseTests
-        {
-            [TestInitialize]
-            public void TestInitialize()
-            {
-                Database.SetInitializer<SmartConfigEntities>(null);
-            }
-
-            [TestMethod]
-            public void Select_Int32Field()
-            {
-                var dataSource = new SqlServer()
-                {
-                    ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
-                    TableName = "TestConfig"
-                };
-                SmartConfigManager.Load(typeof(SqlServerTestConfig), dataSource);
-                Assert.AreEqual(123, SqlServerTestConfig.Int32Field);
-            }
-
-            [TestMethod]
-            public void Update_Int32Fields()
-            {
-                var dataSource = new SqlServer()
-                {
-                    ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
-                    TableName = "TestConfig"
-                };
-                SmartConfigManager.Load(typeof(SqlServerTestConfig), dataSource);
-                Assert.AreEqual(123, SqlServerTestConfig.Int32Field);
-                SmartConfigManager.Update(() => SqlServerTestConfig.Int32Field, 4);
-            }
-
-        }
+        #endregion        
     }
 }
