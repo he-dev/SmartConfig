@@ -76,7 +76,6 @@
     <Compile Include="_TestHelpers\TestDataSource.cs" />
     <Compile Include="TestEnum.cs" />
     <Compile Include="_Attributes\_Constraints\RangeAttributeTests.cs" />
-    <Compile Include="_Types\SemanticVersionTests.cs" />
     <Compile Include="TestConfigs\_Exeption tests\MissingAttributeTestConfig.cs" />
     <Compile Include="TestConfigs\_Exeption tests\MissingNullableAttributeConfig.cs" />
     <Compile Include="TestConfigs\_AppConfig tests\AppConfigTestConfig.cs" />

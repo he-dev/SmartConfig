@@ -113,7 +113,6 @@
     <Compile Include="_Extensions\FieldInfoExtensions.cs" />
     <Compile Include="_Extensions\EnumerableExtensions.cs" />
     <Compile Include="_Extensions\TypeExtensions.cs" />
-    <Compile Include="_Types\Color32.cs" />
     <Compile Include="Converters\ColorConverter.cs" />
     <Compile Include="Converters\StringConverter.cs" />
     <Compile Include="Converters\XmlConverter.cs" />
@@ -123,7 +122,6 @@
     <Compile Include="_Attributes\ObjectConverterAttribute.cs" />
     <Compile Include="_Attributes\NullableAttribute.cs" />
     <Compile Include="Converters\ObjectConverterBase.cs" />
-    <Compile Include="_Types\SemanticVersion.cs" />
     <Compile Include="SmartConfigManager.cs" />
     <Compile Include="ConfigElementName.cs" />
     <Compile Include="_Extensions\Extensions.cs" />
