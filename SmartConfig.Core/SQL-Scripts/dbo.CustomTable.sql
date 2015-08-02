@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[Table]
+﻿CREATE TABLE [dbo].[CustomTable]
 (
 	[Environment] NVARCHAR(50) NOT NULL , 
     [Version] NVARCHAR(50) NOT NULL, 

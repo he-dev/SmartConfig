@@ -13,24 +13,19 @@ namespace SmartConfig
     [AttributeUsage(AttributeTargets.Class)]
     public class SmartConfigAttribute : Attribute
     {
-        private string name;
-
-        public SmartConfigAttribute()
-        {
-            Version = string.Empty;
-        }
+        private string _name;
 
         /// <summary>
         /// Gets or sets a custom config name. The name must be a valid CLR identifier.
         /// </summary>
         public string Name
         {
-            get { return name; }
+            get { return _name; }
             set
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    name = value;
+                    throw new ArgumentNullException("Name");
                 }
 
                 // https://regex101.com/r/dW3gF3/1
@@ -39,10 +34,8 @@ namespace SmartConfig
                     throw new ArgumentOutOfRangeException("Name", "Config name must be a valid CLR identifier.");
                 }
 
-                name = value;
+                _name = value;
             }
         }
-
-        public string Version { get; set; }
     }
 }

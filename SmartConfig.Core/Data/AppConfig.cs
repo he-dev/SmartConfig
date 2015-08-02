@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Data
 {
+    /// <summary>
+    /// Implements the app.config as data source.
+    /// </summary>
     public class AppConfig : IDataSource
     {
         // https://regex101.com/r/vA9kR5/3
@@ -51,9 +54,7 @@ namespace SmartConfig.Data
         public void Update(IDictionary<string, string> keys, string value)
         {
             //ConfigurationManager.AppSettings[configElement.Name] = configElement.Value;
-            //throw new NotSupportedException("AppConfig data source does not support updating (yet).");
+            throw new NotSupportedException("AppConfig data source does not support updating (yet).");
         }
-
-
     }
 }

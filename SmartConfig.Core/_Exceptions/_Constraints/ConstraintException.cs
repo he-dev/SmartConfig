@@ -6,15 +6,20 @@ using System.Threading.Tasks;
 
 namespace SmartConfig
 {
-    public class ConstraintException : Exception
+    /// <summary>
+    /// Base class for constraint exceptions.
+    /// </summary>
+    public abstract class ConstraintException : Exception
     {
         public ConstraintException(object value, string message)
             : base(message)
-        //: base(string.Format("String [{0}] does not match the pattern [{1}].", value, pattern))
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Gets the invalid value that caused the exception.
+        /// </summary>
         public object Value { get; protected set; }
     }
 }

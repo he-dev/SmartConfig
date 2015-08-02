@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace SmartConfig
 {
-    public class RegularExpressionAttribute : ValueConstraintAttribute
+    /// <summary>
+    /// Provides a regular expression validation.
+    /// </summary>
+    public class RegularExpressionAttribute : ConstraintAttribute
     {
         private readonly string _pattern;
 

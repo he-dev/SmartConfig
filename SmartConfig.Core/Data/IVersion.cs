@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Data
 {
+    /// <summary>
+    /// Specifies a common criteria.
+    /// </summary>
     public interface IVersion
     {
         string Version { get; }

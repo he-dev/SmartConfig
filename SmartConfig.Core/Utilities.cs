@@ -17,7 +17,7 @@ namespace SmartConfig
         /// <returns></returns>
         internal static string ConfigName(Type type)
         {
-            var smartConfigAttribute = type.CustomAttribute<SmartConfigAttribute>();
+            var smartConfigAttribute = type.GetCustomAttribute<SmartConfigAttribute>();
             if (smartConfigAttribute == null)
             {
                 throw new InvalidOperationException("Type is not marked with SmartConfigAttribute.");
@@ -68,7 +68,7 @@ namespace SmartConfig
                         ConfigType = type,
                         Keys = type.GetCustomAttributes<CustomKeyAttribute>(true).ToDictionary(x => x.Key, x => x.Value),
                         ElementName = ConfigElementName.Combine(path, true),
-                        ElementConstraints = ((FieldInfo)memberInfo).GetCustomAttributes<ValueConstraintAttribute>(false)
+                        ElementConstraints = ((FieldInfo)memberInfo).GetCustomAttributes<ConstraintAttribute>(false)
                     };
                     return result;
                 }

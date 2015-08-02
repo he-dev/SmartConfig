@@ -12,7 +12,7 @@ namespace SmartConfig.Converters
     /// </summary>
     public class JsonConverter : ObjectConverterBase
     {
-        public override object DeserializeObject(string value, Type type, IEnumerable<ValueConstraintAttribute> constraints)
+        public override object DeserializeObject(string value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
             var result =
                 !string.IsNullOrEmpty(value)
@@ -21,7 +21,7 @@ namespace SmartConfig.Converters
             return result;
         }
 
-        public override string SerializeObject(object value, Type type, IEnumerable<ValueConstraintAttribute> constraints)
+        public override string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
             var result =
                 value != null

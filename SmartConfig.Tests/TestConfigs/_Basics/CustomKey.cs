@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    public static class NullableFields
+    [CustomKey("Version=2.2.1")]
+    public static class CustomKey
     {
-        [Nullable]
-        public static string NullableStringField;
+        [Optional]
+        public static string StringField;
     }
 }

@@ -19,13 +19,13 @@ namespace SmartConfig.Converters
         {
         }
 
-        public override object DeserializeObject(string value, Type type, IEnumerable<ValueConstraintAttribute> constraints)
+        public override object DeserializeObject(string value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
             ValidateType(type);
             return (Color)Color32.Parse(value);
         }
 
-        public override string SerializeObject(object value, Type type, IEnumerable<ValueConstraintAttribute> constraints)
+        public override string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
             ValidateType(type);
             return value != null ? value.ToString() : null;

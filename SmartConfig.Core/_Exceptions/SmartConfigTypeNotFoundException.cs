@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace SmartConfig
 {
     /// <summary>
-    /// Is thrown if there is no type marked with the <c>SmartConfigAttribute</c>.
+    /// Occurs when there is no type marked with the <c>SmartConfigAttribute</c>.
     /// </summary>
     public class SmartConfigTypeNotFoundException : Exception
     {

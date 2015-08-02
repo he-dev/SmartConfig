@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace SmartConfig
 {
+    /// <summary>
+    /// Provides some of the common keys.
+    /// </summary>
     public static class CommonKeys
     {
         public const string Environment = "Environment";

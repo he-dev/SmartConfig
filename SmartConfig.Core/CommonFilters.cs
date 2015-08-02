@@ -8,6 +8,9 @@ using SmartUtilities;
 
 namespace SmartConfig
 {
+    /// <summary>
+    /// Provides filters for common criteria.
+    /// </summary>
     public static class CommonFilters
     {
         public static IEnumerable<IEnvironment> FilterByEnvironment(IEnumerable<IEnvironment> elements, string environment)

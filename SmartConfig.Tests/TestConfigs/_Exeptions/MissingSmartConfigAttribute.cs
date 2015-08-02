@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Tests.TestConfigs
 {
-    [SmartConfig]
-    public static class OptionalFields
+    // This is commented out by purpose to test the missing attribute.
+    //[SmartConfig]
+    public static class MissingSmartConfigAttribute
     {
-        [Optional]
-        public static string OptionalStringField = "xyz";
     }
 }

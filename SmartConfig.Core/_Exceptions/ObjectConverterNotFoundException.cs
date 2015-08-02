@@ -5,9 +5,12 @@ using System.Text;
 
 namespace SmartConfig
 {
+    /// <summary>
+    /// Occurs when an object converter could not be found.
+    /// </summary>
     public class ObjectConverterNotFoundException : Exception
     {
-        public ObjectConverterNotFoundException(Type type)
+        internal ObjectConverterNotFoundException(Type type)
         {
             Type = type;
         }

@@ -22,7 +22,7 @@ namespace SmartConfig.Converters
         {
         }
 
-        public override object DeserializeObject(string value, Type type, IEnumerable<ValueConstraintAttribute> constraints)
+        public override object DeserializeObject(string value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
             ValidateType(type);
             var parseMethod = type.GetMethod("Parse", new Type[] { typeof(string) });
@@ -30,7 +30,7 @@ namespace SmartConfig.Converters
             return result;
         }
 
-        public override string SerializeObject(object value, Type type, IEnumerable<ValueConstraintAttribute> constraints)
+        public override string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
             ValidateType(type);
             if (value == null)

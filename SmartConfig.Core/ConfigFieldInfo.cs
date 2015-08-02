@@ -11,6 +11,6 @@ namespace SmartConfig
         public Type ConfigType;
         public IDictionary<string, string> Keys;
         public string ElementName;
-        public IEnumerable<ValueConstraintAttribute> ElementConstraints;
+        public IEnumerable<ConstraintAttribute> ElementConstraints;
     }
 }

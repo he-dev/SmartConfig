@@ -7,10 +7,18 @@ using SmartConfig.Converters;
 
 namespace SmartConfig.Collections
 {
+    /// <summary>
+    /// Stores object converters.
+    /// </summary>
     public class ObjectConverterCollection : IEnumerable<ObjectConverterBase>
     {
         private readonly Dictionary<Type, ObjectConverterBase> _converters = new Dictionary<Type, ObjectConverterBase>();
 
+        /// <summary>
+        /// Gets an object converter for the specified type or null.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public ObjectConverterBase this[Type type]
         {
             get
@@ -20,6 +28,11 @@ namespace SmartConfig.Collections
             }
         }
 
+        /// <summary>
+        /// Adds an object converter to the collection.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="objectConverter"></param>
         public void Add<T>(T objectConverter) where T : ObjectConverterBase
         {
             if (objectConverter.IsDirectConverter)

@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartConfig.Tests
+namespace SmartConfig.Tests.TestConfigs
 {
-    class AppConfigTests
+    [SmartConfig]
+    public static class EnumField
     {
+        public static TestEnum EnumField1;
     }
 }

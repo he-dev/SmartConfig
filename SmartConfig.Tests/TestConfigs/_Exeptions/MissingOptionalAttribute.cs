@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    public static class MissingOptionalAttributeConfig
+    public static class MissingOptionalAttribute
     {
         public static int Int32Fields;
     }

@@ -61,30 +61,31 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="AppConfigTests.cs" />
+    <Compile Include="Data\AppConfigTests.cs" />
     <Compile Include="Converters\ColorConverterTests.cs" />
     <Compile Include="Converters\XmlConverterTests.cs" />
     <Compile Include="Converters\JsonConverterTests.cs" />
     <Compile Include="SmartConfigManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestConfigs\_Basics\ColorFields.cs" />
+    <Compile Include="TestConfigs\_Basics\XmlFields.cs" />
+    <Compile Include="TestConfigs\_Basics\DateTimeFields.cs" />
     <Compile Include="_TestHelpers\TestConfigElement2.cs" />
-    <Compile Include="TestConfigs\_Contraint tests\OptionalFields.cs" />
-    <Compile Include="TestConfigs\_Basic tests\JsonFields.cs" />
-    <Compile Include="TestConfigs\_Basic tests\EnumFields.cs" />
-    <Compile Include="TestConfigs\_Basic tests\StringFields.cs" />
-    <Compile Include="TestConfigs\_Exeption tests\MissingOptionalAttributeConfig.cs" />
+    <Compile Include="TestConfigs\_Contraints\OptionalField.cs" />
+    <Compile Include="TestConfigs\_CustomConverters\JsonField.cs" />
+    <Compile Include="TestConfigs\_Basics\EnumField.cs" />
+    <Compile Include="TestConfigs\_Basics\StringField.cs" />
+    <Compile Include="TestConfigs\_Exeptions\MissingOptionalAttribute.cs" />
     <Compile Include="_TestHelpers\TestDataSource.cs" />
     <Compile Include="TestEnum.cs" />
     <Compile Include="_Attributes\_Constraints\RangeAttributeTests.cs" />
-    <Compile Include="TestConfigs\_Exeption tests\MissingAttributeTestConfig.cs" />
-    <Compile Include="TestConfigs\_Exeption tests\MissingNullableAttributeConfig.cs" />
-    <Compile Include="TestConfigs\_AppConfig tests\AppConfigTestConfig.cs" />
-    <Compile Include="TestConfigs\_Nesting tests\OneNestedClass.cs" />
-    <Compile Include="TestConfigs\_Database tests\SqlServerTestConfig.cs" />
-    <Compile Include="TestConfigs\_Nesting tests\TwoNestedClasses.cs" />
-    <Compile Include="TestConfigs\_Config name tests\ConfigName.cs" />
-    <Compile Include="TestConfigs\_Basic tests\ValueTypeFields.cs" />
-    <Compile Include="TestConfigs\_Version tests\VersionTestConfig.cs" />
+    <Compile Include="TestConfigs\_Exeptions\MissingSmartConfigAttribute.cs" />
+    <Compile Include="TestConfigs\_Files\AppConfig.cs" />
+    <Compile Include="TestConfigs\_Nestings\OneNestedClass.cs" />
+    <Compile Include="TestConfigs\_Nestings\TwoNestedClasses.cs" />
+    <Compile Include="TestConfigs\_Basics\ConfigName.cs" />
+    <Compile Include="TestConfigs\_Basics\ValueTypeFields.cs" />
+    <Compile Include="TestConfigs\_Basics\CustomKey.cs" />
     <Compile Include="Converters\ValueTypeConverterTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -96,9 +97,7 @@
       <Name>SmartConfig.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

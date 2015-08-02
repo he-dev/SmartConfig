@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace SmartConfig
 {
     /// <summary>
-    /// Allows to specify a custom object converter.
+    /// Specifies the type of a custom object converter.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
     public class ObjectConverterAttribute : Attribute
@@ -19,7 +19,7 @@ namespace SmartConfig
         }
 
         /// <summary>
-        /// Gets or sets the object converter type.
+        /// Gets the object converter type.
         /// </summary>
         public Type Type { get; private set; }
     }

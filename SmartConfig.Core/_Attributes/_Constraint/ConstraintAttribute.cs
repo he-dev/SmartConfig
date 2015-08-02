@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace SmartConfig
 {
+    /// <summary>
+    /// Base class for constraint attributes.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
-    public abstract class ValueConstraintAttribute : Attribute
+    public abstract class ConstraintAttribute : Attribute
     {
 
     }

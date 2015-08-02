@@ -11,10 +11,6 @@ namespace SmartConfig
 {
     internal static class FieldInfoExtensions
     {
-        public static bool HasAttribute<T>(this FieldInfo fieldInfo, bool inherit = false) where T : Attribute
-        {
-            return fieldInfo.GetCustomAttribute<T>(inherit) != null;
-        }
 
 #if NET40
 
@@ -30,11 +26,20 @@ namespace SmartConfig
 
 #endif
 
+        public static bool HasAttribute<T>(this FieldInfo fieldInfo, bool inherit = false) where T : Attribute
+        {
+#if NET40
+            return fieldInfo.GetCustomAttributes(typeof(T), false).SingleOrDefault() != null;
+#else
+            return fieldInfo.GetCustomAttribute<T>(false) != null;
+#endif
+        }
+
         #region Constraint shortcuts
 
-        public static IEnumerable<ValueConstraintAttribute> Contraints(this FieldInfo fieldInfo)
+        public static IEnumerable<ConstraintAttribute> Contraints(this FieldInfo fieldInfo)
         {
-            return fieldInfo.GetCustomAttributes<ValueConstraintAttribute>(false);
+            return fieldInfo.GetCustomAttributes<ConstraintAttribute>(false);
         }
 
         #endregion
@@ -45,7 +50,7 @@ namespace SmartConfig
         {
             var isNullable =
                 (fieldInfo.FieldType.IsValueType && fieldInfo.FieldType.IsNullable())
-                || fieldInfo.GetCustomAttribute<NullableAttribute>() != null;
+                || fieldInfo.GetCustomAttribute<OptionalAttribute>() != null;
             return isNullable;
         }
 

@@ -11,7 +11,7 @@ namespace SmartConfig
     /// <summary>
     /// Specifies the range for a field.
     /// </summary>
-    public class RangeAttribute : ValueConstraintAttribute
+    public class RangeAttribute : ConstraintAttribute
     {
         /// <summary>
         /// Creates a new instance of the <c>RangeAtrributes</c>.
@@ -26,10 +26,19 @@ namespace SmartConfig
             Max = max;
         }
 
+        /// <summary>
+        /// Gets the type of the range.
+        /// </summary>
         internal Type Type { get; private set; }
 
+        /// <summary>
+        /// Gets the minimum value of the range.
+        /// </summary>
         internal string Min { get; private set; }
 
+        /// <summary>
+        /// Gets the maximum value of the range.
+        /// </summary>
         internal string Max { get; private set; }
 
         /// <summary>

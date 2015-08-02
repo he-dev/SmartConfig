@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Tests.TestConfigs
 {
-    [SmartConfig(Version = "1.2.0")]
-    public static class SqlServerTestConfig
+    [SmartConfig]
+    public static class OptionalField
     {
-        public static int Int32Field;
+        [Optional]
+        public static string OptionalStringField = "xyz";
     }
 }

@@ -33,8 +33,14 @@ namespace SmartConfig.Data
         /// </summary>
         public string TableName { get; set; }
 
+        /// <summary>
+        /// Allows to specify additional keys.
+        /// </summary>
         public IDictionary<string, string> Keys { get; set; }
 
+        /// <summary>
+        /// Allows to specifiy filter function for the additional keys.
+        /// </summary>
         public FilterByFunc<TConfigElement> FilterBy { get; set; }
 
         public string Select(IDictionary<string, string> keys)

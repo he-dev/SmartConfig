@@ -9,33 +9,19 @@ namespace SmartConfig
 {
     public static class EnumerableExtensions
     {
-        public static void Check<T>(this IEnumerable<ValueConstraintAttribute> contraints, Action<T> checkAction) where T : ValueConstraintAttribute
+        /// <summary>
+        /// Allows to check a constraint if it exists.
+        /// </summary>
+        /// <typeparam name="TConstraint"></typeparam>
+        /// <param name="contraints"></param>
+        /// <param name="checkAction"></param>
+        public static void Check<TConstraint>(this IEnumerable<ConstraintAttribute> contraints, Action<TConstraint> checkAction) where TConstraint : ConstraintAttribute
         {
-            var constraint = contraints.OfType<T>().SingleOrDefault();
+            var constraint = contraints.OfType<TConstraint>().SingleOrDefault();
             if (constraint != null)
             {
                 checkAction(constraint);
             }
-        }
-
-        #region ConfigElement Filters
-
-        //public static IEnumerable<ConfigElement> FilterByEnvironment(this IEnumerable<ConfigElement> elements, string environment)
-        //{
-        //    return elements.Where(e => e.Environment.Equals(environment, StringComparison.OrdinalIgnoreCase));
-        //}
-
-        //public static IEnumerable<ConfigElement> FilterBySemanticVersion(this IEnumerable<ConfigElement> elements, string version)
-        //{
-        //    var semVer = SemanticVersion.Parse(version);
-        //    return elements
-        //        // Get versions that are less or equal to current:
-        //        .Where(e => SemanticVersion.Parse(e.Version) <= semVer)
-        //        // Sort by version:
-        //        .OrderByDescending(e => SemanticVersion.Parse(e.Version))
-        //        .Take(1);
-        //}
-
-        #endregion
+        }       
     }
 }

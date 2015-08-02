@@ -70,7 +70,7 @@ namespace SmartConfig.Converters
         /// <param name="type">Type of the value.</param>
         /// <param name="constraints"></param>
         /// <returns></returns>
-        public abstract object DeserializeObject(string value, Type type, IEnumerable<ValueConstraintAttribute> constraints);
+        public abstract object DeserializeObject(string value, Type type, IEnumerable<ConstraintAttribute> constraints);
 
         /// <summary>
         /// Serializes an object.
@@ -79,6 +79,6 @@ namespace SmartConfig.Converters
         /// <param name="type"></param>
         /// <param name="constraints"></param>
         /// <returns></returns>
-        public abstract string SerializeObject(object value, Type type, IEnumerable<ValueConstraintAttribute> constraints);
+        public abstract string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints);
     }
 }

@@ -6,6 +6,9 @@ using System.Data.Entity.Spatial;
 
 namespace SmartConfig.Data
 {
+    /// <summary>
+    /// Basic config element with only two properties. Custom config elements must be derived from this type.
+    /// </summary>
     public partial class BasicConfigElement
     {
         [Key]

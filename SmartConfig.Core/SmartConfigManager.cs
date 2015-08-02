@@ -21,6 +21,9 @@ namespace SmartConfig
     {
         private static readonly Dictionary<Type, IDataSource> DataSources;
 
+        /// <summary>
+        /// Gets the converters collection.
+        /// </summary>
         public static readonly ObjectConverterCollection Converters;
 
         static SmartConfigManager()
@@ -42,11 +45,10 @@ namespace SmartConfig
         #region Loading
 
         /// <summary>
-        /// Initializes a smart config.
+        /// Loads a smart config.
         /// </summary>
-        /// <typeparam name="TConfig">Type that is marked with the <c>SmartCofnigAttribute</c> and specifies the configuration.</typeparam>
-        /// <param name="configType"></param>
-        /// <param name="dataSource">Custom data source that provides data. If null <c>AppConfig</c> is used.</param>
+        /// <param name="configType">Type that is marked with the <c>SmartCofnigAttribute</c> and specifies the configuration.</param>
+        /// <param name="dataSource">Data source that provides data.</param>
         public static void Load(Type configType, IDataSource dataSource)
         {
             if (!configType.IsStatic())
@@ -118,6 +120,12 @@ namespace SmartConfig
 
         #endregion
 
+        /// <summary>
+        /// Updates a field.
+        /// </summary>
+        /// <typeparam name="TField">Type of the field.</typeparam>
+        /// <param name="expression">Lambda expression of the field.</param>
+        /// <param name="value">Value to be set.</param>
         public static void Update<TField>(Expression<Func<TField>> expression, TField value)
         {
             var memberInfo = Utilities.GetMemberInfo(expression);
@@ -131,19 +139,18 @@ namespace SmartConfig
 
             if (value == null && !field.IsNullable())
             {
-                throw new NullableException(configType, elementName);
+                throw new OptionalException(configType, elementName);
             }
 
             try
             {
                 var converter = GetConverter(field);
-                var valueSerialized = converter.SerializeObject(value, field.FieldType, field.GetCustomAttributes<ValueConstraintAttribute>(false));
+                var valueSerialized = converter.SerializeObject(value, field.FieldType, field.GetCustomAttributes<ConstraintAttribute>(false));
 
                 var configFieldInfo = Utilities.GetConfigFieldInfo(memberInfo);
-                DataSources[configFieldInfo.ConfigType]
-                    .Update(
-                        new Dictionary<string, string>(configFieldInfo.Keys) { { "Name", configFieldInfo.ElementName } },
-                        valueSerialized);
+                DataSources[configFieldInfo.ConfigType].Update(
+                    new Dictionary<string, string>(configFieldInfo.Keys) { { "Name", configFieldInfo.ElementName } }, 
+                    valueSerialized);
             }
             catch (Exception ex)
             {

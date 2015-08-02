@@ -10,17 +10,17 @@ namespace SmartConfig.Tests.Converters
     public class JsonConverterTests
     {
         [TestMethod]
-        public void TestDeserializeObject()
+        public void DeserializeObject_ListInt32()
         {
             var converter = new JsonConverter();
-            CollectionAssert.AreEqual(new Int32[] { 1, 2, 3 }, (List<Int32>)converter.DeserializeObject("[1, 2, 3]", typeof(List<Int32>), Enumerable.Empty<ValueConstraintAttribute>()));
+            CollectionAssert.AreEqual(new Int32[] { 1, 2, 3 }, (List<Int32>)converter.DeserializeObject("[1, 2, 3]", typeof(List<Int32>), Enumerable.Empty<ConstraintAttribute>()));
         }
 
         [TestMethod]
-        public void TestSerializeObject()
+        public void SerializeObject_ArrayInt32()
         {
             var converter = new JsonConverter();
-            Assert.AreEqual("[1,2,3]", converter.SerializeObject(new Int32[] { 1, 2, 3 }, null, Enumerable.Empty<ValueConstraintAttribute>()));
+            Assert.AreEqual("[1,2,3]", converter.SerializeObject(new Int32[] { 1, 2, 3 }, null, Enumerable.Empty<ConstraintAttribute>()));
         }
     }
 }

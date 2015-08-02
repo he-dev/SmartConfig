@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace SmartConfig
 {
+    /// <summary>
+    /// Occurs when a type was used that is not supported by an object converter.
+    /// </summary>
     public class UnsupportedTypeException : Exception
     {
         public UnsupportedTypeException(Type type)
@@ -14,6 +17,9 @@ namespace SmartConfig
             Type = type;
         }
 
+        /// <summary>
+        /// Gets the unsupported type.
+        /// </summary>
         public Type Type { get; private set; }
     }
 }
