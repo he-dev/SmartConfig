@@ -54,17 +54,6 @@ namespace SmartConfig
             return type.GetCustomAttributes(typeof(T), false).Any();
         }      
 
-        public static SemanticVersion Version(this Type type)
-        {
-            var version = type.CustomAttribute<SmartConfigAttribute>().Version;
-            if (string.IsNullOrEmpty(version))
-            {
-                return null;
-            }
-            var semVer = SemanticVersion.Parse(version);
-            return semVer;
-        }
-
         public static T CustomAttribute<T>(this Type type) where T : Attribute
         {
 #if NET40

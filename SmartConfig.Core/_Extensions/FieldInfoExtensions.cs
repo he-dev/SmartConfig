@@ -23,15 +23,9 @@ namespace SmartConfig
             return fieldInfo.GetCustomAttributes(typeof (T), inherit).Cast<T>();
         }
 
-
         public static TAttribute GetCustomAttribute<TAttribute>(this FieldInfo fieldInfo, bool inherit = true) where TAttribute : Attribute
         {
             return fieldInfo.GetCustomAttributes<TAttribute>(inherit).SingleOrDefault();
-        }
-
-        public static T GetCustomAttribute<T>(this Type type, bool inherit = true) where T : Attribute
-        {
-            return type.GetCustomAttributes(typeof(T), inherit).Cast<T>().SingleOrDefault();
         }
 
 #endif

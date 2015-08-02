@@ -29,6 +29,10 @@
     <DefineConstants>NET451</DefineConstants>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.5.2' ">
+    <DefineConstants>NET452</DefineConstants>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -69,6 +73,13 @@
       <HintPath Condition="'$(TargetFrameworkVersion)' == 'v4.5'">..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <HintPath Condition="'$(TargetFrameworkVersion)' == 'v4.5.1'">..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <HintPath Condition="'$(TargetFrameworkVersion)' == 'v4.5.2'">..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SmartUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath Condition="'$(TargetFrameworkVersion)' == 'v4.0'">..\packages\SmartUtilities.1.0.1\lib\net40\SmartUtilities.dll</HintPath>
+      <HintPath Condition="'$(TargetFrameworkVersion)' == 'v4.5'">..\packages\SmartUtilities.1.0.1\lib\net45\SmartUtilities.dll</HintPath>
+      <HintPath Condition="'$(TargetFrameworkVersion)' == 'v4.5.1'">..\packages\SmartUtilities.1.0.1\lib\net451\SmartUtilities.dll</HintPath>
+      <HintPath Condition="'$(TargetFrameworkVersion)' == 'v4.5.2'">..\packages\SmartUtilities.1.0.1\lib\net452\SmartUtilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

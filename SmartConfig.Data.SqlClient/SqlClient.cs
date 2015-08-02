@@ -69,7 +69,11 @@ namespace SmartConfig.Data
                 var declaredProperties = typeof(TConfigElement).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
                 foreach (var property in declaredProperties)
                 {
+#if NET40
+                    property.SetValue(newEntity, allKeys[property.Name], null);
+#else
                     property.SetValue(newEntity, allKeys[property.Name]);
+#endif
                 }
 
                 var newEntityKey = ((IObjectContextAdapter)context).ObjectContext.CreateEntityKey("ConfigElements", newEntity);

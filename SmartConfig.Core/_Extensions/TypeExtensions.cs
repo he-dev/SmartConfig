@@ -12,5 +12,20 @@ namespace SmartConfig
         {
             return type.IsAbstract && type.IsSealed;
         }
+
+#if NET40
+
+        public static IEnumerable<T> GetCustomAttributes<T>(this Type type, bool inherit = false) where T : Attribute
+        {
+            return type.GetCustomAttributes(typeof (T), inherit).Cast<T>();
+        }
+
+
+        public static TAttribute GetCustomAttribute<TAttribute>(this Type type, bool inherit = false) where TAttribute : Attribute
+        {
+            return type.GetCustomAttributes<TAttribute>(inherit).SingleOrDefault();
+        }
+
+#endif
     }
 }
