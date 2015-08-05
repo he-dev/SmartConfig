@@ -1,7 +1,7 @@
 # SmartConfig
 Configuration has never been easier!
 
-**SmartConfig** is a simple to use configuration framework.
+**SmartConfig** is a configuration framework.
 
 ## Why another one?
 Because I did't find anything simplier and as powerful as **SmartConfig**. It's main goal is simplicity. A configuration should be set up within few minutes and be easily extended as needed. Unfortunatelly most of the time we spend hours writing them over and over again. With **SmartConfig** It's over.
