@@ -1,4 +1,5 @@
-# SmartConfig - Configuration has never been easier!
+# SmartConfig
+Configuration has never been easier!
 
 **SmartConfig** is a simple to use configuration framework.
 
