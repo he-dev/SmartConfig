@@ -83,7 +83,7 @@ CREATE TABLE [dbo].[ExampleConfigTable]
 (
    [Name] NVARCHAR(255) NOT NULL, 
    [Value] NVARCHAR(MAX) NULL, 
-   PRIMARY KEY ([Environment], [Name], [Version])
+   PRIMARY KEY ([Name])
 )
 ```
 
