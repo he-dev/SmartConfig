@@ -8,6 +8,7 @@ using Microsoft.QualityTools.Testing.Fakes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Data;
 using SmartConfig.Tests.TestConfigs;
+using SmartUtilities;
 
 namespace SmartConfig.Tests
 {
@@ -236,15 +237,20 @@ namespace SmartConfig.Tests
         #region Exception tests       
 
         [TestMethod]
-        [ExpectedException(typeof(OptionalException))]
         public void Load_MissingOptionalAttributeConfig()
         {
             var dataSource = new TestDataSource()
             {
                 SelectFunc = (keys) => null
             };
-            SmartConfigManager.Load(typeof(MissingOptionalAttribute), dataSource);
-            Assert.Fail("OptionalException was not thrown.");
+            var ex = ExceptionAssert.Throws<OptionalException>(() =>
+            {
+                SmartConfigManager.Load(typeof(MissingOptionalAttribute), dataSource);
+            }, (message) => Assert.Fail(message));
+
+            Assert.IsNotNull(ex);
+            Assert.AreEqual(typeof(MissingOptionalAttribute), ex.ConfigType);
+            Assert.AreEqual("Int32Field", ex.FieldName);
         }
 
         [TestMethod]

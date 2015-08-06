@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    [CustomKey("Version=2.2.1")]
+    [ElementKey("Version=2.2.1")]
     public static class CustomKey
     {
         [Optional]

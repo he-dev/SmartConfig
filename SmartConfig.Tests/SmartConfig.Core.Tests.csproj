@@ -39,6 +39,10 @@
     <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="SmartUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SmartUtilities.1.0.2\lib\net452\SmartUtilities.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -56,7 +60,9 @@
     </When>
     <Otherwise>
       <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
+          <Private>False</Private>
+        </Reference>
       </ItemGroup>
     </Otherwise>
   </Choose>
@@ -70,6 +76,7 @@
     <Compile Include="TestConfigs\_Basics\ColorFields.cs" />
     <Compile Include="TestConfigs\_Basics\XmlFields.cs" />
     <Compile Include="TestConfigs\_Basics\DateTimeFields.cs" />
+    <Compile Include="_Attributes\ElementKeyAttributeTests.cs" />
     <Compile Include="_TestHelpers\TestConfigElement2.cs" />
     <Compile Include="TestConfigs\_Contraints\OptionalField.cs" />
     <Compile Include="TestConfigs\_CustomConverters\JsonField.cs" />
@@ -90,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SmartConfig.Core\SmartConfig.Core.csproj">

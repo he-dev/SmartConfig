@@ -103,7 +103,11 @@ namespace SmartConfig
                 {
                     return;
                 }
-                throw new OptionalException(configFieldInfo.ConfigType, configFieldInfo.ElementName);
+                throw new OptionalException()
+                {
+                    ConfigType = configFieldInfo.ConfigType,
+                    FieldName = configFieldInfo.ElementName
+                };
             }
 
             try
@@ -139,7 +143,11 @@ namespace SmartConfig
 
             if (value == null && !field.IsNullable())
             {
-                throw new OptionalException(configType, elementName);
+                throw new OptionalException()
+                {
+                    ConfigType = configType,
+                    FieldName = elementName
+                };
             }
 
             try
@@ -149,7 +157,7 @@ namespace SmartConfig
 
                 var configFieldInfo = Utilities.GetConfigFieldInfo(memberInfo);
                 DataSources[configFieldInfo.ConfigType].Update(
-                    new Dictionary<string, string>(configFieldInfo.Keys) { { "Name", configFieldInfo.ElementName } }, 
+                    new Dictionary<string, string>(configFieldInfo.Keys) { { "Name", configFieldInfo.ElementName } },
                     valueSerialized);
             }
             catch (Exception ex)

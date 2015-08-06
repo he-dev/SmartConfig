@@ -66,7 +66,7 @@ namespace SmartConfig
                     var result = new ConfigFieldInfo()
                     {
                         ConfigType = type,
-                        Keys = type.GetCustomAttributes<CustomKeyAttribute>(true).ToDictionary(x => x.Key, x => x.Value),
+                        Keys = type.GetCustomAttributes<ElementKeyAttribute>(true).ToDictionary(x => x.Key, x => x.Value),
                         ElementName = ConfigElementName.Combine(path, true),
                         ElementConstraints = ((FieldInfo)memberInfo).GetCustomAttributes<ConstraintAttribute>(false)
                     };

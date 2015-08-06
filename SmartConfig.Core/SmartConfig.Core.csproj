@@ -62,10 +62,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="SmartUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath Condition="'$(TargetFrameworkVersion)' == 'v4.0'">..\packages\SmartUtilities.1.0.1\lib\net40\SmartUtilities.dll</HintPath>
-      <HintPath Condition="'$(TargetFrameworkVersion)' == 'v4.5'">..\packages\SmartUtilities.1.0.1\lib\net45\SmartUtilities.dll</HintPath>
-      <HintPath Condition="'$(TargetFrameworkVersion)' == 'v4.5.1'">..\packages\SmartUtilities.1.0.1\lib\net451\SmartUtilities.dll</HintPath>
-      <HintPath Condition="'$(TargetFrameworkVersion)' == 'v4.5.2'">..\packages\SmartUtilities.1.0.1\lib\net452\SmartUtilities.dll</HintPath>
+      <HintPath>..\packages\SmartUtilities.1.0.1\lib\net452\SmartUtilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -84,6 +81,7 @@
   <ItemGroup>
     <Compile Include="ConfigFieldInfo.cs" />
     <Compile Include="CommonKeys.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\EnumConverter.cs" />
     <Compile Include="Data\AppConfig.cs" />
@@ -94,11 +92,12 @@
     <Compile Include="Utilities.cs" />
     <Compile Include="_Attributes\IgnoreAttribute.cs" />
     <Compile Include="_Attributes\OptionalAttribute.cs" />
-    <Compile Include="_Attributes\CustomKeyAttribute.cs" />
+    <Compile Include="_Attributes\ElementKeyAttribute.cs" />
     <Compile Include="_Attributes\_Constraint\DateTimeFormatAttribute.cs" />
     <Compile Include="_Attributes\_Constraint\RegularExpressionAttribute.cs" />
     <Compile Include="_Attributes\_Constraint\RangeAttribute.cs" />
     <Compile Include="_Attributes\_Constraint\ConstraintAttribute.cs" />
+    <Compile Include="_Exceptions\FieldException.cs" />
     <Compile Include="_Exceptions\OptionalException.cs" />
     <Compile Include="_Exceptions\ObjectConverterException.cs" />
     <Compile Include="_Exceptions\_Constraints\ConstraintException.cs" />

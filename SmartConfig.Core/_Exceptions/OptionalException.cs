@@ -13,21 +13,28 @@ namespace SmartConfig
     /// </summary>
     public class OptionalException : Exception
     {
-        public OptionalException(Type configType, string name)
-            : base("[$configTypeName]'s field [fieldName] is not optional. If you want it to be optional add the OptionalAttribute.".FormatWith(new { configTypeName = configType.Name, fieldName = name }, true))
+        public override string Message
         {
-            ConfigType = configType;
-            FieldName = name;
+            get
+            {
+                return
+                    "Field [$fieldName] of [$configTypeName] is not optional. If you want it to be optional add the $optionalAttributeName."
+                    .FormatWith(new
+                    {
+                        FieldName,
+                        ConfigTypeName = ConfigType.Name,
+                        OptionalAttributeName = typeof(OptionalAttribute).Name
+                    }, true);
+            }
         }
-
         /// <summary>
         /// Gets the config type.
         /// </summary>
-        public Type ConfigType { get; private set; }
+        public Type ConfigType { get; internal set; }
 
         /// <summary>
         /// Gets the full name of the field that could not be found.
         /// </summary>
-        public string FieldName { get; private set; }
+        public string FieldName { get; internal set; }
     }
 }
