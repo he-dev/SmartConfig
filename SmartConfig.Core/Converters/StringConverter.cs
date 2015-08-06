@@ -17,11 +17,11 @@ namespace SmartConfig.Converters
 
         public override object DeserializeObject(string value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
-            ValidateType(type);            
+            ValidateType(type);
 
             constraints.Check<RegularExpressionAttribute>(regex =>
             {
-                if (!regex.IsMatch(value)) throw new RegularExpressionException(value, regex);
+                if (!regex.IsMatch(value)) throw new RegularExpressionException(regex, value);
             });
 
             return value;
@@ -31,9 +31,9 @@ namespace SmartConfig.Converters
         {
             ValidateType(type);
 
-            constraints.Check<RegularExpressionAttribute>(pattern =>
+            constraints.Check<RegularExpressionAttribute>(regex =>
             {
-                if (!pattern.IsMatch((string)value)) throw new RegularExpressionException((string)value, pattern);
+                if (!regex.IsMatch((string)value)) throw new RegularExpressionException(regex, (string)value);
             });
 
             return (string)value;

@@ -10,30 +10,18 @@ namespace SmartConfig
     /// <summary>
     /// Occures when is outside of the specified range.
     /// </summary>
-    public class RangeException : ConstraintException
+    public class RangeException : ConstraintException<RangeAttribute>
     {
-        public RangeException(Type type, string value, string min, string max)
-            : base(value, "Value [$value] is not within the specified min [$min] & max [$max] range.".FormatWith(new { value, min, max }, true))
+        public RangeException(RangeAttribute constraint, string value) : base(constraint, value)
         {
-            Value = value;
-            Type = type;
-            Min = min;
-            Max = max;
         }
 
-        /// <summary>
-        /// Gets the type of the range.
-        /// </summary>
-        public Type Type { get; private set; }
-
-        /// <summary>
-        /// Gets the minimum value of the range.
-        /// </summary>
-        public string Min { get; private set; }
-
-        /// <summary>
-        /// Gets the maximum value of the range.
-        /// </summary>
-        public string Max { get; private set; }
+        public override string Message
+        {
+            get
+            {
+                return "$Message Min = [$Min], Max = [$Max].".FormatWith(new { base.Message, Constraint.Min, Constraint.Max }, true);
+            }
+        }
     }
 }

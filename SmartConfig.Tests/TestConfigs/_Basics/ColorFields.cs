@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,8 @@ namespace SmartConfig.Tests.TestConfigs
     [SmartConfig]
     public static class ColorFields
     {
-        public static TestEnum EnumField1;
+        public static Color NameColorField;
+        public static Color DecColorField;
+        public static Color HexColorField;
     }
 }

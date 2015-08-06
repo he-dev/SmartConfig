@@ -22,17 +22,22 @@ namespace SmartConfig.Converters
         {
             ValidateType(type);
 
-            var dateTimeFormat = constraints.OfType<DateTimeFormatAttribute>().SingleOrDefault();
-            if (dateTimeFormat != null)
+            DateTime? result = null;
+            constraints.Check<DateTimeFormatAttribute>(format =>
             {
-                var result = DateTime.ParseExact(value, dateTimeFormat, null);
-                return result;
-            }
-            else
+                DateTime _result;
+                if (!DateTime.TryParseExact(value, format, null, DateTimeStyles.None, out _result))
+                {
+                    throw new DateTimeFormatException(format, value);
+                }
+                result = _result;
+            });
+
+            if (!result.HasValue)
             {
-                var result = DateTime.Parse(value, CultureInfo.InvariantCulture);
-                return result;
+                result = DateTime.Parse(value, CultureInfo.InvariantCulture);
             }
+            return result.Value;
         }
 
         public override string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
@@ -44,17 +49,17 @@ namespace SmartConfig.Converters
                 throw new ArgumentNullException("value", "This field does not allow null values.");
             }
 
-            var dateTimeFormat = constraints.OfType<DateTimeFormatAttribute>().SingleOrDefault();
-            if (dateTimeFormat != null)
+            var result = string.Empty;
+            constraints.Check<DateTimeFormatAttribute>(format =>
             {
-                var result = ((DateTime)value).ToString(dateTimeFormat);
-                return result;
-            }
-            else
+                result = ((DateTime)value).ToString(format);
+            });
+
+            if (string.IsNullOrEmpty(result))
             {
-                var result = ((DateTime)value).ToString(CultureInfo.InvariantCulture);
-                return result;
+                result = ((DateTime)value).ToString(CultureInfo.InvariantCulture);
             }
+            return result;
         }
     }
 }

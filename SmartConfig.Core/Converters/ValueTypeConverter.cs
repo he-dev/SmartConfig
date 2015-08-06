@@ -68,7 +68,7 @@ namespace SmartConfig.Converters
 
             constraints.Check<RangeAttribute>(range =>
             {
-                if (!range.IsValid((IComparable)result)) throw new RangeException(type, value, range.Min, range.Max);
+                if (!range.IsValid((IComparable)result)) throw new RangeException(range, value);
             });
 
             return result;

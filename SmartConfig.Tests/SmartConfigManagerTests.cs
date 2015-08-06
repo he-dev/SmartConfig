@@ -71,8 +71,8 @@ namespace SmartConfig.Tests
             {
                 SelectFunc = (keys) => "abcd"
             };
-            SmartConfigManager.Load(typeof(StringField), dataSource);
-            Assert.AreEqual("abcd", StringField.StringField);
+            SmartConfigManager.Load(typeof(StringFields), dataSource);
+            Assert.AreEqual("abcd", StringFields.StringField);
         }
 
         [TestMethod]
@@ -106,7 +106,17 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void Load_DateTimeFields()
         {
-            Assert.Fail();
+            var dateTime = DateTime.Now;
+            var dataSource = new TestDataSource()
+            {
+                SelectFunc = (keys) => dateTime.ToString(System.Globalization.CultureInfo.InvariantCulture)
+            };
+            SmartConfigManager.Load(typeof(DateTimeFields), dataSource);
+            var diff = dateTime - DateTimeFields.DateTimeField;
+            Assert.AreEqual(dateTime.Date, DateTimeFields.DateTimeField.Date);
+            Assert.AreEqual(dateTime.Hour, DateTimeFields.DateTimeField.Hour);
+            Assert.AreEqual(dateTime.Minute, DateTimeFields.DateTimeField.Minute);
+            Assert.AreEqual(dateTime.Second, DateTimeFields.DateTimeField.Second);
         }
 
         [TestMethod]

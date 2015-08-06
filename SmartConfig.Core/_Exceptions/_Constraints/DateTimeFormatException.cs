@@ -10,9 +10,9 @@ namespace SmartConfig
     /// <summary>
     /// Occures when the value does not match the specified pattern.
     /// </summary>
-    public class RegularExpressionException : ConstraintException<RegularExpressionAttribute>
+    public class DateTimeFormatException : ConstraintException<DateTimeFormatAttribute>
     {
-        public RegularExpressionException(RegularExpressionAttribute constraint, string value) : base(constraint, value)
+        public DateTimeFormatException(DateTimeFormatAttribute constraint, string value) : base(constraint, value)
         {
         }
 
@@ -20,7 +20,7 @@ namespace SmartConfig
         {
             get
             {
-                return "$Message Regex = [$Regex], IgnoreCase = [$IgnoreCase].".FormatWith(new { base.Message, Regex = Constraint, Constraint.IgnoreCase }, true);
+                return "$Message Format = [$Format].".FormatWith(new { base.Message, Format = Constraint }, true);
             }
         }
     }

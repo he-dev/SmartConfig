@@ -9,6 +9,6 @@ namespace SmartConfig.Tests.TestConfigs
     [SmartConfig]
     public static class DateTimeFields
     {
-        public static TestEnum EnumField1;
+        public static DateTime DateTimeField;
     }
 }
