@@ -32,7 +32,7 @@ https://www.nuget.org/packages/SmartConfig/
 - Multiple data sources: app.config (read-only) (connectionsStrings & appSettings), SQL database (read-write)
 - Extendibility. You can write your own data source and value converters.
 
-## Basic Example
+## Hallo SmartConfig! - Basic Example
 
 Let's assume we'd like to use a database for our configuration. (**SmartConfig** uses Entity Framework internaly and you can use any database that Entity Framework supports like the SQL Server or LocalDB.)
 
@@ -76,7 +76,18 @@ SmartConfigManager.Load(typeof(ExampleAppConfig), new AppConfig());
 ```
 The first parameter specifies which configuration we want to load. The second once tells **SmartConfig** which data source to use. That's all. We can now use it.
 
-To read a welcome message from a database where we have a table with two columns `[Name]` and `[Value]` we create a configuration like this one:
+To read a welcome message from a database with the following schema:
+
+```sql
+CREATE TABLE [dbo].[ExampleConfigTable]
+(
+   [Name] NVARCHAR(255) NOT NULL, 
+   [Value] NVARCHAR(MAX) NULL, 
+   PRIMARY KEY ([Environment], [Name], [Version])
+)
+```
+
+we need to create this simple config:
 
 ```cs
 [SmartConfig]
@@ -98,16 +109,7 @@ SmartConfigManager.Load(typeof(ExampleDbConfig), new SqlClient<BasicConfigElemen
 });
 ```
 
-We use the SqlClient as data source. We use the connection string from the previous configuration and we need to specify the table name of our configuration. The table looks like this:
-
-```sql
-CREATE TABLE [dbo].[ExampleConfigTable]
-(
-   [Name] NVARCHAR(255) NOT NULL, 
-   [Value] NVARCHAR(MAX) NULL, 
-   PRIMARY KEY ([Environment], [Name], [Version])
-)
-```
+We use the `SqlClient` as data source. We use the connection string from the previous configuration and we need to specify the table name of our configuration. 
 
 And we're done!
 
