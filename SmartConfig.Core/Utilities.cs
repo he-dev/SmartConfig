@@ -48,36 +48,8 @@ namespace SmartConfig
                 type = type.DeclaringType;
             }
 
-            throw new SmartConfigTypeNotFoundException("Neither the specified type nor any declaring type is marked with the SmartConfigAttribute.");
-        }
-
-        internal static ConfigFieldInfo GetConfigFieldInfo(MemberInfo memberInfo)
-        {
-            var path = new List<string> { memberInfo.Name };
-
-            var type = memberInfo.DeclaringType;
-            while (type != null)
-            {
-                var smartConfigAttribute = type.GetCustomAttribute<SmartConfigAttribute>(false);
-                var isSmartConfigType = smartConfigAttribute != null;
-                if (isSmartConfigType)
-                {
-                    path.Add(smartConfigAttribute.Name);
-                    var result = new ConfigFieldInfo()
-                    {
-                        ConfigType = type,
-                        Keys = type.GetCustomAttributes<ElementKeyAttribute>(true).ToDictionary(x => x.Key, x => x.Value),
-                        ElementName = ConfigElementName.Combine(path, true),
-                        ElementConstraints = ((FieldInfo)memberInfo).GetCustomAttributes<ConstraintAttribute>(false)
-                    };
-                    return result;
-                }
-                path.Add(type.Name);
-                type = type.DeclaringType;
-            }
-
-            throw new SmartConfigTypeNotFoundException("Neither the specified type nor any declaring type is marked with the SmartConfigAttribute.");
-        }
+            throw new SmartConfigTypeNotFoundException();
+        }       
 
         internal static MemberInfo GetMemberInfo<TField>(Expression<Func<TField>> expression)
         {

@@ -45,32 +45,27 @@ namespace SmartConfig
         #region Loading
 
         /// <summary>
-        /// Loads a smart config.
+        /// Loads a configuration from the specified data source.
         /// </summary>
         /// <param name="configType">Type that is marked with the <c>SmartCofnigAttribute</c> and specifies the configuration.</param>
         /// <param name="dataSource">Data source that provides data.</param>
         public static void Load(Type configType, IDataSource dataSource)
         {
-            if (!configType.IsStatic())
-            {
-                throw new InvalidOperationException("Config type must be a static class.");
-            }
-
-            if (!configType.HasAttribute<SmartConfigAttribute>())
-            {
-                throw new SmartConfigTypeNotFoundException("Config type must have the SmartConfigAttribute.");
-            }
+            if (configType == null) throw new ArgumentNullException("configType", "You need to specify a config type.");
+            if (dataSource == null) throw new ArgumentNullException("dataSource", "You need to specify a data source.");
+            if (!configType.IsStatic()) throw new InvalidOperationException("'configType' must be a static class.");
+            if (!configType.HasAttribute<SmartConfigAttribute>()) throw new SmartConfigTypeNotFoundException() { ConfigType = configType };
 
             DataSources[configType] = dataSource;
 
-            var fields = GetConfigFields(configType);
+            var fields = GetFields(configType);
             foreach (var field in fields)
             {
                 LoadValue(field);
             }
         }
 
-        private static IEnumerable<FieldInfo> GetConfigFields(Type type)
+        private static IEnumerable<FieldInfo> GetFields(Type type)
         {
             var fields = type.GetFields(BindingFlags.Public | BindingFlags.Static).Where(f => f.GetCustomAttribute<IgnoreAttribute>() == null);
             foreach (var field in fields)
@@ -82,7 +77,7 @@ namespace SmartConfig
                 type
                 .GetNestedTypes()
                 .Where(t => t.GetCustomAttribute<IgnoreAttribute>() == null)
-                .SelectMany(GetConfigFields);
+                .SelectMany(GetFields);
 
             foreach (var field in nestedTypes)
             {
@@ -92,33 +87,54 @@ namespace SmartConfig
 
         private static void LoadValue(FieldInfo field)
         {
-            var configFieldInfo = Utilities.GetConfigFieldInfo(field);
-            var value =
-                DataSources[configFieldInfo.ConfigType]
-                .Select(new Dictionary<string, string>(configFieldInfo.Keys) { { "Name", configFieldInfo.ElementName } });
+            var configFieldInfo = ConfigFieldInfo.From(field);
+            var value = GetValue(configFieldInfo);
 
             if (string.IsNullOrEmpty(value))
             {
-                if (field.IsOptional())
+                if (!field.IsOptional())
                 {
-                    return;
+                    throw new OptionalException(configFieldInfo);
                 }
-                throw new OptionalException()
-                {
-                    ConfigType = configFieldInfo.ConfigType,
-                    FieldName = configFieldInfo.ElementName
-                };
+                return;
             }
+
+            var converter = GetConverter(configFieldInfo);
 
             try
             {
-                var converter = GetConverter(field);
                 var obj = converter.DeserializeObject(value, field.FieldType, field.Contraints());
                 field.SetValue(null, obj);
             }
+            catch (ConstraintException<ConstraintAttribute>)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
-                throw new ObjectConverterException(configFieldInfo.ConfigType, configFieldInfo.ElementName, ex);
+                throw new ObjectConverterException(configFieldInfo, ex)
+                {
+                    Value = value,
+                    FromType = typeof(string),
+                    ToType = field.FieldType
+                };
+            }
+        }
+
+        private static string GetValue(ConfigFieldInfo configFieldInfo)
+        {
+            try
+            {
+                var value = DataSources[configFieldInfo.ConfigType].Select(
+                    new Dictionary<string, string>(configFieldInfo.ConfigKeys)
+                    {
+                        { CommonKeys.Name, configFieldInfo.FieldFullName }
+                    });
+                return value;
+            }
+            catch (Exception ex)
+            {
+                throw new DataSourceException(configFieldInfo, ex);
             }
         }
 
@@ -132,64 +148,73 @@ namespace SmartConfig
         /// <param name="value">Value to be set.</param>
         public static void Update<TField>(Expression<Func<TField>> expression, TField value)
         {
-            var memberInfo = Utilities.GetMemberInfo(expression);
-            var configType = Utilities.GetConfigType(memberInfo);
-            var elementName = ConfigElementName.From(expression);
-            var field = memberInfo as FieldInfo;
-
+            var configFieldInfo = ConfigFieldInfo.From(expression);
+            var field = configFieldInfo.Field;
             field.SetValue(null, value);
 
             //TField data = expression.Compile()();
 
             if (value == null && !field.IsNullable())
             {
-                throw new OptionalException()
-                {
-                    ConfigType = configType,
-                    FieldName = elementName
-                };
+                throw new OptionalException(configFieldInfo);
             }
+
+            var converter = GetConverter(configFieldInfo);
 
             try
             {
-                var converter = GetConverter(field);
-                var valueSerialized = converter.SerializeObject(value, field.FieldType, field.GetCustomAttributes<ConstraintAttribute>(false));
-
-                var configFieldInfo = Utilities.GetConfigFieldInfo(memberInfo);
+                var serializedValue = converter.SerializeObject(value, field.FieldType, field.GetCustomAttributes<ConstraintAttribute>(false));
                 DataSources[configFieldInfo.ConfigType].Update(
-                    new Dictionary<string, string>(configFieldInfo.Keys) { { "Name", configFieldInfo.ElementName } },
-                    valueSerialized);
+                    new Dictionary<string, string>(configFieldInfo.ConfigKeys)
+                    {
+                        { CommonKeys.Name, configFieldInfo.FieldFullName }
+                    },
+                    serializedValue);
+            }
+            catch (ConstraintException<ConstraintAttribute>)
+            {
+                throw;
             }
             catch (Exception ex)
             {
-                throw new ObjectConverterException(configType, elementName, ex);
+                throw new ObjectConverterException(configFieldInfo, ex)
+                {
+                    Value = value,
+                    FromType = field.FieldType,
+                    ToType = typeof(string),
+                };
             }
         }
 
-        private static ObjectConverterBase GetConverter(FieldInfo fieldInfo)
+        private static ObjectConverterBase GetConverter(ConfigFieldInfo configFieldInfo)
+        {
+            var type = GetConverterType(configFieldInfo.Field);
+
+            var objectConverter = Converters[type];
+            if (objectConverter == null)
+            {
+                throw new ObjectConverterNotFoundException(configFieldInfo, type);
+            }
+
+            return objectConverter;
+        }
+
+        private static Type GetConverterType(FieldInfo fieldInfo)
         {
             var type = fieldInfo.FieldType;
 
             if (type.BaseType == typeof(Enum))
             {
-                type = typeof(Enum);
-            }
-            else
-            {
-                var objectConverterAttr = fieldInfo.GetCustomAttribute<ObjectConverterAttribute>(true);
-                if (objectConverterAttr != null)
-                {
-                    type = objectConverterAttr.Type;
-                }
+                return typeof(Enum);
             }
 
-            var objectConverter = Converters[type];
-            if (objectConverter == null)
+            var objectConverterAttribute = fieldInfo.GetCustomAttribute<ObjectConverterAttribute>(false);
+            if (objectConverterAttribute != null)
             {
-                throw new ObjectConverterNotFoundException(type);
+                return objectConverterAttribute.Type;
             }
 
-            return objectConverter;
+            return type;
         }
 
     }

@@ -100,6 +100,8 @@
     <Compile Include="_Exceptions\FieldException.cs" />
     <Compile Include="_Exceptions\OptionalException.cs" />
     <Compile Include="_Exceptions\ObjectConverterException.cs" />
+    <Compile Include="_Exceptions\DataSourceException.cs" />
+    <Compile Include="_Exceptions\SmartConfigException.cs" />
     <Compile Include="_Exceptions\_Constraints\ConstraintException.cs" />
     <Compile Include="_Exceptions\_Constraints\RangeException.cs" />
     <Compile Include="_Exceptions\_Constraints\DateTimeFormatException.cs" />

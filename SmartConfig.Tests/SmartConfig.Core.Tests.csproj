@@ -76,6 +76,7 @@
     <Compile Include="TestConfigs\_Basics\ColorFields.cs" />
     <Compile Include="TestConfigs\_Basics\XmlFields.cs" />
     <Compile Include="TestConfigs\_Basics\DateTimeFields.cs" />
+    <Compile Include="TestConfigs\_Exeptions\InvalidType.cs" />
     <Compile Include="_Attributes\ElementKeyAttributeTests.cs" />
     <Compile Include="_TestHelpers\TestConfigElement2.cs" />
     <Compile Include="TestConfigs\_Contraints\OptionalField.cs" />

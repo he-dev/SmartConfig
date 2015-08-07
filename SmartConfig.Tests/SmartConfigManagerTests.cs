@@ -130,11 +130,44 @@ namespace SmartConfig.Tests
         public void Load_XmlFields()
         {
             Assert.Fail();
+
+            var testData = new[]
+            {
+                "BooleanField|true",
+                "CharField|a",
+                "Int16Field|123",
+                "Int32Field|123",
+                "Int64Field|123",
+                "SingleField|1.2",
+                "DoubleField|1.2",
+                "DecimalField|1.2",
+            }
+            .Select(x => new TestConfigElement2(x));
+
+            var dataSource = new TestDataSource()
+            {
+                SelectFunc = (keys) =>
+                {
+                    var element = testData.SingleOrDefault(ce => ce.Name.Equals(keys[CommonKeys.Name], StringComparison.OrdinalIgnoreCase));
+                    return element == null ? null : element.Value;
+                }
+            };
+
+            SmartConfigManager.Load(typeof(ValueTypeFields), dataSource);
+
+            Assert.AreEqual(true, ValueTypeFields.BooleanField);
+            Assert.AreEqual('a', ValueTypeFields.CharField);
+            Assert.AreEqual(123, ValueTypeFields.Int16Field);
+            Assert.AreEqual(123, ValueTypeFields.Int32Field);
+            Assert.AreEqual(123, ValueTypeFields.Int64Field);
+            Assert.AreEqual(1.2f, ValueTypeFields.SingleField);
+            Assert.AreEqual(1.2, ValueTypeFields.DoubleField);
+            Assert.AreEqual(1.2m, ValueTypeFields.DecimalField);
         }
 
         #endregion
 
-        #region Nestings
+        #region _Nestings
 
         [TestMethod]
         public void Load_OneSubClass()
@@ -249,20 +282,40 @@ namespace SmartConfig.Tests
             }, (message) => Assert.Fail(message));
 
             Assert.IsNotNull(ex);
-            Assert.AreEqual(typeof(MissingOptionalAttribute), ex.ConfigType);
-            Assert.AreEqual("Int32Field", ex.FieldName);
+            Assert.AreEqual(typeof(MissingOptionalAttribute), ex.ConfigFieldInfo.ConfigType);
+            Assert.AreEqual("Int32Field", ex.ConfigFieldInfo.FieldFullName);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(SmartConfigTypeNotFoundException))]
         public void Load_MissingSmartConfigAttribute()
         {
-            var dataSource = new TestDataSource()
+            var ex = ExceptionAssert.Throws<SmartConfigTypeNotFoundException>(() =>
             {
-                SelectFunc = (keys) => null
-            };
-            SmartConfigManager.Load(typeof(MissingSmartConfigAttribute), dataSource);
-            Assert.Fail("SmartConfigTypeNotFoundException was not thrown.");
+                SmartConfigManager.Load(typeof(MissingSmartConfigAttribute), new TestDataSource()
+                {
+                    SelectFunc = (keys) => null
+                });
+            }, (message) => Assert.Fail(message));
+            Assert.IsNotNull(ex);
+        }
+
+        [TestMethod]
+        public void Load_InvalidType()
+        {
+            var ex = ExceptionAssert.Throws<ObjectConverterException>(() =>
+            {
+                SmartConfigManager.Load(typeof(InvalidType), new TestDataSource()
+                {
+                    SelectFunc = (keys) => "abc"
+                });
+            }, (message) => Assert.Fail(message));
+            Assert.IsNotNull(ex);
+        }
+
+        [TestMethod]
+        public void Load_()
+        {
+
         }
 
         #endregion        

@@ -2,22 +2,34 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SmartUtilities;
 
 namespace SmartConfig
 {
     /// <summary>
     /// Occurs when an object converter could not be found.
     /// </summary>
-    public class ObjectConverterNotFoundException : Exception
+    public class ObjectConverterNotFoundException : SmartConfigException
     {
-        internal ObjectConverterNotFoundException(Type type)
+        internal ObjectConverterNotFoundException(ConfigFieldInfo configFieldInfo, Type converterType) : base(configFieldInfo, null)
         {
-            Type = type;
+            ConverterType = converterType;
         }
 
-        /// <summary>
-        /// Gets the type for which a converter could not be found.
-        /// </summary>
-        public Type Type { get; private set; }
+        public override string Message
+        {
+            get
+            {
+                return "Object converter [$ConverterTypeName] for [$ConfigTypeName]'s field [$FieldFullName] not found."
+                    .FormatWith(new
+                    {
+                        ConverterType = ConverterType.Name,
+                        ConfigTypeName = ConfigFieldInfo.ConfigType.Name,
+                        FieldFullName = ConfigFieldInfo.FieldFullName
+                    }, true);
+            }
+        }
+
+        public Type ConverterType { get; private set; }
     }
 }

@@ -22,7 +22,7 @@ namespace SmartConfig
         {
             get
             {
-                return "Constraint '$AbbreviatedAttributeName' failed for value '$Value'.".FormatWith(new { AbbreviatedAttributeName, Value }, true);
+                return "Constraint [$AbbreviatedAttributeName] failed.".FormatWith(new { AbbreviatedAttributeName }, true);
             }
         }
 
