@@ -267,10 +267,57 @@ namespace SmartConfig.Tests
 
         #endregion
 
-        #region Exception tests       
+        #region Exceptions - Contraints
 
         [TestMethod]
-        public void Load_MissingOptionalAttributeConfig()
+        public void Load_With_DateTimeFormatException()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void Load_With_RangeException()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void Load_With_RegulaExpressionException()
+        {
+            Assert.Fail();
+        }
+
+        #endregion
+
+        #region Exceptions - General
+
+        [TestMethod]
+        public void Load_With_DataSourceException()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void Load_With_ObjectConverterException()
+        {
+            var ex = ExceptionAssert.Throws<ObjectConverterException>(() =>
+            {
+                SmartConfigManager.Load(typeof(InvalidType), new TestDataSource()
+                {
+                    SelectFunc = (keys) => "abc"
+                });
+            }, (message) => Assert.Fail(message));
+            Assert.IsNotNull(ex);
+        }
+
+        [TestMethod]
+        public void Load_With_ObjectConverterNotFoundException()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void Load_With_OptionalException()
         {
             var dataSource = new TestDataSource()
             {
@@ -287,7 +334,13 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void Load_MissingSmartConfigAttribute()
+        public void Load_With_SmartConfigException()
+        {
+            // Base exception. Not test required.
+        }
+
+        [TestMethod]
+        public void Load_With_SmartConfigTypeNotFoundException()
         {
             var ex = ExceptionAssert.Throws<SmartConfigTypeNotFoundException>(() =>
             {
@@ -300,22 +353,9 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void Load_InvalidType()
+        public void Load_With_UnsupportedTypeException()
         {
-            var ex = ExceptionAssert.Throws<ObjectConverterException>(() =>
-            {
-                SmartConfigManager.Load(typeof(InvalidType), new TestDataSource()
-                {
-                    SelectFunc = (keys) => "abc"
-                });
-            }, (message) => Assert.Fail(message));
-            Assert.IsNotNull(ex);
-        }
-
-        [TestMethod]
-        public void Load_()
-        {
-
+            // User cannot create this exception.
         }
 
         #endregion        

@@ -97,7 +97,6 @@
     <Compile Include="_Attributes\_Constraint\RegularExpressionAttribute.cs" />
     <Compile Include="_Attributes\_Constraint\RangeAttribute.cs" />
     <Compile Include="_Attributes\_Constraint\ConstraintAttribute.cs" />
-    <Compile Include="_Exceptions\FieldException.cs" />
     <Compile Include="_Exceptions\OptionalException.cs" />
     <Compile Include="_Exceptions\ObjectConverterException.cs" />
     <Compile Include="_Exceptions\DataSourceException.cs" />
