@@ -16,7 +16,7 @@ At current state **SmartConfig** can read the _App.config_ file and a _SQL Serve
 Yes there are :-) **SmartConfig** is strongly typed and can validate the values as well during loading as during updating. Thus you know whether the configuration is ok before you start the application. It supports many popular types and provides an interface to add you own types if you need to. **SmartCofnig** can filter your settings based on various additional criteria. By defualt it uses only a name. If you need an environment or version can be easily added.
 
 ## Is it stable yet?
-It looks like it is. However I'm working on additional tests because I think not only stability is important but also meaningfull error messages.
+It looks like it is ;-)
 
 ## Where can I get it?
 You can install the current pre-release version via the NuGet package manager: _Install-Package SmartConfig -Pre_
