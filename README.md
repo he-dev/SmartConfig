@@ -31,6 +31,15 @@ https://www.nuget.org/packages/SmartConfig/
 - Multiple configurations in a single storage.
 - Multiple data sources: app.config (read-only) (connectionsStrings & appSettings), SQL database (read-write)
 - Extendibility. You can write your own data source and value converters.
+- 
+## Is this all it offers?
+Not quite. I have more ideas for new features but we have to start somewhere so here's the first basic version. The most important ones that will come are:
+- Automatic database keys generation so that you don't have to write each entry by yourself.
+- Database settings override from app.config.
+- Custom app.config sections.
+- Saving settings to app.config.
+- Xml data source.
+- Automatic reloading when datasource changes and change notifications.
 
 ## Hallo SmartConfig! - Basic Example
 
