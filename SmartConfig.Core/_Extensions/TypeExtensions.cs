@@ -68,13 +68,13 @@ namespace SmartConfig
             return type.GetCustomAttributes(typeof(T), false).Any();
         }
 
-        public static T GetCustomAttribute<T>(this Type type, bool inherit = false) where T : Attribute
-        {
-#if NET40
-            return (T)type.GetCustomAttributes(typeof(T), inherit).SingleOrDefault();
-#else
-            return type.GetCustomAttributes(inherit).OfType<T>().SingleOrDefault();
-#endif
-        }
+//        public static T GetCustomAttribute<T>(this Type type, bool inherit = false) where T : Attribute
+//        {
+//#if NET40
+//            return (T)type.GetCustomAttributes(typeof(T), inherit).SingleOrDefault();
+//#else
+//            return type.GetCustomAttributes(inherit).OfType<T>().SingleOrDefault();
+//#endif
+//        }
     }
 }
