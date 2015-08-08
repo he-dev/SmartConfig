@@ -22,26 +22,21 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void Load_ValueTypeFields()
         {
-            var testData = new[]
+            var testData = new Dictionary<string, string>()
             {
-                "BooleanField|true",
-                "CharField|a",
-                "Int16Field|123",
-                "Int32Field|123",
-                "Int64Field|123",
-                "SingleField|1.2",
-                "DoubleField|1.2",
-                "DecimalField|1.2",
-            }
-            .Select(x => new TestConfigElement2(x));
+                {"BooleanField", "true"},
+                {"CharField", "a"},
+                {"Int16Field", "123"},
+                {"Int32Field", "123"},
+                {"Int64Field", "123"},
+                {"SingleField", "1.2"},
+                {"DoubleField", "1.2"},
+                {"DecimalField", "1.2"},
+            };
 
             var dataSource = new TestDataSource()
             {
-                SelectFunc = keys =>
-                {
-                    var element = testData.SingleOrDefault(ce => ce.Name.Equals(keys[CommonKeys.Name], StringComparison.OrdinalIgnoreCase));
-                    return element?.Value;
-                }
+                SelectFunc = keys => testData[keys[CommonFieldKeys.Name]]
             };
 
             SmartConfigManager.Load(typeof(ValueTypesTestConfig), dataSource);
@@ -85,7 +80,7 @@ namespace SmartConfig.Tests
             {
                 SelectFunc = keys =>
                 {
-                    Assert.AreEqual("ABCD.StringField", keys[CommonKeys.Name], "Invalid element name.");
+                    Assert.AreEqual("ABCD.StringField", keys[CommonFieldKeys.Name], "Invalid element name.");
                     return null;
                 }
             };
@@ -99,7 +94,7 @@ namespace SmartConfig.Tests
             {
                 SelectFunc = keys =>
                 {
-                    Assert.AreEqual("2.2.1", keys[CommonKeys.Version], "Invalid version.");
+                    Assert.AreEqual("2.2.1", keys[CommonFieldKeys.Version], "Invalid version.");
                     return null;
                 }
             };
@@ -133,7 +128,7 @@ namespace SmartConfig.Tests
 
             SmartConfigManager.Load(typeof(ColorsTestConfig), new TestDataSource()
             {
-                SelectFunc = keys => testData[keys[CommonKeys.Name]]
+                SelectFunc = keys => testData[keys[CommonFieldKeys.Name]]
             });
             Assert.AreEqual(Color.FromArgb(255, 0, 0), ColorsTestConfig.NameColorField);
             Assert.AreEqual(Color.FromArgb(1, 2, 3), ColorsTestConfig.DecColorField);
@@ -150,7 +145,7 @@ namespace SmartConfig.Tests
             };
             SmartConfigManager.Load(typeof(XmlTestConfig), new TestDataSource()
             {
-                SelectFunc = keys => testData[keys[CommonKeys.Name]]
+                SelectFunc = keys => testData[keys[CommonFieldKeys.Name]]
             });
             Assert.AreEqual(XDocument.Parse(testData["XDocumentField"]).ToString(), XmlTestConfig.XDocumentField.ToString());
             Assert.AreEqual(XDocument.Parse(testData["XElementField"]).ToString(), XmlTestConfig.XElementField.ToString());
@@ -186,7 +181,7 @@ namespace SmartConfig.Tests
 
             var dataSource = new TestDataSource()
             {
-                SelectFunc = keys => testData[keys[CommonKeys.Name]]
+                SelectFunc = keys => testData[keys[CommonFieldKeys.Name]]
             };
             SmartConfigManager.Load(typeof(OneNestedClass), dataSource);
 
@@ -201,7 +196,7 @@ namespace SmartConfig.Tests
             {
                 SelectFunc = keys =>
                 {
-                    Assert.AreEqual("SubClass.SubSubClass.SubSubStringField", keys[CommonKeys.Name], "Invalid element name.");
+                    Assert.AreEqual("SubClass.SubSubClass.SubSubStringField", keys[CommonFieldKeys.Name], "Invalid element name.");
                     return "abc";
                 }
             };

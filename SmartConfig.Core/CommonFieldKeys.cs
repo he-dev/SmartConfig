@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 namespace SmartConfig
 {
     /// <summary>
-    /// Provides some of the common keys.
+    /// Provides names for popular field keys.
     /// </summary>
-    public static class CommonKeys
+    public static class CommonFieldKeys
     {
         public const string Environment = "Environment";
         public const string MachineName = "MachineName";
         public const string Name = "Name";
         public const string UserName = "UserName";
-        public const string Version = "Version";
+        public const string Version = "SemanticVersion";
     }
 }

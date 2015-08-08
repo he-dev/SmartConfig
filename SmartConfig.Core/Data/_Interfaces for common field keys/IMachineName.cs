@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 namespace SmartConfig.Data
 {
     /// <summary>
-    /// Specifies a common criteria.
+    /// Exposes a machine name for a filter.
     /// </summary>
-    public interface IEnvironment
+    public interface IMachineName
     {
-        string Environment { get; }
+        string MachineName { get; }
     }
 }

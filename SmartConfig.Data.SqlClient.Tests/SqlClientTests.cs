@@ -31,7 +31,7 @@ namespace SmartConfig.Data.SqlClient.Tests
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
                 TableName = "TestConfig",
-                Keys = new Dictionary<string, string>() { { CommonKeys.Environment, "ABC" } },
+                Keys = new Dictionary<string, string>() { { CommonFieldKeys.Environment, "ABC" } },
                 FilterBy = FilterBy
             };
             SmartConfigManager.Load(typeof(BasicConfig), dataSource);
@@ -42,8 +42,8 @@ namespace SmartConfig.Data.SqlClient.Tests
         {
             switch (keyValue.Key)
             {
-            case CommonKeys.Environment: return CommonFilters.FilterByEnvironment(elements, keyValue.Value).Cast<TestConfigElement>();
-            case CommonKeys.Version: return CommonFilters.FilterBySemanticVersion(elements, keyValue.Value).Cast<TestConfigElement>();
+            case CommonFieldKeys.Environment: return CommonFilters.FilterByEnvironment(elements, keyValue.Value).Cast<TestConfigElement>();
+            case CommonFieldKeys.Version: return CommonFilters.FilterBySemanticVersion(elements, keyValue.Value).Cast<TestConfigElement>();
             default: throw new IndexOutOfRangeException("Filter function not found.");
             }
         }
@@ -55,7 +55,7 @@ namespace SmartConfig.Data.SqlClient.Tests
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
                 TableName = "TestConfig",
-                Keys = new Dictionary<string, string>() { { CommonKeys.Environment, "ABC" } },
+                Keys = new Dictionary<string, string>() { { CommonFieldKeys.Environment, "ABC" } },
                 FilterBy = FilterBy
             };
             SmartConfigManager.Load(typeof(BasicConfig), dataSource);
@@ -65,16 +65,16 @@ namespace SmartConfig.Data.SqlClient.Tests
             SmartConfigManager.Update(() => BasicConfig.Int32Field, 456);
             Assert.AreEqual("456", dataSource.Select(new Dictionary<string, string>()
             {
-                { CommonKeys.Name, "Int32Field" },
-                { CommonKeys.Version, "1.3.0" }
+                { CommonFieldKeys.Name, "Int32Field" },
+                { CommonFieldKeys.Version, "1.3.0" }
             }));
             Assert.AreEqual(456, BasicConfig.Int32Field);
 
             SmartConfigManager.Update(() => BasicConfig.Int32Field, 789);
             Assert.AreEqual("789", dataSource.Select(new Dictionary<string, string>()
             {
-                { CommonKeys.Name, "Int32Field" },
-                { CommonKeys.Version, "1.3.0" }
+                { CommonFieldKeys.Name, "Int32Field" },
+                { CommonFieldKeys.Version, "1.3.0" }
             }));
             Assert.AreEqual(789, BasicConfig.Int32Field);
         }       

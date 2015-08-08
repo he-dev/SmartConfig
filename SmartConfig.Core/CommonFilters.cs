@@ -9,7 +9,7 @@ using SmartUtilities;
 namespace SmartConfig
 {
     /// <summary>
-    /// Provides filters for common criteria.
+    /// Implements popular filters.
     /// </summary>
     public static class CommonFilters
     {
@@ -18,15 +18,25 @@ namespace SmartConfig
             return elements.Where(e => e.Environment.Equals(environment, StringComparison.OrdinalIgnoreCase));
         }
 
-        public static IEnumerable<IVersion> FilterBySemanticVersion(IEnumerable<IVersion> elements, string version)
+        public static IEnumerable<IMachineName> FilterByMachineName(IEnumerable<IMachineName> elements, string environment)
+        {
+            return elements.Where(e => e.MachineName.Equals(environment, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public static IEnumerable<IUserName> FilterByUserName(IEnumerable<IUserName> elements, string environment)
+        {
+            return elements.Where(e => e.UserName.Equals(environment, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public static IEnumerable<ISemanticVersion> FilterBySemanticVersion(IEnumerable<ISemanticVersion> elements, string version)
         {
             var semVer = SemanticVersion.Parse(version);
             var result =
                 elements
                 // Get versions that are less or equal to current:
-               .Where(e => SemanticVersion.Parse(e.Version) <= semVer)
+               .Where(e => SemanticVersion.Parse(e.SemanticVersion) <= semVer)
                 // Sort by version:
-               .OrderByDescending(e => SemanticVersion.Parse(e.Version))
+               .OrderByDescending(e => SemanticVersion.Parse(e.SemanticVersion))
                .Take(1);
             return result;
         }

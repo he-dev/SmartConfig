@@ -48,11 +48,11 @@ namespace SmartConfig.Data
             using (var context = new SmartConfigEntities<TConfigElement>(ConnectionString, TableName))
             {
                 var allKeys = Utilities.CombineDictionaries(keys, Keys);
-                var name = keys[CommonKeys.Name];
+                var name = keys[CommonFieldKeys.Name];
                 var elements = context.ConfigElements.Where(ce => ce.Name == name).ToList() as IEnumerable<TConfigElement>;
                 if (FilterBy != null)
                 {
-                    elements = allKeys.Where(x => x.Key != CommonKeys.Name).Aggregate(elements, (current, keyValue) => FilterBy(current, keyValue));
+                    elements = allKeys.Where(x => x.Key != CommonFieldKeys.Name).Aggregate(elements, (current, keyValue) => FilterBy(current, keyValue));
                 }
 
                 var element = elements.SingleOrDefault();
@@ -68,7 +68,7 @@ namespace SmartConfig.Data
             {
                 var newEntity = new TConfigElement()
                 {
-                    Name = keys[CommonKeys.Name],
+                    Name = keys[CommonFieldKeys.Name],
                     Value = value
                 };
 
@@ -85,7 +85,7 @@ namespace SmartConfig.Data
                 var newEntityKey = ((IObjectContextAdapter)context).ObjectContext.CreateEntityKey("ConfigElements", newEntity);
 
                 // Try to get the entity from the database.
-                var name = keys[CommonKeys.Name];
+                var name = keys[CommonFieldKeys.Name];
                 var elements = context.ConfigElements.Where(x => x.Name == name).ToList() as IEnumerable<TConfigElement>;
                 var existingEntity = elements.SingleOrDefault(e => ((IObjectContextAdapter)context).ObjectContext.CreateEntityKey("ConfigElements", e) == newEntityKey);
 

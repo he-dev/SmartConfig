@@ -82,14 +82,13 @@
     <Compile Include="TestConfigs\_Exeptions\InvalidFieldKeyTestConfig.cs" />
     <Compile Include="TestConfigs\_Exeptions\UnsupportedTypeTestConfig.cs" />
     <Compile Include="_Attributes\ElementKeyAttributeTests.cs" />
-    <Compile Include="_TestHelpers\TestConfigElement2.cs" />
     <Compile Include="TestConfigs\_Contraints\OptionalTestConfig.cs" />
     <Compile Include="TestConfigs\_CustomConverters\JsonConverterTestConfig.cs" />
     <Compile Include="TestConfigs\_Basics\EnumField.cs" />
     <Compile Include="TestConfigs\_Basics\StringTestConfig.cs" />
     <Compile Include="TestConfigs\_Exeptions\MissingOptionalAttribute.cs" />
     <Compile Include="_TestHelpers\TestDataSource.cs" />
-    <Compile Include="TestEnum.cs" />
+    <Compile Include="_TestHelpers\TestEnum.cs" />
     <Compile Include="_Attributes\_Constraints\RangeAttributeTests.cs" />
     <Compile Include="TestConfigs\_Exeptions\MissingSmartConfigAttribute.cs" />
     <Compile Include="TestConfigs\_Files\AppConfig.cs" />

@@ -15,14 +15,14 @@ using SmartConfig.Data;
 namespace SmartConfig
 {
     /// <summary>
-    /// Provides all the <c>SmartConfig</c> functionality.
+    /// This class takes care of loading and updating config values.
     /// </summary>
     public static class SmartConfigManager
     {
         private static readonly Dictionary<Type, IDataSource> DataSources;
 
         /// <summary>
-        /// Gets the converters collection.
+        /// Gets the converters collection that holds all the default converters and allows to add additional ones.
         /// </summary>
         public static ObjectConverterCollection Converters { get; private set; }
 
@@ -124,7 +124,7 @@ namespace SmartConfig
                 var value = DataSources[configFieldInfo.ConfigType].Select(
                     new Dictionary<string, string>(configFieldInfo.ConfigKeys)
                     {
-                        { CommonKeys.Name, configFieldInfo.FieldFullName }
+                        { CommonFieldKeys.Name, configFieldInfo.FieldFullName }
                     });
                 return value;
             }
@@ -137,7 +137,7 @@ namespace SmartConfig
         #endregion
 
         /// <summary>
-        /// Updates a field.
+        /// Updates a configuration field.
         /// </summary>
         /// <typeparam name="TField">Type of the field.</typeparam>
         /// <param name="expression">Lambda expression of the field.</param>
@@ -163,7 +163,7 @@ namespace SmartConfig
                 DataSources[configFieldInfo.ConfigType].Update(
                     new Dictionary<string, string>(configFieldInfo.ConfigKeys)
                     {
-                        { CommonKeys.Name, configFieldInfo.FieldFullName }
+                        { CommonFieldKeys.Name, configFieldInfo.FieldFullName }
                     },
                     serializedValue);
             }

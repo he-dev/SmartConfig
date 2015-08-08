@@ -9,7 +9,7 @@ using SmartConfig.Data;
 
 namespace SmartConfig.Data.SqlClient.Tests
 {
-    public partial class TestConfigElement : BasicConfigElement, IEnvironment, IVersion
+    public partial class TestConfigElement : BasicConfigElement, IEnvironment, ISemanticVersion
     {
         public TestConfigElement() { }
 
@@ -17,7 +17,7 @@ namespace SmartConfig.Data.SqlClient.Tests
         {
             var columns = values.Split('|');
             Environment = columns[0];
-            Version = columns[1];
+            SemanticVersion = columns[1];
             Name = columns[2];
             Value = columns[3];
         }
@@ -30,6 +30,6 @@ namespace SmartConfig.Data.SqlClient.Tests
         [Key]
         [StringLength(50)]
         [Column(Order = 3)]
-        public string Version { get; set; }
+        public string SemanticVersion { get; set; }
     }
 }

@@ -80,23 +80,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigFieldInfo.cs" />
-    <Compile Include="CommonKeys.cs" />
+    <Compile Include="CommonFieldKeys.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\EnumConverter.cs" />
     <Compile Include="Data\AppConfig.cs" />
     <Compile Include="Collections\ObjectConverterCollection.cs" />
-    <Compile Include="Data\IVersion.cs" />
-    <Compile Include="Data\IEnvironment.cs" />
+    <Compile Include="Data\_Interfaces for common field keys\IMachineName.cs" />
+    <Compile Include="Data\_Interfaces for common field keys\IUserName.cs" />
+    <Compile Include="Data\_Interfaces for common field keys\ISemanticVersion.cs" />
+    <Compile Include="Data\_Interfaces for common field keys\IEnvironment.cs" />
     <Compile Include="CommonFilters.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="_Attributes\IgnoreAttribute.cs" />
     <Compile Include="_Attributes\OptionalAttribute.cs" />
     <Compile Include="_Attributes\FieldKeyAttribute.cs" />
-    <Compile Include="_Attributes\_Constraint\DateTimeFormatAttribute.cs" />
-    <Compile Include="_Attributes\_Constraint\RegularExpressionAttribute.cs" />
-    <Compile Include="_Attributes\_Constraint\RangeAttribute.cs" />
-    <Compile Include="_Attributes\_Constraint\ConstraintAttribute.cs" />
+    <Compile Include="_Attributes\_Constraints\DateTimeFormatAttribute.cs" />
+    <Compile Include="_Attributes\_Constraints\RegularExpressionAttribute.cs" />
+    <Compile Include="_Attributes\_Constraints\RangeAttribute.cs" />
+    <Compile Include="_Attributes\_Constraints\ConstraintAttribute.cs" />
     <Compile Include="_Exceptions\OptionalException.cs" />
     <Compile Include="_Exceptions\ObjectConverterException.cs" />
     <Compile Include="_Exceptions\DataSourceException.cs" />

@@ -47,7 +47,7 @@ namespace SmartConfig.Example
             {
                 ConnectionString = ExampleAppConfig.ConnectionStrings.ExampleDb,
                 TableName = "ExampleConfigTable",
-                Keys = new Dictionary<string, string>() { { CommonKeys.Environment, "ABC" } },
+                Keys = new Dictionary<string, string>() { { CommonFieldKeys.Environment, "ABC" } },
                 FilterBy = FilterBy
             });
 
@@ -58,8 +58,8 @@ namespace SmartConfig.Example
         {
             switch (keyValue.Key)
             {
-            case CommonKeys.Environment: return CommonFilters.FilterByEnvironment(elements, keyValue.Value).Cast<CustomConfigElement>();
-            case CommonKeys.Version: return CommonFilters.FilterBySemanticVersion(elements, keyValue.Value).Cast<CustomConfigElement>();
+            case CommonFieldKeys.Environment: return CommonFilters.FilterByEnvironment(elements, keyValue.Value).Cast<CustomConfigElement>();
+            case CommonFieldKeys.Version: return CommonFilters.FilterBySemanticVersion(elements, keyValue.Value).Cast<CustomConfigElement>();
             default: throw new IndexOutOfRangeException("Filter function not found.");
             }
         }

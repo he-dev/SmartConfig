@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 namespace SmartConfig.Data
 {
     /// <summary>
-    /// Specifies a common criteria.
+    /// Exposes a version for a filter.
     /// </summary>
-    public interface IVersion
+    public interface ISemanticVersion
     {
-        string Version { get; }
+        string SemanticVersion { get; }
     }
 }
