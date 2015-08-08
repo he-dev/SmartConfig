@@ -14,26 +14,28 @@ namespace SmartConfig
     /// <remarks>Config elements are always selected only by name. 
     /// After you get a list of all the values it is possible to use a filter function to narrow down the elements.</remarks>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public class ElementKeyAttribute : Attribute
+    public class FieldKeyAttribute : Attribute
     {
         /// <summary>
-        /// Creates a new <c>CustomKeyAttribute</c> from a "Key=Value" string.
+        /// Creates a new <c>FieldKeyAttribute</c> from a "Key=Value" string.
         /// </summary>
         /// <param name="keyValue"></param>
-        public ElementKeyAttribute(string keyValue)
+        public FieldKeyAttribute(string keyValue)
         {
             var pattern = @"(?<Key>$identifierPattern)=(?<Value>.+)".FormatWith(new { Constants.IdentifierPattern }, true);
             var keyValueMatch = Regex.Match(keyValue, pattern, RegexOptions.IgnoreCase);
             if (!keyValueMatch.Success)
             {
-                throw new Exception("Invalid constant");
+                throw new ArgumentException(
+                    "Value [$keyValue] is not a valid field \"Key=Value\" pair.".FormatWith(new { keyValue }, true),
+                    "keyValue");
             }
 
             Key = keyValueMatch.Groups["Key"].Value;
             Value = keyValueMatch.Groups["Value"].Value;
         }
 
-        public ElementKeyAttribute(string key, string value)
+        public FieldKeyAttribute(string key, string value)
         {
             Key = key;
             Value = value;

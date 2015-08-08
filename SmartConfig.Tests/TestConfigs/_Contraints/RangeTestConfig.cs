@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Tests.TestConfigs
 {
-    [SmartConfig(Name = "ABCD")]
-    public static class ConfigName
+    [SmartConfig]
+    public static class RangeTestConfig
     {
-        [Optional]
-        public static string StringField;
+        [Range(typeof(int), "1", "2")]
+        public static int Int32Field;
     }
 }

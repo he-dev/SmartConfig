@@ -92,7 +92,7 @@
     <Compile Include="Utilities.cs" />
     <Compile Include="_Attributes\IgnoreAttribute.cs" />
     <Compile Include="_Attributes\OptionalAttribute.cs" />
-    <Compile Include="_Attributes\ElementKeyAttribute.cs" />
+    <Compile Include="_Attributes\FieldKeyAttribute.cs" />
     <Compile Include="_Attributes\_Constraint\DateTimeFormatAttribute.cs" />
     <Compile Include="_Attributes\_Constraint\RegularExpressionAttribute.cs" />
     <Compile Include="_Attributes\_Constraint\RangeAttribute.cs" />

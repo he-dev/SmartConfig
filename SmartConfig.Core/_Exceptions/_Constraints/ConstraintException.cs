@@ -15,6 +15,7 @@ namespace SmartConfig
     {
         public ConstraintException(TConstraint constraint, object value)
         {
+            Constraint = constraint;
             Value = value;
         }
 

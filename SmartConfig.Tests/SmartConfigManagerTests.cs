@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Xml.Linq;
 using Microsoft.QualityTools.Testing.Fakes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Data;
@@ -15,7 +17,7 @@ namespace SmartConfig.Tests
     [TestClass]
     public class SmartConfigManagerTests
     {
-        #region _Basics
+        #region Direct Converters
 
         [TestMethod]
         public void Load_ValueTypeFields()
@@ -35,23 +37,23 @@ namespace SmartConfig.Tests
 
             var dataSource = new TestDataSource()
             {
-                SelectFunc = (keys) =>
+                SelectFunc = keys =>
                 {
                     var element = testData.SingleOrDefault(ce => ce.Name.Equals(keys[CommonKeys.Name], StringComparison.OrdinalIgnoreCase));
-                    return element == null ? null : element.Value;
+                    return element?.Value;
                 }
             };
 
-            SmartConfigManager.Load(typeof(ValueTypeFields), dataSource);
+            SmartConfigManager.Load(typeof(ValueTypesTestConfig), dataSource);
 
-            Assert.AreEqual(true, ValueTypeFields.BooleanField);
-            Assert.AreEqual('a', ValueTypeFields.CharField);
-            Assert.AreEqual(123, ValueTypeFields.Int16Field);
-            Assert.AreEqual(123, ValueTypeFields.Int32Field);
-            Assert.AreEqual(123, ValueTypeFields.Int64Field);
-            Assert.AreEqual(1.2f, ValueTypeFields.SingleField);
-            Assert.AreEqual(1.2, ValueTypeFields.DoubleField);
-            Assert.AreEqual(1.2m, ValueTypeFields.DecimalField);
+            Assert.AreEqual(true, ValueTypesTestConfig.BooleanField);
+            Assert.AreEqual('a', ValueTypesTestConfig.CharField);
+            Assert.AreEqual(123, ValueTypesTestConfig.Int16Field);
+            Assert.AreEqual(123, ValueTypesTestConfig.Int32Field);
+            Assert.AreEqual(123, ValueTypesTestConfig.Int64Field);
+            Assert.AreEqual(1.2f, ValueTypesTestConfig.SingleField);
+            Assert.AreEqual(1.2, ValueTypesTestConfig.DoubleField);
+            Assert.AreEqual(1.2m, ValueTypesTestConfig.DecimalField);
         }
 
         [TestMethod]
@@ -59,7 +61,7 @@ namespace SmartConfig.Tests
         {
             var dataSource = new TestDataSource()
             {
-                SelectFunc = (keys) => "TestValue2"
+                SelectFunc = keys => "TestValue2"
             };
             SmartConfigManager.Load(typeof(EnumField), dataSource);
             Assert.AreEqual(TestEnum.TestValue2, EnumField.EnumField1);
@@ -70,10 +72,10 @@ namespace SmartConfig.Tests
         {
             var dataSource = new TestDataSource()
             {
-                SelectFunc = (keys) => "abcd"
+                SelectFunc = keys => "abcd"
             };
-            SmartConfigManager.Load(typeof(StringFields), dataSource);
-            Assert.AreEqual("abcd", StringFields.StringField);
+            SmartConfigManager.Load(typeof(StringTestConfig), dataSource);
+            Assert.AreEqual("abcd", StringTestConfig.StringField);
         }
 
         [TestMethod]
@@ -81,13 +83,13 @@ namespace SmartConfig.Tests
         {
             var dataSource = new TestDataSource()
             {
-                SelectFunc = (keys) =>
+                SelectFunc = keys =>
                 {
                     Assert.AreEqual("ABCD.StringField", keys[CommonKeys.Name], "Invalid element name.");
                     return null;
                 }
             };
-            SmartConfigManager.Load(typeof(ConfigName), dataSource);
+            SmartConfigManager.Load(typeof(ConfigNameTestConfig), dataSource);
         }
 
         [TestMethod]
@@ -95,13 +97,13 @@ namespace SmartConfig.Tests
         {
             var dataSource = new TestDataSource()
             {
-                SelectFunc = (keys) =>
+                SelectFunc = keys =>
                 {
                     Assert.AreEqual("2.2.1", keys[CommonKeys.Version], "Invalid version.");
                     return null;
                 }
             };
-            SmartConfigManager.Load(typeof(CustomKey), dataSource);
+            SmartConfigManager.Load(typeof(FieldKeyTestConfig), dataSource);
         }
 
         [TestMethod]
@@ -110,10 +112,9 @@ namespace SmartConfig.Tests
             var dateTime = DateTime.Now;
             var dataSource = new TestDataSource()
             {
-                SelectFunc = (keys) => dateTime.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                SelectFunc = keys => dateTime.ToString(System.Globalization.CultureInfo.InvariantCulture)
             };
             SmartConfigManager.Load(typeof(DateTimeFields), dataSource);
-            var diff = dateTime - DateTimeFields.DateTimeField;
             Assert.AreEqual(dateTime.Date, DateTimeFields.DateTimeField.Date);
             Assert.AreEqual(dateTime.Hour, DateTimeFields.DateTimeField.Hour);
             Assert.AreEqual(dateTime.Minute, DateTimeFields.DateTimeField.Minute);
@@ -123,69 +124,69 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void Load_ColorFields()
         {
-            Assert.Fail();
+            var testData = new Dictionary<string, string>()
+            {
+                { "NameColorField", "Red" },
+                { "DecColorField", "1,2,3" },
+                { "HexColorField", "#FF00AA" },
+            };
+
+            SmartConfigManager.Load(typeof(ColorsTestConfig), new TestDataSource()
+            {
+                SelectFunc = keys => testData[keys[CommonKeys.Name]]
+            });
+            Assert.AreEqual(Color.FromArgb(255, 0, 0), ColorsTestConfig.NameColorField);
+            Assert.AreEqual(Color.FromArgb(1, 2, 3), ColorsTestConfig.DecColorField);
+            Assert.AreEqual(Color.FromArgb(255, 0, 170), ColorsTestConfig.HexColorField);
         }
 
         [TestMethod]
         public void Load_XmlFields()
         {
-            Assert.Fail();
-
-            var testData = new[]
+            var testData = new Dictionary<string, string>()
             {
-                "BooleanField|true",
-                "CharField|a",
-                "Int16Field|123",
-                "Int32Field|123",
-                "Int64Field|123",
-                "SingleField|1.2",
-                "DoubleField|1.2",
-                "DecimalField|1.2",
-            }
-            .Select(x => new TestConfigElement2(x));
-
-            var dataSource = new TestDataSource()
-            {
-                SelectFunc = (keys) =>
-                {
-                    var element = testData.SingleOrDefault(ce => ce.Name.Equals(keys[CommonKeys.Name], StringComparison.OrdinalIgnoreCase));
-                    return element == null ? null : element.Value;
-                }
+                { "XDocumentField", @"<?xml version=""1.0""?><testXml></testXml>" },
+                { "XElementField", @"<testXml></testXml>" },
             };
-
-            SmartConfigManager.Load(typeof(ValueTypeFields), dataSource);
-
-            Assert.AreEqual(true, ValueTypeFields.BooleanField);
-            Assert.AreEqual('a', ValueTypeFields.CharField);
-            Assert.AreEqual(123, ValueTypeFields.Int16Field);
-            Assert.AreEqual(123, ValueTypeFields.Int32Field);
-            Assert.AreEqual(123, ValueTypeFields.Int64Field);
-            Assert.AreEqual(1.2f, ValueTypeFields.SingleField);
-            Assert.AreEqual(1.2, ValueTypeFields.DoubleField);
-            Assert.AreEqual(1.2m, ValueTypeFields.DecimalField);
+            SmartConfigManager.Load(typeof(XmlTestConfig), new TestDataSource()
+            {
+                SelectFunc = keys => testData[keys[CommonKeys.Name]]
+            });
+            Assert.AreEqual(XDocument.Parse(testData["XDocumentField"]).ToString(), XmlTestConfig.XDocumentField.ToString());
+            Assert.AreEqual(XDocument.Parse(testData["XElementField"]).ToString(), XmlTestConfig.XElementField.ToString());
         }
 
         #endregion
 
-        #region _Nestings
+        #region Custom Converters
+
+        [TestMethod]
+        public void Load_JsonField()
+        {
+            var dataSource = new TestDataSource()
+            {
+                SelectFunc = keys => "[1, 2, 3]"
+            };
+            SmartConfigManager.Load(typeof(JsonField), dataSource);
+            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, JsonField.ListInt32Field);
+        }
+
+        #endregion
+
+        #region Nesting
 
         [TestMethod]
         public void Load_OneSubClass()
         {
-            var testConfig = new[]
+            var testData = new Dictionary<string, string>()
             {
-                "StringField|abc",
-                "SubClass.StringField|xyz",
-            }
-            .Select(x => new TestConfigElement2(x));
+                { "StringField", "abc"},
+                { "SubClass.StringField", "xyz"},
+            };
 
             var dataSource = new TestDataSource()
             {
-                SelectFunc = (keys) =>
-                {
-                    var element = testConfig.SingleOrDefault(ce => ce.Name.Equals(keys[CommonKeys.Name], StringComparison.OrdinalIgnoreCase));
-                    return element == null ? null : element.Value;
-                }
+                SelectFunc = keys => testData[keys[CommonKeys.Name]]
             };
             SmartConfigManager.Load(typeof(OneNestedClass), dataSource);
 
@@ -198,7 +199,7 @@ namespace SmartConfig.Tests
         {
             var dataSource = new TestDataSource()
             {
-                SelectFunc = (keys) =>
+                SelectFunc = keys =>
                 {
                     Assert.AreEqual("SubClass.SubSubClass.SubSubStringField", keys[CommonKeys.Name], "Invalid element name.");
                     return "abc";
@@ -208,24 +209,9 @@ namespace SmartConfig.Tests
             Assert.AreEqual("abc", TwoNestedClasses.SubClass.SubSubClass.SubSubStringField);
         }
 
-        #endregion      
-
-        #region _CustomConverters
-
-        [TestMethod]
-        public void Load_JsonField()
-        {
-            var dataSource = new TestDataSource()
-            {
-                SelectFunc = (keys) => "[1, 2, 3]"
-            };
-            SmartConfigManager.Load(typeof(JsonField), dataSource);
-            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, JsonField.ListInt32Field);
-        }
-
         #endregion
 
-        #region _Constraints
+        #region Other
 
         [TestMethod]
         public void Load_OptionalField()
@@ -234,10 +220,10 @@ namespace SmartConfig.Tests
 
             var dataSource = new TestDataSource()
             {
-                SelectFunc = (keys) => null
+                SelectFunc = keys => null
             };
-            SmartConfigManager.Load(typeof(OptionalField), dataSource);
-            Assert.AreEqual("xyz", OptionalField.OptionalStringField, "Invalid defualt value.");
+            SmartConfigManager.Load(typeof(OptionalTestConfig), dataSource);
+            Assert.AreEqual("xyz", OptionalTestConfig.StringField, "Invalid defualt value.");
 
             #endregion
 
@@ -245,88 +231,116 @@ namespace SmartConfig.Tests
 
             dataSource = new TestDataSource()
             {
-                SelectFunc = (keys) => "abcd"
+                SelectFunc = keys => "abcd"
             };
-            SmartConfigManager.Load(typeof(OptionalField), dataSource);
-            Assert.AreEqual("abcd", OptionalField.OptionalStringField, "Invalid config value.");
+            SmartConfigManager.Load(typeof(OptionalTestConfig), dataSource);
+            Assert.AreEqual("abcd", OptionalTestConfig.StringField, "Invalid config value.");
 
             #endregion
         }
 
-        [TestMethod]
-        public void Load_RangeFields()
-        {
-            Assert.Fail();
-        }
-
-        [TestMethod]
-        public void Load_RegularExpressionField()
-        {
-            Assert.Fail();
-        }
-
         #endregion
 
-        #region Exceptions - Contraints
+        #region Constraint Exceptions
 
         [TestMethod]
-        public void Load_With_DateTimeFormatException()
-        {
-            Assert.Fail();
-        }
-
-        [TestMethod]
-        public void Load_With_RangeException()
-        {
-            Assert.Fail();
-        }
-
-        [TestMethod]
-        public void Load_With_RegulaExpressionException()
-        {
-            Assert.Fail();
-        }
-
-        #endregion
-
-        #region Exceptions - General
-
-        [TestMethod]
-        public void Load_With_DataSourceException()
-        {
-            Assert.Fail();
-        }
-
-        [TestMethod]
-        public void Load_With_ObjectConverterException()
+        public void Load_Throws_DateTimeFormatException()
         {
             var ex = ExceptionAssert.Throws<ObjectConverterException>(() =>
             {
-                SmartConfigManager.Load(typeof(InvalidType), new TestDataSource()
+                SmartConfigManager.Load(typeof(DateTimeFormatTestConfig), new TestDataSource()
                 {
-                    SelectFunc = (keys) => "abc"
+                    SelectFunc = keys => "14AUG2015"
                 });
-            }, (message) => Assert.Fail(message));
+            }, Assert.Fail);
+            Assert.IsNotNull(ex);
+            Assert.IsInstanceOfType(ex.InnerException, typeof(DateTimeFormatException));
+        }
+
+        [TestMethod]
+        public void Load_Throws_RangeException()
+        {
+            var ex = ExceptionAssert.Throws<ObjectConverterException>(() =>
+            {
+                SmartConfigManager.Load(typeof(RangeTestConfig), new TestDataSource()
+                {
+                    SelectFunc = keys => "3"
+                });
+            }, Assert.Fail);
+            Assert.IsNotNull(ex);
+            Assert.IsInstanceOfType(ex.InnerException, typeof(RangeException));
+        }
+
+        [TestMethod]
+        public void Load_Throws_RegulaExpressionException()
+        {
+            var ex = ExceptionAssert.Throws<ObjectConverterException>(() =>
+            {
+                SmartConfigManager.Load(typeof(RegularExpressionTestConfig), new TestDataSource()
+                {
+                    SelectFunc = keys => "3"
+                });
+            }, Assert.Fail);
+            Assert.IsNotNull(ex);
+            Assert.IsInstanceOfType(ex.InnerException, typeof(RegularExpressionException));
+        }
+
+        #endregion
+
+        #region General Exceptions
+
+        [TestMethod]
+        public void Load_Throws_DataSourceException()
+        {
+            var ex = ExceptionAssert.Throws<DataSourceException>(() =>
+            {
+                SmartConfigManager.Load(typeof(StringTestConfig), new TestDataSource()
+                {
+                    // ReSharper disable once NotResolvedInText
+                    SelectFunc = (keys) => { throw new ArgumentNullException("TestArgument"); }
+                });
+            }, Assert.Fail);
+            Assert.IsNotNull(ex);
+            Assert.IsInstanceOfType(ex.InnerException, typeof(ArgumentNullException));
+        }
+
+        [TestMethod]
+        public void Load_Throws_ObjectConverterException()
+        {
+            var ex = ExceptionAssert.Throws<ObjectConverterException>(() =>
+            {
+                SmartConfigManager.Load(typeof(ValueTypesTestConfig), new TestDataSource()
+                {
+                    SelectFunc = keys => "Lorem ipsum."
+                });
+            }, Assert.Fail);
             Assert.IsNotNull(ex);
         }
 
         [TestMethod]
-        public void Load_With_ObjectConverterNotFoundException()
+        public void Load_Throws_ObjectConverterNotFoundException()
         {
-            Assert.Fail();
+            var ex = ExceptionAssert.Throws<ObjectConverterNotFoundException>(() =>
+            {
+                SmartConfigManager.Load(typeof(UnsupportedTypeTestConfig), new TestDataSource()
+                {
+                    SelectFunc = keys => "Lorem ipsum."
+                });
+            }, Assert.Fail);
+            Assert.IsNotNull(ex);
         }
 
         [TestMethod]
-        public void Load_With_OptionalException()
+        public void Load_Throws_OptionalException()
         {
             var dataSource = new TestDataSource()
             {
-                SelectFunc = (keys) => null
+                SelectFunc = keys => null
             };
             var ex = ExceptionAssert.Throws<OptionalException>(() =>
             {
                 SmartConfigManager.Load(typeof(MissingOptionalAttribute), dataSource);
-            }, (message) => Assert.Fail(message));
+            }, Assert.Fail);
 
             Assert.IsNotNull(ex);
             Assert.AreEqual(typeof(MissingOptionalAttribute), ex.ConfigFieldInfo.ConfigType);
@@ -334,30 +348,43 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void Load_With_SmartConfigException()
+        public void Load_Throws_SmartConfigException()
         {
-            // Base exception. Not test required.
+            Assert.Inconclusive("SmartConfigException is a base exception for other exception types and does not required testing.");
         }
 
         [TestMethod]
-        public void Load_With_SmartConfigTypeNotFoundException()
+        public void Load_Throws_SmartConfigTypeNotFoundException()
         {
             var ex = ExceptionAssert.Throws<SmartConfigTypeNotFoundException>(() =>
             {
                 SmartConfigManager.Load(typeof(MissingSmartConfigAttribute), new TestDataSource()
                 {
-                    SelectFunc = (keys) => null
+                    SelectFunc = keys => null
                 });
-            }, (message) => Assert.Fail(message));
+            }, Assert.Fail);
             Assert.IsNotNull(ex);
         }
 
         [TestMethod]
-        public void Load_With_UnsupportedTypeException()
+        public void Load_Throws_UnsupportedTypeException()
         {
             // User cannot create this exception.
         }
 
-        #endregion        
+        [TestMethod]
+        public void Load_Throws_ArgumentException_For_FieldKey()
+        {
+            var ex = ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                SmartConfigManager.Load(typeof(InvalidFieldKeyTestConfig), new TestDataSource()
+                {
+                    SelectFunc = keys => "abc"
+                });
+            }, Assert.Fail);
+            Assert.IsNotNull(ex);
+        }
+
+        #endregion
     }
 }

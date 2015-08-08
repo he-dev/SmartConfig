@@ -26,7 +26,7 @@ namespace SmartConfig
                     path.Add(smartConfigAttribute.Name);
                     ConfigType = type;
                     ConfigName = smartConfigAttribute.Name;
-                    ConfigKeys = type.GetCustomAttributes<ElementKeyAttribute>(true).ToDictionary(x => x.Key, x => x.Value);
+                    ConfigKeys = type.GetCustomAttributes<FieldKeyAttribute>(true).ToDictionary(x => x.Key, x => x.Value);
                     FieldFullName = ConfigElementName.Combine(path, true);
                     FieldConstraints = ((FieldInfo)member).GetCustomAttributes<ConstraintAttribute>(false);
                 }

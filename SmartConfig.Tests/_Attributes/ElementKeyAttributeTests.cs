@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace SmartConfig.Tests._Attributes
+namespace SmartConfig.Tests
 {
     [TestClass]
     public class ElementKeyAttributeTests
@@ -9,7 +9,7 @@ namespace SmartConfig.Tests._Attributes
         [TestMethod]
         public void ElementKeyAttribute_String()
         {
-            var elementKey = new ElementKeyAttribute("Name=Test");
+            var elementKey = new FieldKeyAttribute("Name=Test");
             Assert.AreEqual("Name", elementKey.Key);
             Assert.AreEqual("Test", elementKey.Value);
         }

@@ -17,14 +17,14 @@ namespace SmartConfig
     /// <summary>
     /// Provides all the <c>SmartConfig</c> functionality.
     /// </summary>
-    public class SmartConfigManager
+    public static class SmartConfigManager
     {
         private static readonly Dictionary<Type, IDataSource> DataSources;
 
         /// <summary>
         /// Gets the converters collection.
         /// </summary>
-        public static readonly ObjectConverterCollection Converters;
+        public static ObjectConverterCollection Converters { get; private set; }
 
         static SmartConfigManager()
         {
@@ -105,10 +105,6 @@ namespace SmartConfig
             {
                 var obj = converter.DeserializeObject(value, field.FieldType, field.Contraints());
                 field.SetValue(null, obj);
-            }
-            catch (ConstraintException<ConstraintAttribute>)
-            {
-                throw;
             }
             catch (Exception ex)
             {

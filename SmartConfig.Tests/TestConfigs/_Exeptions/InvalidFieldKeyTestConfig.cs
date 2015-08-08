@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace SmartConfig.Tests.TestConfigs
 {
+    // This is commented out by purpose to test the missing attribute.
     [SmartConfig]
-    public static class XmlFields
+    [FieldKey("abc")]
+    public static class InvalidFieldKeyTestConfig
     {
-        public static XElement XElementField;
-        public static XDocument XDocumentField;
+        public static string StringField;
     }
 }

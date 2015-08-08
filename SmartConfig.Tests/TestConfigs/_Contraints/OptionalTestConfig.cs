@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    public static class InvalidType
+    public static class OptionalTestConfig
     {
-        public static int Int32Field;
+        [Optional]
+        public static string StringField = "xyz";
     }
 }

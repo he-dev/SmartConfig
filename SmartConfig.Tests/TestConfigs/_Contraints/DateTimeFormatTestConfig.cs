@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    public static class OptionalField
+    public static class DateTimeFormatTestConfig
     {
-        [Optional]
-        public static string OptionalStringField = "xyz";
+        [DateTimeFormat("ddMMyy")]
+        public static DateTime DateTimeField;
     }
 }

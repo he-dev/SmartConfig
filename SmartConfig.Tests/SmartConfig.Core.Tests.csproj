@@ -73,16 +73,20 @@
     <Compile Include="Converters\JsonConverterTests.cs" />
     <Compile Include="SmartConfigManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestConfigs\_Basics\ColorFields.cs" />
-    <Compile Include="TestConfigs\_Basics\XmlFields.cs" />
+    <Compile Include="TestConfigs\_Basics\ColorsTestConfig.cs" />
+    <Compile Include="TestConfigs\_Basics\XmlTestConfig.cs" />
     <Compile Include="TestConfigs\_Basics\DateTimeFields.cs" />
-    <Compile Include="TestConfigs\_Exeptions\InvalidType.cs" />
+    <Compile Include="TestConfigs\_Contraints\RegularExpressionTestConfig.cs" />
+    <Compile Include="TestConfigs\_Contraints\RangeTestConfig.cs" />
+    <Compile Include="TestConfigs\_Contraints\DateTimeFormatTestConfig.cs" />
+    <Compile Include="TestConfigs\_Exeptions\InvalidFieldKeyTestConfig.cs" />
+    <Compile Include="TestConfigs\_Exeptions\UnsupportedTypeTestConfig.cs" />
     <Compile Include="_Attributes\ElementKeyAttributeTests.cs" />
     <Compile Include="_TestHelpers\TestConfigElement2.cs" />
-    <Compile Include="TestConfigs\_Contraints\OptionalField.cs" />
-    <Compile Include="TestConfigs\_CustomConverters\JsonField.cs" />
+    <Compile Include="TestConfigs\_Contraints\OptionalTestConfig.cs" />
+    <Compile Include="TestConfigs\_CustomConverters\JsonConverterTestConfig.cs" />
     <Compile Include="TestConfigs\_Basics\EnumField.cs" />
-    <Compile Include="TestConfigs\_Basics\StringField.cs" />
+    <Compile Include="TestConfigs\_Basics\StringTestConfig.cs" />
     <Compile Include="TestConfigs\_Exeptions\MissingOptionalAttribute.cs" />
     <Compile Include="_TestHelpers\TestDataSource.cs" />
     <Compile Include="TestEnum.cs" />
@@ -91,9 +95,9 @@
     <Compile Include="TestConfigs\_Files\AppConfig.cs" />
     <Compile Include="TestConfigs\_Nestings\OneNestedClass.cs" />
     <Compile Include="TestConfigs\_Nestings\TwoNestedClasses.cs" />
-    <Compile Include="TestConfigs\_Basics\ConfigName.cs" />
-    <Compile Include="TestConfigs\_Basics\ValueTypeFields.cs" />
-    <Compile Include="TestConfigs\_Basics\CustomKey.cs" />
+    <Compile Include="TestConfigs\_Basics\ConfigNameTestConfig.cs" />
+    <Compile Include="TestConfigs\_Basics\ValueTypesTestConfig.cs" />
+    <Compile Include="TestConfigs\_Basics\FieldKeyTestConfig.cs" />
     <Compile Include="Converters\ValueTypeConverterTests.cs" />
   </ItemGroup>
   <ItemGroup>

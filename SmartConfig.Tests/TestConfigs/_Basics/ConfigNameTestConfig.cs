@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Tests.TestConfigs
 {
-    [SmartConfig]
-    public static class StringFields
+    [SmartConfig(Name = "ABCD")]
+    public static class ConfigNameTestConfig
     {
+        [Optional]
         public static string StringField;
-    }    
+    }
 }

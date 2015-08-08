@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartConfig.Data.SqlClient.Tests
+namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    [FieldKey("Version=1.3.0")]
-    public static class BasicConfig
+    public static class UnsupportedTypeTestConfig
     {
-        public static int Int32Field;
+        public static object UnsupportedField;
     }
 }

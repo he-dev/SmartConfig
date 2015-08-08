@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    public static class ColorFields
+    public static class ColorsTestConfig
     {
         public static Color NameColorField;
         public static Color DecColorField;

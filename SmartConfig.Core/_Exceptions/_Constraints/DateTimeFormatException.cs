@@ -20,7 +20,7 @@ namespace SmartConfig
         {
             get
             {
-                return "$Message Format = [$Format].".FormatWith(new { base.Message, Format = Constraint }, true);
+                return "$Message Format = [$Format].".FormatWith(new { base.Message, Format = Constraint.ToString() }, true);
             }
         }
     }

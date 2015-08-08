@@ -23,7 +23,7 @@ namespace SmartConfig
                 return "Object converter [$ConverterTypeName] for [$ConfigTypeName]'s field [$FieldFullName] not found."
                     .FormatWith(new
                     {
-                        ConverterType = ConverterType.Name,
+                        ConverterTypeName = ConverterType.Name,
                         ConfigTypeName = ConfigFieldInfo.ConfigType.Name,
                         FieldFullName = ConfigFieldInfo.FieldFullName
                     }, true);

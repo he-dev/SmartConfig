@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    public static class ValueTypeFields
+    public static class ValueTypesTestConfig
     {
         public static bool BooleanField;
         public static char CharField;

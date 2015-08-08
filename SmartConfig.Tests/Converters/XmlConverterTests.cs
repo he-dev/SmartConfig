@@ -11,13 +11,20 @@ namespace SmartConfig.Tests.Converters
     public class XmlConverterTests
     {
         [TestMethod]
-        public void TestDeserializeObject()
+        public void DeserializeObject_XDocument()
         {
             const string xDocument = @"<?xml version=""1.0""?><testXml></testXml>";
-            const string xElement = @"<testXml></testXml>";
 
             var converter = new XmlConverter();
             Assert.AreEqual(XDocument.Parse(xDocument).ToString(), converter.DeserializeObject(xDocument, typeof(XDocument), Enumerable.Empty<ConstraintAttribute>()).ToString());
+        }
+
+        [TestMethod]
+        public void DeserializeObject_XElement()
+        {
+            const string xElement = @"<testXml></testXml>";
+
+            var converter = new XmlConverter();
             Assert.AreEqual(XElement.Parse(xElement).ToString(), converter.DeserializeObject(xElement, typeof(XElement), Enumerable.Empty<ConstraintAttribute>()).ToString());
         }
 
