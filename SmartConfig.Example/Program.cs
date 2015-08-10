@@ -28,6 +28,8 @@ namespace SmartConfig.Example
 
             SmartConfigManager.Update(() => ExampleAppConfig.AppSettings.Farewell, "Bye!");
             Console.WriteLine(ExampleAppConfig.AppSettings.Farewell);
+
+            SmartConfigManager.Update(() => ExampleAppConfig.ConnectionStrings.TestDb, "Test connection string");
         }
 
         private static void BasicSqlClientExample()

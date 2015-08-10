@@ -12,6 +12,9 @@ namespace SmartConfig.Example.Data
         public static class ConnectionStrings
         {
             public static string ExampleDb;
+
+            [Optional]
+            public static string TestDb;
         }
 
         public static class AppSettings
