@@ -8,13 +8,13 @@ using SmartConfig.Example.Data;
 
 namespace SmartConfig.Example
 {
-    class Program
+    static class Program
     {
         static void Main(string[] args)
         {
             AppConfigExample();
-            BasicSqlClientExample();
-            CustomSqlClientExample();
+            //BasicSqlClientExample();
+            //CustomSqlClientExample();
 
             Console.ReadKey();
         }

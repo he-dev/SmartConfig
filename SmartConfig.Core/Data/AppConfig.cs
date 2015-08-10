@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using SmartUtilities;
 
 namespace SmartConfig.Data
 {
@@ -23,38 +24,56 @@ namespace SmartConfig.Data
             public const string AppSettings = "AppSettings";
         }
 
+        public IDictionary<Type, AppConfigSectionHanlder> SectionHanlders { get; private set; }
+
+        public AppConfig()
+        {
+            SectionHanlders = new AppConfigSectionHanlder[]
+            {
+                new AppSettingsSectionHanlder(),
+                new ConnectionStringsSectionHanlder(),
+            }
+            .ToDictionary(x => x.SectionType, x => x);
+        }
+
         public string Select(IDictionary<string, string> keys)
         {
-            var name = keys["Name"];
-            var sectionName = name.Split('.').First();
-
-            // Experiments.
-            //var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            //var actualSectionName = exeConfig.Sections.Keys.Cast<string>().Single(x => x.Equals(sectionName, StringComparison.OrdinalIgnoreCase));
-            //var section = exeConfig.Sections[actualSectionName] as NameValueCollection;
-            //var section = ConfigurationManager.GetSection(actualSectionName) as NameValueCollection;
-
-            name = name.Substring(name.IndexOf('.') + 1);
-
-            string value = null;
-            switch (sectionName)
-            {
-            case SectionNames.ConnectionStrings:
-                value = ConfigurationManager.ConnectionStrings[name].ConnectionString;
-                break;
-            case SectionNames.AppSettings:
-                //var actualName = ConfigurationManager.AppSettings.Keys.Cast<string>().SingleOrDefault(k => k.Equals(name, StringComparison.OrdinalIgnoreCase));
-                value = ConfigurationManager.AppSettings[name];
-                break;
-            }
-
+            var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            var configurationSection = GetConfigurationSection(exeConfig, keys);
+            var sectionHandler = SectionHanlders[configurationSection.GetType()];
+            var value = sectionHandler.Select(configurationSection, GetNameWithoutSectionName(keys));
             return value;
         }
 
         public void Update(IDictionary<string, string> keys, string value)
         {
-            //ConfigurationManager.AppSettings[configElement.Name] = configElement.Value;
-            throw new NotSupportedException("AppConfig data source does not support updating (yet).");
+            var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            var configurationSection = GetConfigurationSection(exeConfig, keys);
+            var sectionHandler = SectionHanlders[configurationSection.GetType()];
+            sectionHandler.Update(configurationSection, GetNameWithoutSectionName(keys), value);
+            exeConfig.Save(ConfigurationSaveMode.Minimal);
+        }
+
+        private static string GetSectionName(IDictionary<string, string> keys)
+        {
+            var name = keys[CommonFieldKeys.Name];
+            var sectionName = name.Split('.').First();
+            return sectionName;
+        }
+
+        private static string GetNameWithoutSectionName(IDictionary<string, string> keys)
+        {
+            var name = keys[CommonFieldKeys.Name];
+            name = name.Substring(name.IndexOf('.') + 1);
+            return name;
+        }
+
+        private static ConfigurationSection GetConfigurationSection(Configuration configuration, IDictionary<string, string> keys)
+        {
+            var sectionName = GetSectionName(keys);
+            var actualSectionName = configuration.Sections.Keys.Cast<string>().Single(x => x.Equals(sectionName, StringComparison.OrdinalIgnoreCase));
+            var section = configuration.Sections[actualSectionName];
+            return section;
         }
     }
 }

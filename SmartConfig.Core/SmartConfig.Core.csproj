@@ -95,10 +95,13 @@
     <Compile Include="Converters\EnumConverter.cs" />
     <Compile Include="Data\AppConfig.cs" />
     <Compile Include="Collections\ObjectConverterCollection.cs" />
-    <Compile Include="Data\_Interfaces for common field keys\IMachineName.cs" />
-    <Compile Include="Data\_Interfaces for common field keys\IUserName.cs" />
-    <Compile Include="Data\_Interfaces for common field keys\ISemanticVersion.cs" />
-    <Compile Include="Data\_Interfaces for common field keys\IEnvironment.cs" />
+    <Compile Include="Data\AppConfigSectionHanlder.cs" />
+    <Compile Include="Data\AppSettingsSectionHanlder.cs" />
+    <Compile Include="Data\ConnectionStringsSectionHanlder.cs" />
+    <Compile Include="Data\_CommonFieldKeys\IMachineName.cs" />
+    <Compile Include="Data\_CommonFieldKeys\IUserName.cs" />
+    <Compile Include="Data\_CommonFieldKeys\ISemanticVersion.cs" />
+    <Compile Include="Data\_CommonFieldKeys\IEnvironment.cs" />
     <Compile Include="CommonFilters.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="_Attributes\IgnoreAttribute.cs" />
