@@ -57,7 +57,7 @@ To be able to connect to the database we of course need a connection string. We 
 </appSettings>
 ```
 
-To read this connection string we'll create our first **SmartConfig** by defining a static class with the SmartConfigAttribute. We define one nested class that will represent the `connectionStrings` section in the `app.config`. The `ExampleDb` field is the name of the connection string.
+To read this connection string we'll create our first **SmartConfig** by defining a static class with the `SmartConfigAttribute`. We define one nested class that will represent the `connectionStrings` section in the `app.config`. The `ExampleDb` field is the name of the connection string.
 
 ### ExampleAppConfig.cs
 ```cs
@@ -83,9 +83,9 @@ Next we need to load the configuration like this:
 ```cs
 SmartConfigManager.Load(typeof(ExampleAppConfig), new AppConfig());
 ```
-The first parameter specifies which configuration we want to load. The second once tells **SmartConfig** which data source to use. That's all. We can now use it.
+The first parameter specifies which configuration we want to load. The second onc tells **SmartConfig** which data source to use. That's all. 
 
-To read a welcome message from a database with the following schema:
+We can now use it to read a welcome message from a database with the following schema:
 
 ```sql
 CREATE TABLE [dbo].[ExampleConfigTable]
@@ -96,7 +96,7 @@ CREATE TABLE [dbo].[ExampleConfigTable]
 )
 ```
 
-we need to create this simple config:
+Here we'll also create a simple static class:
 
 ```cs
 [SmartConfig]
@@ -108,7 +108,7 @@ static class ExampleDbConfig
 
 In the database there have to be a row with the following values: `[Name]='Welcome'`, `[Value]='Hallo SmartConfig!'`
 
-Finally we load it and we use the values that we loaded from the `app.config`:
+Finally we need to load it and to do this we use the values that we got from the `app.config`:
 
 ```cs
 SmartConfigManager.Load(typeof(ExampleDbConfig), new SqlClient<BasicConfigElement>()
@@ -118,7 +118,7 @@ SmartConfigManager.Load(typeof(ExampleDbConfig), new SqlClient<BasicConfigElemen
 });
 ```
 
-We use the `SqlClient` as data source. We use the connection string from the previous configuration and we need to specify the table name of our configuration. 
+We use the `SqlClient` as a data source. We use the connection string from the previous configuration and we need to specify the table name of our configuration. 
 
 And we're done!
 
