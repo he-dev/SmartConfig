@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Data
 {
-    public class ConnectionStringsSectionHanlder:AppConfigSectionHanlder
+    public class ConnectionStringsSectionHandler : AppConfigSectionHandler
     {
-        public override Type SectionType { get { return typeof(ConnectionStringsSection); } }
+        public ConnectionStringsSectionHandler() : base(typeof(ConnectionStringsSection)) { }
 
         public override string Select(ConfigurationSection section, string key)
         {

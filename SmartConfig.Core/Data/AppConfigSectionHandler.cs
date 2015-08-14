@@ -7,9 +7,14 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Data
 {
-    public abstract class AppConfigSectionHanlder
+    public abstract class AppConfigSectionHandler
     {
-        public abstract Type SectionType { get; }
+        protected AppConfigSectionHandler(Type sectionType)
+        {
+            SectionType = sectionType;
+        }
+
+        public Type SectionType { get; private set; }
 
         public abstract string Select(ConfigurationSection section, string key);
 

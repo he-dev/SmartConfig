@@ -95,9 +95,9 @@
     <Compile Include="Converters\EnumConverter.cs" />
     <Compile Include="Data\AppConfig.cs" />
     <Compile Include="Collections\ObjectConverterCollection.cs" />
-    <Compile Include="Data\AppConfigSectionHanlder.cs" />
-    <Compile Include="Data\AppSettingsSectionHanlder.cs" />
-    <Compile Include="Data\ConnectionStringsSectionHanlder.cs" />
+    <Compile Include="Data\AppConfigSectionHandler.cs" />
+    <Compile Include="Data\AppSettingsSectionHandler.cs" />
+    <Compile Include="Data\ConnectionStringsSectionHandler.cs" />
     <Compile Include="Data\_CommonFieldKeys\IMachineName.cs" />
     <Compile Include="Data\_CommonFieldKeys\IUserName.cs" />
     <Compile Include="Data\_CommonFieldKeys\ISemanticVersion.cs" />

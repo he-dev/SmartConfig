@@ -17,30 +17,32 @@ namespace SmartConfig.Data
     {
         // https://regex101.com/r/vA9kR5/3
         //private static readonly string SectionNamePattern = @"^(?:[A-Z0-9_]+\.)?(?:(?<SectionName>ConnectionStrings|AppSettings)\.)";
-
-        private static class SectionNames
-        {
-            public const string ConnectionStrings = "ConnectionStrings";
-            public const string AppSettings = "AppSettings";
-        }
-
-        public IDictionary<Type, AppConfigSectionHanlder> SectionHanlders { get; private set; }
+      
+        public IDictionary<Type, AppConfigSectionHandler> SectionHandlers { get; private set; }
 
         public AppConfig()
         {
-            SectionHanlders = new AppConfigSectionHanlder[]
+            SectionHandlers = new AppConfigSectionHandler[]
             {
-                new AppSettingsSectionHanlder(),
-                new ConnectionStringsSectionHanlder(),
+                new AppSettingsSectionHandler(),
+                new ConnectionStringsSectionHandler(),
             }
             .ToDictionary(x => x.SectionType, x => x);
+        }
+
+        public AppConfig(IEnumerable<AppConfigSectionHandler> sectionHandlers) : base()
+        {
+            foreach (var sectionHandler in sectionHandlers)
+            {
+                SectionHandlers.Add(sectionHandler.SectionType, sectionHandler);
+            }
         }
 
         public string Select(IDictionary<string, string> keys)
         {
             var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             var configurationSection = GetConfigurationSection(exeConfig, keys);
-            var sectionHandler = SectionHanlders[configurationSection.GetType()];
+            var sectionHandler = SectionHandlers[configurationSection.GetType()];
             var value = sectionHandler.Select(configurationSection, GetNameWithoutSectionName(keys));
             return value;
         }
@@ -49,7 +51,7 @@ namespace SmartConfig.Data
         {
             var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             var configurationSection = GetConfigurationSection(exeConfig, keys);
-            var sectionHandler = SectionHanlders[configurationSection.GetType()];
+            var sectionHandler = SectionHandlers[configurationSection.GetType()];
             sectionHandler.Update(configurationSection, GetNameWithoutSectionName(keys), value);
             exeConfig.Save(ConfigurationSaveMode.Minimal);
         }
