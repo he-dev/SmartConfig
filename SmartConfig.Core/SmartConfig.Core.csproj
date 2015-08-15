@@ -89,7 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigFieldInfo.cs" />
-    <Compile Include="CommonFieldKeys.cs" />
+    <Compile Include="KeyNames.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\EnumConverter.cs" />
@@ -97,13 +97,13 @@
     <Compile Include="Collections\ObjectConverterCollection.cs" />
     <Compile Include="Data\AppConfigSectionHandler.cs" />
     <Compile Include="Data\AppSettingsSectionHandler.cs" />
+    <Compile Include="Data\ConfigElement.cs" />
     <Compile Include="Data\ConnectionStringsSectionHandler.cs" />
-    <Compile Include="Data\_CommonFieldKeys\IMachineName.cs" />
-    <Compile Include="Data\_CommonFieldKeys\IUserName.cs" />
-    <Compile Include="Data\_CommonFieldKeys\ISemanticVersion.cs" />
-    <Compile Include="Data\_CommonFieldKeys\IEnvironment.cs" />
-    <Compile Include="CommonFilters.cs" />
+    <Compile Include="Data\DataSource.cs" />
+    <Compile Include="Data\XmlConfig.cs" />
+    <Compile Include="Filters.cs" />
     <Compile Include="Utilities.cs" />
+    <Compile Include="Wildcards.cs" />
     <Compile Include="_Attributes\IgnoreAttribute.cs" />
     <Compile Include="_Attributes\OptionalAttribute.cs" />
     <Compile Include="_Attributes\FieldKeyAttribute.cs" />

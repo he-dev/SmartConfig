@@ -87,6 +87,7 @@
     <Compile Include="TestConfigs\_Basics\EnumField.cs" />
     <Compile Include="TestConfigs\_Basics\StringTestConfig.cs" />
     <Compile Include="TestConfigs\_Exeptions\MissingOptionalAttribute.cs" />
+    <Compile Include="_TestHelpers\TestConfigElement.cs" />
     <Compile Include="_TestHelpers\TestDataSource.cs" />
     <Compile Include="_TestHelpers\TestEnum.cs" />
     <Compile Include="_Attributes\_Constraints\RangeAttributeTests.cs" />

@@ -7,23 +7,26 @@ using System.Text;
 using System.Threading.Tasks;
 using SmartConfig.Data;
 
-namespace SmartConfig.Data.SqlClient.Tests
+namespace SmartConfig.Tests
 {
     public class TestConfigElement : ConfigElement
     {
-        public TestConfigElement() : base(typeof(TestConfigElement)) { }
+        public const string EnvironmentKeyName = "Environment";
+        public const string VersionKeyName = "Version";
+
+        public TestConfigElement() { }
 
         public TestConfigElement(string values)
         {
             var columns = values.Split('|');
             Environment = columns[0];
-            Version = columns[1];
+            SemanticVersion = columns[1];
             Name = columns[2];
             Value = columns[3];
         }
 
         public string Environment { get; set; }
 
-        public string Version { get; set; }
+        public string SemanticVersion { get; set; }
     }
 }

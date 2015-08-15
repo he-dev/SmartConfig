@@ -124,7 +124,7 @@ namespace SmartConfig
                 var value = DataSources[configFieldInfo.ConfigType].Select(
                     new Dictionary<string, string>(configFieldInfo.ConfigKeys)
                     {
-                        { CommonFieldKeys.Name, configFieldInfo.FieldFullName }
+                        { "Name", configFieldInfo.FieldFullName }
                     });
                 return value;
             }
@@ -163,7 +163,7 @@ namespace SmartConfig
                 DataSources[configFieldInfo.ConfigType].Update(
                     new Dictionary<string, string>(configFieldInfo.ConfigKeys)
                     {
-                        { CommonFieldKeys.Name, configFieldInfo.FieldFullName }
+                        { KeyNames.DefaultKeyName, configFieldInfo.FieldFullName }
                     },
                     serializedValue);
             }

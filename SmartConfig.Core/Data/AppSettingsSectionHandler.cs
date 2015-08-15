@@ -45,23 +45,37 @@ namespace SmartConfig.Data
             // select all matches with 'OtherKey'
             var otherKeyMatches = matches.Where(m => m.Groups["OtherKey"].Success);
 
-            var otherKeyGroup = otherKeyMatches
-                // group by 'OtherKey' and get their values
-                .GroupBy(m => m.Groups["OtherKey"].Value, m => m.Groups["Value"].Value)
-                // at most o only one such group can exist
-                .SingleOrDefault();
-
-            if (otherKeyGroup != null)
+            try
             {
-                // get the actual key for the other key
-                var actualOtherKey = section.Settings.AllKeys.SingleOrDefault(k => k.Equals(otherKeyGroup.Key, StringComparison.InvariantCulture));
+                var otherKeyGroup = otherKeyMatches
+                    // group by 'OtherKey' and get their values
+                    .GroupBy(m => m.Groups["OtherKey"].Value, m => m.Groups["Value"].Value)
+                    // at most o only one such group can exist
+                    .SingleOrDefault();
 
-                // get the other key's value
-                var otherKeyValue = section.Settings[actualOtherKey].Value;
+                if (otherKeyGroup != null)
+                {
+                    // get the actual key for the other key
+                    var actualOtherKey = section.Settings.AllKeys
+                        .SingleOrDefault(k => k.Equals(otherKeyGroup.Key, StringComparison.InvariantCulture));
 
-                // build the actual conditional key
-                var actualConditionalKey = string.Format("{0}@{1}:{2}", key, otherKeyGroup.Key, otherKeyValue);
-                return actualConditionalKey;
+                    // get the other key's value
+                    var otherKeyValue = section.Settings[actualOtherKey].Value;
+
+                    // build the actual conditional key
+                    var actualConditionalKey = string.Format("{0}@{1}:{2}", key, otherKeyGroup.Key, otherKeyValue);
+                    return actualConditionalKey;
+                }
+            }
+            catch (InvalidOperationException ex)
+            {
+                // TODO: Create an exception with information about the invalid keys.
+                throw;
+            }
+            catch (Exception ex)
+            {
+                // Rethrow unknown exceptions.
+                throw;
             }
 
             var actualKey = section.Settings.AllKeys.SingleOrDefault(k => k.Equals(key, StringComparison.OrdinalIgnoreCase));

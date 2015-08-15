@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace SmartConfig
 {
-    static class Constants
+    public static class Wildcards
     {
-        public static readonly string IdentifierPattern = @"[A-Z_][A-Z0-9_]+";
-
+        public const string Asterisk = "*";
 
     }
 }

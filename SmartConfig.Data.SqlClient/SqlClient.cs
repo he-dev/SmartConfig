@@ -16,7 +16,7 @@ namespace SmartConfig.Data
     /// <summary>
     /// Implements sql server data source.
     /// </summary>
-    public class SqlClient<TConfigElement> : IDataSource where TConfigElement : BasicConfigElement, new()
+    public class SqlClient<TConfigElement> : DataSource<TConfigElement> where TConfigElement : ConfigElement, new()
     {
         public SqlClient()
         {
@@ -31,28 +31,20 @@ namespace SmartConfig.Data
         /// <summary>
         /// Gets or sets the config table name.
         /// </summary>
-        public string TableName { get; set; }
+        public string TableName { get; set; }        
 
-        /// <summary>
-        /// Allows to specify additional keys.
-        /// </summary>
-        public IDictionary<string, string> Keys { get; set; }
-
-        /// <summary>
-        /// Allows to specifiy filter function for the additional keys.
-        /// </summary>
-        public FilterByFunc<TConfigElement> FilterBy { get; set; }
-
-        public string Select(IDictionary<string, string> keys)
+        public override string Select(IDictionary<string, string> keys)
         {
-            using (var context = new SmartConfigEntities<TConfigElement>(ConnectionString, TableName))
+            var allKeys = Utilities.CombineDictionaries(keys, Keys);
+            using (var context = new SmartConfigEntities<TConfigElement>(ConnectionString, TableName, allKeys.Select(k => k.Key)))
             {
-                var allKeys = Utilities.CombineDictionaries(keys, Keys);
-                var name = keys[CommonFieldKeys.Name];
+                var name = keys[KeyNames.DefaultKeyName];
                 var elements = context.ConfigElements.Where(ce => ce.Name == name).ToList() as IEnumerable<TConfigElement>;
-                if (FilterBy != null)
+                if (Filters != null)
                 {
-                    elements = allKeys.Where(x => x.Key != CommonFieldKeys.Name).Aggregate(elements, (current, keyValue) => FilterBy(current, keyValue));
+                    elements = allKeys
+                        .Where(x => x.Key != KeyNames.DefaultKeyName)
+                        .Aggregate(elements, (current, item) => Filters[item.Key](current, item));
                 }
 
                 var element = elements.SingleOrDefault();
@@ -60,15 +52,15 @@ namespace SmartConfig.Data
             };
         }
 
-        public void Update(IDictionary<string, string> keys, string value)
+        public override void Update(IDictionary<string, string> keys, string value)
         {
             var allKeys = Utilities.CombineDictionaries(keys, Keys);
 
-            using (var context = new SmartConfigEntities<TConfigElement>(ConnectionString, TableName))
+            using (var context = new SmartConfigEntities<TConfigElement>(ConnectionString, TableName, allKeys.Select(k => k.Key)))
             {
                 var newEntity = new TConfigElement()
                 {
-                    Name = keys[CommonFieldKeys.Name],
+                    Name = keys[KeyNames.DefaultKeyName],
                     Value = value
                 };
 
@@ -85,7 +77,7 @@ namespace SmartConfig.Data
                 var newEntityKey = ((IObjectContextAdapter)context).ObjectContext.CreateEntityKey("ConfigElements", newEntity);
 
                 // Try to get the entity from the database.
-                var name = keys[CommonFieldKeys.Name];
+                var name = keys[KeyNames.DefaultKeyName];
                 var elements = context.ConfigElements.Where(x => x.Name == name).ToList() as IEnumerable<TConfigElement>;
                 var existingEntity = elements.SingleOrDefault(e => ((IObjectContextAdapter)context).ObjectContext.CreateEntityKey("ConfigElements", e) == newEntityKey);
 

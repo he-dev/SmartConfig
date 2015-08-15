@@ -36,7 +36,7 @@ namespace SmartConfig.Tests
 
             var dataSource = new TestDataSource()
             {
-                SelectFunc = keys => testData[keys[CommonFieldKeys.Name]]
+                SelectFunc = keys => testData[keys[KeyNames.DefaultKeyName]]
             };
 
             SmartConfigManager.Load(typeof(ValueTypesTestConfig), dataSource);
@@ -80,7 +80,7 @@ namespace SmartConfig.Tests
             {
                 SelectFunc = keys =>
                 {
-                    Assert.AreEqual("ABCD.StringField", keys[CommonFieldKeys.Name], "Invalid element name.");
+                    Assert.AreEqual("ABCD.StringField", keys[KeyNames.DefaultKeyName], "Invalid element name.");
                     return null;
                 }
             };
@@ -94,7 +94,7 @@ namespace SmartConfig.Tests
             {
                 SelectFunc = keys =>
                 {
-                    Assert.AreEqual("2.2.1", keys[CommonFieldKeys.Version], "Invalid version.");
+                    Assert.AreEqual("2.2.1", keys[TestConfigElement.VersionKeyName], "Invalid version.");
                     return null;
                 }
             };
@@ -128,7 +128,7 @@ namespace SmartConfig.Tests
 
             SmartConfigManager.Load(typeof(ColorsTestConfig), new TestDataSource()
             {
-                SelectFunc = keys => testData[keys[CommonFieldKeys.Name]]
+                SelectFunc = keys => testData[keys[KeyNames.DefaultKeyName]]
             });
             Assert.AreEqual(Color.FromArgb(255, 0, 0), ColorsTestConfig.NameColorField);
             Assert.AreEqual(Color.FromArgb(1, 2, 3), ColorsTestConfig.DecColorField);
@@ -145,7 +145,7 @@ namespace SmartConfig.Tests
             };
             SmartConfigManager.Load(typeof(XmlTestConfig), new TestDataSource()
             {
-                SelectFunc = keys => testData[keys[CommonFieldKeys.Name]]
+                SelectFunc = keys => testData[keys[KeyNames.DefaultKeyName]]
             });
             Assert.AreEqual(XDocument.Parse(testData["XDocumentField"]).ToString(), XmlTestConfig.XDocumentField.ToString());
             Assert.AreEqual(XDocument.Parse(testData["XElementField"]).ToString(), XmlTestConfig.XElementField.ToString());
@@ -181,7 +181,7 @@ namespace SmartConfig.Tests
 
             var dataSource = new TestDataSource()
             {
-                SelectFunc = keys => testData[keys[CommonFieldKeys.Name]]
+                SelectFunc = keys => testData[keys[KeyNames.DefaultKeyName]]
             };
             SmartConfigManager.Load(typeof(OneNestedClass), dataSource);
 
@@ -196,7 +196,7 @@ namespace SmartConfig.Tests
             {
                 SelectFunc = keys =>
                 {
-                    Assert.AreEqual("SubClass.SubSubClass.SubSubStringField", keys[CommonFieldKeys.Name], "Invalid element name.");
+                    Assert.AreEqual("SubClass.SubSubClass.SubSubStringField", keys[KeyNames.DefaultKeyName], "Invalid element name.");
                     return "abc";
                 }
             };

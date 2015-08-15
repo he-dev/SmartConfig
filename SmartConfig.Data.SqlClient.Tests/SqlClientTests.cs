@@ -16,8 +16,12 @@ namespace SmartConfig.Data.SqlClient.Tests
         [TestInitialize]
         public void TestInitialize()
         {
+            // TODO: define key columns
             AppDomain.CurrentDomain.SetData("DataDirectory", AppDomain.CurrentDomain.BaseDirectory);
-            using (var context = new SmartConfigEntities<TestConfigElement>(ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString, "TestConfig"))
+            using (var context = new SmartConfigEntities<TestConfigElement>(
+                ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
+                "TestConfig",
+                new[] { KeyNames.EnvironmentKeyName, KeyNames.VersionKeyName }))
             {
                 context.Database.Initialize(true);
             }
@@ -31,21 +35,15 @@ namespace SmartConfig.Data.SqlClient.Tests
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
                 TableName = "TestConfig",
-                Keys = new Dictionary<string, string>() { { CommonFieldKeys.Environment, "ABC" } },
-                FilterBy = FilterBy
+                Keys = new Dictionary<string, string>() { { KeyNames.EnvironmentKeyName, "ABC" } },
+                Filters = new Dictionary<string, FilterByFunc<TestConfigElement>>()
+                {
+                    { KeyNames.EnvironmentKeyName, Filters.FilterByString },
+                    { KeyNames.VersionKeyName, Filters.FilterByVersion }
+                }
             };
             SmartConfigManager.Load(typeof(BasicConfig), dataSource);
             Assert.AreEqual(123, BasicConfig.Int32Field);
-        }
-
-        private static IEnumerable<TestConfigElement> FilterBy(IEnumerable<TestConfigElement> elements, KeyValuePair<string, string> keyValue)
-        {
-            switch (keyValue.Key)
-            {
-            case CommonFieldKeys.Environment: return CommonFilters.FilterByEnvironment(elements, keyValue.Value).Cast<TestConfigElement>();
-            case CommonFieldKeys.Version: return CommonFilters.FilterBySemanticVersion(elements, keyValue.Value).Cast<TestConfigElement>();
-            default: throw new IndexOutOfRangeException("Filter function not found.");
-            }
         }
 
         [TestMethod]
@@ -55,8 +53,12 @@ namespace SmartConfig.Data.SqlClient.Tests
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
                 TableName = "TestConfig",
-                Keys = new Dictionary<string, string>() { { CommonFieldKeys.Environment, "ABC" } },
-                FilterBy = FilterBy
+                Keys = new Dictionary<string, string>() { { KeyNames.EnvironmentKeyName, "ABC" } },
+                Filters = new Dictionary<string, FilterByFunc<TestConfigElement>>()
+                {
+                    { KeyNames.EnvironmentKeyName, Filters.FilterByString },
+                    { KeyNames.VersionKeyName, Filters.FilterByVersion }
+                }
             };
             SmartConfigManager.Load(typeof(BasicConfig), dataSource);
 
@@ -65,18 +67,18 @@ namespace SmartConfig.Data.SqlClient.Tests
             SmartConfigManager.Update(() => BasicConfig.Int32Field, 456);
             Assert.AreEqual("456", dataSource.Select(new Dictionary<string, string>()
             {
-                { CommonFieldKeys.Name, "Int32Field" },
-                { CommonFieldKeys.Version, "1.3.0" }
+                { KeyNames.DefaultKeyName, "Int32Field" },
+                { KeyNames.VersionKeyName, "1.3.0" }
             }));
             Assert.AreEqual(456, BasicConfig.Int32Field);
 
             SmartConfigManager.Update(() => BasicConfig.Int32Field, 789);
             Assert.AreEqual("789", dataSource.Select(new Dictionary<string, string>()
             {
-                { CommonFieldKeys.Name, "Int32Field" },
-                { CommonFieldKeys.Version, "1.3.0" }
+                { KeyNames.DefaultKeyName, "Int32Field" },
+                { KeyNames.VersionKeyName, "1.3.0" }
             }));
             Assert.AreEqual(789, BasicConfig.Int32Field);
-        }       
+        }
     }
 }

@@ -13,11 +13,11 @@ namespace SmartConfig.Data
     /// <summary>
     /// Implements the app.config as data source.
     /// </summary>
-    public class AppConfig : IDataSource
+    public class AppConfig : DataSource<ConfigElement>
     {
         // https://regex101.com/r/vA9kR5/3
         //private static readonly string SectionNamePattern = @"^(?:[A-Z0-9_]+\.)?(?:(?<SectionName>ConnectionStrings|AppSettings)\.)";
-      
+
         public IDictionary<Type, AppConfigSectionHandler> SectionHandlers { get; private set; }
 
         public AppConfig()
@@ -38,7 +38,7 @@ namespace SmartConfig.Data
             }
         }
 
-        public string Select(IDictionary<string, string> keys)
+        public override string Select(IDictionary<string, string> keys)
         {
             var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             var configurationSection = GetConfigurationSection(exeConfig, keys);
@@ -47,7 +47,7 @@ namespace SmartConfig.Data
             return value;
         }
 
-        public void Update(IDictionary<string, string> keys, string value)
+        public override void Update(IDictionary<string, string> keys, string value)
         {
             var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             var configurationSection = GetConfigurationSection(exeConfig, keys);
@@ -58,14 +58,14 @@ namespace SmartConfig.Data
 
         private static string GetSectionName(IDictionary<string, string> keys)
         {
-            var name = keys[CommonFieldKeys.Name];
+            var name = keys[KeyNames.DefaultKeyName];
             var sectionName = name.Split('.').First();
             return sectionName;
         }
 
         private static string GetNameWithoutSectionName(IDictionary<string, string> keys)
         {
-            var name = keys[CommonFieldKeys.Name];
+            var name = keys[KeyNames.DefaultKeyName];
             name = name.Substring(name.IndexOf('.') + 1);
             return name;
         }

@@ -21,6 +21,22 @@ namespace SmartConfig.Example
 
         private static void AppConfigExample()
         {
+
+            SmartConfigManager.Load(typeof(ExampleAppConfig), new XmlConfig<CustomConfigElement>()
+            {
+                FileName = @"Data\XmlConfig.xml",
+                Keys = new Dictionary<string, string>()
+                {
+                    { KeyNames.EnvironmentKeyName, "ABC" }
+                },
+                Filters = new Dictionary<string, FilterByFunc<CustomConfigElement>>()
+                {
+                    { KeyNames.EnvironmentKeyName, Filters.FilterByString }
+                }
+            });
+
+            return;
+
             SmartConfigManager.Load(typeof(ExampleAppConfig), new AppConfig());
 
             Console.WriteLine(ExampleAppConfig.AppSettings.Greeting);
@@ -34,7 +50,7 @@ namespace SmartConfig.Example
 
         private static void BasicSqlClientExample()
         {
-            SmartConfigManager.Load(typeof(ExampleDbConfig1), new SqlClient<BasicConfigElement>()
+            SmartConfigManager.Load(typeof(ExampleDbConfig1), new SqlClient<ConfigElement>()
             {
                 ConnectionString = ExampleAppConfig.ConnectionStrings.ExampleDb,
                 TableName = "ExampleConfigTable",
@@ -49,21 +65,15 @@ namespace SmartConfig.Example
             {
                 ConnectionString = ExampleAppConfig.ConnectionStrings.ExampleDb,
                 TableName = "ExampleConfigTable",
-                Keys = new Dictionary<string, string>() { { CommonFieldKeys.Environment, "ABC" } },
-                FilterBy = FilterBy
+                Keys = new Dictionary<string, string>() { { KeyNames.EnvironmentKeyName, "ABC" } },
+                Filters = new Dictionary<string, FilterByFunc<CustomConfigElement>>()
+                {
+                    { KeyNames.EnvironmentKeyName, Filters.FilterByString },
+                    { KeyNames.VersionKeyName, Filters.FilterByVersion }
+                }
             });
 
             Console.WriteLine(ExampleDbConfig2.GoodBye);
-        }
-
-        private static IEnumerable<CustomConfigElement> FilterBy(IEnumerable<CustomConfigElement> elements, KeyValuePair<string, string> keyValue)
-        {
-            switch (keyValue.Key)
-            {
-            case CommonFieldKeys.Environment: return CommonFilters.FilterByEnvironment(elements, keyValue.Value).Cast<CustomConfigElement>();
-            case CommonFieldKeys.Version: return CommonFilters.FilterBySemanticVersion(elements, keyValue.Value).Cast<CustomConfigElement>();
-            default: throw new IndexOutOfRangeException("Filter function not found.");
-            }
-        }
+        }       
     }
 }

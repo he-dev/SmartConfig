@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\CustomConfigElement.cs" />
+    <Compile Include="Data\ExampleXmlConfig.cs" />
     <Compile Include="Data\ExampleDbConfig2.cs" />
     <Compile Include="Data\ExampleDbConfig1.cs" />
     <Compile Include="Data\ExampleAppConfig.cs" />
@@ -86,6 +87,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <DependentUpon>ExampleDb.mdf</DependentUpon>
     </Content>
+    <None Include="Data\XmlConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.1">

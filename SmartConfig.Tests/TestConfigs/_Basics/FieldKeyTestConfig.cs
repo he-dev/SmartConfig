@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    [FieldKey("SemanticVersion=2.2.1")]
+    [FieldKey("Version=2.2.1")]
     public static class FieldKeyTestConfig
     {
         [Optional]

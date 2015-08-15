@@ -92,7 +92,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelfConfig.cs" />
     <Compile Include="SqlClient.cs" />
-    <Compile Include="BasicConfigElement.cs" />
     <Compile Include="SmartConfigEntities.cs" />
   </ItemGroup>
   <ItemGroup>

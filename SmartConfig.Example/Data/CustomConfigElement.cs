@@ -9,16 +9,12 @@ using SmartConfig.Data;
 
 namespace SmartConfig.Example.Data
 {
-    public partial class CustomConfigElement : BasicConfigElement, IEnvironment, ISemanticVersion
+    public class CustomConfigElement : ConfigElement
     {
-        [Key]
-        [StringLength(50)]
-        [Column(Order = 2)]
+        public CustomConfigElement() : base(typeof(CustomConfigElement)) { }
+
         public string Environment { get; set; }
 
-        [Key]
-        [StringLength(50)]
-        [Column(Order = 3)]
-        public string SemanticVersion { get; set; }
+        public string Version { get; set; }
     }
 }
