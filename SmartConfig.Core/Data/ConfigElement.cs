@@ -15,14 +15,11 @@ namespace SmartConfig.Data
     /// </summary>
     public class ConfigElement
     {
-
-        public ConfigElement() { }
-
-        protected ConfigElement(Type type)
+        public ConfigElement()
         {
             GetStringDelegates = new Dictionary<string, GetStringDelegate>();
             SetStringDelegates = new Dictionary<string, SetStringDelegate>();
-            CustomProperties = type.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public);
+            CustomProperties = GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public);
             foreach (var property in CustomProperties)
             {
                 GetStringDelegates.Add(property.Name, Delegate.CreateDelegate(typeof(GetStringDelegate), this, property.GetGetMethod()) as GetStringDelegate);

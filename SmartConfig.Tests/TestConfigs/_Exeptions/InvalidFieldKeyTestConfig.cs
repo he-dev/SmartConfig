@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Tests.TestConfigs
 {
-    // This is commented out by purpose to test the missing attribute.
     [SmartConfig]
     [FieldKey("abc")]
     public static class InvalidFieldKeyTestConfig

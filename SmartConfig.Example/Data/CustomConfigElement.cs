@@ -11,8 +11,6 @@ namespace SmartConfig.Example.Data
 {
     public class CustomConfigElement : ConfigElement
     {
-        public CustomConfigElement() : base(typeof(CustomConfigElement)) { }
-
         public string Environment { get; set; }
 
         public string Version { get; set; }

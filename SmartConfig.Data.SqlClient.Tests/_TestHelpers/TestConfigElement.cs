@@ -11,7 +11,7 @@ namespace SmartConfig.Data.SqlClient.Tests
 {
     public class TestConfigElement : ConfigElement
     {
-        public TestConfigElement() : base(typeof(TestConfigElement)) { }
+        public TestConfigElement() { }
 
         public TestConfigElement(string values)
         {
