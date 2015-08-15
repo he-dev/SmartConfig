@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using SmartConfig.Collections;
 using SmartConfig.Converters;
 using SmartConfig.Data;
+using SmartUtilities;
 
 namespace SmartConfig
 {
@@ -55,6 +56,13 @@ namespace SmartConfig
             if (dataSource == null) throw new ArgumentNullException("dataSource", "You need to specify a data source.");
             if (!configType.IsStatic()) throw new InvalidOperationException("'configType' must be a static class.");
             if (!configType.HasAttribute<SmartConfigAttribute>()) throw new SmartConfigTypeNotFoundException() { ConfigType = configType };
+
+            Logger.LogAction(() => "Loading [$configTypeName] from [$dataSourceName]..."
+                .FormatWith(new
+                {
+                    configTypeName = configType.Name,
+                    dataSourceName = dataSource.GetType().Name
+                }, true));
 
             DataSources[configType] = dataSource;
 

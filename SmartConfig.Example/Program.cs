@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,8 @@ namespace SmartConfig.Example
     {
         static void Main(string[] args)
         {
+            Logger.Log = m => Debug.WriteLine(m);
+
             AppConfigExample();
             //BasicSqlClientExample();
             //CustomSqlClientExample();
@@ -74,6 +77,6 @@ namespace SmartConfig.Example
             });
 
             Console.WriteLine(ExampleDbConfig2.GoodBye);
-        }       
+        }
     }
 }

@@ -20,14 +20,7 @@ namespace SmartConfig.Data
             Keys = new Dictionary<string, string>();
         }
 
-        public string FileName { get; set; }
-
-        ///// <summary>
-        ///// Allows to specify additional keys.
-        ///// </summary>
-        //IDictionary<string, string> Keys { get; set; }
-
-        //public IDictionary<string, FilterByFunc<TConfigElement>> Filters { get; set; }
+        public string FileName { get; set; }       
 
         public override string Select(IDictionary<string, string> keys)
         {
@@ -50,7 +43,7 @@ namespace SmartConfig.Data
                 // set custom properties
                 foreach (var property in element.CustomProperties)
                 {
-                    var attr = x.Attribute(property.Name);
+                    var attr = x.Attributes().SingleOrDefault(a => a.Name.ToString().Equals(property.Name, StringComparison.OrdinalIgnoreCase));
                     element.SetStringDelegates[property.Name](attr == null ? Wildcards.Asterisk : attr.Value);
                 }
                 return element;
@@ -60,7 +53,7 @@ namespace SmartConfig.Data
                 .Where(x => x.Key != KeyNames.DefaultKeyName)
                 .Aggregate(elements, (current, keyValue) => Filters[keyValue.Key](current, keyValue));
 
-            var result = elements.SingleOrDefault();
+            var result = elements.FirstOrDefault();
             return result != null ? result.Value : null;
         }
 

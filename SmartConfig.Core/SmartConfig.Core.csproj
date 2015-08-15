@@ -102,6 +102,7 @@
     <Compile Include="Data\DataSource.cs" />
     <Compile Include="Data\XmlConfig.cs" />
     <Compile Include="Filters.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="Wildcards.cs" />
     <Compile Include="_Attributes\IgnoreAttribute.cs" />
