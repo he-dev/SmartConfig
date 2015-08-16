@@ -35,12 +35,20 @@ namespace SmartConfig.Data.SqlClient.Tests
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
                 TableName = "TestConfig",
-                Keys = new Dictionary<string, string>() { { KeyNames.EnvironmentKeyName, "ABC" } },
-                Filters = new Dictionary<string, FilterByFunc<TestConfigElement>>()
+                Keys = new[]
                 {
-                    { KeyNames.EnvironmentKeyName, Filters.FilterByString },
-                    { KeyNames.VersionKeyName, Filters.FilterByVersion }
-                }
+                    new KeyInfo<TestConfigElement>()
+                    {
+                        KeyName = KeyNames.EnvironmentKeyName,
+                        KeyValue = "ABC",
+                        Filter = Filters.FilterByString
+                    },
+                    new KeyInfo<TestConfigElement>()
+                    {
+                        KeyName = KeyNames.VersionKeyName,
+                        Filter = Filters.FilterByVersion
+                    }
+                } 
             };
             SmartConfigManager.Load(typeof(BasicConfig), dataSource);
             Assert.AreEqual(123, BasicConfig.Int32Field);
@@ -53,11 +61,19 @@ namespace SmartConfig.Data.SqlClient.Tests
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
                 TableName = "TestConfig",
-                Keys = new Dictionary<string, string>() { { KeyNames.EnvironmentKeyName, "ABC" } },
-                Filters = new Dictionary<string, FilterByFunc<TestConfigElement>>()
+                Keys = new[]
                 {
-                    { KeyNames.EnvironmentKeyName, Filters.FilterByString },
-                    { KeyNames.VersionKeyName, Filters.FilterByVersion }
+                    new KeyInfo<TestConfigElement>()
+                    {
+                        KeyName = KeyNames.EnvironmentKeyName,
+                        KeyValue = "ABC",
+                        Filter = Filters.FilterByString
+                    },
+                    new KeyInfo<TestConfigElement>()
+                    {
+                        KeyName = KeyNames.VersionKeyName,
+                        Filter = Filters.FilterByVersion
+                    }
                 }
             };
             SmartConfigManager.Load(typeof(BasicConfig), dataSource);

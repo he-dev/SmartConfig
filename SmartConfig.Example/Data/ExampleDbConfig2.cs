@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Example.Data
 {
-    [SmartConfig(Name = "ExampleApp2")]
-    [FieldKey("SemanticVersion=2.0.0")]
+    [SmartConfig(Name = "ExampleApp2", Version = "2.0.0")]
     static class ExampleDbConfig2
     {
         public static string GoodBye;

@@ -24,7 +24,7 @@ namespace SmartConfig
                     .FormatWith(new
                     {
                         ConfigTypeName = ConfigFieldInfo.ConfigType.Name,
-                        ConfigFieldInfo.FieldFullName,
+                        FieldFullName = ConfigFieldInfo.FieldPath,
                         OptionalAttributeName = typeof(OptionalAttribute).Name
                     }, true);
             }

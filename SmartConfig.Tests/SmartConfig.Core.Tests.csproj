@@ -82,7 +82,6 @@
     <Compile Include="TestConfigs\_Exeptions\InvalidFieldKeyTestConfig.cs" />
     <Compile Include="TestConfigs\_Exeptions\UnsupportedTypeTestConfig.cs" />
     <Compile Include="FiltersTests.cs" />
-    <Compile Include="_Attributes\ElementKeyAttributeTests.cs" />
     <Compile Include="TestConfigs\_Contraints\OptionalTestConfig.cs" />
     <Compile Include="TestConfigs\_CustomConverters\JsonConverterTestConfig.cs" />
     <Compile Include="TestConfigs\_Basics\EnumField.cs" />

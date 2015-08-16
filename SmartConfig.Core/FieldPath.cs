@@ -12,7 +12,7 @@ namespace SmartConfig
     /// <summary>
     /// Provides utility methods for creating config element names.
     /// </summary>
-    internal static class ConfigElementName
+    internal static class FieldPath
     {
         public static string From<T>(Expression<Func<T>> expression)
         {
@@ -37,9 +37,9 @@ namespace SmartConfig
             return configName;
         }
 
-        public static string Combine(IEnumerable<string> path, bool reverse = false)
+        public static string Combine(IEnumerable<string> path)
         {
-            return string.Join(".", (reverse ? path.Reverse() : path).Where(name => !string.IsNullOrEmpty(name)));
+            return string.Join(".", path.Where(name => !string.IsNullOrEmpty(name)));
         }
     }
 }

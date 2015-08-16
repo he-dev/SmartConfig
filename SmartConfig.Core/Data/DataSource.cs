@@ -11,39 +11,26 @@ namespace SmartConfig.Data
     /// </summary>
     public abstract class DataSource<TConfigElement> : IDataSource where TConfigElement : ConfigElement, new()
     {
-        private IDictionary<string, string> _keys;
-        private IDictionary<string, FilterByFunc<TConfigElement>> _filters;
+        protected IDictionary<string, KeyInfo<TConfigElement>> _keys;
 
         protected DataSource()
         {
-            _keys = new Dictionary<string, string>();
-            _filters = new Dictionary<string, FilterByFunc<TConfigElement>>();
+            _keys = new Dictionary<string, KeyInfo<TConfigElement>>();
         }
 
-        /// <summary>
-        /// Allows to specify additional keys.
-        /// </summary>
-        public IDictionary<string, string> Keys
+        public IEnumerable<KeyInfo<TConfigElement>> Keys
         {
-            get { return _keys; }
+            get { return _keys.Values; }
             set
             {
                 if (value == null) throw new ArgumentNullException("Keys");
-                _keys = value;
+                _keys = value.ToDictionary(k => k.KeyName);
             }
         }
 
-        /// <summary>
-        /// Allows to specifiy filter function for the additional keys.
-        /// </summary>
-        public IDictionary<string, FilterByFunc<TConfigElement>> Filters
+        IDictionary<string, string> IDataSource.Keys
         {
-            get { return _filters; }
-            set
-            {
-                if (value == null) throw new ArgumentNullException("Filters");
-                _filters = value;
-            }
+            get { return _keys.ToDictionary(x => x.Key, x => x.Value.KeyValue); }
         }
 
         public abstract string Select(IDictionary<string, string> keys);

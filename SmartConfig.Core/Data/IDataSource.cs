@@ -15,6 +15,8 @@ namespace SmartConfig.Data
     //public interface IDataSource
     public interface IDataSource
     {
+        IDictionary<string, string> Keys { get; }        
+
         string Select(IDictionary<string, string> keys);
 
         void Update(IDictionary<string, string> keys, string value);

@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Tests.TestConfigs
 {
-    [SmartConfig]
-    [FieldKey("abc")]
+    [SmartConfig(Version = "Invalid Version!")]
     public static class InvalidFieldKeyTestConfig
     {
         public static string StringField;

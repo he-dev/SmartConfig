@@ -89,6 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigFieldInfo.cs" />
+    <Compile Include="KeyInfo.cs" />
     <Compile Include="KeyNames.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Converters\DateTimeConverter.cs" />
@@ -107,7 +108,6 @@
     <Compile Include="Wildcards.cs" />
     <Compile Include="_Attributes\IgnoreAttribute.cs" />
     <Compile Include="_Attributes\OptionalAttribute.cs" />
-    <Compile Include="_Attributes\FieldKeyAttribute.cs" />
     <Compile Include="_Attributes\_Constraints\DateTimeFormatAttribute.cs" />
     <Compile Include="_Attributes\_Constraints\RegularExpressionAttribute.cs" />
     <Compile Include="_Attributes\_Constraints\RangeAttribute.cs" />
@@ -133,7 +133,7 @@
     <Compile Include="_Attributes\ObjectConverterAttribute.cs" />
     <Compile Include="Converters\ObjectConverterBase.cs" />
     <Compile Include="SmartConfigManager.cs" />
-    <Compile Include="ConfigElementName.cs" />
+    <Compile Include="FieldPath.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="_Attributes\SmartConfigAttribute.cs" />
     <Compile Include="Data\IDataSource.cs" />

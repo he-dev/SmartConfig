@@ -67,6 +67,7 @@ namespace SmartConfig
             DataSources[configType] = dataSource;
 
             var fields = GetFields(configType);
+
             foreach (var field in fields)
             {
                 LoadValue(field);
@@ -125,21 +126,42 @@ namespace SmartConfig
             }
         }
 
+        // gets a value for config field and throws detailed exception if failed
         private static string GetValue(ConfigFieldInfo configFieldInfo)
         {
             try
             {
-                var value = DataSources[configFieldInfo.ConfigType].Select(
-                    new Dictionary<string, string>(configFieldInfo.ConfigKeys)
-                    {
-                        { "Name", configFieldInfo.FieldFullName }
-                    });
+                var dataSource = DataSources[configFieldInfo.ConfigType];
+                var keys = CombineKeys(dataSource, configFieldInfo);
+                var value = dataSource.Select(keys);
                 return value;
             }
             catch (Exception ex)
             {
                 throw new DataSourceException(configFieldInfo, ex);
             }
+        }
+
+        /// <summary>
+        /// Combines keys from a data source and a config.
+        /// </summary>
+        /// <param name="dataSource"></param>
+        /// <param name="configFieldInfo"></param>
+        /// <returns></returns>
+        private static IDictionary<string, string> CombineKeys(IDataSource dataSource, ConfigFieldInfo configFieldInfo)
+        {
+            // merge custom and default keys
+            var keys = new Dictionary<string, string>(dataSource.Keys)
+            {
+                { KeyNames.DefaultKeyName, configFieldInfo.FieldPath }
+            };
+
+            // add version key if defined
+            if (!string.IsNullOrEmpty(configFieldInfo.ConfigVersion))
+            {
+                keys.Add(KeyNames.VersionKeyName, configFieldInfo.ConfigVersion);
+            }
+            return keys;
         }
 
         #endregion
@@ -168,12 +190,9 @@ namespace SmartConfig
             try
             {
                 var serializedValue = converter.SerializeObject(value, field.FieldType, field.GetCustomAttributes<ConstraintAttribute>(false));
-                DataSources[configFieldInfo.ConfigType].Update(
-                    new Dictionary<string, string>(configFieldInfo.ConfigKeys)
-                    {
-                        { KeyNames.DefaultKeyName, configFieldInfo.FieldFullName }
-                    },
-                    serializedValue);
+                var dataSource = DataSources[configFieldInfo.ConfigType];
+                var keys = CombineKeys(dataSource, configFieldInfo);
+                dataSource.Update(keys, serializedValue);
             }
             catch (ConstraintException<ConstraintAttribute>)
             {

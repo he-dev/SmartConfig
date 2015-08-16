@@ -63,9 +63,9 @@ namespace SmartConfig
             return memberExpression.Member;
         }
 
-        public static Dictionary<string, string> CombineDictionaries(IDictionary<string, string> dic1, IDictionary<string, string> dic2)
-        {
-            return dic1.Concat(dic2).ToDictionary(x => x.Key, x => x.Value);
-        }
+        //public static Dictionary<string, string> CombineDictionaries(IDictionary<string, string> dic1, IDictionary<string, string> dic2)
+        //{
+        //    return dic1.Concat(dic2).ToDictionary(x => x.Key, x => x.Value);
+        //}
     }
 }

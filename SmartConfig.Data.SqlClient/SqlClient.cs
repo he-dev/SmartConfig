@@ -18,11 +18,6 @@ namespace SmartConfig.Data
     /// </summary>
     public class SqlClient<TConfigElement> : DataSource<TConfigElement> where TConfigElement : ConfigElement, new()
     {
-        public SqlClient()
-        {
-            Keys = new Dictionary<string, string>();
-        }
-
         /// <summary>
         /// Gets or sets the connection string where the config table can be found.
         /// </summary>
@@ -31,21 +26,17 @@ namespace SmartConfig.Data
         /// <summary>
         /// Gets or sets the config table name.
         /// </summary>
-        public string TableName { get; set; }        
+        public string TableName { get; set; }
 
         public override string Select(IDictionary<string, string> keys)
         {
-            var allKeys = Utilities.CombineDictionaries(keys, Keys);
-            using (var context = new SmartConfigEntities<TConfigElement>(ConnectionString, TableName, allKeys.Select(k => k.Key)))
+            using (var context = new SmartConfigEntities<TConfigElement>(ConnectionString, TableName, keys.Select(k => k.Key)))
             {
                 var name = keys[KeyNames.DefaultKeyName];
                 var elements = context.ConfigElements.Where(ce => ce.Name == name).ToList() as IEnumerable<TConfigElement>;
-                if (Filters != null)
-                {
-                    elements = allKeys
-                        .Where(x => x.Key != KeyNames.DefaultKeyName)
-                        .Aggregate(elements, (current, item) => Filters[item.Key](current, item));
-                }
+                elements = keys
+                    .Where(x => x.Key != KeyNames.DefaultKeyName)
+                    .Aggregate(elements, (current, item) => _keys[item.Key].Filter(current, item));
 
                 var element = elements.SingleOrDefault();
                 return element == null ? null : element.Value;
@@ -54,9 +45,7 @@ namespace SmartConfig.Data
 
         public override void Update(IDictionary<string, string> keys, string value)
         {
-            var allKeys = Utilities.CombineDictionaries(keys, Keys);
-
-            using (var context = new SmartConfigEntities<TConfigElement>(ConnectionString, TableName, allKeys.Select(k => k.Key)))
+            using (var context = new SmartConfigEntities<TConfigElement>(ConnectionString, TableName, keys.Select(k => k.Key)))
             {
                 var newEntity = new TConfigElement()
                 {
@@ -68,9 +57,9 @@ namespace SmartConfig.Data
                 foreach (var property in declaredProperties)
                 {
 #if NET40
-                    property.SetValue(newEntity, allKeys[property.Name], null);
+                    property.SetValue(newEntity, keys[property.Name], null);
 #else
-                    property.SetValue(newEntity, allKeys[property.Name]);
+                    property.SetValue(newEntity, keys[property.Name]);
 #endif
                 }
 

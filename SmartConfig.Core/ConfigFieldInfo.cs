@@ -26,8 +26,8 @@ namespace SmartConfig
                     path.Add(smartConfigAttribute.Name);
                     ConfigType = type;
                     ConfigName = smartConfigAttribute.Name;
-                    ConfigKeys = type.GetCustomAttributes<FieldKeyAttribute>(true).ToDictionary(x => x.Key, x => x.Value);
-                    FieldFullName = ConfigElementName.Combine(path, true);
+                    ConfigVersion = smartConfigAttribute.Version;
+                    FieldPath = SmartConfig.FieldPath.Combine(((IEnumerable<string>)path).Reverse());
                     FieldConstraints = ((FieldInfo)member).GetCustomAttributes<ConstraintAttribute>(false);
                 }
                 path.Add(type.Name);
@@ -54,14 +54,14 @@ namespace SmartConfig
 
         public Type ConfigType { get; private set; }
         public string ConfigName { get; private set; }
-        public IDictionary<string, string> ConfigKeys { get; private set; }
+        public string ConfigVersion { get; private set; }
 
         #endregion
 
         #region Field Info
 
         public FieldInfo Field { get; private set; }
-        public string FieldFullName { get; private set; }
+        public string FieldPath { get; private set; }
         public IEnumerable<ConstraintAttribute> FieldConstraints { get; private set; }
 
         #endregion
@@ -78,7 +78,7 @@ namespace SmartConfig
     //{
     //    private FieldInfo _fieldInfo;
 
-    //    public string FieldFullName { get; private set; }
+    //    public string FieldPath { get; private set; }
     //    public IEnumerable<ConstraintAttribute> FieldConstraints { get; private set; }
 
     //    public static implicit operator FieldInfo(ConfigField configField)

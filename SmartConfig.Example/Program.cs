@@ -24,17 +24,18 @@ namespace SmartConfig.Example
 
         private static void AppConfigExample()
         {
-
+            // SmartConfigBuilder.Load(typeof(ExampleAppConfig)).From<XmlConfig>(ds => ds.FileName = @"abc.xml")
             SmartConfigManager.Load(typeof(ExampleAppConfig), new XmlConfig<CustomConfigElement>()
             {
-                FileName = @"Data\XmlConfig.xml",
-                Keys = new Dictionary<string, string>()
+                FileName = @"Data\XmlConfig.xml",                
+                Keys = new []
                 {
-                    { KeyNames.EnvironmentKeyName, "ABC" }
-                },
-                Filters = new Dictionary<string, FilterByFunc<CustomConfigElement>>()
-                {
-                    { KeyNames.EnvironmentKeyName, Filters.FilterByString }
+                    new KeyInfo<CustomConfigElement>()
+                    {
+                        KeyName = KeyNames.EnvironmentKeyName,
+                        KeyValue = "ABC",
+                        Filter = Filters.FilterByString
+                    }, 
                 }
             });
 
@@ -68,12 +69,20 @@ namespace SmartConfig.Example
             {
                 ConnectionString = ExampleAppConfig.ConnectionStrings.ExampleDb,
                 TableName = "ExampleConfigTable",
-                Keys = new Dictionary<string, string>() { { KeyNames.EnvironmentKeyName, "ABC" } },
-                Filters = new Dictionary<string, FilterByFunc<CustomConfigElement>>()
+                Keys = new[]
                 {
-                    { KeyNames.EnvironmentKeyName, Filters.FilterByString },
-                    { KeyNames.VersionKeyName, Filters.FilterByVersion }
-                }
+                    new KeyInfo<CustomConfigElement>()
+                    {
+                        KeyName = KeyNames.EnvironmentKeyName,
+                        KeyValue = "ABC",
+                        Filter = Filters.FilterByString
+                    },
+                    new KeyInfo<CustomConfigElement>()
+                    {
+                        KeyName = KeyNames.VersionKeyName,
+                        Filter = Filters.FilterByVersion
+                    }
+                }                
             });
 
             Console.WriteLine(ExampleDbConfig2.GoodBye);
