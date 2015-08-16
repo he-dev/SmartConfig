@@ -25,7 +25,7 @@ namespace SmartConfig.Data
             // the search is case insensitive
             var xElements =
                 xConfig.Root.Elements()
-                .Where(e => e.Attribute("name").Value.Equals(keys[KeyNames.DefaultKeyName], StringComparison.OrdinalIgnoreCase));
+                .Where(e => e.Attribute("name").Value.Equals(keys[SmartConfig.KeyNames.DefaultKeyName], StringComparison.OrdinalIgnoreCase));
 
             // create TConfigElement from each item
             var elements = xElements.Select(x =>
@@ -37,20 +37,20 @@ namespace SmartConfig.Data
                 };
 
                 // set custom properties
-                foreach (var property in element.CustomProperties)
+                foreach (var keyName in OrderedKeyNames.Where(k => k != SmartConfig.KeyNames.DefaultKeyName))
                 {
                     // find an attribute for the property - the search is case insensitive
-                    var attr = x.Attributes().SingleOrDefault(a => a.Name.ToString().Equals(property.Name, StringComparison.OrdinalIgnoreCase));
+                    var attr = x.Attributes().SingleOrDefault(a => a.Name.ToString().Equals(keyName, StringComparison.OrdinalIgnoreCase));
 
                     // use the attribute value or an asterisk if attribute not found
-                    element.SetStringDelegates[property.Name](attr == null ? Wildcards.Asterisk : attr.Value);
+                    element.SetStringDelegates[keyName](attr == null ? Wildcards.Asterisk : attr.Value);
                 }
                 return element;
             });
 
             // apply filters for all keys except the default one
             elements = keys
-                .Where(x => x.Key != KeyNames.DefaultKeyName)
+                .Where(x => x.Key != SmartConfig.KeyNames.DefaultKeyName)
                 .Aggregate(elements, (current, keyValue) => _keys[keyValue.Key].Filter(current, keyValue));
 
             var result = elements.FirstOrDefault();

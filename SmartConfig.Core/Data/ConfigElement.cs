@@ -3,6 +3,7 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Reflection;
 
 namespace SmartConfig.Data
@@ -19,15 +20,15 @@ namespace SmartConfig.Data
         {
             GetStringDelegates = new Dictionary<string, GetStringDelegate>();
             SetStringDelegates = new Dictionary<string, SetStringDelegate>();
-            CustomProperties = GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public);
-            foreach (var property in CustomProperties)
+
+            var properties = GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public);
+            foreach (var property in properties)
             {
                 GetStringDelegates.Add(property.Name, Delegate.CreateDelegate(typeof(GetStringDelegate), this, property.GetGetMethod()) as GetStringDelegate);
                 SetStringDelegates.Add(property.Name, Delegate.CreateDelegate(typeof(SetStringDelegate), this, property.GetSetMethod()) as SetStringDelegate);
             }
         }
 
-        public PropertyInfo[] CustomProperties { get; private set; }
         public IDictionary<string, GetStringDelegate> GetStringDelegates { get; private set; }
         public IDictionary<string, SetStringDelegate> SetStringDelegates { get; private set; }
 

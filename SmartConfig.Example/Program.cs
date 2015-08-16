@@ -15,9 +15,10 @@ namespace SmartConfig.Example
         {
             Logger.Log = m => Debug.WriteLine(m);
 
-            AppConfigExample();
+            //AppConfigExample();
             //BasicSqlClientExample();
             //CustomSqlClientExample();
+            XmlConfigExample();
 
             Console.ReadKey();
         }
@@ -27,15 +28,15 @@ namespace SmartConfig.Example
             // SmartConfigBuilder.Load(typeof(ExampleAppConfig)).From<XmlConfig>(ds => ds.FileName = @"abc.xml")
             SmartConfigManager.Load(typeof(ExampleAppConfig), new XmlConfig<CustomConfigElement>()
             {
-                FileName = @"Data\XmlConfig.xml",                
-                Keys = new []
+                FileName = @"Data\XmlConfig.xml",
+                KeyInfos = new[]
                 {
                     new KeyInfo<CustomConfigElement>()
                     {
                         KeyName = KeyNames.EnvironmentKeyName,
                         KeyValue = "ABC",
                         Filter = Filters.FilterByString
-                    }, 
+                    },
                 }
             });
 
@@ -69,7 +70,7 @@ namespace SmartConfig.Example
             {
                 ConnectionString = ExampleAppConfig.ConnectionStrings.ExampleDb,
                 TableName = "ExampleConfigTable",
-                Keys = new[]
+                KeyInfos = new[]
                 {
                     new KeyInfo<CustomConfigElement>()
                     {
@@ -82,10 +83,27 @@ namespace SmartConfig.Example
                         KeyName = KeyNames.VersionKeyName,
                         Filter = Filters.FilterByVersion
                     }
-                }                
+                }
             });
 
             Console.WriteLine(ExampleDbConfig2.GoodBye);
+        }
+
+        private static void XmlConfigExample()
+        {
+            SmartConfigManager.Load(typeof(ExampleXmlConfig), new XmlConfig<CustomConfigElement>()
+            {
+                FileName = @"Data\XmlConfig.xml",
+                KeyInfos = new[]
+                {
+                    new KeyInfo<CustomConfigElement>()
+                    {
+                        KeyName = KeyNames.EnvironmentKeyName,
+                        KeyValue = "ABC",
+                        Filter = Filters.FilterByString
+                    },
+                }
+            });            
         }
     }
 }

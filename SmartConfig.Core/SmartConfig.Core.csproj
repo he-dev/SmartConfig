@@ -96,10 +96,10 @@
     <Compile Include="Converters\EnumConverter.cs" />
     <Compile Include="Data\AppConfig.cs" />
     <Compile Include="Collections\ObjectConverterCollection.cs" />
-    <Compile Include="Data\AppConfigSectionHandler.cs" />
-    <Compile Include="Data\AppSettingsSectionHandler.cs" />
+    <Compile Include="Data\_AppConfigSectionHandlers\AppConfigSectionHandler.cs" />
+    <Compile Include="Data\_AppConfigSectionHandlers\AppSettingsSectionHandler.cs" />
     <Compile Include="Data\ConfigElement.cs" />
-    <Compile Include="Data\ConnectionStringsSectionHandler.cs" />
+    <Compile Include="Data\_AppConfigSectionHandlers\ConnectionStringsSectionHandler.cs" />
     <Compile Include="Data\DataSource.cs" />
     <Compile Include="Data\XmlConfig.cs" />
     <Compile Include="Filters.cs" />

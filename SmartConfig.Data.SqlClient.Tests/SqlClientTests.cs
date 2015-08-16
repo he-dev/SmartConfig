@@ -18,10 +18,7 @@ namespace SmartConfig.Data.SqlClient.Tests
         {
             // TODO: define key columns
             AppDomain.CurrentDomain.SetData("DataDirectory", AppDomain.CurrentDomain.BaseDirectory);
-            using (var context = new SmartConfigEntities<TestConfigElement>(
-                ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
-                "TestConfig",
-                new[] { KeyNames.EnvironmentKeyName, KeyNames.VersionKeyName }))
+            using (var context = new SmartConfigEntities<TestConfigElement>(ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString, "TestConfig"))
             {
                 context.Database.Initialize(true);
             }
@@ -35,7 +32,7 @@ namespace SmartConfig.Data.SqlClient.Tests
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
                 TableName = "TestConfig",
-                Keys = new[]
+                KeyInfos = new[]
                 {
                     new KeyInfo<TestConfigElement>()
                     {
@@ -48,7 +45,7 @@ namespace SmartConfig.Data.SqlClient.Tests
                         KeyName = KeyNames.VersionKeyName,
                         Filter = Filters.FilterByVersion
                     }
-                } 
+                }
             };
             SmartConfigManager.Load(typeof(BasicConfig), dataSource);
             Assert.AreEqual(123, BasicConfig.Int32Field);
@@ -61,7 +58,7 @@ namespace SmartConfig.Data.SqlClient.Tests
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
                 TableName = "TestConfig",
-                Keys = new[]
+                KeyInfos = new[]
                 {
                     new KeyInfo<TestConfigElement>()
                     {

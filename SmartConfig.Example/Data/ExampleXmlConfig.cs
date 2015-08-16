@@ -20,6 +20,7 @@ namespace SmartConfig.Example.Data
 
         public static class ConnectionStrings
         {
+            [Optional]
             public static string ExampleDb;
 
             [Optional]

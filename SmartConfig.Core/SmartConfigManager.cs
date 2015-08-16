@@ -151,12 +151,12 @@ namespace SmartConfig
         private static IDictionary<string, string> CombineKeys(IDataSource dataSource, ConfigFieldInfo configFieldInfo)
         {
             // merge custom and default keys
-            var keys = new Dictionary<string, string>(dataSource.Keys)
+            var keys = new Dictionary<string, string>(dataSource.KeyValues)
             {
                 { KeyNames.DefaultKeyName, configFieldInfo.FieldPath }
             };
 
-            // add version key if defined
+            // set version key
             if (!string.IsNullOrEmpty(configFieldInfo.ConfigVersion))
             {
                 keys[KeyNames.VersionKeyName] = configFieldInfo.ConfigVersion;
