@@ -11,9 +11,6 @@ namespace SmartConfig.Tests
 {
     public class TestConfigElement : ConfigElement
     {
-        public const string EnvironmentKeyName = "Environment";
-        public const string VersionKeyName = "Version";
-
         public TestConfigElement()  { }
 
         public TestConfigElement(string values) 

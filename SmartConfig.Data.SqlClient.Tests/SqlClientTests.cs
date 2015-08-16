@@ -84,6 +84,7 @@ namespace SmartConfig.Data.SqlClient.Tests
             Assert.AreEqual("456", dataSource.Select(new Dictionary<string, string>()
             {
                 { KeyNames.DefaultKeyName, "Int32Field" },
+                { KeyNames.EnvironmentKeyName, "ABC" },
                 { KeyNames.VersionKeyName, "1.3.0" }
             }));
             Assert.AreEqual(456, BasicConfig.Int32Field);
@@ -92,6 +93,7 @@ namespace SmartConfig.Data.SqlClient.Tests
             Assert.AreEqual("789", dataSource.Select(new Dictionary<string, string>()
             {
                 { KeyNames.DefaultKeyName, "Int32Field" },
+                { KeyNames.EnvironmentKeyName, "ABC" },
                 { KeyNames.VersionKeyName, "1.3.0" }
             }));
             Assert.AreEqual(789, BasicConfig.Int32Field);

@@ -26,11 +26,11 @@ namespace SmartConfig.Tests
 
             result = Filters.FilterByString(_testItems, new KeyValuePair<string, string>("Environment", "JKL"));
             item = result.FirstOrDefault();
-            Assert.AreEqual(_testItems[3], item);
+            Assert.AreEqual(_testItems[4], item);
 
             result = Filters.FilterByString(_testItems, new KeyValuePair<string, string>("Environment", "ASD"));
             item = result.FirstOrDefault();
-            Assert.AreEqual(_testItems[2], item);
+            Assert.AreEqual(_testItems[3], item);
         }
 
         [TestMethod]

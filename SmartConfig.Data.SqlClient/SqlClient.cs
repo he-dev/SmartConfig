@@ -34,9 +34,7 @@ namespace SmartConfig.Data
             {
                 var name = keys[KeyNames.DefaultKeyName];
                 var elements = context.ConfigElements.Where(ce => ce.Name == name).ToList() as IEnumerable<TConfigElement>;
-                elements = keys
-                    .Where(x => x.Key != KeyNames.DefaultKeyName)
-                    .Aggregate(elements, (current, item) => _keys[item.Key].Filter(current, item));
+                elements = ApplyFilters(elements, keys);
 
                 var element = elements.SingleOrDefault();
                 return element == null ? null : element.Value;
@@ -47,28 +45,36 @@ namespace SmartConfig.Data
         {
             using (var context = new SmartConfigEntities<TConfigElement>(ConnectionString, TableName, keys.Select(k => k.Key)))
             {
+                // create default entity
                 var newEntity = new TConfigElement()
                 {
                     Name = keys[KeyNames.DefaultKeyName],
                     Value = value
                 };
 
-                var declaredProperties = typeof(TConfigElement).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
-                foreach (var property in declaredProperties)
+                // set values for custom properties
+                foreach (var property in newEntity.CustomProperties)
                 {
-#if NET40
-                    property.SetValue(newEntity, keys[property.Name], null);
-#else
-                    property.SetValue(newEntity, keys[property.Name]);
-#endif
+                    newEntity.SetStringDelegates[property.Name](keys[property.Name]);
                 }
 
-                var newEntityKey = ((IObjectContextAdapter)context).ObjectContext.CreateEntityKey("ConfigElements", newEntity);
+                // helper Func for creating entity keys
+                var createEntityKey = new Func<DbContext, TConfigElement, EntityKey>((c, e) =>
+                {
+                    const string entitySetName = "ConfigElements";
+                    var entityKey = ((IObjectContextAdapter)c).ObjectContext.CreateEntityKey(entitySetName, e);
+                    return entityKey;
+                });
 
-                // Try to get the entity from the database.
+                // create an entity key for the new entity so that EF can compare it with existing entities
+                var newEntityKey = createEntityKey(context, newEntity);
+
+                // try to get an existing entity from the database by entity key
                 var name = keys[KeyNames.DefaultKeyName];
                 var elements = context.ConfigElements.Where(x => x.Name == name).ToList() as IEnumerable<TConfigElement>;
-                var existingEntity = elements.SingleOrDefault(e => ((IObjectContextAdapter)context).ObjectContext.CreateEntityKey("ConfigElements", e) == newEntityKey);
+                elements = ApplyFilters(elements, keys);
+
+                var existingEntity = elements.SingleOrDefault(e => createEntityKey(context, e) == newEntityKey);
 
                 if (existingEntity != null)
                 {

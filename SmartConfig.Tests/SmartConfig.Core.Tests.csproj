@@ -79,7 +79,6 @@
     <Compile Include="TestConfigs\_Contraints\RegularExpressionTestConfig.cs" />
     <Compile Include="TestConfigs\_Contraints\RangeTestConfig.cs" />
     <Compile Include="TestConfigs\_Contraints\DateTimeFormatTestConfig.cs" />
-    <Compile Include="TestConfigs\_Exeptions\InvalidFieldKeyTestConfig.cs" />
     <Compile Include="TestConfigs\_Exeptions\UnsupportedTypeTestConfig.cs" />
     <Compile Include="FiltersTests.cs" />
     <Compile Include="TestConfigs\_Contraints\OptionalTestConfig.cs" />
@@ -97,7 +96,7 @@
     <Compile Include="TestConfigs\_Nestings\TwoNestedClasses.cs" />
     <Compile Include="TestConfigs\_Basics\ConfigNameTestConfig.cs" />
     <Compile Include="TestConfigs\_Basics\ValueTypesTestConfig.cs" />
-    <Compile Include="TestConfigs\_Basics\FieldKeyTestConfig.cs" />
+    <Compile Include="TestConfigs\_Basics\VersionTestConfig.cs" />
     <Compile Include="Converters\ValueTypeConverterTests.cs" />
   </ItemGroup>
   <ItemGroup>

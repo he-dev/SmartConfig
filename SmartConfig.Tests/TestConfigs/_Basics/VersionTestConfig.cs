@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Tests.TestConfigs
 {
-    [SmartConfig(Version = "2.1.1")]
-    public static class FieldKeyTestConfig
+    [SmartConfig(Version = "2.2.1")]
+    public static class VersionTestConfig
     {
         [Optional]
         public static string StringField;

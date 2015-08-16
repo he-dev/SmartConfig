@@ -41,7 +41,7 @@ namespace SmartConfig
                 versions = elements.Where(e => e.GetStringDelegates[property.Key]() == Wildcards.Asterisk).ToList();
             }
 
-            return versions;
+            return versions.Take(1);
         }
     }
 }

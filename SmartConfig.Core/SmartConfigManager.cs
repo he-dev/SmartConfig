@@ -159,7 +159,7 @@ namespace SmartConfig
             // add version key if defined
             if (!string.IsNullOrEmpty(configFieldInfo.ConfigVersion))
             {
-                keys.Add(KeyNames.VersionKeyName, configFieldInfo.ConfigVersion);
+                keys[KeyNames.VersionKeyName] = configFieldInfo.ConfigVersion;
             }
             return keys;
         }

@@ -36,5 +36,13 @@ namespace SmartConfig.Data
         public abstract string Select(IDictionary<string, string> keys);
 
         public abstract void Update(IDictionary<string, string> keys, string value);
+
+        protected IEnumerable<TConfigElement> ApplyFilters(IEnumerable<TConfigElement> elements, IDictionary<string, string> keys)
+        {
+            elements = keys
+                .Where(x => x.Key != KeyNames.DefaultKeyName)
+                .Aggregate(elements, (current, item) => _keys[item.Key].Filter(current, item));
+            return elements;
+        }
     }
 }

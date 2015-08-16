@@ -88,17 +88,17 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void Load_CustomKey()
+        public void Load_VersionKey()
         {
             var dataSource = new TestDataSource()
             {
                 SelectFunc = keys =>
                 {
-                    Assert.AreEqual("2.2.1", keys[TestConfigElement.VersionKeyName], "Invalid version.");
+                    Assert.AreEqual("2.2.1", keys[KeyNames.VersionKeyName], "Invalid version.");
                     return null;
                 }
             };
-            SmartConfigManager.Load(typeof(FieldKeyTestConfig), dataSource);
+            SmartConfigManager.Load(typeof(VersionTestConfig), dataSource);
         }
 
         [TestMethod]
@@ -365,20 +365,7 @@ namespace SmartConfig.Tests
         public void Load_Throws_UnsupportedTypeException()
         {
             // User cannot create this exception.
-        }
-
-        [TestMethod]
-        public void Load_Throws_ArgumentException_For_FieldKey()
-        {
-            var ex = ExceptionAssert.Throws<ArgumentException>(() =>
-            {
-                SmartConfigManager.Load(typeof(InvalidFieldKeyTestConfig), new TestDataSource()
-                {
-                    SelectFunc = keys => "abc"
-                });
-            }, Assert.Fail);
-            Assert.IsNotNull(ex);
-        }
+        }        
 
         #endregion
     }
