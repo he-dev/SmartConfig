@@ -32,21 +32,10 @@ namespace SmartConfig.Data.SqlClient.Tests
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
                 TableName = "TestConfig",
-                CustomKeys = new[]
-                {
-                    new CustomKey<TestConfigElement>()
-                    {
-                        Name = KeyNames.EnvironmentKeyName,
-                        Value = "ABC",
-                        Filter = Filters.FilterByString
-                    },
-                    new CustomKey<TestConfigElement>()
-                    {
-                        Name = KeyNames.VersionKeyName,
-                        Filter = Filters.FilterByVersion
-                    }
-                }
-            };
+            }
+            .AddCustomKey(k => k.HasName(KeyNames.EnvironmentKeyName).HasValue("ABC").HasFilter(Filters.FilterByString))
+            .AddCustomKey(k => k.HasName(KeyNames.VersionKeyName).HasValue("1.3.0").HasFilter(Filters.FilterByVersion));
+
             SmartConfigManager.Load(typeof(BasicConfig), dataSource);
             Assert.AreEqual(123, BasicConfig.Int32Field);
         }
@@ -78,21 +67,11 @@ namespace SmartConfig.Data.SqlClient.Tests
             Assert.AreEqual(123, BasicConfig.Int32Field);
 
             SmartConfigManager.Update(() => BasicConfig.Int32Field, 456);
-            Assert.AreEqual("456", dataSource.Select(new Dictionary<string, string>()
-            {
-                { KeyNames.DefaultKeyName, "Int32Field" },
-                { KeyNames.EnvironmentKeyName, "ABC" },
-                { KeyNames.VersionKeyName, "1.3.0" }
-            }));
+            Assert.AreEqual("456", dataSource.Select("Int32Field"));
             Assert.AreEqual(456, BasicConfig.Int32Field);
 
             SmartConfigManager.Update(() => BasicConfig.Int32Field, 789);
-            Assert.AreEqual("789", dataSource.Select(new Dictionary<string, string>()
-            {
-                { KeyNames.DefaultKeyName, "Int32Field" },
-                { KeyNames.EnvironmentKeyName, "ABC" },
-                { KeyNames.VersionKeyName, "1.3.0" }
-            }));
+            Assert.AreEqual("789", dataSource.Select("Int32Field"));
             Assert.AreEqual(789, BasicConfig.Int32Field);
         }
     }

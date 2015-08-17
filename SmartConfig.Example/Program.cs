@@ -69,22 +69,10 @@ namespace SmartConfig.Example
             SmartConfigManager.Load(typeof(ExampleDbConfig2), new SqlClient<CustomConfigElement>()
             {
                 ConnectionString = ExampleAppConfig.ConnectionStrings.ExampleDb,
-                TableName = "ExampleConfigTable",
-                CustomKeys = new[]
-                {
-                    new CustomKey<CustomConfigElement>()
-                    {
-                        Name = KeyNames.EnvironmentKeyName,
-                        Value = "ABC",
-                        Filter = Filters.FilterByString
-                    },
-                    new CustomKey<CustomConfigElement>()
-                    {
-                        Name = KeyNames.VersionKeyName,
-                        Filter = Filters.FilterByVersion
-                    }
-                }
-            });
+                TableName = "ExampleConfigTable",                
+            }
+            .AddCustomKey(k => k.HasName(KeyNames.EnvironmentKeyName).HasValue("ABC").HasFilter(Filters.FilterByString))
+            .AddCustomKey(k => k.HasName(KeyNames.VersionKeyName).HasValue("2.0.0").HasFilter(Filters.FilterByVersion)));
 
             Console.WriteLine(ExampleDbConfig2.GoodBye);
         }
@@ -95,10 +83,7 @@ namespace SmartConfig.Example
             {
                 FileName = @"Data\XmlConfig.xml",
             }
-            .AddCustomKey(k => k
-                .HasName(KeyNames.EnvironmentKeyName)
-                .HasValue("ABC")
-                .HasFilter(Filters.FilterByString)));
+            .AddCustomKey(k => k.HasName(KeyNames.EnvironmentKeyName).HasValue("ABC").HasFilter(Filters.FilterByString)));
         }
     }
 }

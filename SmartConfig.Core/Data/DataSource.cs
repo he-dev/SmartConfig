@@ -30,14 +30,14 @@ namespace SmartConfig.Data
             }
         }
 
-        IDictionary<string, string> IDataSource.CustomKeys
+        IDictionary<string, string> IDataSource.CompositeKey
         {
             get { return _customKeys.ToDictionary(x => x.Key, x => x.Value.Value); }
         }
 
         /// <summary>
         /// Gets an ordered enumeration of key names.
-        /// The first element is always the Name then follow other keys in alphabetical order.
+        /// The first element is always the Name then follow other key in alphabetical order.
         /// </summary>
         public IEnumerable<string> OrderedKeyNames { get; protected set; }
 
@@ -45,9 +45,9 @@ namespace SmartConfig.Data
 
         public virtual void Initialize(IDictionary<string, string> values) { }
 
-        public abstract string Select(IDictionary<string, string> keys);
+        public abstract string Select(string  defaultKey);
 
-        public abstract void Update(IDictionary<string, string> keys, string value);
+        public abstract void Update(string defaultKey, string value);
 
         /// <summary>
         /// Applies all of the specified filters.
@@ -82,6 +82,21 @@ namespace SmartConfig.Data
             configureKey(customKey);
             _customKeys[customKey.Name] = customKey;
             return this;
+        }
+
+        public CompositeKey CreateCompositeKey(string defaultKey)
+        {
+            var complexKey = new CompositeKey()
+            {
+                { KeyNames.DefaultKeyName, defaultKey }
+            };
+
+            foreach (var keyName in OrderedKeyNames.Where(k => k != KeyNames.DefaultKeyName))
+            {
+                complexKey[keyName] = _customKeys[keyName].Value;
+            }
+
+            return complexKey;
         }
     }
 }

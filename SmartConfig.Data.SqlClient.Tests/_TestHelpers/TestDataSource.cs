@@ -5,18 +5,22 @@ namespace SmartConfig.Data.SqlClient.Tests
 {
     public class TestDataSource : DataSource<TestConfigElement>
     {
-        public Func<IDictionary<string, string>, string> SelectFunc;
+        public Func<string, string> SelectFunc;
 
-        public Action<IDictionary<string, string>, string> UpdateAction;
+        public Action<string, string> UpdateAction;
 
-        public override string Select(IDictionary<string, string> keys)
+        public override void Initialize(IDictionary<string, string> values)
         {
-            return SelectFunc(keys);
         }
 
-        public override void Update(IDictionary<string, string> keys, string value)
+        public override string Select(string defaultKey)
         {
-            UpdateAction(keys, value);
+            return SelectFunc(defaultKey);
+        }
+
+        public override void Update(string defaultKey, string value)
+        {
+            UpdateAction(defaultKey, value);
         }
     }
 }

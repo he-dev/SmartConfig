@@ -143,8 +143,7 @@ namespace SmartConfig
             try
             {
                 var dataSource = DataSources[configFieldInfo.ConfigType];
-                var keys = CombineKeys(dataSource, configFieldInfo);
-                var value = dataSource.Select(keys);
+                var value = dataSource.Select(configFieldInfo.FieldPath);
                 return value;
             }
             catch (Exception ex)
@@ -159,21 +158,22 @@ namespace SmartConfig
         /// <param name="dataSource"></param>
         /// <param name="configFieldInfo"></param>
         /// <returns></returns>
-        private static IDictionary<string, string> CombineKeys(IDataSource dataSource, ConfigFieldInfo configFieldInfo)
-        {
-            // merge custom and default keys
-            var keys = new Dictionary<string, string>(dataSource.CustomKeys)
-            {
-                { KeyNames.DefaultKeyName, configFieldInfo.FieldPath }
-            };
+        //[Obsolete]
+        //private static IDictionary<string, string> CombineKeys(IDataSource dataSource, ConfigFieldInfo configFieldInfo)
+        //{
+        //    // merge custom and default keys
+        //    var keys = new Dictionary<string, string>(dataSource.CompositeKey)
+        //    {
+        //        { KeyNames.DefaultKeyName, configFieldInfo.FieldPath }
+        //    };
 
-            // set version key
-            if (!string.IsNullOrEmpty(configFieldInfo.ConfigVersion))
-            {
-                keys[KeyNames.VersionKeyName] = configFieldInfo.ConfigVersion;
-            }
-            return keys;
-        }
+        //    // set version key
+        //    if (!string.IsNullOrEmpty(configFieldInfo.ConfigVersion))
+        //    {
+        //        keys[KeyNames.VersionKeyName] = configFieldInfo.ConfigVersion;
+        //    }
+        //    return keys;
+        //}
 
         #endregion
 
@@ -190,8 +190,7 @@ namespace SmartConfig
             try
             {
                 var dataSource = DataSources[configFieldInfo.ConfigType];
-                var keys = CombineKeys(dataSource, configFieldInfo);
-                dataSource.Update(keys, serializedValue);
+                dataSource.Update(configFieldInfo.FieldPath, serializedValue);
             }
             catch (ConstraintException<ConstraintAttribute>)
             {

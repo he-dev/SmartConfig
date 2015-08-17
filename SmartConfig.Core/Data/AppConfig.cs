@@ -40,27 +40,33 @@ namespace SmartConfig.Data
             }
         }
 
-        public override string Select(IDictionary<string, string> keys)
+        public override void Initialize(IDictionary<string, string> values)
+        {
+        }
+
+        public override string Select(string defaultKey)
         {
             var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var configurationSection = GetConfigurationSection(exeConfig, keys);
+            var compositeKey = CreateCompositeKey(defaultKey);
+            var configurationSection = GetConfigurationSection(exeConfig, compositeKey);
             var sectionHandler = _sectionHandlers[configurationSection.GetType()];
-            var value = sectionHandler.Select(configurationSection, GetNameWithoutSectionName(keys));
+            var value = sectionHandler.Select(configurationSection, GetNameWithoutSectionName(compositeKey));
             return value;
         }
 
-        public override void Update(IDictionary<string, string> keys, string value)
+        public override void Update(string defaultKey, string value)
         {
             var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var configurationSection = GetConfigurationSection(exeConfig, keys);
+            var compositeKey = CreateCompositeKey(defaultKey);
+            var configurationSection = GetConfigurationSection(exeConfig, compositeKey);
             var sectionHandler = _sectionHandlers[configurationSection.GetType()];
-            sectionHandler.Update(configurationSection, GetNameWithoutSectionName(keys), value);
+            sectionHandler.Update(configurationSection, GetNameWithoutSectionName(compositeKey), value);
             exeConfig.Save(ConfigurationSaveMode.Minimal);
         }
 
-        private static string GetSectionName(IDictionary<string, string> keys)
+        private static string GetSectionName(CompositeKey key)
         {
-            var name = keys[SmartConfig.KeyNames.DefaultKeyName];
+            var name = key[KeyNames.DefaultKeyName];
             var sectionName = name.Split('.').First();
             return sectionName;
         }
@@ -72,9 +78,9 @@ namespace SmartConfig.Data
             return name;
         }
 
-        private static ConfigurationSection GetConfigurationSection(Configuration configuration, IDictionary<string, string> keys)
+        private static ConfigurationSection GetConfigurationSection(Configuration configuration, CompositeKey key)
         {
-            var sectionName = GetSectionName(keys);
+            var sectionName = GetSectionName(key);
             var actualSectionName = configuration.Sections.Keys.Cast<string>().Single(x => x.Equals(sectionName, StringComparison.OrdinalIgnoreCase));
             var section = configuration.Sections[actualSectionName];
             return section;

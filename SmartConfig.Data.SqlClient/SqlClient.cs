@@ -44,50 +44,44 @@ namespace SmartConfig.Data
             {
                 foreach (var value in values)
                 {
-                    // set default key
-                    var keys = new Dictionary<string, string>
-                    {
-                        { KeyNames.DefaultKeyName, value.Key }
-                    };
-
-                    foreach (var keyName in OrderedKeyNames.Where(k => k != KeyNames.DefaultKeyName))
-                    {
-                        keys[keyName] = _customKeys[keyName].Value;
-                    }
+                    var compositeKey = CreateCompositeKey(value.Key);
 
                     // check if this entity already exists
-                    var keyValues = OrderedKeyNames.Select(k => keys[k]).Cast<object>().ToArray();
+                    var keyValues = OrderedKeyNames.Select(k => compositeKey[k]).Cast<object>().ToArray();
                     var entity = context.ConfigElements.Find(keyValues);
 
                     // there's is no such entity yet so insert the default value
                     if (entity == null)
                     {
-                        InsertConfigElement(context, keys, value.Value);
+                        InsertConfigElement(context, compositeKey, value.Value);
                     }
                 }
                 context.SaveChanges();
             }
         }
 
-        public override string Select(IDictionary<string, string> keys)
+        public override string Select(string defaultKey)
         {
             using (var context = new SmartConfigEntities<TConfigElement>(ConnectionString, TableName))
             {
-                var name = keys[SmartConfig.KeyNames.DefaultKeyName];
+                var compositeKey = CreateCompositeKey(defaultKey);
+                var name = compositeKey[KeyNames.DefaultKeyName];
                 var elements = context.ConfigElements.Where(ce => ce.Name == name).ToList() as IEnumerable<TConfigElement>;
-                elements = ApplyFilters(elements, keys);
+                elements = ApplyFilters(elements, compositeKey);
 
                 var element = elements.SingleOrDefault();
                 return element == null ? null : element.Value;
             };
         }
 
-        public override void Update(IDictionary<string, string> keys, string value)
+        public override void Update(string defaultKey, string value)
         {
             using (var context = new SmartConfigEntities<TConfigElement>(ConnectionString, TableName))
             {
+                var compositeKey = CreateCompositeKey(defaultKey);
+
                 // find entity to update
-                var keyValues = OrderedKeyNames.Select(k => keys[k]).Cast<object>().ToArray();
+                var keyValues = compositeKey.Values.Cast<object>().ToArray(); // OrderedKeyNames.Select(k => compositeKey[k]).Cast<object>().ToArray();
                 var entity = context.ConfigElements.Find(keyValues);
 
                 // there is no such entity yet so create a new one
@@ -96,14 +90,14 @@ namespace SmartConfig.Data
                     // create a new entity
                     entity = new TConfigElement()
                     {
-                        Name = keys[SmartConfig.KeyNames.DefaultKeyName],
+                        Name = compositeKey[KeyNames.DefaultKeyName],
                         Value = value
                     };
 
                     // set customKeys
-                    foreach (var keyName in OrderedKeyNames.Where(k => k != SmartConfig.KeyNames.DefaultKeyName))
+                    foreach (var keyName in OrderedKeyNames.Where(k => k != KeyNames.DefaultKeyName))
                     {
-                        entity.SetStringDelegates[keyName](keys[keyName]);
+                        entity.SetStringDelegates[keyName](compositeKey[keyName]);
                     }
 
                     context.ConfigElements.Add(entity);

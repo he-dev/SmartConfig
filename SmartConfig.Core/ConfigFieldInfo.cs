@@ -26,7 +26,7 @@ namespace SmartConfig
                     path.Add(smartConfigAttribute.Name);
                     ConfigType = type;
                     ConfigName = smartConfigAttribute.Name;
-                    ConfigVersion = smartConfigAttribute.Version;
+                    //ConfigVersion = smartConfigAttribute.Version;
                     FieldPath = SmartConfig.FieldPath.Combine(((IEnumerable<string>)path).Reverse());
                     FieldConstraints = ((FieldInfo)member).GetCustomAttributes<ConstraintAttribute>(false);
                 }
@@ -54,7 +54,7 @@ namespace SmartConfig
 
         public Type ConfigType { get; private set; }
         public string ConfigName { get; private set; }
-        public string ConfigVersion { get; private set; }
+        //public string ConfigVersion { get; private set; }
 
         #endregion
 

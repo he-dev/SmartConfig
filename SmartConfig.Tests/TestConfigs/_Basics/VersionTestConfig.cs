@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Tests.TestConfigs
 {
-    [SmartConfig(Version = "2.2.1")]
+    [SmartConfig]
     public static class VersionTestConfig
     {
         [Optional]

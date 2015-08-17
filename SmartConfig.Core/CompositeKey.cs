@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartConfig.Data.SqlClient.Tests
+namespace SmartConfig
 {
-    [SmartConfig]
-    public static class BasicConfig
+    public class CompositeKey : Dictionary<string, string>
     {
-        public static int Int32Field;
+        
     }
 }
