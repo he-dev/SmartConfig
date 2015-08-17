@@ -23,9 +23,13 @@ namespace SmartConfig.Data
         /// <summary>
         /// Gets keys used by the data source.
         /// </summary>
-        IDictionary<string, string> KeyValues { get; }
+        IDictionary<string, string> CustomKeys { get; }
 
         IEnumerable<string> OrderedKeyNames { get; }
+
+        bool InitializationEnabled { get; }
+
+        void Initialize(IDictionary<string, string> values);
 
         /// <summary>
         /// Selects data from the data source.

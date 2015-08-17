@@ -32,17 +32,17 @@ namespace SmartConfig.Data.SqlClient.Tests
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
                 TableName = "TestConfig",
-                KeyInfos = new[]
+                CustomKeys = new[]
                 {
-                    new KeyInfo<TestConfigElement>()
+                    new CustomKey<TestConfigElement>()
                     {
-                        KeyName = KeyNames.EnvironmentKeyName,
-                        KeyValue = "ABC",
+                        Name = KeyNames.EnvironmentKeyName,
+                        Value = "ABC",
                         Filter = Filters.FilterByString
                     },
-                    new KeyInfo<TestConfigElement>()
+                    new CustomKey<TestConfigElement>()
                     {
-                        KeyName = KeyNames.VersionKeyName,
+                        Name = KeyNames.VersionKeyName,
                         Filter = Filters.FilterByVersion
                     }
                 }
@@ -58,17 +58,17 @@ namespace SmartConfig.Data.SqlClient.Tests
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
                 TableName = "TestConfig",
-                KeyInfos = new[]
+                CustomKeys = new[]
                 {
-                    new KeyInfo<TestConfigElement>()
+                    new CustomKey<TestConfigElement>()
                     {
-                        KeyName = KeyNames.EnvironmentKeyName,
-                        KeyValue = "ABC",
+                        Name = KeyNames.EnvironmentKeyName,
+                        Value = "ABC",
                         Filter = Filters.FilterByString
                     },
-                    new KeyInfo<TestConfigElement>()
+                    new CustomKey<TestConfigElement>()
                     {
-                        KeyName = KeyNames.VersionKeyName,
+                        Name = KeyNames.VersionKeyName,
                         Filter = Filters.FilterByVersion
                     }
                 }

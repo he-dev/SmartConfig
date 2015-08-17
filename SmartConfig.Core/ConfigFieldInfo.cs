@@ -12,7 +12,7 @@ namespace SmartConfig
     {
         private ConfigFieldInfo(MemberInfo member)
         {
-            Field = (FieldInfo)member;
+            FieldInfo = (FieldInfo)member;
 
             var path = new List<string> { member.Name };
 
@@ -58,11 +58,12 @@ namespace SmartConfig
 
         #endregion
 
-        #region Field Info
+        #region FieldInfo Info
 
-        public FieldInfo Field { get; private set; }
+        public FieldInfo FieldInfo { get; private set; }
         public string FieldPath { get; private set; }
         public IEnumerable<ConstraintAttribute> FieldConstraints { get; private set; }
+        public object FieldValue { get { return FieldInfo.GetValue(null); } }
 
         #endregion
     }

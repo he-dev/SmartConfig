@@ -11,8 +11,8 @@ namespace SmartConfig.Example.Data
     {
         public static class AppSettings
         {
-            public static string Environment;
-            public static string Greeting;
+            public static string Environment = "TEST";
+            public static string Greeting = "Hallo SmartConfig!";
 
             [Optional]
             public static string Farewell = "Good bye!";

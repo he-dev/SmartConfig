@@ -39,7 +39,7 @@ namespace SmartConfig.Data
             // get other keys but sort them alphabeticaly
             var declaredProperties = typeof(TConfigElement).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
             keyNames.AddRange(declaredProperties.OrderBy(p => p.Name).Select(p => p.Name));
-
+            
             var columnOrder = 0;
             foreach (var keyName in keyNames)
             {

@@ -20,7 +20,7 @@ namespace SmartConfig
             get
             {
                 return 
-                    "An error occured while reading the data for: Config = [$ConfigType], Field = [$FieldName]. See the inner exception for details."
+                    "An error occured while reading the data for: Config = [$ConfigType], FieldInfo = [$FieldName]. See the inner exception for details."
                     .FormatFrom(ConfigFieldInfo, true);
             }
         }

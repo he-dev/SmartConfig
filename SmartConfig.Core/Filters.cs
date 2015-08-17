@@ -15,19 +15,20 @@ namespace SmartConfig
     {
         public static IEnumerable<T> FilterByString<T>(IEnumerable<T> elements, KeyValuePair<string, string> property) where T : ConfigElement
         {
-            var result = 
+            var result =
                 elements
                 // first sort items by value
                 .OrderByDescending(e => e.GetStringDelegates[property.Key]())
                 // then either get the matching item or the one with the asterisk
-                .Where(e => e.GetStringDelegates[property.Key]().Equals(property.Value, StringComparison.OrdinalIgnoreCase) 
-                || e.GetStringDelegates[property.Key]().Equals(Wildcards.Asterisk));            
+                .Where(e =>
+                    e.GetStringDelegates[property.Key]().Equals(property.Value, StringComparison.OrdinalIgnoreCase)
+                    || e.GetStringDelegates[property.Key]().Equals(Wildcards.Asterisk));
             return result;
         }
 
         public static IEnumerable<T> FilterByVersion<T>(IEnumerable<T> elements, KeyValuePair<string, string> property) where T : ConfigElement
         {
-            var versions = 
+            var versions =
                 elements
                 .Where(e => e.GetStringDelegates[property.Key]() != Wildcards.Asterisk)
                 // get versions that are less or equal to current

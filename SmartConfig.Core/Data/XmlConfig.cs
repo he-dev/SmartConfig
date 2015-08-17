@@ -51,7 +51,7 @@ namespace SmartConfig.Data
             // apply filters for all keys except the default one
             elements = keys
                 .Where(x => x.Key != SmartConfig.KeyNames.DefaultKeyName)
-                .Aggregate(elements, (current, keyValue) => _keys[keyValue.Key].Filter(current, keyValue));
+                .Aggregate(elements, (current, keyValue) => _customKeys[keyValue.Key].Filter(current, keyValue));
 
             var result = elements.FirstOrDefault();
             return result != null ? result.Value : null;

@@ -38,6 +38,37 @@ namespace SmartConfig.Data
         /// </summary>
         public string TableName { get; set; }
 
+        public override void Initialize(IDictionary<string, string> values)
+        {
+            using (var context = new SmartConfigEntities<TConfigElement>(ConnectionString, TableName))
+            {
+                foreach (var value in values)
+                {
+                    // set default key
+                    var keys = new Dictionary<string, string>
+                    {
+                        { KeyNames.DefaultKeyName, value.Key }
+                    };
+
+                    foreach (var keyName in OrderedKeyNames.Where(k => k != KeyNames.DefaultKeyName))
+                    {
+                        keys[keyName] = _customKeys[keyName].Value;
+                    }
+
+                    // check if this entity already exists
+                    var keyValues = OrderedKeyNames.Select(k => keys[k]).Cast<object>().ToArray();
+                    var entity = context.ConfigElements.Find(keyValues);
+
+                    // there's is no such entity yet so insert the default value
+                    if (entity == null)
+                    {
+                        InsertConfigElement(context, keys, value.Value);
+                    }
+                }
+                context.SaveChanges();
+            }
+        }
+
         public override string Select(IDictionary<string, string> keys)
         {
             using (var context = new SmartConfigEntities<TConfigElement>(ConnectionString, TableName))
@@ -55,7 +86,9 @@ namespace SmartConfig.Data
         {
             using (var context = new SmartConfigEntities<TConfigElement>(ConnectionString, TableName))
             {
-                var entity = context.ConfigElements.Find(OrderedKeyNames.Select(k => keys[k]).Cast<object>().ToArray());
+                // find entity to update
+                var keyValues = OrderedKeyNames.Select(k => keys[k]).Cast<object>().ToArray();
+                var entity = context.ConfigElements.Find(keyValues);
 
                 // there is no such entity yet so create a new one
                 if (entity == null)
@@ -67,7 +100,7 @@ namespace SmartConfig.Data
                         Value = value
                     };
 
-                    // set keys
+                    // set customKeys
                     foreach (var keyName in OrderedKeyNames.Where(k => k != SmartConfig.KeyNames.DefaultKeyName))
                     {
                         entity.SetStringDelegates[keyName](keys[keyName]);
@@ -83,6 +116,24 @@ namespace SmartConfig.Data
 
                 context.SaveChanges();
             };
+        }
+
+        private void InsertConfigElement(SmartConfigEntities<TConfigElement> context, IDictionary<string, string> keys, string value)
+        {
+            // create a new entity
+            var entity = new TConfigElement()
+            {
+                Name = keys[KeyNames.DefaultKeyName],
+                Value = value
+            };
+
+            // set other customKeys
+            foreach (var keyName in keys.Keys.Where(k => k != KeyNames.DefaultKeyName))
+            {
+                entity.SetStringDelegates[keyName](keys[keyName]);
+            }
+
+            context.ConfigElements.Add(entity);
         }
     }
 }

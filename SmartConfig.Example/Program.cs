@@ -29,12 +29,12 @@ namespace SmartConfig.Example
             SmartConfigManager.Load(typeof(ExampleAppConfig), new XmlConfig<CustomConfigElement>()
             {
                 FileName = @"Data\XmlConfig.xml",
-                KeyInfos = new[]
+                CustomKeys = new[]
                 {
-                    new KeyInfo<CustomConfigElement>()
+                    new CustomKey<CustomConfigElement>()
                     {
-                        KeyName = KeyNames.EnvironmentKeyName,
-                        KeyValue = "ABC",
+                        Name = KeyNames.EnvironmentKeyName,
+                        Value = "ABC",
                         Filter = Filters.FilterByString
                     },
                 }
@@ -70,17 +70,17 @@ namespace SmartConfig.Example
             {
                 ConnectionString = ExampleAppConfig.ConnectionStrings.ExampleDb,
                 TableName = "ExampleConfigTable",
-                KeyInfos = new[]
+                CustomKeys = new[]
                 {
-                    new KeyInfo<CustomConfigElement>()
+                    new CustomKey<CustomConfigElement>()
                     {
-                        KeyName = KeyNames.EnvironmentKeyName,
-                        KeyValue = "ABC",
+                        Name = KeyNames.EnvironmentKeyName,
+                        Value = "ABC",
                         Filter = Filters.FilterByString
                     },
-                    new KeyInfo<CustomConfigElement>()
+                    new CustomKey<CustomConfigElement>()
                     {
-                        KeyName = KeyNames.VersionKeyName,
+                        Name = KeyNames.VersionKeyName,
                         Filter = Filters.FilterByVersion
                     }
                 }
@@ -94,16 +94,11 @@ namespace SmartConfig.Example
             SmartConfigManager.Load(typeof(ExampleXmlConfig), new XmlConfig<CustomConfigElement>()
             {
                 FileName = @"Data\XmlConfig.xml",
-                KeyInfos = new[]
-                {
-                    new KeyInfo<CustomConfigElement>()
-                    {
-                        KeyName = KeyNames.EnvironmentKeyName,
-                        KeyValue = "ABC",
-                        Filter = Filters.FilterByString
-                    },
-                }
-            });            
+            }
+            .AddCustomKey(k => k
+                .HasName(KeyNames.EnvironmentKeyName)
+                .HasValue("ABC")
+                .HasFilter(Filters.FilterByString)));
         }
     }
 }

@@ -89,7 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigFieldInfo.cs" />
-    <Compile Include="KeyInfo.cs" />
+    <Compile Include="CustomKey.cs" />
     <Compile Include="KeyNames.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Converters\DateTimeConverter.cs" />

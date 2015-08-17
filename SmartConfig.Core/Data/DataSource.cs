@@ -12,27 +12,27 @@ namespace SmartConfig.Data
     /// </summary>
     public abstract class DataSource<TConfigElement> : IDataSource where TConfigElement : ConfigElement, new()
     {
-        protected IDictionary<string, KeyInfo<TConfigElement>> _keys;
+        protected IDictionary<string, CustomKey<TConfigElement>> _customKeys;
 
         protected DataSource()
         {
             OrderedKeyNames = GetOrderedKeyNames();
-            _keys = new Dictionary<string, KeyInfo<TConfigElement>>();
+            _customKeys = new Dictionary<string, CustomKey<TConfigElement>>();
         }
 
-        public IEnumerable<KeyInfo<TConfigElement>> KeyInfos
+        public IEnumerable<CustomKey<TConfigElement>> CustomKeys
         {
-            get { return _keys.Values; }
+            get { return _customKeys.Values; }
             set
             {
-                if (value == null) throw new ArgumentNullException("Keys");
-                _keys = value.ToDictionary(k => k.KeyName);
+                if (value == null) throw new ArgumentNullException("CustomKeys");
+                _customKeys = value.ToDictionary(k => k.Name);
             }
         }
 
-        IDictionary<string, string> IDataSource.KeyValues
+        IDictionary<string, string> IDataSource.CustomKeys
         {
-            get { return _keys.ToDictionary(x => x.Key, x => x.Value.KeyValue); }
+            get { return _customKeys.ToDictionary(x => x.Key, x => x.Value.Value); }
         }
 
         /// <summary>
@@ -40,6 +40,10 @@ namespace SmartConfig.Data
         /// The first element is always the Name then follow other keys in alphabetical order.
         /// </summary>
         public IEnumerable<string> OrderedKeyNames { get; protected set; }
+
+        public bool InitializationEnabled { get; set; }
+
+        public virtual void Initialize(IDictionary<string, string> values) { }
 
         public abstract string Select(IDictionary<string, string> keys);
 
@@ -55,7 +59,7 @@ namespace SmartConfig.Data
         {
             elements = keys
                 .Where(x => x.Key != SmartConfig.KeyNames.DefaultKeyName)
-                .Aggregate(elements, (current, item) => _keys[item.Key].Filter(current, item));
+                .Aggregate(elements, (current, item) => _customKeys[item.Key].Filter(current, item));
             return elements;
         }
 
@@ -70,6 +74,14 @@ namespace SmartConfig.Data
                 .OrderBy(n => n);
             result.AddRange(propertyNames);
             return result;
+        }
+
+        public DataSource<TConfigElement> AddCustomKey(Action<CustomKey<TConfigElement>> configureKey)
+        {
+            var customKey = new CustomKey<TConfigElement>();
+            configureKey(customKey);
+            _customKeys[customKey.Name] = customKey;
+            return this;
         }
     }
 }

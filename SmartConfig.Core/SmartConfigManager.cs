@@ -66,7 +66,18 @@ namespace SmartConfig
 
             DataSources[configType] = dataSource;
 
-            var fields = GetFields(configType);
+            var fields = GetFields(configType).ToList();
+
+            if (true) //dataSource.InitializationEnabled)
+            {
+                IDictionary<string, string> values = new Dictionary<string, string>();
+                foreach (var field in fields)
+                {                
+                    var configFieldInfo = ConfigFieldInfo.From(field);
+                    values[configFieldInfo.FieldPath] = SerializeValue(configFieldInfo.FieldValue, configFieldInfo) ;
+                }
+                dataSource.Initialize(values);
+            }
 
             foreach (var field in fields)
             {
@@ -151,7 +162,7 @@ namespace SmartConfig
         private static IDictionary<string, string> CombineKeys(IDataSource dataSource, ConfigFieldInfo configFieldInfo)
         {
             // merge custom and default keys
-            var keys = new Dictionary<string, string>(dataSource.KeyValues)
+            var keys = new Dictionary<string, string>(dataSource.CustomKeys)
             {
                 { KeyNames.DefaultKeyName, configFieldInfo.FieldPath }
             };
@@ -175,21 +186,9 @@ namespace SmartConfig
         public static void Update<TField>(Expression<Func<TField>> expression, TField value)
         {
             var configFieldInfo = ConfigFieldInfo.From(expression);
-            var field = configFieldInfo.Field;
-            field.SetValue(null, value);
-
-            //TField data = expression.Compile()();
-
-            if (value == null && !field.IsNullable())
-            {
-                throw new OptionalException(configFieldInfo);
-            }
-
-            var converter = GetConverter(configFieldInfo);
-
+            var serializedValue = SerializeValue(value, configFieldInfo);
             try
             {
-                var serializedValue = converter.SerializeObject(value, field.FieldType, field.GetCustomAttributes<ConstraintAttribute>(false));
                 var dataSource = DataSources[configFieldInfo.ConfigType];
                 var keys = CombineKeys(dataSource, configFieldInfo);
                 dataSource.Update(keys, serializedValue);
@@ -203,7 +202,36 @@ namespace SmartConfig
                 throw new ObjectConverterException(configFieldInfo, ex)
                 {
                     Value = value,
-                    FromType = field.FieldType,
+                    FromType = configFieldInfo.FieldInfo.FieldType,
+                    ToType = typeof(string),
+                };
+            }
+        }
+
+        private static string SerializeValue(object value, ConfigFieldInfo configFieldInfo)
+        {
+            if (value == null && !configFieldInfo.FieldInfo.IsNullable())
+            {
+                throw new OptionalException(configFieldInfo);
+            }
+
+            var converter = GetConverter(configFieldInfo);
+
+            try
+            {
+                var serializedValue = converter.SerializeObject(value, configFieldInfo.FieldInfo.FieldType, configFieldInfo.FieldConstraints);
+                return serializedValue;
+            }
+            catch (ConstraintException<ConstraintAttribute>)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new ObjectConverterException(configFieldInfo, ex)
+                {
+                    Value = value,
+                    FromType = configFieldInfo.FieldInfo.FieldType,
                     ToType = typeof(string),
                 };
             }
@@ -211,7 +239,7 @@ namespace SmartConfig
 
         private static ObjectConverterBase GetConverter(ConfigFieldInfo configFieldInfo)
         {
-            var type = GetConverterType(configFieldInfo.Field);
+            var type = GetConverterType(configFieldInfo.FieldInfo);
 
             var objectConverter = Converters[type];
             if (objectConverter == null)
