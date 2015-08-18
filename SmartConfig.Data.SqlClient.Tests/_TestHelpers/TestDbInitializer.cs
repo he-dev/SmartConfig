@@ -10,9 +10,9 @@ namespace SmartConfig.Data.SqlClient.Tests
 {
     // http://stackoverflow.com/a/13992028/235671
 
-    class TestDbInitializer : System.Data.Entity.DropCreateDatabaseAlways<SmartConfigEntities<TestConfigElement>>
+    class TestDbInitializer : System.Data.Entity.DropCreateDatabaseAlways<SmartConfigEntities<TestSetting>>
     {
-        protected override void Seed(SmartConfigEntities<TestConfigElement> context)
+        protected override void Seed(SmartConfigEntities<TestSetting> context)
         {
             var testConfig = new[]
             {
@@ -21,11 +21,11 @@ namespace SmartConfig.Data.SqlClient.Tests
                 "ABC|2.1.1|StringField|jkl",
                 "JKL|3.2.4|StringField|xyz",
             }
-            .Select(x => new TestConfigElement(x));
+            .Select(x => new TestSetting(x));
 
             foreach (var configElement in testConfig)
             {
-                context.ConfigElements.Add(configElement);
+                context.Settings.Add(configElement);
             }
             context.SaveChanges();
         }

@@ -10,42 +10,39 @@ namespace SmartConfig.Data
     /// <summary>
     /// Implements and extends the <c>IDataSource</c> interface.
     /// </summary>
-    public abstract class DataSource<TConfigElement> : IDataSource where TConfigElement : ConfigElement, new()
+    public abstract class DataSource<TSetting> : IDataSource where TSetting : Setting, new()
     {
-        protected IDictionary<string, CustomKey<TConfigElement>> _customKeys;
+        private KeyMembers _keyMembers;
+
+        protected IDictionary<string, KeyProperties<TSetting>> _keyConfigurations;
 
         protected DataSource()
         {
-            OrderedKeyNames = GetOrderedKeyNames();
-            _customKeys = new Dictionary<string, CustomKey<TConfigElement>>();
-        }
-
-        public IEnumerable<CustomKey<TConfigElement>> CustomKeys
-        {
-            get { return _customKeys.Values; }
-            set
-            {
-                if (value == null) throw new ArgumentNullException("CustomKeys");
-                _customKeys = value.ToDictionary(k => k.Name);
-            }
-        }
-
-        IDictionary<string, string> IDataSource.CompositeKey
-        {
-            get { return _customKeys.ToDictionary(x => x.Key, x => x.Value.Value); }
-        }
+            _keyConfigurations = new Dictionary<string, KeyProperties<TSetting>>();
+        }        
 
         /// <summary>
         /// Gets an ordered enumeration of key names.
         /// The first element is always the Name then follow other key in alphabetical order.
         /// </summary>
-        public IEnumerable<string> OrderedKeyNames { get; protected set; }
+        public KeyMembers KeyMembers
+        {
+            get
+            {
+                if (_keyMembers != null)
+                {
+                    return _keyMembers;
+                }
+                _keyMembers = KeyMembers.From<TSetting>();
+                return _keyMembers;
+            }
+        }
 
-        public bool InitializationEnabled { get; set; }
+        public bool CanInitializeSettings { get; set; }
 
-        public virtual void Initialize(IDictionary<string, string> values) { }
+        public virtual void InitializeSettings(IDictionary<string, string> values) { }
 
-        public abstract string Select(string  defaultKey);
+        public abstract string Select(string defaultKey);
 
         public abstract void Update(string defaultKey, string value);
 
@@ -55,45 +52,32 @@ namespace SmartConfig.Data
         /// <param name="elements"></param>
         /// <param name="keys"></param>
         /// <returns></returns>
-        protected IEnumerable<TConfigElement> ApplyFilters(IEnumerable<TConfigElement> elements, IDictionary<string, string> keys)
+        protected IEnumerable<TSetting> ApplyFilters(IEnumerable<TSetting> elements, IDictionary<string, string> keys)
         {
             elements = keys
-                .Where(x => x.Key != SmartConfig.KeyNames.DefaultKeyName)
-                .Aggregate(elements, (current, item) => _customKeys[item.Key].Filter(current, item));
+                .Where(x => x.Key != KeyNames.DefaultKeyName)
+                .Aggregate(elements, (current, item) => _keyConfigurations[item.Key].Filter(current, item));
             return elements;
         }
 
-        private IEnumerable<string> GetOrderedKeyNames()
+        public DataSource<TSetting> ConfigureKey(string keyName, Action<KeyProperties<TSetting>> configureKey)
         {
-            var result = new List<string> { KeyNames.DefaultKeyName };
-
-            var propertyNames = 
-                typeof(TConfigElement)
-                .GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
-                .Select(p => p.Name)
-                .OrderBy(n => n);
-            result.AddRange(propertyNames);
-            return result;
-        }
-
-        public DataSource<TConfigElement> AddCustomKey(Action<CustomKey<TConfigElement>> configureKey)
-        {
-            var customKey = new CustomKey<TConfigElement>();
-            configureKey(customKey);
-            _customKeys[customKey.Name] = customKey;
+            var keyConfiguration = new KeyProperties<TSetting>();
+            configureKey(keyConfiguration);
+            _keyConfigurations[keyName] = keyConfiguration;
             return this;
         }
 
-        public CompositeKey CreateCompositeKey(string defaultKey)
+        protected CompositeKey CreateCompositeKey(string defaultKey)
         {
             var complexKey = new CompositeKey()
             {
                 { KeyNames.DefaultKeyName, defaultKey }
             };
 
-            foreach (var keyName in OrderedKeyNames.Where(k => k != KeyNames.DefaultKeyName))
+            foreach (var keyName in KeyMembers.Where(k => k != KeyNames.DefaultKeyName))
             {
-                complexKey[keyName] = _customKeys[keyName].Value;
+                complexKey[keyName] = _keyConfigurations[keyName].Value;
             }
 
             return complexKey;

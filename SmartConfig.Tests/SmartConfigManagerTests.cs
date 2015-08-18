@@ -338,8 +338,8 @@ namespace SmartConfig.Tests
             }, Assert.Fail);
 
             Assert.IsNotNull(ex);
-            Assert.AreEqual(typeof(MissingOptionalAttribute), ex.ConfigFieldInfo.ConfigType);
-            Assert.AreEqual("Int32Field", ex.ConfigFieldInfo.FieldPath);
+            Assert.AreEqual(typeof(MissingOptionalAttribute), ex.SettingInfo.ConfigType);
+            Assert.AreEqual("Int32Field", ex.SettingInfo.FieldPath);
         }
 
         [TestMethod]

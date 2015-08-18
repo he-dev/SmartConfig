@@ -11,13 +11,13 @@ using SmartUtilities;
 
 namespace SmartConfig.Data
 {
-    public class XmlConfig<TConfigElement> : DataSource<TConfigElement> where TConfigElement : ConfigElement, new()
+    public class XmlConfig<TSetting> : DataSource<TSetting> where TSetting : Setting, new()
     {
         private XDocument xConfig;       
 
         public string FileName { get; set; }
 
-        public override void Initialize(IDictionary<string, string> values)
+        public override void InitializeSettings(IDictionary<string, string> values)
         {
         }
 
@@ -36,14 +36,14 @@ namespace SmartConfig.Data
             // create TConfigElement from each item
             var elements = xElements.Select(x =>
             {
-                var element = new TConfigElement
+                var element = new TSetting
                 {
                     Name = x.Attribute("name").Value,
                     Value = x.Value
                 };
 
                 // set custom properties
-                foreach (var keyName in OrderedKeyNames.Where(k => k != KeyNames.DefaultKeyName))
+                foreach (var keyName in KeyMembers.Where(k => k != KeyNames.DefaultKeyName))
                 {
                     // find an attribute for the property - the search is case insensitive
                     var attr = x.Attributes().SingleOrDefault(a => a.Name.ToString().Equals(keyName, StringComparison.OrdinalIgnoreCase));
@@ -57,7 +57,7 @@ namespace SmartConfig.Data
             // apply filters for all keys except the default one
             elements = compositeKey
                 .Where(x => x.Key != KeyNames.DefaultKeyName)
-                .Aggregate(elements, (current, keyValue) => _customKeys[keyValue.Key].Filter(current, keyValue));
+                .Aggregate(elements, (current, keyValue) => _keyConfigurations[keyValue.Key].Filter(current, keyValue));
 
             var result = elements.FirstOrDefault();
             return result != null ? result.Value : null;
@@ -70,7 +70,7 @@ namespace SmartConfig.Data
 
         private void LoadXml()
         {
-            var currentLocation = Path.GetDirectoryName(Assembly.GetAssembly(typeof(XmlConfig<TConfigElement>)).Location);
+            var currentLocation = Path.GetDirectoryName(Assembly.GetAssembly(typeof(XmlConfig<TSetting>)).Location);
             xConfig = XDocument.Load(Path.Combine(currentLocation, FileName));
         }
     }

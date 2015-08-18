@@ -13,7 +13,7 @@ namespace SmartConfig.Data
     /// <summary>
     /// Implements the app.config as data source.
     /// </summary>
-    public class AppConfig : DataSource<ConfigElement>
+    public class AppConfig : DataSource<Setting>
     {
         private IDictionary<Type, AppConfigSectionHandler> _sectionHandlers;
 
@@ -40,7 +40,7 @@ namespace SmartConfig.Data
             }
         }
 
-        public override void Initialize(IDictionary<string, string> values)
+        public override void InitializeSettings(IDictionary<string, string> values)
         {
         }
 

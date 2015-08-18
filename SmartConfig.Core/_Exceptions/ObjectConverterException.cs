@@ -13,8 +13,8 @@ namespace SmartConfig
     /// </summary>
     public class ObjectConverterException : SmartConfigException
     {
-        public ObjectConverterException(ConfigFieldInfo configFieldInfo, Exception innerException)
-            : base(configFieldInfo, innerException)
+        public ObjectConverterException(SettingInfo settingInfo, Exception innerException)
+            : base(settingInfo, innerException)
         {
         }
 

@@ -93,6 +93,7 @@
     <Compile Include="SelfConfig.cs" />
     <Compile Include="SqlClient.cs" />
     <Compile Include="SmartConfigEntities.cs" />
+    <Compile Include="SqlClientConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SmartConfig.Core\SmartConfig.Core.csproj">

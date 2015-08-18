@@ -8,12 +8,12 @@ namespace SmartConfig
 {
     public class SmartConfigException : Exception
     {
-        public SmartConfigException(ConfigFieldInfo configFieldInfo, Exception innerException)
+        public SmartConfigException(SettingInfo settingInfo, Exception innerException)
             : base(string.Empty, innerException)
         {
-            ConfigFieldInfo = configFieldInfo;
+            SettingInfo = settingInfo;
         }
 
-        public ConfigFieldInfo ConfigFieldInfo { get; private set; }        
+        public SettingInfo SettingInfo { get; private set; }        
     }
 }

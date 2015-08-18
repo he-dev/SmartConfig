@@ -8,13 +8,13 @@ namespace SmartConfig.Tests
     [TestClass]
     public class FiltersTests
     {
-        private readonly TestConfigElement[] _testItems = new[]
+        private readonly TestSetting[] _testItems = new[]
         {
-            new TestConfigElement("ABC|*|name|value"),
-            new TestConfigElement("XYZ|1.3.0|name|value"),
-            new TestConfigElement("XYZ|2.4.0|name|value"),
-            new TestConfigElement("*|3.0.0|name|value"),
-            new TestConfigElement("JKL|4.1.8|name|value"),
+            new TestSetting("ABC|*|name|value"),
+            new TestSetting("XYZ|1.3.0|name|value"),
+            new TestSetting("XYZ|2.4.0|name|value"),
+            new TestSetting("*|3.0.0|name|value"),
+            new TestSetting("JKL|4.1.8|name|value"),
         };
 
         [TestMethod]

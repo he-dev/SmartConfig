@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -12,7 +13,7 @@ namespace SmartConfig
     /// <summary>
     /// Provides general utilities.
     /// </summary>
-    internal static class Utilities
+    public static class Utilities
     {
         internal static MemberInfo GetMemberInfo<TField>(Expression<Func<TField>> expression)
         {
@@ -25,5 +26,33 @@ namespace SmartConfig
 
             return memberExpression.Member;
         }
+    }
+
+    public class KeyMembers : List<string>
+    {
+        public static KeyMembers From<TSetting>() where TSetting : Setting
+        {
+            var keyMembers = new KeyMembers()
+            {
+                KeyNames.DefaultKeyName
+            };
+
+            var currentType = typeof(TSetting);
+
+            var isCustomType = currentType != typeof(Setting);
+            if (!isCustomType)
+            {
+                return keyMembers;
+            }
+
+            var propertyNames =
+                currentType
+                    .GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
+                    .Select(p => p.Name)
+                    .OrderBy(n => n);
+            keyMembers.AddRange(propertyNames);
+
+            return keyMembers;
+        }       
     }
 }

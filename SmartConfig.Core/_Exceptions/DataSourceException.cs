@@ -9,8 +9,8 @@ namespace SmartConfig
 {
     public class DataSourceException : SmartConfigException
     {
-        public DataSourceException(ConfigFieldInfo configFieldInfo, Exception innerException)
-            : base(configFieldInfo, innerException)
+        public DataSourceException(SettingInfo settingInfo, Exception innerException)
+            : base(settingInfo, innerException)
         {
 
         }
@@ -21,7 +21,7 @@ namespace SmartConfig
             {
                 return 
                     "An error occured while reading the data for: Config = [$ConfigType], FieldInfo = [$FieldName]. See the inner exception for details."
-                    .FormatFrom(ConfigFieldInfo, true);
+                    .FormatFrom(SettingInfo, true);
             }
         }
     }

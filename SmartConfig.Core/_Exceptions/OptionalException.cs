@@ -13,7 +13,7 @@ namespace SmartConfig
     /// </summary>
     public class OptionalException : SmartConfigException
     {
-        internal OptionalException(ConfigFieldInfo configFieldInfo) : base(configFieldInfo, null) { }
+        internal OptionalException(SettingInfo settingInfo) : base(settingInfo, null) { }
 
         public override string Message
         {
@@ -23,8 +23,8 @@ namespace SmartConfig
                     "[$ConfigTypeName]'s field [$FieldName] is not optional. If you want it to be optional add the $optionalAttributeName."
                     .FormatWith(new
                     {
-                        ConfigTypeName = ConfigFieldInfo.ConfigType.Name,
-                        FieldFullName = ConfigFieldInfo.FieldPath,
+                        ConfigTypeName = SettingInfo.ConfigType.Name,
+                        FieldFullName = SettingInfo.FieldPath,
                         OptionalAttributeName = typeof(OptionalAttribute).Name
                     }, true);
             }

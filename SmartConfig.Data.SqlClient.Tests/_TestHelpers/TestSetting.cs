@@ -9,11 +9,11 @@ using SmartConfig.Data;
 
 namespace SmartConfig.Data.SqlClient.Tests
 {
-    public class TestConfigElement : ConfigElement
+    public class TestSetting : Setting
     {
-        public TestConfigElement() { }
+        public TestSetting() { }
 
-        public TestConfigElement(string values)
+        public TestSetting(string values)
         {
             var columns = values.Split('|');
             Environment = columns[0];

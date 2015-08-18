@@ -13,7 +13,7 @@ namespace SmartConfig
     /// </summary>
     public static class Filters
     {
-        public static IEnumerable<T> FilterByString<T>(IEnumerable<T> elements, KeyValuePair<string, string> property) where T : ConfigElement
+        public static IEnumerable<T> FilterByString<T>(IEnumerable<T> elements, KeyValuePair<string, string> property) where T : Setting
         {
             var result =
                 elements
@@ -26,7 +26,7 @@ namespace SmartConfig
             return result;
         }
 
-        public static IEnumerable<T> FilterByVersion<T>(IEnumerable<T> elements, KeyValuePair<string, string> property) where T : ConfigElement
+        public static IEnumerable<T> FilterByVersion<T>(IEnumerable<T> elements, KeyValuePair<string, string> property) where T : Setting
         {
             var versions =
                 elements

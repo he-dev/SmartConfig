@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace SmartConfig
 {
-    public class ConfigFieldInfo
+    public class SettingInfo
     {
-        private ConfigFieldInfo(MemberInfo member)
+        private SettingInfo(MemberInfo member)
         {
             FieldInfo = (FieldInfo)member;
 
@@ -40,14 +40,14 @@ namespace SmartConfig
             }
         }
 
-        internal static ConfigFieldInfo From(MemberInfo member)
+        internal static SettingInfo From(MemberInfo member)
         {
-            return new ConfigFieldInfo(member);
+            return new SettingInfo(member);
         }
 
-        internal static ConfigFieldInfo From<TField>(Expression<Func<TField>> expression)
+        internal static SettingInfo From<TField>(Expression<Func<TField>> expression)
         {
-            return new ConfigFieldInfo(Utilities.GetMemberInfo(expression));
+            return new SettingInfo(Utilities.GetMemberInfo(expression));
         }
 
         #region Config Info
@@ -66,25 +66,5 @@ namespace SmartConfig
         public object FieldValue { get { return FieldInfo.GetValue(null); } }
 
         #endregion
-    }
-
-    //class ConfigInfo
-    //{
-    //    public Type ConfigType { get; private set; }
-    //    public string ConfigName { get; private set; }
-    //    public IDictionary<string, string> ConfigKeys { get; private set; }
-    //}
-
-    //class ConfigField
-    //{
-    //    private FieldInfo _fieldInfo;
-
-    //    public string FieldPath { get; private set; }
-    //    public IEnumerable<ConstraintAttribute> FieldConstraints { get; private set; }
-
-    //    public static implicit operator FieldInfo(ConfigField configField)
-    //    {
-    //        return configField._fieldInfo;
-    //    }
-    //}
+    }    
 }

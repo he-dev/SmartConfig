@@ -7,13 +7,13 @@ using SmartConfig.Data;
 
 namespace SmartConfig.Tests
 {
-    public class TestDataSource : DataSource<TestConfigElement>
+    public class TestDataSource : DataSource<TestSetting>
     {
         public Func<string, string> SelectFunc;
 
         public Action<string, string> UpdateAction;
 
-        public override void Initialize(IDictionary<string, string> values)
+        public override void InitializeSettings(IDictionary<string, string> values)
         {
         }
 

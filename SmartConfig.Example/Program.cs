@@ -25,20 +25,18 @@ namespace SmartConfig.Example
 
         private static void AppConfigExample()
         {
-            // SmartConfigBuilder.Load(typeof(ExampleAppConfig)).From<XmlConfig>(ds => ds.FileName = @"abc.xml")
-            SmartConfigManager.Load(typeof(ExampleAppConfig), new XmlConfig<CustomConfigElement>()
+            //SmartConfigLoader.From<XmlConfig<CustomSetting>>(c => c.)
+
+            // SmartConfigLoader.Load(typeof(ExampleAppConfig)).From<XmlConfig>(ds => ds.FileName = @"abc.xml")
+            SmartConfigManager.Load(typeof(ExampleAppConfig), new XmlConfig<CustomSetting>()
             {
-                FileName = @"Data\XmlConfig.xml",
-                CustomKeys = new[]
-                {
-                    new CustomKey<CustomConfigElement>()
-                    {
-                        Name = KeyNames.EnvironmentKeyName,
-                        Value = "ABC",
-                        Filter = Filters.FilterByString
-                    },
-                }
-            });
+                FileName = @"Data\XmlConfig.xml"
+            }
+            .ConfigureKey(KeyNames.EnvironmentKeyName, k =>
+            {
+                k.Value = "ABC";
+                k.Filter = Filters.FilterByString;
+            }));
 
             return;
 
@@ -55,10 +53,10 @@ namespace SmartConfig.Example
 
         private static void BasicSqlClientExample()
         {
-            SmartConfigManager.Load(typeof(ExampleDbConfig1), new SqlClient<ConfigElement>()
+            SmartConfigManager.Load(typeof(ExampleDbConfig1), new SqlClient<Setting>()
             {
                 ConnectionString = ExampleAppConfig.ConnectionStrings.ExampleDb,
-                TableName = "ExampleConfigTable",
+                SettingTableName = "ExampleConfigTable",
             });
 
             Console.WriteLine(ExampleDbConfig1.Welcome);
@@ -66,24 +64,42 @@ namespace SmartConfig.Example
 
         private static void CustomSqlClientExample()
         {
-            SmartConfigManager.Load(typeof(ExampleDbConfig2), new SqlClient<CustomConfigElement>()
+            //SmartConfigManager.Load(typeof(ExampleAppConfig), new SqlClient<CustomSetting>(c =>
+            //{
+            //    c.ConnectionString = "";
+            //    c.SettingTableName = "";
+            //}));
+
+            SmartConfigManager.Load(typeof(ExampleDbConfig2), new SqlClient<CustomSetting>()
             {
                 ConnectionString = ExampleAppConfig.ConnectionStrings.ExampleDb,
-                TableName = "ExampleConfigTable",                
+                SettingTableName = "ExampleConfigTable",
             }
-            .AddCustomKey(k => k.HasName(KeyNames.EnvironmentKeyName).HasValue("ABC").HasFilter(Filters.FilterByString))
-            .AddCustomKey(k => k.HasName(KeyNames.VersionKeyName).HasValue("2.0.0").HasFilter(Filters.FilterByVersion)));
+            .ConfigureKey(KeyNames.EnvironmentKeyName, k =>
+            {
+                k.Value = "ABC";
+                k.Filter = Filters.FilterByString;
+            })
+            .ConfigureKey(KeyNames.VersionKeyName, k =>
+            {
+                k.Value = "2.0.0";
+                k.Filter = Filters.FilterByVersion;
+            }));
 
             Console.WriteLine(ExampleDbConfig2.GoodBye);
         }
 
         private static void XmlConfigExample()
         {
-            SmartConfigManager.Load(typeof(ExampleXmlConfig), new XmlConfig<CustomConfigElement>()
+            SmartConfigManager.Load(typeof(ExampleXmlConfig), new XmlConfig<CustomSetting>()
             {
                 FileName = @"Data\XmlConfig.xml",
             }
-            .AddCustomKey(k => k.HasName(KeyNames.EnvironmentKeyName).HasValue("ABC").HasFilter(Filters.FilterByString)));
+            .ConfigureKey(KeyNames.EnvironmentKeyName, k =>
+            {
+                k.Value = "ABC";
+                k.Filter = Filters.FilterByString;
+            }));
         }
     }
 }

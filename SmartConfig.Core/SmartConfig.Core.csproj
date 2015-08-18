@@ -89,8 +89,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompositeKey.cs" />
-    <Compile Include="ConfigFieldInfo.cs" />
-    <Compile Include="CustomKey.cs" />
+    <Compile Include="SettingInfo.cs" />
+    <Compile Include="KeyProperties.cs" />
     <Compile Include="KeyNames.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Converters\DateTimeConverter.cs" />
@@ -99,12 +99,13 @@
     <Compile Include="Collections\ObjectConverterCollection.cs" />
     <Compile Include="Data\_AppConfigSectionHandlers\AppConfigSectionHandler.cs" />
     <Compile Include="Data\_AppConfigSectionHandlers\AppSettingsSectionHandler.cs" />
-    <Compile Include="Data\ConfigElement.cs" />
+    <Compile Include="Data\Setting.cs" />
     <Compile Include="Data\_AppConfigSectionHandlers\ConnectionStringsSectionHandler.cs" />
     <Compile Include="Data\DataSource.cs" />
     <Compile Include="Data\XmlConfig.cs" />
     <Compile Include="Filters.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="SmartConfigLoader.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="Wildcards.cs" />
     <Compile Include="_Attributes\IgnoreAttribute.cs" />

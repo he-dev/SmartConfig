@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -10,34 +11,30 @@ namespace SmartConfig.Data
     /// <summary>
     /// Provides <c>DbContext</c> for retreiving configuration from a database.
     /// </summary>
-    public class SmartConfigEntities<TConfigElement> : DbContext where TConfigElement : class
+    public sealed class SmartConfigEntities<TSetting> : DbContext where TSetting : class
     {
-        private readonly string _tableName;
-
-        public SmartConfigEntities(string connectionString, string tableName)
+        public SmartConfigEntities(string connectionString)
             : base(connectionString)
         {
-            if (string.IsNullOrEmpty(tableName))
-            {
-                throw new ArgumentNullException("tableName");
-            }
-            _tableName = tableName;
+            Debug.Assert(!string.IsNullOrEmpty(connectionString));
         }
+        
+        public string SettingsTableName { get; set; }
 
         /// <summary>
         /// Gets or sets config elements.
         /// </summary>
-        public virtual DbSet<TConfigElement> ConfigElements { get; set; }
+        public DbSet<TSetting> Settings { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<TConfigElement>().ToTable(_tableName);
+            modelBuilder.Entity<TSetting>().ToTable(SettingsTableName);
 
             // create a list with key names and initialize it with the default key
             var keyNames = new List<string> { KeyNames.DefaultKeyName };
 
             // get other keys but sort them alphabeticaly
-            var declaredProperties = typeof(TConfigElement).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+            var declaredProperties = typeof(TSetting).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
             keyNames.AddRange(declaredProperties.OrderBy(p => p.Name).Select(p => p.Name));
             
             var columnOrder = 0;

@@ -9,7 +9,7 @@ using SmartConfig.Data;
 
 namespace SmartConfig.Example.Data
 {
-    public class CustomConfigElement : ConfigElement
+    public class CustomSetting : Setting
     {
         public string Environment { get; set; }
 

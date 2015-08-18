@@ -17,7 +17,7 @@ namespace SmartConfig
         public static string From<T>(Expression<Func<T>> expression)
         {
             var memberInfo = Utilities.GetMemberInfo(expression);
-            var configFieldInfo = ConfigFieldInfo.From(memberInfo);
+            var configFieldInfo = SettingInfo.From(memberInfo);
 
             // Replace config namespace and class name with application name.
             var elementName = Regex.Replace(memberInfo.ReflectedType.FullName, @"^" + configFieldInfo.ConfigType.FullName + @"\.?", string.Empty);

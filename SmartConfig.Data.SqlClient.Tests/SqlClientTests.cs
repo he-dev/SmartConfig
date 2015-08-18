@@ -18,7 +18,10 @@ namespace SmartConfig.Data.SqlClient.Tests
         {
             // TODO: define key columns
             AppDomain.CurrentDomain.SetData("DataDirectory", AppDomain.CurrentDomain.BaseDirectory);
-            using (var context = new SmartConfigEntities<TestConfigElement>(ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString, "TestConfig"))
+            using (var context = new SmartConfigEntities<TestSetting>(ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString)
+            {
+                SettingsTableName = "TestConfig"
+            })
             {
                 context.Database.Initialize(true);
             }
@@ -28,13 +31,21 @@ namespace SmartConfig.Data.SqlClient.Tests
         [TestMethod]
         public void Select_Int32Field()
         {
-            var dataSource = new SqlClient<TestConfigElement>()
+            var dataSource = new SqlClient<TestSetting>()
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
-                TableName = "TestConfig",
+                SettingTableName = "TestConfig",
             }
-            .AddCustomKey(k => k.HasName(KeyNames.EnvironmentKeyName).HasValue("ABC").HasFilter(Filters.FilterByString))
-            .AddCustomKey(k => k.HasName(KeyNames.VersionKeyName).HasValue("1.3.0").HasFilter(Filters.FilterByVersion));
+            .ConfigureKey(KeyNames.EnvironmentKeyName, k =>
+            {
+                k.Value = "ABC";
+                k.Filter = Filters.FilterByString;
+            })
+            .ConfigureKey(KeyNames.VersionKeyName, k =>
+            {
+                k.Value = "1.3.0";
+                k.Filter = Filters.FilterByVersion;
+            });
 
             SmartConfigManager.Load(typeof(BasicConfig), dataSource);
             Assert.AreEqual(123, BasicConfig.Int32Field);
@@ -43,25 +54,22 @@ namespace SmartConfig.Data.SqlClient.Tests
         [TestMethod]
         public void Update_Int32Fields()
         {
-            var dataSource = new SqlClient<TestConfigElement>()
+            var dataSource = new SqlClient<TestSetting>()
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
-                TableName = "TestConfig",
-                CustomKeys = new[]
-                {
-                    new CustomKey<TestConfigElement>()
-                    {
-                        Name = KeyNames.EnvironmentKeyName,
-                        Value = "ABC",
-                        Filter = Filters.FilterByString
-                    },
-                    new CustomKey<TestConfigElement>()
-                    {
-                        Name = KeyNames.VersionKeyName,
-                        Filter = Filters.FilterByVersion
-                    }
-                }
-            };
+                SettingTableName = "TestConfig"
+            }
+            .ConfigureKey(KeyNames.EnvironmentKeyName, k =>
+            {
+                k.Value = "ABC";
+                k.Filter = Filters.FilterByString;
+            })
+            .ConfigureKey(KeyNames.VersionKeyName, k =>
+            {
+                k.Value = "1.3.0";
+                k.Filter = Filters.FilterByVersion;
+            });
+
             SmartConfigManager.Load(typeof(BasicConfig), dataSource);
 
             Assert.AreEqual(123, BasicConfig.Int32Field);

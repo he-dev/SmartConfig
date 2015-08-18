@@ -16,17 +16,17 @@ namespace SmartConfig.Data
     /// <summary>
     /// Implements sql server data source.
     /// </summary>
-    public class SqlClient<TConfigElement> : DataSource<TConfigElement> where TConfigElement : ConfigElement, new()
+    public class SqlClient<TSetting> : DataSource<TSetting> where TSetting : Setting, new()
     {
-        public SqlClient()
-        {
-            using (var context = new SmartConfigEntities<TConfigElement>(ConnectionString, TableName))
-            {
-                var objectContext = ((IObjectContextAdapter)context).ObjectContext;
-                var objectSet = objectContext.CreateObjectSet<TConfigElement>();
-                OrderedKeyNames = objectSet.EntitySet.ElementType.KeyMembers.Select(k => k.Name).ToList();
-            }
-        }
+        //public SqlClient()
+        //{
+        //    using (var context = new SmartConfigEntities<TSetting>(ConnectionString) { SettingsTableName = ""})
+        //    {
+        //        var objectContext = ((IObjectContextAdapter)context).ObjectContext;
+        //        var objectSet = objectContext.CreateObjectSet<TSetting>();
+        //        var keyNames = objectSet.EntitySet.ElementType.KeyMembers.Select(k => k.Name).ToList();
+        //    }
+        //}
 
         /// <summary>
         /// Gets or sets the connection string where the config table can be found.
@@ -36,24 +36,27 @@ namespace SmartConfig.Data
         /// <summary>
         /// Gets or sets the config table name.
         /// </summary>
-        public string TableName { get; set; }
+        public string SettingTableName { get; set; }
 
-        public override void Initialize(IDictionary<string, string> values)
+        public override void InitializeSettings(IDictionary<string, string> values)
         {
-            using (var context = new SmartConfigEntities<TConfigElement>(ConnectionString, TableName))
+            using (var context = new SmartConfigEntities<TSetting>(ConnectionString)
+            {
+                SettingsTableName = SettingTableName
+            })
             {
                 foreach (var value in values)
                 {
                     var compositeKey = CreateCompositeKey(value.Key);
 
                     // check if this entity already exists
-                    var keyValues = OrderedKeyNames.Select(k => compositeKey[k]).Cast<object>().ToArray();
-                    var entity = context.ConfigElements.Find(keyValues);
+                    var keyValues = KeyMembers.Select(k => compositeKey[k]).Cast<object>().ToArray();
+                    var entity = context.Settings.Find(keyValues);
 
                     // there's is no such entity yet so insert the default value
                     if (entity == null)
                     {
-                        InsertConfigElement(context, compositeKey, value.Value);
+                        InsertSetting(context, compositeKey, value.Value);
                     }
                 }
                 context.SaveChanges();
@@ -62,11 +65,14 @@ namespace SmartConfig.Data
 
         public override string Select(string defaultKey)
         {
-            using (var context = new SmartConfigEntities<TConfigElement>(ConnectionString, TableName))
+            using (var context = new SmartConfigEntities<TSetting>(ConnectionString)
+            {
+                SettingsTableName = SettingTableName
+            })
             {
                 var compositeKey = CreateCompositeKey(defaultKey);
                 var name = compositeKey[KeyNames.DefaultKeyName];
-                var elements = context.ConfigElements.Where(ce => ce.Name == name).ToList() as IEnumerable<TConfigElement>;
+                var elements = context.Settings.Where(ce => ce.Name == name).ToList() as IEnumerable<TSetting>;
                 elements = ApplyFilters(elements, compositeKey);
 
                 var element = elements.SingleOrDefault();
@@ -76,31 +82,34 @@ namespace SmartConfig.Data
 
         public override void Update(string defaultKey, string value)
         {
-            using (var context = new SmartConfigEntities<TConfigElement>(ConnectionString, TableName))
+            using (var context = new SmartConfigEntities<TSetting>(ConnectionString)
+            {
+                SettingsTableName = SettingTableName
+            })
             {
                 var compositeKey = CreateCompositeKey(defaultKey);
 
                 // find entity to update
-                var keyValues = compositeKey.Values.Cast<object>().ToArray(); // OrderedKeyNames.Select(k => compositeKey[k]).Cast<object>().ToArray();
-                var entity = context.ConfigElements.Find(keyValues);
+                var keyValues = compositeKey.Values.Cast<object>().ToArray();
+                var entity = context.Settings.Find(keyValues);
 
                 // there is no such entity yet so create a new one
                 if (entity == null)
                 {
                     // create a new entity
-                    entity = new TConfigElement()
+                    entity = new TSetting()
                     {
                         Name = compositeKey[KeyNames.DefaultKeyName],
                         Value = value
                     };
 
                     // set customKeys
-                    foreach (var keyName in OrderedKeyNames.Where(k => k != KeyNames.DefaultKeyName))
+                    foreach (var keyName in KeyMembers.Where(k => k != KeyNames.DefaultKeyName))
                     {
                         entity.SetStringDelegates[keyName](compositeKey[keyName]);
                     }
 
-                    context.ConfigElements.Add(entity);
+                    context.Settings.Add(entity);
                 }
                 // there is already such entity so just update the value
                 else
@@ -110,12 +119,12 @@ namespace SmartConfig.Data
 
                 context.SaveChanges();
             };
-        }
+        }        
 
-        private void InsertConfigElement(SmartConfigEntities<TConfigElement> context, IDictionary<string, string> keys, string value)
+        private void InsertSetting(SmartConfigEntities<TSetting> context, IDictionary<string, string> keys, string value)
         {
             // create a new entity
-            var entity = new TConfigElement()
+            var entity = new TSetting()
             {
                 Name = keys[KeyNames.DefaultKeyName],
                 Value = value
@@ -127,7 +136,7 @@ namespace SmartConfig.Data
                 entity.SetStringDelegates[keyName](keys[keyName]);
             }
 
-            context.ConfigElements.Add(entity);
+            context.Settings.Add(entity);
         }
     }
 }

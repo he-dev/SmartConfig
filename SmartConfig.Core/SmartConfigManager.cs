@@ -68,15 +68,15 @@ namespace SmartConfig
 
             var fields = GetFields(configType).ToList();
 
-            if (true) //dataSource.InitializationEnabled)
+            if (false) //dataSource.CanInitializeSettings)
             {
                 IDictionary<string, string> values = new Dictionary<string, string>();
                 foreach (var field in fields)
                 {                
-                    var configFieldInfo = ConfigFieldInfo.From(field);
+                    var configFieldInfo = SettingInfo.From(field);
                     values[configFieldInfo.FieldPath] = SerializeValue(configFieldInfo.FieldValue, configFieldInfo) ;
                 }
-                dataSource.Initialize(values);
+                dataSource.InitializeSettings(values);
             }
 
             foreach (var field in fields)
@@ -107,7 +107,7 @@ namespace SmartConfig
 
         private static void LoadValue(FieldInfo field)
         {
-            var configFieldInfo = ConfigFieldInfo.From(field);
+            var configFieldInfo = SettingInfo.From(field);
             var value = GetValue(configFieldInfo);
 
             if (string.IsNullOrEmpty(value))
@@ -138,17 +138,17 @@ namespace SmartConfig
         }
 
         // gets a value for config field and throws detailed exception if failed
-        private static string GetValue(ConfigFieldInfo configFieldInfo)
+        private static string GetValue(SettingInfo settingInfo)
         {
             try
             {
-                var dataSource = DataSources[configFieldInfo.ConfigType];
-                var value = dataSource.Select(configFieldInfo.FieldPath);
+                var dataSource = DataSources[settingInfo.ConfigType];
+                var value = dataSource.Select(settingInfo.FieldPath);
                 return value;
             }
             catch (Exception ex)
             {
-                throw new DataSourceException(configFieldInfo, ex);
+                throw new DataSourceException(settingInfo, ex);
             }
         }
 
@@ -159,18 +159,18 @@ namespace SmartConfig
         /// <param name="configFieldInfo"></param>
         /// <returns></returns>
         //[Obsolete]
-        //private static IDictionary<string, string> CombineKeys(IDataSource dataSource, ConfigFieldInfo configFieldInfo)
+        //private static IDictionary<string, string> CombineKeys(IDataSource dataSource, SettingInfo SettingInfo)
         //{
         //    // merge custom and default keys
         //    var keys = new Dictionary<string, string>(dataSource.CompositeKey)
         //    {
-        //        { KeyNames.DefaultKeyName, configFieldInfo.FieldPath }
+        //        { KeyNames.DefaultKeyName, SettingInfo.FieldPath }
         //    };
 
         //    // set version key
-        //    if (!string.IsNullOrEmpty(configFieldInfo.ConfigVersion))
+        //    if (!string.IsNullOrEmpty(SettingInfo.ConfigVersion))
         //    {
-        //        keys[KeyNames.VersionKeyName] = configFieldInfo.ConfigVersion;
+        //        keys[KeyNames.VersionKeyName] = SettingInfo.ConfigVersion;
         //    }
         //    return keys;
         //}
@@ -185,12 +185,13 @@ namespace SmartConfig
         /// <param name="value">Value to be set.</param>
         public static void Update<TField>(Expression<Func<TField>> expression, TField value)
         {
-            var configFieldInfo = ConfigFieldInfo.From(expression);
+            var configFieldInfo = SettingInfo.From(expression);
             var serializedValue = SerializeValue(value, configFieldInfo);
             try
             {
                 var dataSource = DataSources[configFieldInfo.ConfigType];
                 dataSource.Update(configFieldInfo.FieldPath, serializedValue);
+                configFieldInfo.FieldInfo.SetValue(null, value);
             }
             catch (ConstraintException<ConstraintAttribute>)
             {
@@ -207,18 +208,23 @@ namespace SmartConfig
             }
         }
 
-        private static string SerializeValue(object value, ConfigFieldInfo configFieldInfo)
+        public static void From<T>(Action<T> fromAction)
         {
-            if (value == null && !configFieldInfo.FieldInfo.IsNullable())
+            
+        }
+
+        private static string SerializeValue(object value, SettingInfo settingInfo)
+        {
+            if (value == null && !settingInfo.FieldInfo.IsNullable())
             {
-                throw new OptionalException(configFieldInfo);
+                throw new OptionalException(settingInfo);
             }
 
-            var converter = GetConverter(configFieldInfo);
+            var converter = GetConverter(settingInfo);
 
             try
             {
-                var serializedValue = converter.SerializeObject(value, configFieldInfo.FieldInfo.FieldType, configFieldInfo.FieldConstraints);
+                var serializedValue = converter.SerializeObject(value, settingInfo.FieldInfo.FieldType, settingInfo.FieldConstraints);
                 return serializedValue;
             }
             catch (ConstraintException<ConstraintAttribute>)
@@ -227,23 +233,23 @@ namespace SmartConfig
             }
             catch (Exception ex)
             {
-                throw new ObjectConverterException(configFieldInfo, ex)
+                throw new ObjectConverterException(settingInfo, ex)
                 {
                     Value = value,
-                    FromType = configFieldInfo.FieldInfo.FieldType,
+                    FromType = settingInfo.FieldInfo.FieldType,
                     ToType = typeof(string),
                 };
             }
         }
 
-        private static ObjectConverterBase GetConverter(ConfigFieldInfo configFieldInfo)
+        private static ObjectConverterBase GetConverter(SettingInfo settingInfo)
         {
-            var type = GetConverterType(configFieldInfo.FieldInfo);
+            var type = GetConverterType(settingInfo.FieldInfo);
 
             var objectConverter = Converters[type];
             if (objectConverter == null)
             {
-                throw new ObjectConverterNotFoundException(configFieldInfo, type);
+                throw new ObjectConverterNotFoundException(settingInfo, type);
             }
 
             return objectConverter;

@@ -14,9 +14,9 @@ namespace SmartConfig.Data
     /// <summary>
     /// This is the default basic config element. Custom config elements must be derived from this type.
     /// </summary>
-    public class ConfigElement
+    public class Setting
     {
-        public ConfigElement()
+        public Setting()
         {
             GetStringDelegates = new Dictionary<string, GetStringDelegate>();
             SetStringDelegates = new Dictionary<string, SetStringDelegate>();

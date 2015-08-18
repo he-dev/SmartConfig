@@ -61,7 +61,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="_TestHelpers\TestConfigElement.cs" />
+    <Compile Include="_TestHelpers\TestSetting.cs" />
     <Compile Include="_TestHelpers\Global.cs" />
     <Compile Include="SqlClientTests.cs" />
     <Compile Include="_TestHelpers\TestDbInitializer.cs" />

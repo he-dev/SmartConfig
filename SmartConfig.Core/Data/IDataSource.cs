@@ -20,31 +20,24 @@ namespace SmartConfig.Data
     /// </summary>
     public interface IDataSource
     {
-        /// <summary>
-        /// Gets key used by the data source.
-        /// </summary>
-        IDictionary<string, string> CompositeKey { get; }
+        KeyMembers KeyMembers { get; }
 
-        IEnumerable<string> OrderedKeyNames { get; }
+        bool CanInitializeSettings { get; }
 
-        bool InitializationEnabled { get; }
-
-        void Initialize(IDictionary<string, string> values);
+        void InitializeSettings(IDictionary<string, string> values);
 
         /// <summary>
         /// Selects data from the data source.
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="defaultKey"></param>
         /// <returns></returns>
         string Select(string defaultKey);
 
         /// <summary>
         /// Updates data in the data source.
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="defaultKey"></param>
         /// <param name="value"></param>
         void Update(string defaultKey, string value);
-
-        CompositeKey CreateCompositeKey(string defaultKeyValue);
     }    
 }
