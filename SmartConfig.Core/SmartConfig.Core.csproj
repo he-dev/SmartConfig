@@ -150,8 +150,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.txt" />
-    <Content Include="SQL-Scripts\dbo.BasicTable.sql" />
-    <Content Include="SQL-Scripts\dbo.CustomTable.sql" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

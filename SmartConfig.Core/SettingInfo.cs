@@ -54,7 +54,6 @@ namespace SmartConfig
 
         public Type ConfigType { get; private set; }
         public string ConfigName { get; private set; }
-        //public string ConfigVersion { get; private set; }
 
         #endregion
 

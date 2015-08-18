@@ -10,6 +10,8 @@ namespace SmartConfig.Data
     {
         public string ConnectionString { get; set; }
 
-        public string TableName { get; set; }
+        public string SettingsTableName { get; set; }
+
+        //public 
     }
 }

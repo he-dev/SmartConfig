@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartConfig.Data;
 
 namespace SmartConfig
 {
@@ -10,15 +11,15 @@ namespace SmartConfig
     {
         private SmartConfigLoader() { }
 
-        public static SmartConfigLoader From<T>(Action<T> dataSourceConfiguration) where T : new ()
+        public static SmartConfigLoader From<TDataSource>(Action<TDataSource> dataSourceConfiguration) where TDataSource : IDataSource, new()
         {
-            var dataSource = new T();
+            var dataSource = new TDataSource();
             return null;
         }
 
         public void Load(Type configType)
         {
-            
+
         }
     }
 }

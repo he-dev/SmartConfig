@@ -20,11 +20,11 @@ namespace SmartConfig
             get
             {
                 return
-                    "[$ConfigTypeName]'s field [$FieldName] is not optional. If you want it to be optional add the $optionalAttributeName."
+                    "[$ConfigTypeName]'s field [$FieldPath] is not optional. If you want it to be optional add the $OptionalAttributeName."
                     .FormatWith(new
                     {
                         ConfigTypeName = SettingInfo.ConfigType.Name,
-                        FieldFullName = SettingInfo.FieldPath,
+                        FieldPath = SettingInfo.FieldPath,
                         OptionalAttributeName = typeof(OptionalAttribute).Name
                     }, true);
             }
