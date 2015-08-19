@@ -106,7 +106,7 @@ namespace SmartConfig.Data
                     // set customKeys
                     foreach (var keyName in KeyMembers.Where(k => k != KeyNames.DefaultKeyName))
                     {
-                        entity.SetStringDelegates[keyName](compositeKey[keyName]);
+                        entity[keyName] = compositeKey[keyName];
                     }
 
                     context.Settings.Add(entity);
@@ -133,7 +133,7 @@ namespace SmartConfig.Data
             // set other customKeys
             foreach (var keyName in keys.Keys.Where(k => k != KeyNames.DefaultKeyName))
             {
-                entity.SetStringDelegates[keyName](keys[keyName]);
+                entity[keyName] = keys[keyName];
             }
 
             context.Settings.Add(entity);

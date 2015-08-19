@@ -13,33 +13,33 @@ namespace SmartConfig
     /// </summary>
     public static class Filters
     {
-        public static IEnumerable<T> FilterByString<T>(IEnumerable<T> elements, KeyValuePair<string, string> property) where T : Setting
+        public static IEnumerable<IIndexer> FilterByString(IEnumerable<IIndexer> elements, KeyValuePair<string, string> property)
         {
             var result =
                 elements
                 // first sort items by value
-                .OrderByDescending(e => e.GetStringDelegates[property.Key]())
+                .OrderByDescending(e => e[property.Key])
                 // then either get the matching item or the one with the asterisk
                 .Where(e =>
-                    e.GetStringDelegates[property.Key]().Equals(property.Value, StringComparison.OrdinalIgnoreCase)
-                    || e.GetStringDelegates[property.Key]().Equals(Wildcards.Asterisk));
+                    e[property.Key].Equals(property.Value, StringComparison.OrdinalIgnoreCase)
+                    || e[property.Key].Equals(Wildcards.Asterisk));
             return result;
         }
 
-        public static IEnumerable<T> FilterByVersion<T>(IEnumerable<T> elements, KeyValuePair<string, string> property) where T : Setting
+        public static IEnumerable<IIndexer> FilterByVersion(IEnumerable<IIndexer> elements, KeyValuePair<string, string> property)
         {
             var versions =
                 elements
-                .Where(e => e.GetStringDelegates[property.Key]() != Wildcards.Asterisk)
+                .Where(e => e[property.Key] != Wildcards.Asterisk)
                 // get versions that are less or equal to current
-                .Where(e => SemanticVersion.Parse(e.GetStringDelegates[property.Key]()) <= SemanticVersion.Parse(property.Value))
+                .Where(e => SemanticVersion.Parse(e[property.Key]) <= SemanticVersion.Parse(property.Value))
                 // sort versions
-                .OrderByDescending(e => SemanticVersion.Parse(e.GetStringDelegates[property.Key]()))
+                .OrderByDescending(e => SemanticVersion.Parse(e[property.Key]))
                 .ToList();
 
             if (versions.Count == 0)
             {
-                versions = elements.Where(e => e.GetStringDelegates[property.Key]() == Wildcards.Asterisk).ToList();
+                versions = elements.Where(e => e[property.Key] == Wildcards.Asterisk).ToList();
             }
 
             return versions.Take(1);

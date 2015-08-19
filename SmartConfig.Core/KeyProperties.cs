@@ -10,8 +10,7 @@ namespace SmartConfig
     /// <summary>
     /// Represents information about a key.
     /// </summary>
-    /// <typeparam name="TSetting"></typeparam>
-    public class KeyProperties<TSetting> where TSetting : Setting, new()
+    public class KeyProperties
     {
         /// <summary>
         /// Gets or sets the key value. This property is optional for the version set via the <c>SmartConfigAttribute</c>.
@@ -22,6 +21,6 @@ namespace SmartConfig
         /// <summary>
         /// Gets or sets the filter function for this key.
         /// </summary>
-        public FilterByFunc<TSetting> Filter { get; set; }       
+        public FilterByFunc Filter { get; set; }     
     }
 }

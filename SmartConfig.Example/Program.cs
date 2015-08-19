@@ -25,18 +25,14 @@ namespace SmartConfig.Example
 
         private static void AppConfigExample()
         {
-            //SmartConfigLoader.From<XmlConfig<CustomSetting>>(c => c.)
-
-            // SmartConfigLoader.Load(typeof(ExampleAppConfig)).From<XmlConfig>(ds => ds.FileName = @"abc.xml")
             SmartConfigManager.Load(typeof(ExampleAppConfig), new XmlConfig<CustomSetting>()
             {
-                FileName = @"Data\XmlConfig.xml"
-            }
-            .ConfigureKey(KeyNames.EnvironmentKeyName, k =>
-            {
-                k.Value = "ABC";
-                k.Filter = Filters.FilterByString;
-            }));
+                FileName = @"Data\XmlConfig.xml",
+                KeyProperties = new Dictionary<string, KeyProperties>()
+                {
+                    { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString} }
+                }
+            });
 
             return;
 
@@ -64,27 +60,16 @@ namespace SmartConfig.Example
 
         private static void CustomSqlClientExample()
         {
-            //SmartConfigManager.Load(typeof(ExampleAppConfig), new SqlClient<CustomSetting>(c =>
-            //{
-            //    c.ConnectionString = "";
-            //    c.SettingTableName = "";
-            //}));
-
             SmartConfigManager.Load(typeof(ExampleDbConfig2), new SqlClient<CustomSetting>()
             {
                 ConnectionString = ExampleAppConfig.ConnectionStrings.ExampleDb,
                 SettingTableName = "ExampleConfigTable",
-            }
-            .ConfigureKey(KeyNames.EnvironmentKeyName, k =>
-            {
-                k.Value = "ABC";
-                k.Filter = Filters.FilterByString;
-            })
-            .ConfigureKey(KeyNames.VersionKeyName, k =>
-            {
-                k.Value = "2.0.0";
-                k.Filter = Filters.FilterByVersion;
-            }));
+                KeyProperties = new Dictionary<string, KeyProperties>()
+                {
+                    { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString } },
+                    { KeyNames.VersionKeyName, new KeyProperties() { Value = "2.0.0", Filter = Filters.FilterByVersion } },
+                }
+            });
 
             Console.WriteLine(ExampleDbConfig2.GoodBye);
         }
@@ -94,12 +79,11 @@ namespace SmartConfig.Example
             SmartConfigManager.Load(typeof(ExampleXmlConfig), new XmlConfig<CustomSetting>()
             {
                 FileName = @"Data\XmlConfig.xml",
-            }
-            .ConfigureKey(KeyNames.EnvironmentKeyName, k =>
-            {
-                k.Value = "ABC";
-                k.Filter = Filters.FilterByString;
-            }));
+                KeyProperties = new Dictionary<string, KeyProperties>()
+                {
+                    { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString } },
+                }
+            });
         }
     }
 }

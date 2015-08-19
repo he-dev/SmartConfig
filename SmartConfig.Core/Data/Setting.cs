@@ -14,23 +14,29 @@ namespace SmartConfig.Data
     /// <summary>
     /// This is the default basic config element. Custom config elements must be derived from this type.
     /// </summary>
-    public class Setting
+    public class Setting : IIndexer
     {
+        private readonly IDictionary<string, GetStringDelegate> _getStringDelegates;
+        private readonly IDictionary<string, SetStringDelegate> _setStringDelegates;
+
         public Setting()
         {
-            GetStringDelegates = new Dictionary<string, GetStringDelegate>();
-            SetStringDelegates = new Dictionary<string, SetStringDelegate>();
+            _getStringDelegates = new Dictionary<string, GetStringDelegate>();
+            _setStringDelegates = new Dictionary<string, SetStringDelegate>();
 
             var properties = GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public);
             foreach (var property in properties)
             {
-                GetStringDelegates.Add(property.Name, Delegate.CreateDelegate(typeof(GetStringDelegate), this, property.GetGetMethod()) as GetStringDelegate);
-                SetStringDelegates.Add(property.Name, Delegate.CreateDelegate(typeof(SetStringDelegate), this, property.GetSetMethod()) as SetStringDelegate);
+                _getStringDelegates.Add(property.Name, Delegate.CreateDelegate(typeof(GetStringDelegate), this, property.GetGetMethod()) as GetStringDelegate);
+                _setStringDelegates.Add(property.Name, Delegate.CreateDelegate(typeof(SetStringDelegate), this, property.GetSetMethod()) as SetStringDelegate);
             }
         }
 
-        public IDictionary<string, GetStringDelegate> GetStringDelegates { get; private set; }
-        public IDictionary<string, SetStringDelegate> SetStringDelegates { get; private set; }
+        public string this[string propertyName]
+        {
+            get { return _getStringDelegates[propertyName](); }
+            set { _setStringDelegates[propertyName](value); }
+        }
 
         public string Name { get; set; }
 

@@ -89,6 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompositeKey.cs" />
+    <Compile Include="Data\IIndexer.cs" />
     <Compile Include="SettingInfo.cs" />
     <Compile Include="KeyProperties.cs" />
     <Compile Include="KeyNames.cs" />
@@ -105,7 +106,6 @@
     <Compile Include="Data\XmlConfig.cs" />
     <Compile Include="Filters.cs" />
     <Compile Include="Logger.cs" />
-    <Compile Include="SmartConfigLoader.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="Wildcards.cs" />
     <Compile Include="_Attributes\IgnoreAttribute.cs" />

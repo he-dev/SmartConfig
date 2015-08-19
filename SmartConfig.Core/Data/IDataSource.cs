@@ -13,7 +13,7 @@ namespace SmartConfig.Data
     /// <param name="elements">Elements to be filtered.</param>
     /// <param name="criteria">Filter criteria as key & value.</param>
     /// <returns>Filtered elements.</returns>
-    public delegate IEnumerable<T> FilterByFunc<T>(IEnumerable<T> elements, KeyValuePair<string, string> criteria) where T : class;
+    public delegate IEnumerable<IIndexer> FilterByFunc(IEnumerable<IIndexer> elements, KeyValuePair<string, string> criteria);
 
     /// <summary>
     /// Specifies the data source interface.
@@ -39,5 +39,5 @@ namespace SmartConfig.Data
         /// <param name="defaultKey"></param>
         /// <param name="value"></param>
         void Update(string defaultKey, string value);
-    }    
+    }
 }

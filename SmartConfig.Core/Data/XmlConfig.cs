@@ -13,7 +13,7 @@ namespace SmartConfig.Data
 {
     public class XmlConfig<TSetting> : DataSource<TSetting> where TSetting : Setting, new()
     {
-        private XDocument xConfig;       
+        private XDocument xConfig;
 
         public string FileName { get; set; }
 
@@ -49,7 +49,7 @@ namespace SmartConfig.Data
                     var attr = x.Attributes().SingleOrDefault(a => a.Name.ToString().Equals(keyName, StringComparison.OrdinalIgnoreCase));
 
                     // use the attribute value or an asterisk if attribute not found
-                    element.SetStringDelegates[keyName](attr == null ? Wildcards.Asterisk : attr.Value);
+                    element[keyName] = (attr == null ? Wildcards.Asterisk : attr.Value);
                 }
                 return element;
             });
@@ -57,7 +57,7 @@ namespace SmartConfig.Data
             // apply filters for all keys except the default one
             elements = compositeKey
                 .Where(x => x.Key != KeyNames.DefaultKeyName)
-                .Aggregate(elements, (current, keyValue) => _keyConfigurations[keyValue.Key].Filter(current, keyValue));
+                .Aggregate(elements, (current, keyValue) => (IEnumerable<TSetting>)KeyProperties[keyValue.Key].Filter(current, keyValue));
 
             var result = elements.FirstOrDefault();
             return result != null ? result.Value : null;

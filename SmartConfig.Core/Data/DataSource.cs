@@ -14,11 +14,10 @@ namespace SmartConfig.Data
     {
         private KeyMembers _keyMembers;
 
-        protected IDictionary<string, KeyProperties<TSetting>> _keyConfigurations;
 
         protected DataSource()
         {
-            _keyConfigurations = new Dictionary<string, KeyProperties<TSetting>>();
+            KeyProperties = new Dictionary<string, KeyProperties>();
         }        
 
         /// <summary>
@@ -40,6 +39,8 @@ namespace SmartConfig.Data
 
         public bool CanInitializeSettings { get; set; }
 
+        public IDictionary<string, KeyProperties> KeyProperties { get; set; }
+
         public virtual void InitializeSettings(IDictionary<string, string> values) { }
 
         public abstract string Select(string defaultKey);
@@ -56,16 +57,8 @@ namespace SmartConfig.Data
         {
             elements = keys
                 .Where(x => x.Key != KeyNames.DefaultKeyName)
-                .Aggregate(elements, (current, item) => _keyConfigurations[item.Key].Filter(current, item));
+                .Aggregate(elements, (current, item) => KeyProperties[item.Key].Filter(current, item).Cast<TSetting>());
             return elements;
-        }
-
-        public DataSource<TSetting> ConfigureKey(string keyName, Action<KeyProperties<TSetting>> configureKey)
-        {
-            var keyConfiguration = new KeyProperties<TSetting>();
-            configureKey(keyConfiguration);
-            _keyConfigurations[keyName] = keyConfiguration;
-            return this;
         }
 
         protected CompositeKey CreateCompositeKey(string defaultKey)
@@ -77,7 +70,7 @@ namespace SmartConfig.Data
 
             foreach (var keyName in KeyMembers.Where(k => k != KeyNames.DefaultKeyName))
             {
-                complexKey[keyName] = _keyConfigurations[keyName].Value;
+                complexKey[keyName] = KeyProperties[keyName].Value;
             }
 
             return complexKey;

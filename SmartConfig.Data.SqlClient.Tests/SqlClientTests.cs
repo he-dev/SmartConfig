@@ -35,17 +35,12 @@ namespace SmartConfig.Data.SqlClient.Tests
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
                 SettingTableName = "TestConfig",
-            }
-            .ConfigureKey(KeyNames.EnvironmentKeyName, k =>
-            {
-                k.Value = "ABC";
-                k.Filter = Filters.FilterByString;
-            })
-            .ConfigureKey(KeyNames.VersionKeyName, k =>
-            {
-                k.Value = "1.3.0";
-                k.Filter = Filters.FilterByVersion;
-            });
+                KeyProperties = new Dictionary<string, KeyProperties>()
+                {
+                    { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString }},
+                    { KeyNames.VersionKeyName, new KeyProperties() { Value = "1.3.0", Filter = Filters.FilterByVersion }},
+                }
+            };
 
             SmartConfigManager.Load(typeof(BasicConfig), dataSource);
             Assert.AreEqual(123, BasicConfig.Int32Field);
@@ -57,18 +52,13 @@ namespace SmartConfig.Data.SqlClient.Tests
             var dataSource = new SqlClient<TestSetting>()
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
-                SettingTableName = "TestConfig"
-            }
-            .ConfigureKey(KeyNames.EnvironmentKeyName, k =>
-            {
-                k.Value = "ABC";
-                k.Filter = Filters.FilterByString;
-            })
-            .ConfigureKey(KeyNames.VersionKeyName, k =>
-            {
-                k.Value = "1.3.0";
-                k.Filter = Filters.FilterByVersion;
-            });
+                SettingTableName = "TestConfig",
+                KeyProperties = new Dictionary<string, KeyProperties>()
+                {
+                    { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString }},
+                    { KeyNames.VersionKeyName, new KeyProperties() { Value = "1.3.0", Filter = Filters.FilterByVersion }},
+                }
+            };
 
             SmartConfigManager.Load(typeof(BasicConfig), dataSource);
 

@@ -7,11 +7,12 @@ using SmartConfig.Data;
 
 namespace SmartConfig
 {
-    public class SmartConfigLoader
+    public class SmartConfigBuilder
     {
-        private SmartConfigLoader() { }
+        private SmartConfigBuilder() { }
 
-        public static SmartConfigLoader From<TDataSource>(Action<TDataSource> dataSourceConfiguration) where TDataSource : IDataSource, new()
+        public static SmartConfigBuilder From<TDataSource>(Action<IConfigureKey> dataSourceConfiguration) 
+            where TDataSource : IDataSource, new()
         {
             var dataSource = new TDataSource();
             return null;
