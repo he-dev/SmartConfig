@@ -40,7 +40,7 @@ namespace SmartConfig
 
             foreach (var field in fields)
             {
-                yield return new SettingInfo(configType, new SettingPath(path, field.Name));
+                yield return new SettingInfo(configType, field, new SettingPath(path, field.Name));
             }
 
             var settingInfos = currentType

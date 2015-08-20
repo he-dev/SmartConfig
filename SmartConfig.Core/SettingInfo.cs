@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -8,13 +9,15 @@ using System.Threading.Tasks;
 
 namespace SmartConfig
 {
+    [DebuggerDisplay("ConfigType.Name = {ConfigType.Name} SettingPath = \"{SettingPath}\" IsInternal = \"{IsInternal}\"")]
     public class SettingInfo
     {
-        internal SettingInfo(Type configType, string settingName)
+        internal SettingInfo(Type configType, FieldInfo fieldInfo, string settingName)
         {
             var smartConfigAttribute = configType.GetCustomAttribute<SmartConfigAttribute>(false);
             ConfigType = configType;
             ConfigName = smartConfigAttribute.Name;
+            FieldInfo = fieldInfo;
             SettingPath = new SettingPath(ConfigName, settingName);
         }
 
@@ -35,7 +38,6 @@ namespace SmartConfig
                     ConfigType = type;
                     ConfigName = smartConfigAttribute.Name;
                     SettingPath = new SettingPath(((IEnumerable<string>)path).Reverse());
-                    FieldConstraints = ((FieldInfo)member).GetCustomAttributes<ConstraintAttribute>(false);
                 }
                 path.Add(type.Name);
                 type = type.DeclaringType;
@@ -58,10 +60,14 @@ namespace SmartConfig
 
         public FieldInfo FieldInfo { get; private set; }
         public SettingPath SettingPath { get; private set; }
-        public IEnumerable<ConstraintAttribute> FieldConstraints { get; private set; }
+
+        public IEnumerable<ConstraintAttribute> SettingConstraints
+        {
+            get { return FieldInfo == null ? Enumerable.Empty<ConstraintAttribute>() : FieldInfo.Contraints(); }
+        }
 
         #endregion
 
-        internal bool IsInternalSetting { get; private set; }
+        internal bool IsInternal { get; private set; }
     }
 }

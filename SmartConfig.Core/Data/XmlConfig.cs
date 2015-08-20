@@ -55,9 +55,7 @@ namespace SmartConfig.Data
             });
 
             // apply filters for all keys except the default one
-            elements = compositeKey
-                .Where(x => x.Key != KeyNames.DefaultKeyName)
-                .Aggregate(elements, (current, keyValue) => (IEnumerable<TSetting>)KeyProperties[keyValue.Key].Filter(current, keyValue));
+            elements = ApplyFilters(elements, compositeKey);
 
             var result = elements.FirstOrDefault();
             return result != null ? result.Value : null;

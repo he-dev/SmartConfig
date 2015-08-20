@@ -207,7 +207,7 @@ namespace SmartConfig
 
             try
             {
-                var serializedValue = converter.SerializeObject(value, settingInfo.FieldInfo.FieldType, settingInfo.FieldConstraints);
+                var serializedValue = converter.SerializeObject(value, settingInfo.FieldInfo.FieldType, settingInfo.SettingConstraints);
                 return serializedValue;
             }
             catch (ConstraintException<ConstraintAttribute>)
