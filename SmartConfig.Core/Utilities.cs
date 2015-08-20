@@ -13,7 +13,7 @@ namespace SmartConfig
     /// <summary>
     /// Provides general utilities.
     /// </summary>
-    public static class Utilities
+    internal static class Utilities
     {
         internal static MemberInfo GetMemberInfo<TField>(Expression<Func<TField>> expression)
         {
@@ -26,33 +26,39 @@ namespace SmartConfig
 
             return memberExpression.Member;
         }
-    }
 
-    public class KeyMembers : List<string>
-    {
-        public static KeyMembers From<TSetting>() where TSetting : Setting
+        internal static IEnumerable<SettingInfo> GetSettingInfos(Type configType, Type currentType = null, string path = null)
         {
-            var keyMembers = new KeyMembers()
+            if (currentType == null)
             {
-                KeyNames.DefaultKeyName
-            };
-
-            var currentType = typeof(TSetting);
-
-            var isCustomType = currentType != typeof(Setting);
-            if (!isCustomType)
-            {
-                return keyMembers;
+                currentType = configType;
             }
 
-            var propertyNames =
-                currentType
-                    .GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
-                    .Select(p => p.Name)
-                    .OrderBy(n => n);
-            keyMembers.AddRange(propertyNames);
+            var fields = currentType
+                .GetFields(BindingFlags.Public | BindingFlags.Static)
+                .Where(f => f.GetCustomAttribute<IgnoreAttribute>() == null);
 
-            return keyMembers;
-        }       
+            foreach (var field in fields)
+            {
+                yield return new SettingInfo(configType, new SettingPath(path, field.Name));
+            }
+
+            var settingInfos = currentType
+                .GetNestedTypes(BindingFlags.Public | BindingFlags.Public)
+                .Where(t => t.GetCustomAttribute<IgnoreAttribute>() == null)
+                .SelectMany(t => GetSettingInfos(configType, t, new SettingPath(path, t.Name)));
+
+            foreach (var settingInfo in settingInfos)
+            {
+                yield return settingInfo;
+            }
+        }
+
+        internal static SettingInfo FindSettingInfo(Type configType, string settingPath)
+        {
+            return GetSettingInfos(configType).SingleOrDefault(si => si.SettingPath == settingPath);
+        }
     }
+
+
 }

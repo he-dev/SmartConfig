@@ -20,11 +20,9 @@ namespace SmartConfig.Data
     /// </summary>
     public interface IDataSource
     {
-        KeyMembers KeyMembers { get; }
+        KeyNames KeyNames { get; }
 
         bool CanInitializeSettings { get; }
-
-        void InitializeSettings(IDictionary<string, string> values);
 
         /// <summary>
         /// Selects data from the data source.

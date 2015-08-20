@@ -47,7 +47,7 @@ namespace SmartConfig.Data
         public override string Select(string defaultKey)
         {
             var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var compositeKey = CreateCompositeKey(defaultKey);
+            var compositeKey = CompositeKey.From(defaultKey, KeyNames, KeyProperties);
             var configurationSection = GetConfigurationSection(exeConfig, compositeKey);
             var sectionHandler = _sectionHandlers[configurationSection.GetType()];
             var value = sectionHandler.Select(configurationSection, GetNameWithoutSectionName(compositeKey));
@@ -57,7 +57,7 @@ namespace SmartConfig.Data
         public override void Update(string defaultKey, string value)
         {
             var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var compositeKey = CreateCompositeKey(defaultKey);
+            var compositeKey = CompositeKey.From(defaultKey, KeyNames, KeyProperties);
             var configurationSection = GetConfigurationSection(exeConfig, compositeKey);
             var sectionHandler = _sectionHandlers[configurationSection.GetType()];
             sectionHandler.Update(configurationSection, GetNameWithoutSectionName(compositeKey), value);

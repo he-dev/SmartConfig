@@ -10,7 +10,15 @@ namespace SmartConfig
 {
     public class SettingInfo
     {
-        private SettingInfo(MemberInfo member)
+        internal SettingInfo(Type configType, string settingName)
+        {
+            var smartConfigAttribute = configType.GetCustomAttribute<SmartConfigAttribute>(false);
+            ConfigType = configType;
+            ConfigName = smartConfigAttribute.Name;
+            SettingPath = new SettingPath(ConfigName, settingName);
+        }
+
+        internal SettingInfo(MemberInfo member)
         {
             FieldInfo = (FieldInfo)member;
 
@@ -26,8 +34,7 @@ namespace SmartConfig
                     path.Add(smartConfigAttribute.Name);
                     ConfigType = type;
                     ConfigName = smartConfigAttribute.Name;
-                    //ConfigVersion = smartConfigAttribute.Version;
-                    FieldPath = SmartConfig.FieldPath.Combine(((IEnumerable<string>)path).Reverse());
+                    SettingPath = new SettingPath(((IEnumerable<string>)path).Reverse());
                     FieldConstraints = ((FieldInfo)member).GetCustomAttributes<ConstraintAttribute>(false);
                 }
                 path.Add(type.Name);
@@ -40,16 +47,6 @@ namespace SmartConfig
             }
         }
 
-        internal static SettingInfo From(MemberInfo member)
-        {
-            return new SettingInfo(member);
-        }
-
-        internal static SettingInfo From<TField>(Expression<Func<TField>> expression)
-        {
-            return new SettingInfo(Utilities.GetMemberInfo(expression));
-        }
-
         #region Config Info
 
         public Type ConfigType { get; private set; }
@@ -60,10 +57,11 @@ namespace SmartConfig
         #region FieldInfo Info
 
         public FieldInfo FieldInfo { get; private set; }
-        public string FieldPath { get; private set; }
+        public SettingPath SettingPath { get; private set; }
         public IEnumerable<ConstraintAttribute> FieldConstraints { get; private set; }
-        public object FieldValue { get { return FieldInfo.GetValue(null); } }
 
         #endregion
-    }    
+
+        internal bool IsInternalSetting { get; private set; }
+    }
 }

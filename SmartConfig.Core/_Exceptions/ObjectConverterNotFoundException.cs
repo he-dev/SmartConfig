@@ -20,12 +20,12 @@ namespace SmartConfig
         {
             get
             {
-                return "Object converter [$ConverterTypeName] for [$ConfigTypeName]'s field [$FieldPath] not found."
+                return "Object converter [$ConverterTypeName] for [$ConfigTypeName]'s field [$SettingPath] not found."
                     .FormatWith(new
                     {
                         ConverterTypeName = ConverterType.Name,
                         ConfigTypeName = SettingInfo.ConfigType.Name,
-                        FieldFullName = SettingInfo.FieldPath
+                        SettingPath = SettingInfo.SettingPath
                     }, true);
             }
         }

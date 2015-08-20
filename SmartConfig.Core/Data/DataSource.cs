@@ -12,8 +12,7 @@ namespace SmartConfig.Data
     /// </summary>
     public abstract class DataSource<TSetting> : IDataSource where TSetting : Setting, new()
     {
-        private KeyMembers _keyMembers;
-
+        private KeyNames _keyNames;
 
         protected DataSource()
         {
@@ -24,22 +23,22 @@ namespace SmartConfig.Data
         /// Gets an ordered enumeration of key names.
         /// The first element is always the Name then follow other key in alphabetical order.
         /// </summary>
-        public KeyMembers KeyMembers
+        public KeyNames KeyNames
         {
             get
             {
-                if (_keyMembers != null)
+                if (_keyNames != null)
                 {
-                    return _keyMembers;
+                    return _keyNames;
                 }
-                _keyMembers = KeyMembers.From<TSetting>();
-                return _keyMembers;
+                _keyNames = KeyNames.From<TSetting>();
+                return _keyNames;
             }
         }
 
-        public bool CanInitializeSettings { get; set; }
-
         public IDictionary<string, KeyProperties> KeyProperties { get; set; }
+
+        public bool CanInitializeSettings { get; set; }
 
         public virtual void InitializeSettings(IDictionary<string, string> values) { }
 
@@ -59,21 +58,6 @@ namespace SmartConfig.Data
                 .Where(x => x.Key != KeyNames.DefaultKeyName)
                 .Aggregate(elements, (current, item) => KeyProperties[item.Key].Filter(current, item).Cast<TSetting>());
             return elements;
-        }
-
-        protected CompositeKey CreateCompositeKey(string defaultKey)
-        {
-            var complexKey = new CompositeKey()
-            {
-                { KeyNames.DefaultKeyName, defaultKey }
-            };
-
-            foreach (var keyName in KeyMembers.Where(k => k != KeyNames.DefaultKeyName))
-            {
-                complexKey[keyName] = KeyProperties[keyName].Value;
-            }
-
-            return complexKey;
-        }
+        }        
     }
 }

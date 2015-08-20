@@ -24,7 +24,7 @@ namespace SmartConfig.Data
         //    {
         //        var objectContext = ((IObjectContextAdapter)context).ObjectContext;
         //        var objectSet = objectContext.CreateObjectSet<TSetting>();
-        //        var keyNames = objectSet.EntitySet.ElementType.KeyMembers.Select(k => k.Name).ToList();
+        //        var keyNames = objectSet.EntitySet.ElementType.KeyNames.Select(k => k.Name).ToList();
         //    }
         //}
 
@@ -36,41 +36,13 @@ namespace SmartConfig.Data
         /// <summary>
         /// Gets or sets the config table name.
         /// </summary>
-        public string SettingTableName { get; set; }
-
-        public override void InitializeSettings(IDictionary<string, string> values)
-        {
-            using (var context = new SmartConfigEntities<TSetting>(ConnectionString)
-            {
-                SettingsTableName = SettingTableName
-            })
-            {
-                foreach (var value in values)
-                {
-                    var compositeKey = CreateCompositeKey(value.Key);
-
-                    // check if this entity already exists
-                    var keyValues = KeyMembers.Select(k => compositeKey[k]).Cast<object>().ToArray();
-                    var entity = context.Settings.Find(keyValues);
-
-                    // there's is no such entity yet so insert the default value
-                    if (entity == null)
-                    {
-                        InsertSetting(context, compositeKey, value.Value);
-                    }
-                }
-                context.SaveChanges();
-            }
-        }
+        public string SettingTableName { get; set; }       
 
         public override string Select(string defaultKey)
         {
-            using (var context = new SmartConfigEntities<TSetting>(ConnectionString)
+            using (var context = CreateDbContext())
             {
-                SettingsTableName = SettingTableName
-            })
-            {
-                var compositeKey = CreateCompositeKey(defaultKey);
+                var compositeKey = CompositeKey.From(defaultKey, KeyNames, KeyProperties);
                 var name = compositeKey[KeyNames.DefaultKeyName];
                 var elements = context.Settings.Where(ce => ce.Name == name).ToList() as IEnumerable<TSetting>;
                 elements = ApplyFilters(elements, compositeKey);
@@ -82,12 +54,9 @@ namespace SmartConfig.Data
 
         public override void Update(string defaultKey, string value)
         {
-            using (var context = new SmartConfigEntities<TSetting>(ConnectionString)
+            using (var context = CreateDbContext())
             {
-                SettingsTableName = SettingTableName
-            })
-            {
-                var compositeKey = CreateCompositeKey(defaultKey);
+                var compositeKey = CompositeKey.From(defaultKey, KeyNames, KeyProperties);
 
                 // find entity to update
                 var keyValues = compositeKey.Values.Cast<object>().ToArray();
@@ -104,7 +73,7 @@ namespace SmartConfig.Data
                     };
 
                     // set customKeys
-                    foreach (var keyName in KeyMembers.Where(k => k != KeyNames.DefaultKeyName))
+                    foreach (var keyName in KeyNames.Where(k => k != KeyNames.DefaultKeyName))
                     {
                         entity[keyName] = compositeKey[keyName];
                     }
@@ -119,7 +88,16 @@ namespace SmartConfig.Data
 
                 context.SaveChanges();
             };
-        }        
+        }
+
+        private SmartConfigEntities<TSetting> CreateDbContext()
+        {
+            return new SmartConfigEntities<TSetting>(ConnectionString)
+            {
+                SettingsTableName = SettingTableName,
+                SettingsTableKeyNames = KeyNames
+            };
+        }
 
         private void InsertSetting(SmartConfigEntities<TSetting> context, IDictionary<string, string> keys, string value)
         {

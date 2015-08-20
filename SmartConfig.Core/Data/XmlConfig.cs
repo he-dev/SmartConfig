@@ -25,7 +25,7 @@ namespace SmartConfig.Data
         {
             LoadXml();
 
-            var compositeKey = CreateCompositeKey(defaultKey);
+            var compositeKey = CompositeKey.From(defaultKey, KeyNames, KeyProperties);
 
             // find all elements where the name-attribute's value is equal to the specified key
             // the search is case insensitive
@@ -43,7 +43,7 @@ namespace SmartConfig.Data
                 };
 
                 // set custom properties
-                foreach (var keyName in KeyMembers.Where(k => k != KeyNames.DefaultKeyName))
+                foreach (var keyName in KeyNames.Where(k => k != KeyNames.DefaultKeyName))
                 {
                     // find an attribute for the property - the search is case insensitive
                     var attr = x.Attributes().SingleOrDefault(a => a.Name.ToString().Equals(keyName, StringComparison.OrdinalIgnoreCase));

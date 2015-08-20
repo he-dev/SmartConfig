@@ -55,7 +55,10 @@ namespace SmartConfig
             if (configType == null) throw new ArgumentNullException("configType", "You need to specify a config type.");
             if (dataSource == null) throw new ArgumentNullException("dataSource", "You need to specify a data source.");
             if (!configType.IsStatic()) throw new InvalidOperationException("'configType' must be a static class.");
-            if (!configType.HasAttribute<SmartConfigAttribute>()) throw new SmartConfigTypeNotFoundException() { ConfigType = configType };
+
+            var smartConfigAttribute = configType.GetCustomAttribute<SmartConfigAttribute>();
+
+            if (smartConfigAttribute == null) throw new SmartConfigTypeNotFoundException() { ConfigType = configType };
 
             Logger.LogAction(() => "Loading [$configTypeName] from [$dataSourceName]...".FormatWith(new
             {
@@ -63,55 +66,31 @@ namespace SmartConfig
                 dataSourceName = dataSource.GetType().Name
             }, true));
 
-            DataSources[configType] = dataSource;
+            DataSources[configType] = dataSource;           
 
-            var fields = GetFields(configType).ToList();
+            var settingInfos = Utilities.GetSettingInfos(configType).ToList();
 
-            if (false) //dataSource.CanInitializeSettings)
+            if (dataSource.CanInitializeSettings && !CheckSettingsInitialized(dataSource))
             {
-                IDictionary<string, string> values = new Dictionary<string, string>();
-                foreach (var field in fields)
+                foreach (var settingInfo in settingInfos)
                 {
-                    var settingInfo = SettingInfo.From(field);
-                    values[settingInfo.FieldPath] = SerializeValue(settingInfo.FieldValue, settingInfo);
+                    InitializeSetting(settingInfo);
                 }
-                dataSource.InitializeSettings(values);
             }
 
-            foreach (var field in fields)
+            foreach (var settingInfo in settingInfos)
             {
-                LoadValue(field);
+                LoadValue(settingInfo);
             }
         }
 
-        private static IEnumerable<FieldInfo> GetFields(Type type)
+        private static void LoadValue(SettingInfo settingInfo)
         {
-            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Static).Where(f => f.GetCustomAttribute<IgnoreAttribute>() == null);
-            foreach (var field in fields)
-            {
-                yield return field;
-            }
-
-            var nestedTypes =
-                type
-                .GetNestedTypes()
-                .Where(t => t.GetCustomAttribute<IgnoreAttribute>() == null)
-                .SelectMany(GetFields);
-
-            foreach (var field in nestedTypes)
-            {
-                yield return field;
-            }
-        }
-
-        private static void LoadValue(FieldInfo field)
-        {
-            var settingInfo = SettingInfo.From(field);
             var value = GetValue(settingInfo);
 
             if (string.IsNullOrEmpty(value))
             {
-                if (!field.IsOptional())
+                if (!settingInfo.FieldInfo.IsOptional())
                 {
                     throw new OptionalException(settingInfo);
                 }
@@ -122,8 +101,8 @@ namespace SmartConfig
 
             try
             {
-                var obj = converter.DeserializeObject(value, field.FieldType, field.Contraints());
-                field.SetValue(null, obj);
+                var obj = converter.DeserializeObject(value, settingInfo.FieldInfo.FieldType, settingInfo.FieldInfo.Contraints());
+                settingInfo.FieldInfo.SetValue(null, obj);
             }
             catch (Exception ex)
             {
@@ -131,7 +110,7 @@ namespace SmartConfig
                 {
                     Value = value,
                     FromType = typeof(string),
-                    ToType = field.FieldType
+                    ToType = settingInfo.FieldInfo.FieldType
                 };
             }
         }
@@ -142,7 +121,7 @@ namespace SmartConfig
             try
             {
                 var dataSource = DataSources[settingInfo.ConfigType];
-                var value = dataSource.Select(settingInfo.FieldPath);
+                var value = dataSource.Select(settingInfo.SettingPath);
                 return value;
             }
             catch (Exception ex)
@@ -161,13 +140,33 @@ namespace SmartConfig
         /// <param name="value">Value to be set.</param>
         public static void Update<TField>(Expression<Func<TField>> expression, TField value)
         {
-            var settingInfo = SettingInfo.From(expression);
+            var settingInfo = new SettingInfo(Utilities.GetMemberInfo(expression));
+            UpdateSetting(settingInfo, value);
+        }
+
+        public static void UpdateSetting(Type configType, string settingPath, object value)
+        {
+            var settingInfo = Utilities.FindSettingInfo(configType, settingPath);
+            if (settingInfo == null)
+            {
+                // todo: create a meaningfull exception
+                throw new Exception("Setting not found.");
+            }
+
+            UpdateSetting(settingInfo, value);
+        }
+
+        private static void UpdateSetting(SettingInfo settingInfo, object value, bool isInitialization = false)
+        {
             var serializedValue = SerializeValue(value, settingInfo);
             try
             {
                 var dataSource = DataSources[settingInfo.ConfigType];
-                dataSource.Update(settingInfo.FieldPath, serializedValue);
-                settingInfo.FieldInfo.SetValue(null, value);
+                dataSource.Update(settingInfo.SettingPath, serializedValue);
+                if (!isInitialization)
+                {
+                    settingInfo.FieldInfo.SetValue(null, value);
+                }
             }
             catch (ConstraintException<ConstraintAttribute>)
             {
@@ -184,9 +183,17 @@ namespace SmartConfig
             }
         }
 
-        public static void From<T>(Action<T> fromAction)
+        private static bool CheckSettingsInitialized(IDataSource dataSource)
         {
+            var settingInitialized = dataSource.Select("__SettingsInitialized");
+            var result = false;
+            bool.TryParse(settingInitialized, out result);
+            return result;
+        }
 
+        private static void InitializeSetting(SettingInfo settingInfo)
+        {
+            UpdateSetting(settingInfo, settingInfo.FieldInfo.GetValue(null), true);
         }
 
         private static string SerializeValue(object value, SettingInfo settingInfo)
@@ -248,6 +255,5 @@ namespace SmartConfig
 
             return type;
         }
-
     }
 }

@@ -135,7 +135,7 @@
     <Compile Include="_Attributes\ObjectConverterAttribute.cs" />
     <Compile Include="Converters\ObjectConverterBase.cs" />
     <Compile Include="SmartConfigManager.cs" />
-    <Compile Include="FieldPath.cs" />
+    <Compile Include="SettingPath.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="_Attributes\SmartConfigAttribute.cs" />
     <Compile Include="Data\IDataSource.cs" />
