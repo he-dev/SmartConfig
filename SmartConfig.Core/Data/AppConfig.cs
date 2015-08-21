@@ -40,14 +40,10 @@ namespace SmartConfig.Data
             }
         }
 
-        public override void InitializeSettings(IDictionary<string, string> values)
-        {
-        }
-
         public override string Select(string defaultKey)
         {
             var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var compositeKey = CompositeKey.From(defaultKey, KeyNames, KeyProperties);
+            var compositeKey = new CompositeKey(defaultKey, KeyNames, KeyProperties);
             var configurationSection = GetConfigurationSection(exeConfig, compositeKey);
             var sectionHandler = _sectionHandlers[configurationSection.GetType()];
             var value = sectionHandler.Select(configurationSection, GetNameWithoutSectionName(compositeKey));
@@ -57,7 +53,7 @@ namespace SmartConfig.Data
         public override void Update(string defaultKey, string value)
         {
             var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var compositeKey = CompositeKey.From(defaultKey, KeyNames, KeyProperties);
+            var compositeKey = new CompositeKey(defaultKey, KeyNames, KeyProperties);
             var configurationSection = GetConfigurationSection(exeConfig, compositeKey);
             var sectionHandler = _sectionHandlers[configurationSection.GetType()];
             sectionHandler.Update(configurationSection, GetNameWithoutSectionName(compositeKey), value);

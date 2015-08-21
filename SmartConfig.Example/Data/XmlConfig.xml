@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<xmlConfig>
-  <item name="AppSettings.Environment">ABC</item>
-  <item name="AppSettings.Greeting">Hallo SmartConfig!</item>
-  <item name="AppSettings.Greeting" environment="ABC">Hallo ABC!</item>
-  <item name="AppSettings.Greeting" environment="XYZ">Hallo XYZ!</item>
-</xmlConfig>
+<smartConfig>
+  <setting name="AppSettings.Environment">ABC</setting>
+  <setting name="AppSettings.Greeting">Hallo SmartConfig!</setting>
+  <setting name="AppSettings.Greeting" environment="ABC">Hallo ABC!</setting>
+  <setting name="AppSettings.Greeting" environment="XYZ">Hallo XYZ!</setting>
+</smartConfig>

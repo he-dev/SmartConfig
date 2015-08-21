@@ -17,12 +17,8 @@ namespace SmartConfig.Data
         protected DataSource()
         {
             KeyProperties = new Dictionary<string, KeyProperties>();
-        }        
+        }
 
-        /// <summary>
-        /// Gets an ordered enumeration of key names.
-        /// The first element is always the Name then follow other key in alphabetical order.
-        /// </summary>
         public KeyNames KeyNames
         {
             get
@@ -36,11 +32,14 @@ namespace SmartConfig.Data
             }
         }
 
+        public IEnumerable<string> KeyNamesWithoutDefault
+        {
+            get { return KeyNames.Where(k => k != KeyNames.DefaultKeyName); }
+        }
+
         public IDictionary<string, KeyProperties> KeyProperties { get; set; }
 
         public bool CanInitializeSettings { get; set; }
-
-        public virtual void InitializeSettings(IDictionary<string, string> values) { }
 
         public abstract string Select(string defaultKey);
 
@@ -58,6 +57,6 @@ namespace SmartConfig.Data
                 .Where(x => x.Key != KeyNames.DefaultKeyName)
                 .Aggregate(elements, (current, item) => KeyProperties[item.Key].Filter(current, item).Cast<TSetting>());
             return elements;
-        }        
+        }
     }
 }

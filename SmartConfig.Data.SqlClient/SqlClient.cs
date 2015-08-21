@@ -42,7 +42,7 @@ namespace SmartConfig.Data
         {
             using (var context = CreateDbContext())
             {
-                var compositeKey = CompositeKey.From(defaultKey, KeyNames, KeyProperties);
+                var compositeKey = new CompositeKey(defaultKey, KeyNames, KeyProperties);
                 var name = compositeKey[KeyNames.DefaultKeyName];
                 var elements = context.Settings.Where(ce => ce.Name == name).ToList() as IEnumerable<TSetting>;
                 elements = ApplyFilters(elements, compositeKey);
@@ -56,7 +56,7 @@ namespace SmartConfig.Data
         {
             using (var context = CreateDbContext())
             {
-                var compositeKey = CompositeKey.From(defaultKey, KeyNames, KeyProperties);
+                var compositeKey = new CompositeKey(defaultKey, KeyNames, KeyProperties);
 
                 // find entity to update
                 var keyValues = compositeKey.Values.Cast<object>().ToArray();
