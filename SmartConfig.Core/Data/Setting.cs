@@ -24,11 +24,15 @@ namespace SmartConfig.Data
             _getStringDelegates = new Dictionary<string, GetStringDelegate>();
             _setStringDelegates = new Dictionary<string, SetStringDelegate>();
 
-            var properties = GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public);
-            foreach (var property in properties)
+            var isDerived = GetType() != typeof(Setting);
+            if (isDerived)
             {
-                _getStringDelegates.Add(property.Name, Delegate.CreateDelegate(typeof(GetStringDelegate), this, property.GetGetMethod()) as GetStringDelegate);
-                _setStringDelegates.Add(property.Name, Delegate.CreateDelegate(typeof(SetStringDelegate), this, property.GetSetMethod()) as SetStringDelegate);
+                var properties = GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public);
+                foreach (var property in properties)
+                {
+                    _getStringDelegates.Add(property.Name, Delegate.CreateDelegate(typeof(GetStringDelegate), this, property.GetGetMethod()) as GetStringDelegate);
+                    _setStringDelegates.Add(property.Name, Delegate.CreateDelegate(typeof(SetStringDelegate), this, property.GetSetMethod()) as SetStringDelegate);
+                }
             }
         }
 

@@ -12,13 +12,15 @@ using SmartUtilities;
 
 namespace SmartConfig.Data
 {
-    public class XmlConfig<TSetting> : DataSource<TSetting> where TSetting : Setting, new()
+    public class XmlSource<TSetting> : DataSource<TSetting> where TSetting : Setting, new()
     {
         private const string DefaultRootElementName = "smartConfig";
         private const string DefaultSettingElementName = "setting";
 
         private string _rootElementName;
         private string _settingElementName;
+
+        public XmlSource() { }
 
         public string FileName { get; set; }
 
@@ -38,23 +40,28 @@ namespace SmartConfig.Data
         {
             get
             {
+                if (string.IsNullOrEmpty(FileName))
+                {
+                    return null;
+                }
+
                 if (Path.IsPathRooted(FileName))
                 {
                     return FileName;
                 }
 
-                var currentLocation = Path.GetDirectoryName(Assembly.GetAssembly(typeof(XmlConfig<TSetting>)).Location);
+                var currentLocation = Path.GetDirectoryName(Assembly.GetAssembly(typeof(XmlSource<TSetting>)).Location);
                 // ReSharper disable once AssignNullToNotNullAttribute
                 var fullName = Path.Combine(currentLocation, FileName);
                 return fullName;
             }
         }
 
-        public override string Select(string defaultKey)
+        public override string Select(string defaultKeyValue)
         {
-            var xConfig = XDocument.Load(FullName);
+            var xConfig = LoadXml();
 
-            var compositeKey = new CompositeKey(defaultKey, KeyNames, KeyProperties);
+            var compositeKey = CreateCompositeKey(defaultKeyValue);
 
             var defaultKeyXPath = "//$rootElementName/$settingElementName[@$attributeName='$attributeValue']".FormatWith(new
             {
@@ -92,11 +99,11 @@ namespace SmartConfig.Data
             return result != null ? result.Value : null;
         }
 
-        public override void Update(string defaultKey, string value)
+        public override void Update(string defaultKeyValue, string value)
         {
-            var xConfig = XDocument.Load(FullName);
+            var xConfig = LoadXml();
 
-            var compositeKey = new CompositeKey(defaultKey, KeyNames, KeyProperties);
+            var compositeKey = new CompositeKey(defaultKeyValue, KeyNames, KeyProperties);
 
             // try get item from loaded config
             var attributeCondition = compositeKey.Select(x => "@$attributeName = '$attributeValue'".FormatWith(new
@@ -111,7 +118,7 @@ namespace SmartConfig.Data
             {
                 RootElementName,
                 SettingElementName,
-                attributeConditions = EncodeKeyName(KeyNames.DefaultKeyName)
+                attributeConditions = attributeConditions
             }, true);
 
             var xSettings = xConfig.XPathSelectElements(settingXPath);
@@ -120,25 +127,49 @@ namespace SmartConfig.Data
             // add new setting
             if (xSetting == null)
             {
-                xSetting = new XElement(DefaultSettingElementName, value);
-                xConfig.Add(xSetting);
+                xSetting = new XElement(
+                    SettingElementName, 
+                    new XAttribute(EncodeKeyName(KeyNames.DefaultKeyName), defaultKeyValue), 
+                    value);
+                xConfig.Root.Add(xSetting);
             }
 
             // set custom keys
-            foreach (var x in compositeKey)
+            foreach (var keyName in KeyNamesWithoutDefault)
             {
-                xSetting.Add(new XAttribute(EncodeKeyName(x.Key), x.Value));
+                xSetting.Add(new XAttribute(EncodeKeyName(keyName), compositeKey[keyName]));
             }
+
+            xSetting.Value = value;
 
             xConfig.Save(FullName);
         }
 
-        private static string EncodeKeyName(string keyName)
+        internal static string EncodeKeyName(string keyName)
         {
             // any uppercase character that is not followed by an uppercase character
             keyName = Regex.Replace(keyName, "([A-Z])(?![A-Z])", "-$1").ToLower();
             return keyName.TrimStart('-');
         }
 
+        private XDocument LoadXml()
+        {
+            if (string.IsNullOrEmpty(FullName))
+            {
+                throw new InvalidOperationException("FileName must not be empty.");
+            }
+
+            if (!File.Exists(FullName))
+            {
+                Logger.Warn("Xml file not found. Creating new file. FileName = $FullName".FormatWith(new { FullName }, true));
+                var xDoc = new XDocument(new XElement(RootElementName));
+                return xDoc;
+            }
+            else
+            {
+                var xDoc = XDocument.Load(FullName);
+                return xDoc;
+            }
+        }
     }
 }

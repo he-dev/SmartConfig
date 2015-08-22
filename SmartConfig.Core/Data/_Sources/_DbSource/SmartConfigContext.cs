@@ -11,9 +11,9 @@ namespace SmartConfig.Data
     /// <summary>
     /// Provides <c>DbContext</c> for retreiving configuration from a database.
     /// </summary>
-    public sealed class SmartConfigEntities<TSetting> : DbContext where TSetting : class
+    public sealed class SmartConfigContext<TSetting> : DbContext where TSetting : class
     {
-        public SmartConfigEntities(string connectionString)
+        public SmartConfigContext(string connectionString)
             : base(connectionString)
         {
             Debug.Assert(!string.IsNullOrEmpty(connectionString));
@@ -32,13 +32,7 @@ namespace SmartConfig.Data
         {
             modelBuilder.Entity<TSetting>().ToTable(SettingsTableName);
 
-            // create a list with key names and initialize it with the default key
-            //var keyNames = new List<string> { KeyNames.DefaultKeyName };
-
-            // get other keys but sort them alphabeticaly
-            //var declaredProperties = typeof(TSetting).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
-            //keyNames.AddRange(declaredProperties.OrderBy(p => p.Name).Select(p => p.Name));
-            
+            // configure keys
             var columnOrder = 0;
             foreach (var keyName in SettingsTableKeyNames)
             {

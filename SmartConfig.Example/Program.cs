@@ -13,7 +13,7 @@ namespace SmartConfig.Example
     {
         static void Main(string[] args)
         {
-            Logger.Log = m => Debug.WriteLine(m);
+            Logger.Info = m => Debug.WriteLine(m);
 
             //AppConfigExample();
             //BasicSqlClientExample();
@@ -25,9 +25,9 @@ namespace SmartConfig.Example
 
         private static void AppConfigExample()
         {
-            SmartConfigManager.Load(typeof(ExampleAppConfig), new XmlConfig<CustomSetting>()
+            SmartConfigManager.Load(typeof(ExampleAppConfig), new XmlSource<CustomSetting>()
             {
-                FileName = @"Data\XmlConfig.xml",
+                FileName = @"Data\XmlSource.xml",
                 KeyProperties = new Dictionary<string, KeyProperties>()
                 {
                     { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString} }
@@ -36,7 +36,7 @@ namespace SmartConfig.Example
 
             return;
 
-            SmartConfigManager.Load(typeof(ExampleAppConfig), new AppConfig());
+            SmartConfigManager.Load(typeof(ExampleAppConfig), new AppConfigSource());
 
             Console.WriteLine(ExampleAppConfig.AppSettings.Greeting);
             Console.WriteLine(ExampleAppConfig.AppSettings.Farewell);
@@ -49,7 +49,7 @@ namespace SmartConfig.Example
 
         private static void BasicSqlClientExample()
         {
-            SmartConfigManager.Load(typeof(ExampleDbConfig1), new SqlClient<Setting>()
+            SmartConfigManager.Load(typeof(ExampleDbConfig1), new DbSource<Setting>()
             {
                 ConnectionString = ExampleAppConfig.ConnectionStrings.ExampleDb,
                 SettingTableName = "ExampleConfigTable",
@@ -60,7 +60,7 @@ namespace SmartConfig.Example
 
         private static void CustomSqlClientExample()
         {
-            SmartConfigManager.Load(typeof(ExampleDbConfig2), new SqlClient<CustomSetting>()
+            SmartConfigManager.Load(typeof(ExampleDbConfig2), new DbSource<CustomSetting>()
             {
                 ConnectionString = ExampleAppConfig.ConnectionStrings.ExampleDb,
                 SettingTableName = "ExampleConfigTable",
@@ -76,9 +76,9 @@ namespace SmartConfig.Example
 
         private static void XmlConfigExample()
         {
-            SmartConfigManager.Load(typeof(ExampleXmlConfig), new XmlConfig<CustomSetting>()
+            SmartConfigManager.Load(typeof(ExampleXmlConfig), new XmlSource<CustomSetting>()
             {
-                FileName = @"Data\XmlConfig.xml",
+                FileName = @"Data\XmlSource.xml",
                 CanInitializeSettings = false,
                 KeyProperties = new Dictionary<string, KeyProperties>()
                 {

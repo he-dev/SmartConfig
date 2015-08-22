@@ -27,15 +27,15 @@ namespace SmartConfig.Data
         /// <summary>
         /// Selects data from the data source.
         /// </summary>
-        /// <param name="defaultKey"></param>
+        /// <param name="defaultKeyValue"></param>
         /// <returns></returns>
-        string Select(string defaultKey);
+        string Select(string defaultKeyValue);
 
         /// <summary>
         /// Updates data in the data source.
         /// </summary>
-        /// <param name="defaultKey"></param>
+        /// <param name="defaultKeyValue"></param>
         /// <param name="value"></param>
-        void Update(string defaultKey, string value);
+        void Update(string defaultKeyValue, string value);
     }
 }

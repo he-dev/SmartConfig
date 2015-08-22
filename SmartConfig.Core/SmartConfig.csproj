@@ -58,6 +58,14 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath Condition="'$(TargetFrameworkVersion)' == 'v4.0'">..\packages\Newtonsoft.Json.7.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
       <HintPath Condition="'$(TargetFrameworkVersion)' == 'v4.5'">..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -89,21 +97,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompositeKey.cs" />
+    <Compile Include="Data\_Sources\_DbSource\DbSource.cs" />
     <Compile Include="Data\IIndexer.cs" />
+    <Compile Include="Data\_Sources\_DbSource\SmartConfigContext.cs" />
     <Compile Include="SettingInfo.cs" />
     <Compile Include="KeyProperties.cs" />
     <Compile Include="KeyNames.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\EnumConverter.cs" />
-    <Compile Include="Data\AppConfig.cs" />
+    <Compile Include="Data\_Sources\_AppConfigSource\AppConfigSource.cs" />
     <Compile Include="Collections\ObjectConverterCollection.cs" />
-    <Compile Include="Data\_AppConfigSectionHandlers\AppConfigSectionHandler.cs" />
-    <Compile Include="Data\_AppConfigSectionHandlers\AppSettingsSectionHandler.cs" />
+    <Compile Include="Data\_Sources\_AppConfigSource\AppConfigSectionHandler.cs" />
+    <Compile Include="Data\_Sources\_AppConfigSource\AppSettingsSectionHandler.cs" />
     <Compile Include="Data\Setting.cs" />
-    <Compile Include="Data\_AppConfigSectionHandlers\ConnectionStringsSectionHandler.cs" />
+    <Compile Include="Data\_Sources\_AppConfigSource\ConnectionStringsSectionHandler.cs" />
     <Compile Include="Data\DataSource.cs" />
-    <Compile Include="Data\XmlConfig.cs" />
+    <Compile Include="Data\_Sources\XmlSource.cs" />
     <Compile Include="Filters.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Utilities.cs" />
@@ -149,6 +159,8 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Data\_Sources\_DbSource\SQL-Scripts\dbo.BasicTable.sql" />
+    <Content Include="Data\_Sources\_DbSource\SQL-Scripts\dbo.CustomTable.sql" />
     <Content Include="LICENSE.txt" />
   </ItemGroup>
   <ItemGroup />

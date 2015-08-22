@@ -13,11 +13,11 @@ namespace SmartConfig.Data
     /// <summary>
     /// Implements the app.config as data source.
     /// </summary>
-    public class AppConfig : DataSource<Setting>
+    public class AppConfigSource : DataSource<Setting>
     {
         private IDictionary<Type, AppConfigSectionHandler> _sectionHandlers;
 
-        public AppConfig()
+        public AppConfigSource()
         {
             _sectionHandlers = new AppConfigSectionHandler[]
             {
@@ -40,20 +40,20 @@ namespace SmartConfig.Data
             }
         }
 
-        public override string Select(string defaultKey)
+        public override string Select(string defaultKeyValue)
         {
             var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var compositeKey = new CompositeKey(defaultKey, KeyNames, KeyProperties);
+            var compositeKey = new CompositeKey(defaultKeyValue, KeyNames, KeyProperties);
             var configurationSection = GetConfigurationSection(exeConfig, compositeKey);
             var sectionHandler = _sectionHandlers[configurationSection.GetType()];
             var value = sectionHandler.Select(configurationSection, GetNameWithoutSectionName(compositeKey));
             return value;
         }
 
-        public override void Update(string defaultKey, string value)
+        public override void Update(string defaultKeyValue, string value)
         {
             var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var compositeKey = new CompositeKey(defaultKey, KeyNames, KeyProperties);
+            var compositeKey = new CompositeKey(defaultKeyValue, KeyNames, KeyProperties);
             var configurationSection = GetConfigurationSection(exeConfig, compositeKey);
             var sectionHandler = _sectionHandlers[configurationSection.GetType()];
             sectionHandler.Update(configurationSection, GetNameWithoutSectionName(compositeKey), value);

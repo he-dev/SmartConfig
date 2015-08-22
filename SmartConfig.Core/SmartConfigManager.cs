@@ -60,7 +60,7 @@ namespace SmartConfig
 
             if (smartConfigAttribute == null) throw new SmartConfigTypeNotFoundException() { ConfigType = configType };
 
-            Logger.LogAction(() => "Loading [$configTypeName] from [$dataSourceName]...".FormatWith(new
+            Logger.LogInfo(() => "Loading [$configTypeName] from [$dataSourceName]...".FormatWith(new
             {
                 configTypeName = configType.Name,
                 dataSourceName = dataSource.GetType().Name

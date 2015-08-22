@@ -41,9 +41,9 @@ namespace SmartConfig.Data
 
         public bool CanInitializeSettings { get; set; }
 
-        public abstract string Select(string defaultKey);
+        public abstract string Select(string defaultKeyValue);
 
-        public abstract void Update(string defaultKey, string value);
+        public abstract void Update(string defaultKeyValue, string value);
 
         /// <summary>
         /// Applies all of the specified filters.
@@ -57,6 +57,11 @@ namespace SmartConfig.Data
                 .Where(x => x.Key != KeyNames.DefaultKeyName)
                 .Aggregate(elements, (current, item) => KeyProperties[item.Key].Filter(current, item).Cast<TSetting>());
             return elements;
+        }
+
+        protected CompositeKey CreateCompositeKey(string defaultKeyValue)
+        {
+            return new CompositeKey(defaultKeyValue, KeyNames, KeyProperties);
         }
     }
 }

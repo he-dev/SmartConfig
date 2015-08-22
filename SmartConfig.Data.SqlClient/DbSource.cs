@@ -16,11 +16,11 @@ namespace SmartConfig.Data
     /// <summary>
     /// Implements sql server data source.
     /// </summary>
-    public class SqlClient<TSetting> : DataSource<TSetting> where TSetting : Setting, new()
+    public class DbSource<TSetting> : DataSource<TSetting> where TSetting : Setting, new()
     {
-        //public SqlClient()
+        //public DbSource()
         //{
-        //    using (var context = new SmartConfigEntities<TSetting>(ConnectionString) { SettingsTableName = ""})
+        //    using (var context = new SmartConfigContext<TSetting>(ConnectionString) { SettingsTableName = ""})
         //    {
         //        var objectContext = ((IObjectContextAdapter)context).ObjectContext;
         //        var objectSet = objectContext.CreateObjectSet<TSetting>();
@@ -90,16 +90,16 @@ namespace SmartConfig.Data
             };
         }
 
-        private SmartConfigEntities<TSetting> CreateDbContext()
+        private SmartConfigContext<TSetting> CreateDbContext()
         {
-            return new SmartConfigEntities<TSetting>(ConnectionString)
+            return new SmartConfigContext<TSetting>(ConnectionString)
             {
                 SettingsTableName = SettingTableName,
                 SettingsTableKeyNames = KeyNames
             };
         }
 
-        private void InsertSetting(SmartConfigEntities<TSetting> context, IDictionary<string, string> keys, string value)
+        private void InsertSetting(SmartConfigContext<TSetting> context, IDictionary<string, string> keys, string value)
         {
             // create a new entity
             var entity = new TSetting()
