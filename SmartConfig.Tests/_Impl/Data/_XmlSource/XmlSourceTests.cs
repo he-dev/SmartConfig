@@ -15,7 +15,7 @@ namespace SmartConfig.Tests.Data
         {
             var value = new XmlSource<Setting>()
             {
-                FileName = @"_Xmls\XmlConfig_SelectTests.xml"
+                FileName = @"TestFiles\XmlConfigs\XmlConfig_SelectTests.xml"
             }
             .Select("Setting1");
             Assert.AreEqual("Value1", value);
@@ -26,7 +26,7 @@ namespace SmartConfig.Tests.Data
         {
             var value = new XmlSource<TestSetting>()
             {
-                FileName = @"_Xmls\XmlConfig_SelectTests.xml",
+                FileName = @"TestFiles\XmlConfigs\XmlConfig_SelectTests.xml",
                 KeyProperties = new Dictionary<string, KeyProperties>
                 {
                     { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "JKL", Filter = Filters.FilterByString } },
@@ -42,7 +42,7 @@ namespace SmartConfig.Tests.Data
         {
             var value = new XmlSource<TestSetting>()
             {
-                FileName = @"_Xmls\XmlConfig_SelectTests.xml",
+                FileName = @"TestFiles\XmlConfigs\XmlConfig_SelectTests.xml",
                 KeyProperties = new Dictionary<string, KeyProperties>
                 {
                     { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString } },
@@ -58,7 +58,7 @@ namespace SmartConfig.Tests.Data
         {
             var value = new XmlSource<TestSetting>()
             {
-                FileName = @"_Xmls\XmlConfig_SelectTests.xml",
+                FileName = @"TestFiles\XmlConfigs\XmlConfig_SelectTests.xml",
                 KeyProperties = new Dictionary<string, KeyProperties>
                 {
                     { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "XYZ", Filter = Filters.FilterByString } },
@@ -74,7 +74,7 @@ namespace SmartConfig.Tests.Data
         {
             var value = new XmlSource<TestSetting>()
             {
-                FileName = @"_Xmls\XmlConfig_SelectTests.xml",
+                FileName = @"TestFiles\XmlConfigs\XmlConfig_SelectTests.xml",
                 KeyProperties = new Dictionary<string, KeyProperties>
                 {
                     { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString } },
@@ -94,7 +94,7 @@ namespace SmartConfig.Tests.Data
         {
             var xmlSource = new XmlSource<Setting>()
             {
-                FileName = @"_Xmls\XmlConfig_UpdateTests.xml"
+                FileName = @"TestFiles\XmlConfigs\XmlConfig_UpdateTests.xml"
             };
 
             var oldValue = xmlSource.Select("Setting1");
@@ -112,7 +112,7 @@ namespace SmartConfig.Tests.Data
 
             var xmlSource = new XmlSource<Setting>()
             {
-                FileName = @"_Xmls\XmlConfig_UpdateTests.xml"
+                FileName = @"TestFiles\XmlConfigs\XmlConfig_UpdateTests.xml"
             };
 
             var oldValue = xmlSource.Select("Setting2");
@@ -138,7 +138,7 @@ namespace SmartConfig.Tests.Data
         {
             var value = new XmlSource<Setting>()
             {
-                FileName = @"_Xmls\XmlConfig_set_RootElementName.xml",
+                FileName = @"TestFiles\XmlConfigs\XmlConfig_set_RootElementName.xml",
                 RootElementName = "testConfig"
             }
              .Select("Setting1");
@@ -150,7 +150,7 @@ namespace SmartConfig.Tests.Data
         {
             var value = new XmlSource<Setting>()
             {
-                FileName = @"_Xmls\XmlConfig_set_SettingElementName.xml",
+                FileName = @"TestFiles\XmlConfigs\XmlConfig_set_SettingElementName.xml",
                 RootElementName = "testConfig",
                 SettingElementName = "testSetting"
             }

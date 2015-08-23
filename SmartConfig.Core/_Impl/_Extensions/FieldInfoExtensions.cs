@@ -37,28 +37,28 @@ namespace SmartConfig
 
         #region Constraint shortcuts
 
-        public static IEnumerable<ConstraintAttribute> Contraints(this FieldInfo fieldInfo)
-        {
-            return fieldInfo.GetCustomAttributes<ConstraintAttribute>(false);
-        }
+        //public static IEnumerable<ConstraintAttribute> Contraints(this FieldInfo fieldInfo)
+        //{
+        //    return fieldInfo.GetCustomAttributes<ConstraintAttribute>(false);
+        //}
 
         #endregion
 
         #region 
 
-        public static bool IsNullable(this FieldInfo fieldInfo)
-        {
-            var isNullable =
-                (fieldInfo.FieldType.IsValueType && fieldInfo.FieldType.IsNullable())
-                || fieldInfo.GetCustomAttribute<OptionalAttribute>() != null;
-            return isNullable;
-        }
+        //public static bool IsNullable(this FieldInfo fieldInfo)
+        //{
+        //    var isNullable =
+        //        (fieldInfo.FieldType.IsValueType && fieldInfo.FieldType.IsNullable())
+        //        || fieldInfo.GetCustomAttribute<OptionalAttribute>() != null;
+        //    return isNullable;
+        //}
 
-        public static bool IsOptional(this FieldInfo fieldInfo)
-        {
-            var isOptional = fieldInfo.GetCustomAttribute<OptionalAttribute>() != null;
-            return isOptional;
-        }
+        //public static bool IsOptional(this FieldInfo fieldInfo)
+        //{
+        //    var isOptional = fieldInfo.GetCustomAttribute<OptionalAttribute>() != null;
+        //    return isOptional;
+        //}
 
         #endregion
     }

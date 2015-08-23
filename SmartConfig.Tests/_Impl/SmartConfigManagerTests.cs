@@ -364,11 +364,82 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void InitializeDbSource()
+        public void InitializeDbSource_AnonymousConfig()
         {
+            AppDomain.CurrentDomain.SetData("DataDirectory", AppDomain.CurrentDomain.BaseDirectory);
+            var connectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString;
+            using (var context = new SmartConfigContext<TestSetting>(connectionString)
+            {
+                SettingsTableName = "TestConfig",
+                SettingsTableKeyNames = KeyNames.From<TestSetting>()
+            })
+            {
+                context.Database.Initialize(true);
+            }
 
+            var dataSource = new DbSource<TestSetting>()
+            {
+                ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
+                SettingTableName = "TestConfig",
+                SettingsInitializationEnabled = true,
+                KeyProperties = new Dictionary<string, KeyProperties>()
+                {
+                    { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString }},
+                    { KeyNames.VersionKeyName, new KeyProperties() { Value = "1.1.0", Filter = Filters.FilterByVersion }},
+                }
+            };
+
+            SmartConfigManager.Load(typeof(SettingsInitializationTestConfig), dataSource);
+
+            var setting1 = dataSource.Select("Setting1");
+            var setting2 = dataSource.Select("Nested1.Setting2");
+            var setting3 = dataSource.Select("Nested1.Nested2.Setting3");
+            var settingsInitialized = dataSource.Select(KeyNames.Internal.SettingsInitializedKeyName);
+
+            Assert.AreEqual("A", setting1);
+            Assert.AreEqual("B", setting2);
+            Assert.AreEqual("C", setting3);
+            Assert.AreEqual("True", settingsInitialized);
         }
 
+        [TestMethod]
+        public void InitializeDbSource_NamedConfig()
+        {
+            AppDomain.CurrentDomain.SetData("DataDirectory", AppDomain.CurrentDomain.BaseDirectory);
+            var connectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString;
+            using (var context = new SmartConfigContext<TestSetting>(connectionString)
+            {
+                SettingsTableName = "TestConfig",
+                SettingsTableKeyNames = KeyNames.From<TestSetting>()
+            })
+            {
+                context.Database.Initialize(true);
+            }
+
+            var dataSource = new DbSource<TestSetting>()
+            {
+                ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
+                SettingTableName = "TestConfig",
+                SettingsInitializationEnabled = true,
+                KeyProperties = new Dictionary<string, KeyProperties>()
+                {
+                    { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString }},
+                    { KeyNames.VersionKeyName, new KeyProperties() { Value = "1.1.0", Filter = Filters.FilterByVersion }},
+                }
+            };
+
+            SmartConfigManager.Load(typeof(NamedTestConfig), dataSource);
+
+            var setting1 = dataSource.Select("UnitTest.Setting1");
+            var setting2 = dataSource.Select("UnitTest.Nested1.Setting2");
+            var setting3 = dataSource.Select("UnitTest.Nested1.Nested2.Setting3");
+            var settingsInitialized = dataSource.Select(new SettingPath("UnitTest", KeyNames.Internal.SettingsInitializedKeyName));
+
+            Assert.AreEqual("A", setting1);
+            Assert.AreEqual("B", setting2);
+            Assert.AreEqual("C", setting3);
+            Assert.AreEqual("True", settingsInitialized);
+        }
         [TestMethod]
         public void InitializeXmlSource()
         {

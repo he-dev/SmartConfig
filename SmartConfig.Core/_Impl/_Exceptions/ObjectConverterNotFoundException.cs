@@ -11,9 +11,8 @@ namespace SmartConfig
     /// </summary>
     public class ObjectConverterNotFoundException : SmartConfigException
     {
-        internal ObjectConverterNotFoundException(SettingInfo settingInfo, Type converterType) : base(settingInfo, null)
+        internal ObjectConverterNotFoundException(SettingInfo settingInfo) : base(settingInfo, null)
         {
-            ConverterType = converterType;
         }
 
         public override string Message
@@ -23,7 +22,7 @@ namespace SmartConfig
                 return "Object converter [$ConverterTypeName] for [$ConfigTypeName]'s field [$SettingPath] not found."
                     .FormatWith(new
                     {
-                        ConverterTypeName = ConverterType.Name,
+                        ConverterTypeName = SettingInfo.ConverterType.Name,
                         ConfigTypeName = SettingInfo.ConfigType.Name,
                         SettingPath = SettingInfo.SettingPath
                     }, true);

@@ -27,26 +27,21 @@ namespace SmartConfig
             return memberExpression.Member;
         }
 
-        internal static IEnumerable<SettingInfo> GetSettingInfos(Type configType, Type currentType = null, string path = null)
+        internal static IEnumerable<SettingInfo> GetSettingInfos(Type currentType)
         {
-            if (currentType == null)
-            {
-                currentType = configType;
-            }
-
             var fields = currentType
                 .GetFields(BindingFlags.Public | BindingFlags.Static)
                 .Where(f => f.GetCustomAttribute<IgnoreAttribute>() == null);
 
             foreach (var field in fields)
             {
-                yield return new SettingInfo(configType, field, new SettingPath(path, field.Name));
+                yield return new SettingInfo(field);
             }
 
             var settingInfos = currentType
                 .GetNestedTypes(BindingFlags.Public | BindingFlags.Public)
                 .Where(t => t.GetCustomAttribute<IgnoreAttribute>() == null)
-                .SelectMany(t => GetSettingInfos(configType, t, new SettingPath(path, t.Name)));
+                .SelectMany(GetSettingInfos);
 
             foreach (var settingInfo in settingInfos)
             {

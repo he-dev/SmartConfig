@@ -82,8 +82,9 @@ namespace SmartConfig
                 {
                     InitializeSetting(settingInfo);
                 }
-                var settingInitializedSettingInfo = new SettingInfo(configType, KeyNames.Internal.SettingsInitializedKeyName);
-                UpdateSetting(configType, settingInitializedSettingInfo.SettingPath, true);
+
+                var settingInitializedSettingInfo = SettingInfoFactory.CreateSettingsInitializedSettingInfo(configType);
+                UpdateSetting(settingInitializedSettingInfo, true, true);
             }
 
             foreach (var settingInfo in settingInfos)
@@ -98,7 +99,7 @@ namespace SmartConfig
 
             if (string.IsNullOrEmpty(value))
             {
-                if (!settingInfo.FieldInfo.IsOptional())
+                if (!settingInfo.IsOptional)
                 {
                     throw new OptionalException(settingInfo);
                 }
@@ -109,8 +110,8 @@ namespace SmartConfig
 
             try
             {
-                var obj = converter.DeserializeObject(value, settingInfo.FieldInfo.FieldType, settingInfo.FieldInfo.Contraints());
-                settingInfo.FieldInfo.SetValue(null, obj);
+                var obj = converter.DeserializeObject(value, settingInfo.SettingType, settingInfo.SettingConstraints);
+                settingInfo.Value = obj;
             }
             catch (Exception ex)
             {
@@ -118,7 +119,7 @@ namespace SmartConfig
                 {
                     Value = value,
                     FromType = typeof(string),
-                    ToType = settingInfo.FieldInfo.FieldType
+                    ToType = settingInfo.SettingType
                 };
             }
         }
@@ -178,7 +179,7 @@ namespace SmartConfig
                     return;
                 }
 
-                settingInfo.FieldInfo.SetValue(null, value);
+                settingInfo.Value = value;
             }
             catch (ConstraintException<ConstraintAttribute>)
             {
@@ -189,7 +190,7 @@ namespace SmartConfig
                 throw new ObjectConverterException(settingInfo, ex)
                 {
                     Value = value,
-                    FromType = settingInfo.FieldInfo.FieldType,
+                    FromType = settingInfo.SettingType,
                     ToType = typeof(string),
                 };
             }
@@ -211,22 +212,22 @@ namespace SmartConfig
         private static void InitializeSetting(SettingInfo settingInfo)
         {
             Logger.LogTrace(() => "Initializing: $SettingPath".FormatWith(new { settingInfo.SettingPath }, true));
-            UpdateSetting(settingInfo, settingInfo.FieldInfo.GetValue(null), true);
+            UpdateSetting(settingInfo, settingInfo.Value, true);
         }
 
         private static string SerializeValue(object value, SettingInfo settingInfo)
         {
             // a null value that is not nullable is not allowed
-            if (value == null && !settingInfo.FieldInfo.IsNullable())
-            {
-                throw new OptionalException(settingInfo);
-            }
+            //if (value == null && !settingInfo.FieldInfo.IsNullable())
+            //{
+            //    throw new OptionalException(settingInfo);
+            //}
 
             var converter = GetConverter(settingInfo);
 
             try
             {
-                var serializedValue = converter.SerializeObject(value, settingInfo.FieldInfo.FieldType, settingInfo.SettingConstraints);
+                var serializedValue = converter.SerializeObject(value, settingInfo.SettingType, settingInfo.SettingConstraints);
                 return serializedValue;
             }
             catch (ConstraintException<ConstraintAttribute>)
@@ -238,7 +239,7 @@ namespace SmartConfig
                 throw new ObjectConverterException(settingInfo, ex)
                 {
                     Value = value,
-                    FromType = settingInfo.FieldInfo.FieldType,
+                    FromType = settingInfo.SettingType,
                     ToType = typeof(string),
                 };
             }
@@ -246,12 +247,10 @@ namespace SmartConfig
 
         private static ObjectConverterBase GetConverter(SettingInfo settingInfo)
         {
-            var type = GetConverterType(settingInfo.FieldInfo);
-
-            var objectConverter = Converters[type];
+            var objectConverter = Converters[settingInfo.ConverterType];
             if (objectConverter == null)
             {
-                throw new ObjectConverterNotFoundException(settingInfo, type);
+                throw new ObjectConverterNotFoundException(settingInfo);
             }
 
             return objectConverter;
