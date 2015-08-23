@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SmartConfig.Tests.Data;
 
-namespace SmartConfig.Data.SqlClient.Tests
+namespace SmartConfig.Tests
 {
     [TestClass]
     public class Global

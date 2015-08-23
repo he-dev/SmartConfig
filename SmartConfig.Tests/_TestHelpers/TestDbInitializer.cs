@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using SmartConfig.Data;
-using SmartConfig.Data.SqlClient.Tests;
 
-namespace SmartConfig.Data.SqlClient.Tests
+namespace SmartConfig.Tests.Data
 {
-    // http://stackoverflow.com/a/13992028/235671
-
     class TestDbInitializer : System.Data.Entity.DropCreateDatabaseAlways<SmartConfigContext<TestSetting>>
     {
         protected override void Seed(SmartConfigContext<TestSetting> context)
         {
-            var testConfig = new[]
+            var testSettings = new[]
             {
                 "ABC|1.0.0|StringField|abc",
                 "ABC|1.2.0|Int32Field|123",
@@ -23,11 +16,12 @@ namespace SmartConfig.Data.SqlClient.Tests
             }
             .Select(x => new TestSetting(x));
 
-            foreach (var configElement in testConfig)
+            foreach (var setting in testSettings)
             {
-                context.Settings.Add(configElement);
+                context.Settings.Add(setting);
             }
             context.SaveChanges();
+            base.Seed(context);
         }
     }
 }

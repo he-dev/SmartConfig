@@ -20,8 +20,6 @@ namespace SmartConfig.Data
         private string _rootElementName;
         private string _settingElementName;
 
-        public XmlSource() { }
-
         public string FileName { get; set; }
 
         public string RootElementName
@@ -161,7 +159,7 @@ namespace SmartConfig.Data
 
             if (!File.Exists(FullName))
             {
-                Logger.Warn("Xml file not found. Creating new file. FileName = $FullName".FormatWith(new { FullName }, true));
+                Logger.Warn("Xml file not found. Creating a empty file. FileName = $FullName".FormatWith(new { FullName }, true));
                 var xDoc = new XDocument(new XElement(RootElementName));
                 return xDoc;
             }

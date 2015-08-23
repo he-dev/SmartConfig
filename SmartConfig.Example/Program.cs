@@ -79,7 +79,7 @@ namespace SmartConfig.Example
             SmartConfigManager.Load(typeof(ExampleXmlConfig), new XmlSource<CustomSetting>()
             {
                 FileName = @"Data\XmlSource.xml",
-                CanInitializeSettings = false,
+                SettingsInitializationEnabled = false,
                 KeyProperties = new Dictionary<string, KeyProperties>()
                 {
                     { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString } },

@@ -21,6 +21,10 @@ namespace SmartConfig
             SettingPath = new SettingPath(ConfigName, settingName);
         }
 
+        internal SettingInfo(Type configType, string settingName) : this(configType, null, settingName)
+        {
+        }
+
         internal SettingInfo(MemberInfo member)
         {
             FieldInfo = (FieldInfo)member;

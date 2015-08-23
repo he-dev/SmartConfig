@@ -85,21 +85,7 @@ namespace SmartConfig.Tests
                 }
             };
             SmartConfigManager.Load(typeof(ConfigNameTestConfig), dataSource);
-        }
-
-        [TestMethod]
-        public void Load_VersionKey()
-        {
-            var dataSource = new TestDataSource()
-            {
-                SelectFunc = key =>
-                {
-                    Assert.AreEqual("2.2.1", key, "Invalid version.");
-                    return null;
-                }
-            };
-            SmartConfigManager.Load(typeof(VersionTestConfig), dataSource);
-        }
+        }        
 
         [TestMethod]
         public void Load_DateTimeFields()
@@ -365,7 +351,29 @@ namespace SmartConfig.Tests
         public void Load_Throws_UnsupportedTypeException()
         {
             // User cannot create this exception.
-        }        
+        }
+
+        #endregion
+
+        #region settings initialization
+
+        [TestMethod]
+        public void InitializeAppConfigSource()
+        {
+
+        }
+
+        [TestMethod]
+        public void InitializeDbSource()
+        {
+
+        }
+
+        [TestMethod]
+        public void InitializeXmlSource()
+        {
+            
+        }
 
         #endregion
     }

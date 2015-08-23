@@ -52,30 +52,38 @@ namespace SmartConfig
         /// <param name="dataSource">Data source that provides data.</param>
         public static void Load(Type configType, IDataSource dataSource)
         {
+            #region check arguments
+
             if (configType == null) throw new ArgumentNullException("configType", "You need to specify a config type.");
             if (dataSource == null) throw new ArgumentNullException("dataSource", "You need to specify a data source.");
             if (!configType.IsStatic()) throw new InvalidOperationException("'configType' must be a static class.");
+            if (configType.GetCustomAttribute<SmartConfigAttribute>() == null)
+            {
+                throw new SmartConfigTypeNotFoundException() { ConfigType = configType };
+            }
 
-            var smartConfigAttribute = configType.GetCustomAttribute<SmartConfigAttribute>();
+            #endregion
 
-            if (smartConfigAttribute == null) throw new SmartConfigTypeNotFoundException() { ConfigType = configType };
-
-            Logger.LogInfo(() => "Loading [$configTypeName] from [$dataSourceName]...".FormatWith(new
+            Logger.LogTrace(() => "Loading [$configTypeName] from [$dataSourceName]...".FormatWith(new
             {
                 configTypeName = configType.Name,
                 dataSourceName = dataSource.GetType().Name
             }, true));
 
-            DataSources[configType] = dataSource;           
+            DataSources[configType] = dataSource;
 
             var settingInfos = Utilities.GetSettingInfos(configType).ToList();
 
-            if (dataSource.CanInitializeSettings && !CheckSettingsInitialized(dataSource))
+            // initialize settings
+            if (dataSource.SettingsInitializationEnabled && !CheckSettingsInitialized(dataSource))
             {
+                Logger.LogTrace(() => "Initializing settings...");
                 foreach (var settingInfo in settingInfos)
                 {
                     InitializeSetting(settingInfo);
                 }
+                var settingInitializedSettingInfo = new SettingInfo(configType, KeyNames.Internal.SettingsInitializedKeyName);
+                UpdateSetting(configType, settingInitializedSettingInfo.SettingPath, true);
             }
 
             foreach (var settingInfo in settingInfos)
@@ -132,6 +140,7 @@ namespace SmartConfig
 
         #endregion
 
+        #region updating
         /// <summary>
         /// Updates a configuration field.
         /// </summary>
@@ -163,10 +172,13 @@ namespace SmartConfig
             {
                 var dataSource = DataSources[settingInfo.ConfigType];
                 dataSource.Update(settingInfo.SettingPath, serializedValue);
-                if (!isInitialization)
+
+                if (isInitialization)
                 {
-                    settingInfo.FieldInfo.SetValue(null, value);
+                    return;
                 }
+
+                settingInfo.FieldInfo.SetValue(null, value);
             }
             catch (ConstraintException<ConstraintAttribute>)
             {
@@ -183,21 +195,28 @@ namespace SmartConfig
             }
         }
 
+        #endregion
+
         private static bool CheckSettingsInitialized(IDataSource dataSource)
         {
-            var settingInitialized = dataSource.Select("__SettingsInitialized");
+            var settingInitialized = dataSource.Select(KeyNames.Internal.SettingsInitializedKeyName);
             var result = false;
             bool.TryParse(settingInitialized, out result);
+
+            Logger.LogTrace(() => "$keyName = $result".FormatWith(new { keyName = KeyNames.Internal.SettingsInitializedKeyName, result }));
+
             return result;
         }
 
         private static void InitializeSetting(SettingInfo settingInfo)
         {
+            Logger.LogTrace(() => "Initializing: $SettingPath".FormatWith(new { settingInfo.SettingPath }, true));
             UpdateSetting(settingInfo, settingInfo.FieldInfo.GetValue(null), true);
         }
 
         private static string SerializeValue(object value, SettingInfo settingInfo)
         {
+            // a null value that is not nullable is not allowed
             if (value == null && !settingInfo.FieldInfo.IsNullable())
             {
                 throw new OptionalException(settingInfo);

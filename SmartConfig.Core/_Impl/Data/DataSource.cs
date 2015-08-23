@@ -39,7 +39,7 @@ namespace SmartConfig.Data
 
         public IDictionary<string, KeyProperties> KeyProperties { get; set; }
 
-        public bool CanInitializeSettings { get; set; }
+        public bool SettingsInitializationEnabled { get; set; }
 
         public abstract string Select(string defaultKeyValue);
 

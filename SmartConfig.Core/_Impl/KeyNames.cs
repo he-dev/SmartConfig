@@ -16,7 +16,10 @@ namespace SmartConfig
         public const string MachineNameKeyName = "MachineName";
         public const string UserNameKeyName = "UserName";
 
-        internal const string SettingsInitializedKeyName = "__SettingsInitialized";
+        internal static class Internal
+        {
+            internal const string SettingsInitializedKeyName = "__SettingsInitialized";
+        }
 
         public static KeyNames From<TSetting>() where TSetting : Setting
         {

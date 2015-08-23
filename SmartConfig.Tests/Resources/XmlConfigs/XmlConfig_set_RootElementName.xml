@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<testConfig>
+  <setting name="Setting1">Value1</setting>
+</testConfig>

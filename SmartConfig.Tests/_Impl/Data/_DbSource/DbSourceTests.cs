@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.Entity;
-using System.IO;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Data;
-using SmartConfig.Data.SqlClient.Tests;
+using SmartConfig.Tests.TestConfigs;
 
-namespace SmartConfig.Data.SqlClient.Tests
+namespace SmartConfig.Tests.Data
 {
     [TestClass]
     public class SqlClientTests
@@ -16,16 +13,16 @@ namespace SmartConfig.Data.SqlClient.Tests
         [TestInitialize]
         public void TestInitialize()
         {
-            // TODO: define key columns
             AppDomain.CurrentDomain.SetData("DataDirectory", AppDomain.CurrentDomain.BaseDirectory);
-            using (var context = new SmartConfigContext<TestSetting>(ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString)
+            var connectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString;
+            using (var context = new SmartConfigContext<TestSetting>(connectionString)
             {
-                SettingsTableName = "TestConfig"
+                SettingsTableName = "TestConfig",
+                SettingsTableKeyNames = KeyNames.From<TestSetting>()
             })
             {
                 context.Database.Initialize(true);
             }
-            //Database.SetInitializer<SmartConfigContext>(null);
         }
 
         [TestMethod]
@@ -42,8 +39,8 @@ namespace SmartConfig.Data.SqlClient.Tests
                 }
             };
 
-            SmartConfigManager.Load(typeof(BasicConfig), dataSource);
-            Assert.AreEqual(123, BasicConfig.Int32Field);
+            SmartConfigManager.Load(typeof(SimpteTestConfig), dataSource);
+            Assert.AreEqual(123, SimpteTestConfig.Int32Field);
         }
 
         [TestMethod]
@@ -60,17 +57,17 @@ namespace SmartConfig.Data.SqlClient.Tests
                 }
             };
 
-            SmartConfigManager.Load(typeof(BasicConfig), dataSource);
+            SmartConfigManager.Load(typeof(SimpteTestConfig), dataSource);
 
-            Assert.AreEqual(123, BasicConfig.Int32Field);
+            Assert.AreEqual(123, SimpteTestConfig.Int32Field);
 
-            SmartConfigManager.Update(() => BasicConfig.Int32Field, 456);
+            SmartConfigManager.Update(() => SimpteTestConfig.Int32Field, 456);
             Assert.AreEqual("456", dataSource.Select("Int32Field"));
-            Assert.AreEqual(456, BasicConfig.Int32Field);
+            Assert.AreEqual(456, SimpteTestConfig.Int32Field);
 
-            SmartConfigManager.Update(() => BasicConfig.Int32Field, 789);
+            SmartConfigManager.Update(() => SimpteTestConfig.Int32Field, 789);
             Assert.AreEqual("789", dataSource.Select("Int32Field"));
-            Assert.AreEqual(789, BasicConfig.Int32Field);
+            Assert.AreEqual(789, SimpteTestConfig.Int32Field);
         }
     }
 }

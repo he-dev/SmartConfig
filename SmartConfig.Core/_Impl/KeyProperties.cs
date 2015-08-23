@@ -21,6 +21,15 @@ namespace SmartConfig
         /// <summary>
         /// Gets or sets the filter function for this key.
         /// </summary>
-        public FilterByFunc Filter { get; set; }     
+        public FilterByFunc Filter { get; set; }
+
+        public static KeyProperties Create(string value, FilterByFunc filter)
+        {
+            return new KeyProperties()
+            {
+                Value = value,
+                Filter = filter
+            };
+        }
     }
 }

@@ -75,45 +75,43 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="CompositeKeyTests.cs" />
-    <Compile Include="Data\AppConfigTests.cs" />
-    <Compile Include="Converters\ColorConverterTests.cs" />
-    <Compile Include="Converters\XmlConverterTests.cs" />
-    <Compile Include="Converters\JsonConverterTests.cs" />
-    <Compile Include="Data\_Sources\XmlSourceTests.cs" />
-    <Compile Include="Data\_Sources\_DbSource\DbSourceTests.cs" />
-    <Compile Include="Data\_Sources\_DbSource\_TestConfigs\BasicConfig.cs" />
-    <Compile Include="Data\_Sources\_DbSource\_TestHelpers\Global.cs" />
-    <Compile Include="Data\_Sources\_DbSource\_TestHelpers\TestDataSource.cs" />
-    <Compile Include="Data\_Sources\_DbSource\_TestHelpers\TestDbInitializer.cs" />
-    <Compile Include="Data\_Sources\_DbSource\_TestHelpers\TestSetting.cs" />
-    <Compile Include="SmartConfigManagerTests.cs" />
+    <Compile Include="_src\CompositeKeyTests.cs" />
+    <Compile Include="_src\Data\_AppConfigSource\AppConfigTests.cs" />
+    <Compile Include="_src\Converters\ColorConverterTests.cs" />
+    <Compile Include="_src\Converters\XmlConverterTests.cs" />
+    <Compile Include="_src\Converters\JsonConverterTests.cs" />
+    <Compile Include="_src\Data\_XmlSource\XmlSourceTests.cs" />
+    <Compile Include="_src\Data\_DbSource\DbSourceTests.cs" />
+    <Compile Include="_src\TestConfigs\SimpteTestConfig.cs" />
+    <Compile Include="_src\_TestHelpers\Global.cs" />
+    <Compile Include="_src\Data\_DbSource\TestDbInitializer.cs" />
+    <Compile Include="_src\SmartConfigManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestConfigs\_Basics\ColorsTestConfig.cs" />
-    <Compile Include="TestConfigs\_Basics\XmlTestConfig.cs" />
-    <Compile Include="TestConfigs\_Basics\DateTimeFields.cs" />
-    <Compile Include="TestConfigs\_Contraints\RegularExpressionTestConfig.cs" />
-    <Compile Include="TestConfigs\_Contraints\RangeTestConfig.cs" />
-    <Compile Include="TestConfigs\_Contraints\DateTimeFormatTestConfig.cs" />
-    <Compile Include="TestConfigs\_Exeptions\UnsupportedTypeTestConfig.cs" />
-    <Compile Include="FiltersTests.cs" />
-    <Compile Include="TestConfigs\_Contraints\OptionalTestConfig.cs" />
-    <Compile Include="TestConfigs\_CustomConverters\JsonConverterTestConfig.cs" />
-    <Compile Include="TestConfigs\_Basics\EnumField.cs" />
-    <Compile Include="TestConfigs\_Basics\StringTestConfig.cs" />
-    <Compile Include="TestConfigs\_Exeptions\MissingOptionalAttribute.cs" />
-    <Compile Include="_TestHelpers\TestSetting.cs" />
-    <Compile Include="_TestHelpers\TestDataSource.cs" />
-    <Compile Include="_TestHelpers\TestEnum.cs" />
-    <Compile Include="_Attributes\_Constraints\RangeAttributeTests.cs" />
-    <Compile Include="TestConfigs\_Exeptions\MissingSmartConfigAttribute.cs" />
-    <Compile Include="TestConfigs\_Files\AppConfig.cs" />
-    <Compile Include="TestConfigs\_Nestings\OneNestedClass.cs" />
-    <Compile Include="TestConfigs\_Nestings\TwoNestedClasses.cs" />
-    <Compile Include="TestConfigs\_Basics\ConfigNameTestConfig.cs" />
-    <Compile Include="TestConfigs\_Basics\ValueTypesTestConfig.cs" />
-    <Compile Include="TestConfigs\_Basics\VersionTestConfig.cs" />
-    <Compile Include="Converters\ValueTypeConverterTests.cs" />
+    <Compile Include="_src\TestConfigs\_Basics\ColorsTestConfig.cs" />
+    <Compile Include="_src\TestConfigs\_Basics\XmlTestConfig.cs" />
+    <Compile Include="_src\TestConfigs\_Basics\DateTimeFields.cs" />
+    <Compile Include="_src\TestConfigs\_Contraints\RegularExpressionTestConfig.cs" />
+    <Compile Include="_src\TestConfigs\_Contraints\RangeTestConfig.cs" />
+    <Compile Include="_src\TestConfigs\_Contraints\DateTimeFormatTestConfig.cs" />
+    <Compile Include="_src\TestConfigs\_Exeptions\UnsupportedTypeTestConfig.cs" />
+    <Compile Include="_src\FiltersTests.cs" />
+    <Compile Include="_src\TestConfigs\_Contraints\OptionalTestConfig.cs" />
+    <Compile Include="_src\TestConfigs\_CustomConverters\JsonConverterTestConfig.cs" />
+    <Compile Include="_src\TestConfigs\_Basics\EnumField.cs" />
+    <Compile Include="_src\TestConfigs\_Basics\StringTestConfig.cs" />
+    <Compile Include="_src\TestConfigs\_Exeptions\MissingOptionalAttribute.cs" />
+    <Compile Include="_src\_TestHelpers\TestSetting.cs" />
+    <Compile Include="_src\_TestHelpers\TestDataSource.cs" />
+    <Compile Include="_src\_TestHelpers\TestEnum.cs" />
+    <Compile Include="_src\_Attributes\_Constraints\RangeAttributeTests.cs" />
+    <Compile Include="_src\TestConfigs\_Exeptions\MissingSmartConfigAttribute.cs" />
+    <Compile Include="_src\TestConfigs\_Files\AppConfig.cs" />
+    <Compile Include="_src\TestConfigs\_Nestings\OneNestedClass.cs" />
+    <Compile Include="_src\TestConfigs\_Nestings\TwoNestedClasses.cs" />
+    <Compile Include="_src\TestConfigs\_Basics\ConfigNameTestConfig.cs" />
+    <Compile Include="_src\TestConfigs\_Basics\ValueTypesTestConfig.cs" />
+    <Compile Include="_src\TestConfigs\_Basics\VersionTestConfig.cs" />
+    <Compile Include="_src\Converters\ValueTypeConverterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -126,13 +124,25 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="XmlConfig_SelectTests.xml">
+    <None Include="Resources\XmlConfigs\XmlConfig_SelectTests.xml">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="XmlConfig_UpdateTests.xml">
+    <None Include="Resources\XmlConfigs\XmlConfig_UpdateTests.xml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\XmlConfigs\XmlConfig_set_RootElementName.xml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\XmlConfigs\XmlConfig_set_SettingElementName.xml">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

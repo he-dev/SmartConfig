@@ -8,12 +8,6 @@ namespace SmartConfig.Tests.Data
     [TestClass]
     public class XmlSourceTests
     {
-        [TestMethod]
-        public void EncodeKeyName_CamelCase()
-        {
-            Assert.AreEqual("camel-case", XmlSource<TestSetting>.EncodeKeyName("CamelCase"));
-        }
-
         #region select tests
 
         [TestMethod]
@@ -21,7 +15,7 @@ namespace SmartConfig.Tests.Data
         {
             var value = new XmlSource<Setting>()
             {
-                FileName = "XmlConfig_SelectTests.xml"
+                FileName = @"_Xmls\XmlConfig_SelectTests.xml"
             }
             .Select("Setting1");
             Assert.AreEqual("Value1", value);
@@ -32,7 +26,7 @@ namespace SmartConfig.Tests.Data
         {
             var value = new XmlSource<TestSetting>()
             {
-                FileName = "XmlConfig_SelectTests.xml",
+                FileName = @"_Xmls\XmlConfig_SelectTests.xml",
                 KeyProperties = new Dictionary<string, KeyProperties>
                 {
                     { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "JKL", Filter = Filters.FilterByString } },
@@ -48,7 +42,7 @@ namespace SmartConfig.Tests.Data
         {
             var value = new XmlSource<TestSetting>()
             {
-                FileName = "XmlConfig_SelectTests.xml",
+                FileName = @"_Xmls\XmlConfig_SelectTests.xml",
                 KeyProperties = new Dictionary<string, KeyProperties>
                 {
                     { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString } },
@@ -64,7 +58,7 @@ namespace SmartConfig.Tests.Data
         {
             var value = new XmlSource<TestSetting>()
             {
-                FileName = "XmlConfig_SelectTests.xml",
+                FileName = @"_Xmls\XmlConfig_SelectTests.xml",
                 KeyProperties = new Dictionary<string, KeyProperties>
                 {
                     { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "XYZ", Filter = Filters.FilterByString } },
@@ -80,7 +74,7 @@ namespace SmartConfig.Tests.Data
         {
             var value = new XmlSource<TestSetting>()
             {
-                FileName = "XmlConfig_SelectTests.xml",
+                FileName = @"_Xmls\XmlConfig_SelectTests.xml",
                 KeyProperties = new Dictionary<string, KeyProperties>
                 {
                     { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString } },
@@ -100,7 +94,7 @@ namespace SmartConfig.Tests.Data
         {
             var xmlSource = new XmlSource<Setting>()
             {
-                FileName = "XmlConfig_UpdateTests.xml"
+                FileName = @"_Xmls\XmlConfig_UpdateTests.xml"
             };
 
             var oldValue = xmlSource.Select("Setting1");
@@ -118,7 +112,7 @@ namespace SmartConfig.Tests.Data
 
             var xmlSource = new XmlSource<Setting>()
             {
-                FileName = "XmlConfig_UpdateTests.xml"
+                FileName = @"_Xmls\XmlConfig_UpdateTests.xml"
             };
 
             var oldValue = xmlSource.Select("Setting2");
@@ -129,12 +123,41 @@ namespace SmartConfig.Tests.Data
             Assert.AreEqual("Value2", newValue);
         }
 
-        [TestMethod]
-        public void Update_Setting1_Environment_XYZ()
-        {
+        #endregion
 
+        #region other tests
+
+        [TestMethod]
+        public void EncodeKeyName_CamelCase()
+        {
+            Assert.AreEqual("camel-case", XmlSource<TestSetting>.EncodeKeyName("CamelCase"));
         }
 
+        [TestMethod]
+        public void set_RootElementName()
+        {
+            var value = new XmlSource<Setting>()
+            {
+                FileName = @"_Xmls\XmlConfig_set_RootElementName.xml",
+                RootElementName = "testConfig"
+            }
+             .Select("Setting1");
+            Assert.AreEqual("Value1", value);
+        }
+
+        [TestMethod]
+        public void set_SettingElementName()
+        {
+            var value = new XmlSource<Setting>()
+            {
+                FileName = @"_Xmls\XmlConfig_set_SettingElementName.xml",
+                RootElementName = "testConfig",
+                SettingElementName = "testSetting"
+            }
+             .Select("Setting1");
+            Assert.AreEqual("Value1", value);
+        }
         #endregion
+
     }
 }

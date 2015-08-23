@@ -22,7 +22,7 @@ namespace SmartConfig.Data
     {
         KeyNames KeyNames { get; }
 
-        bool CanInitializeSettings { get; }
+        bool SettingsInitializationEnabled { get; }
 
         /// <summary>
         /// Selects data from the data source.
