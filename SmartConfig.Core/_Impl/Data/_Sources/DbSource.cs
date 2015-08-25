@@ -6,6 +6,7 @@ using System.Data.Entity.Core;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -40,9 +41,11 @@ namespace SmartConfig.Data
 
         public override string Select(string defaultKeyValue)
         {
+            Debug.Assert(!string.IsNullOrEmpty(defaultKeyValue));
+
             using (var context = CreateDbContext())
             {
-                var compositeKey = new CompositeKey(defaultKeyValue, KeyNames, KeyProperties);
+                var compositeKey = CreateCompositeKey(defaultKeyValue);
                 var name = compositeKey[KeyNames.DefaultKeyName];
                 var elements = context.Settings.Where(ce => ce.Name == name).ToList() as IEnumerable<TSetting>;
                 elements = ApplyFilters(elements, compositeKey);
@@ -54,9 +57,11 @@ namespace SmartConfig.Data
 
         public override void Update(string defaultKeyValue, string value)
         {
+            Debug.Assert(!string.IsNullOrEmpty(defaultKeyValue));
+
             using (var context = CreateDbContext())
             {
-                var compositeKey = new CompositeKey(defaultKeyValue, KeyNames, KeyProperties);
+                var compositeKey = CreateCompositeKey(defaultKeyValue);
 
                 // get key values
                 var keyValues = compositeKey.Values.Cast<object>().ToArray();

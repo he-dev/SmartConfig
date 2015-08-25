@@ -14,7 +14,7 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void CompositeKeyTest()
         {
-            Assert.Fail();
+            Assert.Inconclusive();
         }
     }
 }

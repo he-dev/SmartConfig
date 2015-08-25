@@ -67,12 +67,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\CustomSetting.cs" />
-    <Compile Include="Data\ExampleXmlConfig.cs" />
-    <Compile Include="Data\ExampleDbConfig2.cs" />
-    <Compile Include="Data\ExampleDbConfig1.cs" />
-    <Compile Include="Data\ExampleAppConfig.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="_Impl\Data\CustomSetting.cs" />
+    <Compile Include="_Impl\Data\ExampleXmlConfig.cs" />
+    <Compile Include="_Impl\Data\ExampleDbConfig2.cs" />
+    <Compile Include="_Impl\Data\ExampleDbConfig1.cs" />
+    <Compile Include="_Impl\Data\ExampleAppConfig.cs" />
+    <Compile Include="_Impl\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -80,14 +80,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Data\ExampleDb.mdf">
+    <Content Include="Configs\ExampleDb.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\ExampleDb_log.ldf">
+    <Content Include="Configs\ExampleDb_log.ldf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <DependentUpon>ExampleDb.mdf</DependentUpon>
     </Content>
-    <None Include="Data\XmlConfig.xml">
+    <None Include="Configs\XmlConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </None>
