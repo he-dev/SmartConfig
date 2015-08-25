@@ -227,7 +227,7 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void Load_Throws_DateTimeFormatException()
         {
-            var ex = ExceptionAssert.Throws<DateTimeFormatException>(() =>
+            var ex = ExceptionAssert.Throws<ConstraintException>(() =>
             {
                 SmartConfigManager.Load(typeof(DateTimeFormatTestConfig), new TestDataSource()
                 {
@@ -241,7 +241,7 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void Load_Throws_RangeException()
         {
-            var ex = ExceptionAssert.Throws<RangeException>(() =>
+            var ex = ExceptionAssert.Throws<ConstraintException>(() =>
             {
                 SmartConfigManager.Load(typeof(RangeTestConfig), new TestDataSource()
                 {
@@ -255,7 +255,7 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void Load_Throws_RegulaExpressionException()
         {
-            var ex = ExceptionAssert.Throws<RegularExpressionException>(() =>
+            var ex = ExceptionAssert.Throws<ConstraintException>(() =>
             {
                 SmartConfigManager.Load(typeof(RegularExpressionTestConfig), new TestDataSource()
                 {

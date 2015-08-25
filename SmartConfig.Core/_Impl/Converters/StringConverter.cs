@@ -21,7 +21,7 @@ namespace SmartConfig.Converters
 
             constraints.Check<RegularExpressionAttribute>(regex =>
             {
-                if (!regex.IsMatch(value)) throw new RegularExpressionException(regex, value);
+                if (!regex.IsMatch(value)) throw new ConstraintException(regex, value);
             });
 
             return value;
@@ -33,7 +33,7 @@ namespace SmartConfig.Converters
 
             constraints.Check<RegularExpressionAttribute>(regex =>
             {
-                if (!regex.IsMatch((string)value)) throw new RegularExpressionException(regex, (string)value);
+                if (!regex.IsMatch((string)value)) throw new ConstraintException(regex, (string)value);
             });
 
             return (string)value;

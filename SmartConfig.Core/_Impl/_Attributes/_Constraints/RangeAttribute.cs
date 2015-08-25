@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
+using SmartUtilities;
 
 namespace SmartConfig
 {
@@ -40,6 +41,11 @@ namespace SmartConfig
         /// Gets the maximum value of the range.
         /// </summary>
         internal string Max { get; private set; }
+
+        public override string ToString()
+        {
+            return "Type = \"$TypeName\" Min = \"$Min\" Max = \"$Max\"".FormatWith(new { TypeName = Type.Name, Min, Max });
+        }
 
         /// <summary>
         /// Validates the value's range.

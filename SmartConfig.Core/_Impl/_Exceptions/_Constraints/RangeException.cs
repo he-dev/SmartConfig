@@ -12,17 +12,16 @@ namespace SmartConfig
     /// </summary>
     public class RangeException : ConstraintException
     {
-        public RangeException(RangeAttribute constraint, string value) : base(constraint, value)
+        public RangeException(ConstraintAttribute constraint, string value) : base(constraint, value)
         {
         }
 
-        public override string Message
-        {
-            get
-            {
-                var constraint = (RangeAttribute)Constraint;
-                return "$Message Min = [$Min], Max = [$Max].".FormatWith(new { base.Message, constraint.Min, constraint.Max }, true);
-            }
-        }
+        //public override string Message
+        //{
+        //    get
+        //    {
+        //        return "$Message $Range".FormatWith(new { base.Message, Range = ((RangeAttribute)Constraint).ToString() }, true);
+        //    }
+        //}
     }
 }

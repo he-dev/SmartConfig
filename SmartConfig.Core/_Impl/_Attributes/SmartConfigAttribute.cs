@@ -37,7 +37,5 @@ namespace SmartConfig
                 _name = value;
             }
         }
-
-        //public string Version { get; set; }
     }
 }

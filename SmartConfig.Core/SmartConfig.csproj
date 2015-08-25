@@ -129,10 +129,7 @@
     <Compile Include="_Impl\_Exceptions\OptionalException.cs" />
     <Compile Include="_Impl\_Exceptions\DataSourceException.cs" />
     <Compile Include="_Impl\_Exceptions\SmartConfigException.cs" />
-    <Compile Include="_Impl\_Exceptions\_Constraints\ConstraintException.cs" />
-    <Compile Include="_Impl\_Exceptions\_Constraints\RangeException.cs" />
-    <Compile Include="_Impl\_Exceptions\_Constraints\DateTimeFormatException.cs" />
-    <Compile Include="_Impl\_Exceptions\_Constraints\RegularExpressionException.cs" />
+    <Compile Include="_Impl\_Exceptions\ConstraintException.cs" />
     <Compile Include="_Impl\_Exceptions\UnsupportedTypeException.cs" />
     <Compile Include="_Impl\_Extensions\FieldInfoExtensions.cs" />
     <Compile Include="_Impl\_Extensions\EnumerableExtensions.cs" />

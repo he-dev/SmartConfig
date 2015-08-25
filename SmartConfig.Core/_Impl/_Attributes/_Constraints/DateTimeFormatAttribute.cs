@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartUtilities;
 
 namespace SmartConfig
 {
@@ -21,14 +23,19 @@ namespace SmartConfig
         /// </summary>
         public string Format { get; private set; }
 
-        public override string ToString()
+        public bool TryParseExact(string value, out DateTime result)
         {
-            return Format;
+            return DateTime.TryParseExact(value, Format, null, DateTimeStyles.None, out result);
         }
 
-        public static implicit operator string(DateTimeFormatAttribute attribute)
+        public override string ToString()
         {
-            return attribute.ToString();
+            return "Format = \"$Format\"".FormatWith(new { Format });
         }
+
+        //public static implicit operator string (DateTimeFormatAttribute attribute)
+        //{
+        //    return attribute.ToString();
+        //}
     }
 }

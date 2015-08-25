@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using SmartUtilities;
 
 namespace SmartConfig
 {
@@ -24,12 +25,17 @@ namespace SmartConfig
 
         public bool IsMatch(string value)
         {
-            return Regex.IsMatch(value, this, IgnoreCase ? RegexOptions.IgnoreCase : RegexOptions.None);
+            return Regex.IsMatch(value, _pattern, IgnoreCase ? RegexOptions.IgnoreCase : RegexOptions.None);
         }
 
-        public static implicit operator string(RegularExpressionAttribute pattern)
+        public override string ToString()
         {
-            return pattern._pattern;
+            return "Pattern = \"$Pattern\" IgnoreCase = \"$IgnoreCase\"".FormatWith(new { Pattern = _pattern, IgnoreCase = IgnoreCase.ToString() });
         }
+
+        //public static implicit operator string(RegularExpressionAttribute pattern)
+        //{
+        //    return pattern._pattern;
+        //}
     }
 }

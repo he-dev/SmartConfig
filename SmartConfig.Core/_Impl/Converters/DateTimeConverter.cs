@@ -22,22 +22,17 @@ namespace SmartConfig.Converters
         {
             ValidateType(type);
 
-            DateTime? result = null;
+            DateTime result;
             constraints.Check<DateTimeFormatAttribute>(format =>
             {
-                DateTime _result;
-                if (!DateTime.TryParseExact(value, format, null, DateTimeStyles.None, out _result))
+                if (!format.TryParseExact(value, out result))
                 {
-                    throw new DateTimeFormatException(format, value);
+                    throw new ConstraintException(format, value);
                 }
-                result = _result;
             });
 
-            if (!result.HasValue)
-            {
-                result = DateTime.Parse(value, CultureInfo.InvariantCulture);
-            }
-            return result.Value;
+            result = DateTime.Parse(value, CultureInfo.InvariantCulture);
+            return result;
         }
 
         public override string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
@@ -52,7 +47,7 @@ namespace SmartConfig.Converters
             var result = string.Empty;
             constraints.Check<DateTimeFormatAttribute>(format =>
             {
-                result = ((DateTime)value).ToString(format);
+                result = ((DateTime)value).ToString(format.Format);
             });
 
             if (string.IsNullOrEmpty(result))

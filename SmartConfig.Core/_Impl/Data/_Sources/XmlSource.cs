@@ -159,7 +159,7 @@ namespace SmartConfig.Data
 
             if (!File.Exists(FullName))
             {
-                Logger.Warn("Xml file not found. Creating a empty file. FileName = $FullName".FormatWith(new { FullName }, true));
+                Logger.LogWarn(() => "Xml file not found. Creating a empty file. FileName = $FullName".FormatWith(new { FullName }, true));
                 var xDoc = new XDocument(new XElement(RootElementName));
                 return xDoc;
             }

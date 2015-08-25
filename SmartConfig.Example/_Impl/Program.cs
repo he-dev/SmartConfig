@@ -75,7 +75,7 @@ namespace SmartConfig.Example
         {
             SmartConfigManager.Load(typeof(ExampleXmlConfig), new XmlSource<CustomSetting>()
             {
-                FileName = @"Data\XmlSource.xml",
+                FileName = @"Configs\XmlSource.xml",
                 SettingsInitializationEnabled = false,
                 KeyProperties = new Dictionary<string, KeyProperties>()
                 {

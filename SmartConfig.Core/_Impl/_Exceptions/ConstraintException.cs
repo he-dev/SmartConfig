@@ -11,7 +11,7 @@ namespace SmartConfig
     /// <summary>
     /// Base class for constraint exceptions.
     /// </summary>
-    public abstract class ConstraintException : Exception
+    public class ConstraintException : Exception
     {
         public ConstraintException(ConstraintAttribute constraint, object value)
         {
@@ -23,7 +23,13 @@ namespace SmartConfig
         {
             get
             {
-                return "Constraint [$AbbreviatedAttributeName] failed.".FormatWith(new { AbbreviatedAttributeName }, true);
+                return 
+                    "Constraint \"$AbbreviatedAttributeName\" failed for $Constraint"
+                    .FormatWith(new
+                    {
+                        AbbreviatedAttributeName,
+                        Constraint = Constraint.ToString()
+                    }, true);
             }
         }
 

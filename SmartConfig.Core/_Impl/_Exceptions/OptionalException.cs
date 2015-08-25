@@ -9,7 +9,7 @@ using SmartUtilities;
 namespace SmartConfig
 {
     /// <summary>
-    /// Occurs when a field that is not optionl could not be found.
+    /// Occurs when a non optional setting wasn't found in the source.
     /// </summary>
     public class OptionalException : SmartConfigException
     {
@@ -24,7 +24,7 @@ namespace SmartConfig
                     .FormatWith(new
                     {
                         ConfigTypeName = SettingInfo.ConfigType.Name,
-                        FieldPath = SettingInfo.SettingPath,
+                        SettingPath = SettingInfo.SettingPath.ToString(),
                         OptionalAttributeName = typeof(OptionalAttribute).Name
                     }, true);
             }

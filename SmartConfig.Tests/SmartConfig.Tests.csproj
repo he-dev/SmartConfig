@@ -85,6 +85,9 @@
     <Compile Include="_Impl\Data\_Sources\XmlSourceTests.cs" />
     <Compile Include="_Impl\Data\_Sources\DbSourceTests.cs" />
     <Compile Include="TestConfigs\SimpteTestConfig.cs" />
+    <Compile Include="_Impl\_Attributes\_Constraints\DateTimeFormatAttributeTests.cs" />
+    <Compile Include="_Impl\_Attributes\_Constraints\RegularExpressionAttributeTests.cs" />
+    <Compile Include="_Impl\_Exceptions\ConstraintExceptionTests.cs" />
     <Compile Include="_TestHelpers\AssemblyInitializer.cs" />
     <Compile Include="_TestHelpers\TestDbInitializer.cs" />
     <Compile Include="_Impl\SmartConfigManagerTests.cs" />
