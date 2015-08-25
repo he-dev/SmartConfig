@@ -68,10 +68,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="_Impl\Data\CustomSetting.cs" />
-    <Compile Include="_Impl\Data\ExampleXmlConfig.cs" />
-    <Compile Include="_Impl\Data\ExampleDbConfig2.cs" />
-    <Compile Include="_Impl\Data\ExampleDbConfig1.cs" />
-    <Compile Include="_Impl\Data\ExampleAppConfig.cs" />
+    <Compile Include="_Impl\Data\_Configs\ExampleXmlConfig.cs" />
+    <Compile Include="_Impl\Data\_Configs\ExampleDbConfig2.cs" />
+    <Compile Include="_Impl\Data\_Configs\ExampleDbConfig1.cs" />
+    <Compile Include="_Impl\Data\_Configs\ExampleAppConfig.cs" />
     <Compile Include="_Impl\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
