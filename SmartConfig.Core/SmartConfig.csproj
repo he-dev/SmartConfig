@@ -97,22 +97,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="_Impl\CompositeKey.cs" />
-    <Compile Include="_Impl\Data\_DbSource\DbSource.cs" />
+    <Compile Include="_Impl\Data\_Sources\DbSource.cs" />
     <Compile Include="_Impl\Data\IIndexer.cs" />
-    <Compile Include="_Impl\Data\_DbSource\SmartConfigContext.cs" />
+    <Compile Include="_Impl\Data\SmartConfigContext.cs" />
     <Compile Include="_Impl\SettingInfo.cs" />
     <Compile Include="_Impl\KeyProperties.cs" />
     <Compile Include="_Impl\KeyNames.cs" />
     <Compile Include="_Impl\Converters\DateTimeConverter.cs" />
     <Compile Include="_Impl\Converters\EnumConverter.cs" />
-    <Compile Include="_Impl\Data\_AppConfigSource\AppConfigSource.cs" />
+    <Compile Include="_Impl\Data\_Sources\AppConfigSource.cs" />
     <Compile Include="_Impl\Collections\ObjectConverterCollection.cs" />
-    <Compile Include="_Impl\Data\_AppConfigSource\AppConfigSectionHandler.cs" />
-    <Compile Include="_Impl\Data\_AppConfigSource\AppSettingsSectionHandler.cs" />
+    <Compile Include="_Impl\Data\_AppConfigSectionHandlers\AppConfigSectionHandler.cs" />
+    <Compile Include="_Impl\Data\_AppConfigSectionHandlers\AppSettingsSectionHandler.cs" />
     <Compile Include="_Impl\Data\Setting.cs" />
-    <Compile Include="_Impl\Data\_AppConfigSource\ConnectionStringsSectionHandler.cs" />
+    <Compile Include="_Impl\Data\_AppConfigSectionHandlers\ConnectionStringsSectionHandler.cs" />
     <Compile Include="_Impl\Data\DataSource.cs" />
-    <Compile Include="_Impl\Data\_XmlSource\XmlSource.cs" />
+    <Compile Include="_Impl\Data\_Sources\XmlSource.cs" />
     <Compile Include="_Impl\Filters.cs" />
     <Compile Include="_Impl\Logger.cs" />
     <Compile Include="_Impl\SettingInfoFactory.cs" />
@@ -124,8 +124,9 @@
     <Compile Include="_Impl\_Attributes\_Constraints\RegularExpressionAttribute.cs" />
     <Compile Include="_Impl\_Attributes\_Constraints\RangeAttribute.cs" />
     <Compile Include="_Impl\_Attributes\_Constraints\ConstraintAttribute.cs" />
+    <Compile Include="_Impl\_Exceptions\DeserializationException.cs" />
+    <Compile Include="_Impl\_Exceptions\SerializationException.cs" />
     <Compile Include="_Impl\_Exceptions\OptionalException.cs" />
-    <Compile Include="_Impl\_Exceptions\ObjectConverterException.cs" />
     <Compile Include="_Impl\_Exceptions\DataSourceException.cs" />
     <Compile Include="_Impl\_Exceptions\SmartConfigException.cs" />
     <Compile Include="_Impl\_Exceptions\_Constraints\ConstraintException.cs" />
@@ -159,8 +160,8 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="_Impl\Data\_DbSource\SQL-Scripts\dbo.BasicTable.sql" />
-    <Content Include="_Impl\Data\_DbSource\SQL-Scripts\dbo.CustomTable.sql" />
+    <Content Include="SQL-Scripts\dbo.BasicTable.sql" />
+    <Content Include="SQL-Scripts\dbo.CustomTable.sql" />
     <Content Include="LICENSE.txt" />
   </ItemGroup>
   <ItemGroup />

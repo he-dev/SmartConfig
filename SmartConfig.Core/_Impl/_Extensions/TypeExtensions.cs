@@ -15,13 +15,13 @@ namespace SmartConfig
 
 #if NET40
 
-        public static IEnumerable<T> GetCustomAttributes<T>(this Type type, bool inherit = false) where T : Attribute
+        public static IEnumerable<T> GetCustomAttributes<T>(this SettingType type, bool inherit = false) where T : Attribute
         {
             return type.GetCustomAttributes(typeof (T), inherit).Cast<T>();
         }
 
 
-        public static TAttribute GetCustomAttribute<TAttribute>(this Type type, bool inherit = false) where TAttribute : Attribute
+        public static TAttribute GetCustomAttribute<TAttribute>(this SettingType type, bool inherit = false) where TAttribute : Attribute
         {
             return type.GetCustomAttributes<TAttribute>(inherit).SingleOrDefault();
         }
@@ -68,7 +68,7 @@ namespace SmartConfig
             return type.GetCustomAttributes(typeof(T), false).Any();
         }
 
-//        public static T GetCustomAttribute<T>(this Type type, bool inherit = false) where T : Attribute
+//        public static T GetCustomAttribute<T>(this SettingType type, bool inherit = false) where T : Attribute
 //        {
 //#if NET40
 //            return (T)type.GetCustomAttributes(typeof(T), inherit).SingleOrDefault();

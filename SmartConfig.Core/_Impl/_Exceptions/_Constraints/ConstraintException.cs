@@ -11,9 +11,9 @@ namespace SmartConfig
     /// <summary>
     /// Base class for constraint exceptions.
     /// </summary>
-    public abstract class ConstraintException<TConstraint> : Exception where TConstraint : ConstraintAttribute
+    public abstract class ConstraintException : Exception
     {
-        public ConstraintException(TConstraint constraint, object value)
+        public ConstraintException(ConstraintAttribute constraint, object value)
         {
             Constraint = constraint;
             Value = value;
@@ -27,7 +27,7 @@ namespace SmartConfig
             }
         }
 
-        public TConstraint Constraint { get; private set; }
+        public ConstraintAttribute Constraint { get; private set; }
 
         /// <summary>
         /// Gets the invalid value that caused the exception.
@@ -36,7 +36,7 @@ namespace SmartConfig
 
         private string AbbreviatedAttributeName
         {
-            get { return Regex.Replace(typeof(TConstraint).Name, "Attribute$", string.Empty); }
+            get { return Regex.Replace(Constraint.GetType().Name, "Attribute$", string.Empty); }
         }
     }
 }

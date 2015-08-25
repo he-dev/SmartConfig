@@ -12,24 +12,34 @@ namespace SmartConfig
     /// </summary>
     public class KeyProperties
     {
+        private string _value;
+        private FilterByFunc _filter;
+
         /// <summary>
         /// Gets or sets the key value. This property is optional for the version set via the <c>SmartConfigAttribute</c>.
         /// It is set internaly.
         /// </summary>
-        public string Value { get; set; }
+        public string Value
+        {
+            get { return _value; }
+            set
+            {
+                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("Value");
+                _value = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the filter function for this key.
         /// </summary>
-        public FilterByFunc Filter { get; set; }
-
-        public static KeyProperties Create(string value, FilterByFunc filter)
+        public FilterByFunc Filter
         {
-            return new KeyProperties()
+            get { return _filter; }
+            set
             {
-                Value = value,
-                Filter = filter
-            };
+                if (value == null) throw new ArgumentNullException("Filter");
+                _filter = value;
+            }
         }
     }
 }

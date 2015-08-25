@@ -10,7 +10,7 @@ namespace SmartConfig
     /// <summary>
     /// Occures when the value does not match the specified pattern.
     /// </summary>
-    public class DateTimeFormatException : ConstraintException<DateTimeFormatAttribute>
+    public class DateTimeFormatException : ConstraintException
     {
         public DateTimeFormatException(DateTimeFormatAttribute constraint, string value) : base(constraint, value)
         {

@@ -67,7 +67,7 @@ namespace SmartConfig.Converters
         /// Deserializes the value to the specified type.
         /// </summary>
         /// <param name="value">Value to be deserialized.</param>
-        /// <param name="type">Type of the value.</param>
+        /// <param name="type">SettingType of the value.</param>
         /// <param name="constraints"></param>
         /// <returns></returns>
         public abstract object DeserializeObject(string value, Type type, IEnumerable<ConstraintAttribute> constraints);

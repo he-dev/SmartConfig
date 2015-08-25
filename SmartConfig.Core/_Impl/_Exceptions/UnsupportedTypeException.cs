@@ -12,7 +12,7 @@ namespace SmartConfig
     public class UnsupportedTypeException : Exception
     {
         public UnsupportedTypeException(Type type)
-            : base(string.Format("Type [{0}] is not supported.", type.Name))
+            : base(string.Format("SettingType [{0}] is not supported.", type.Name))
         {
             Type = type;
         }

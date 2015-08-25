@@ -78,12 +78,12 @@
     <Compile Include="TestConfigs\SettingsInitializationTestConfig.cs" />
     <Compile Include="TestConfigs\NamedTestConfig.cs" />
     <Compile Include="_Impl\CompositeKeyTests.cs" />
-    <Compile Include="_Impl\Data\_AppConfigSource\AppConfigTests.cs" />
+    <Compile Include="_Impl\Data\_Sources\AppConfigTests.cs" />
     <Compile Include="_Impl\Converters\ColorConverterTests.cs" />
     <Compile Include="_Impl\Converters\XmlConverterTests.cs" />
     <Compile Include="_Impl\Converters\JsonConverterTests.cs" />
-    <Compile Include="_Impl\Data\_XmlSource\XmlSourceTests.cs" />
-    <Compile Include="_Impl\Data\_DbSource\DbSourceTests.cs" />
+    <Compile Include="_Impl\Data\_Sources\XmlSourceTests.cs" />
+    <Compile Include="_Impl\Data\_Sources\DbSourceTests.cs" />
     <Compile Include="TestConfigs\SimpteTestConfig.cs" />
     <Compile Include="_TestHelpers\AssemblyInitializer.cs" />
     <Compile Include="_TestHelpers\TestDbInitializer.cs" />

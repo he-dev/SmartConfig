@@ -10,7 +10,7 @@ namespace SmartConfig
     /// <summary>
     /// Occures when is outside of the specified range.
     /// </summary>
-    public class RangeException : ConstraintException<RangeAttribute>
+    public class RangeException : ConstraintException
     {
         public RangeException(RangeAttribute constraint, string value) : base(constraint, value)
         {
@@ -20,7 +20,8 @@ namespace SmartConfig
         {
             get
             {
-                return "$Message Min = [$Min], Max = [$Max].".FormatWith(new { base.Message, Constraint.Min, Constraint.Max }, true);
+                var constraint = (RangeAttribute)Constraint;
+                return "$Message Min = [$Min], Max = [$Max].".FormatWith(new { base.Message, constraint.Min, constraint.Max }, true);
             }
         }
     }

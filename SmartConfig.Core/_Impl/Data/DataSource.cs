@@ -14,10 +14,7 @@ namespace SmartConfig.Data
     {
         private KeyNames _keyNames;
 
-        protected DataSource()
-        {
-            KeyProperties = new Dictionary<string, KeyProperties>();
-        }
+        private IDictionary<string, KeyProperties> _keyProperties = new Dictionary<string, KeyProperties>();       
 
         public KeyNames KeyNames
         {
@@ -37,7 +34,11 @@ namespace SmartConfig.Data
             get { return KeyNames.Where(k => k != KeyNames.DefaultKeyName); }
         }
 
-        public IDictionary<string, KeyProperties> KeyProperties { get; set; }
+        public IDictionary<string, KeyProperties> KeyProperties
+        {
+            get { return _keyProperties; }
+            set { _keyProperties = value; }
+        }
 
         public bool SettingsInitializationEnabled { get; set; }
 

@@ -36,7 +36,7 @@ namespace SmartConfig.Data
         /// <summary>
         /// Gets or sets the config table name.
         /// </summary>
-        public string SettingTableName { get; set; }       
+        public string SettingsTableName { get; set; }       
 
         public override string Select(string defaultKeyValue)
         {
@@ -94,9 +94,12 @@ namespace SmartConfig.Data
 
         private SmartConfigContext<TSetting> CreateDbContext()
         {
+            if (string.IsNullOrEmpty(ConnectionString)) throw new InvalidOperationException("ConnectionString must not be empty.");
+            if (string.IsNullOrEmpty(SettingsTableName)) throw new InvalidOperationException("SettingsTableName must not be empty.");
+
             return new SmartConfigContext<TSetting>(ConnectionString)
             {
-                SettingsTableName = SettingTableName,
+                SettingsTableName = SettingsTableName,
                 SettingsTableKeyNames = KeyNames
             };
         }       

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using SmartConfig.Data;
@@ -11,6 +13,7 @@ namespace SmartConfig.Example
 {
     static class Program
     {
+
         static void Main(string[] args)
         {
             Logger.Info = m => Debug.WriteLine(m);
@@ -25,17 +28,6 @@ namespace SmartConfig.Example
 
         private static void AppConfigExample()
         {
-            SmartConfigManager.Load(typeof(ExampleAppConfig), new XmlSource<CustomSetting>()
-            {
-                FileName = @"Data\XmlSource.xml",
-                KeyProperties = new Dictionary<string, KeyProperties>()
-                {
-                    { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString} }
-                }
-            });
-
-            return;
-
             SmartConfigManager.Load(typeof(ExampleAppConfig), new AppConfigSource());
 
             Console.WriteLine(ExampleAppConfig.AppSettings.Greeting);
@@ -52,7 +44,7 @@ namespace SmartConfig.Example
             SmartConfigManager.Load(typeof(ExampleDbConfig1), new DbSource<Setting>()
             {
                 ConnectionString = ExampleAppConfig.ConnectionStrings.ExampleDb,
-                SettingTableName = "ExampleConfigTable",
+                SettingsTableName = "ExampleConfigTable",
             });
 
             Console.WriteLine(ExampleDbConfig1.Welcome);
@@ -63,7 +55,7 @@ namespace SmartConfig.Example
             SmartConfigManager.Load(typeof(ExampleDbConfig2), new DbSource<CustomSetting>()
             {
                 ConnectionString = ExampleAppConfig.ConnectionStrings.ExampleDb,
-                SettingTableName = "ExampleConfigTable",
+                SettingsTableName = "ExampleConfigTable",
                 KeyProperties = new Dictionary<string, KeyProperties>()
                 {
                     { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString } },

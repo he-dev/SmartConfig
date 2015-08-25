@@ -10,7 +10,7 @@ namespace SmartConfig
     /// <summary>
     /// Occures when the value does not match the specified pattern.
     /// </summary>
-    public class RegularExpressionException : ConstraintException<RegularExpressionAttribute>
+    public class RegularExpressionException : ConstraintException
     {
         public RegularExpressionException(RegularExpressionAttribute constraint, string value) : base(constraint, value)
         {
@@ -20,7 +20,8 @@ namespace SmartConfig
         {
             get
             {
-                return "$Message Regex = [$Regex], IgnoreCase = [$IgnoreCase].".FormatWith(new { base.Message, Regex = Constraint, Constraint.IgnoreCase }, true);
+                var constraint = (RegularExpressionAttribute) Constraint;
+                return "$Message Regex = [$Regex], IgnoreCase = [$IgnoreCase].".FormatWith(new { base.Message, Regex = Constraint, constraint.IgnoreCase }, true);
             }
         }
     }

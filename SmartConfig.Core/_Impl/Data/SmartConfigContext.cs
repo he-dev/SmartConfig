@@ -13,12 +13,11 @@ namespace SmartConfig.Data
     /// </summary>
     public sealed class SmartConfigContext<TSetting> : DbContext where TSetting : class
     {
-        public SmartConfigContext(string connectionString)
-            : base(connectionString)
+        public SmartConfigContext(string connectionString) : base(connectionString)
         {
             Debug.Assert(!string.IsNullOrEmpty(connectionString));
         }
-        
+
         public string SettingsTableName { get; set; }
 
         public IEnumerable<string> SettingsTableKeyNames { get; set; }
@@ -30,6 +29,16 @@ namespace SmartConfig.Data
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            if (string.IsNullOrEmpty(SettingsTableName))
+            {
+                throw new InvalidOperationException("SettingsTableName must not be empty.");
+            }
+
+            if (SettingsTableKeyNames == null)
+            {
+                throw new InvalidOperationException("SettingsTableKeyNames must not be empty.");
+            }
+
             modelBuilder.Entity<TSetting>().ToTable(SettingsTableName);
 
             // configure keys

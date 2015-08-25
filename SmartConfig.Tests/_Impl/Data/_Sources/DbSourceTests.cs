@@ -31,7 +31,7 @@ namespace SmartConfig.Tests.Data
             var dataSource = new DbSource<TestSetting>()
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
-                SettingTableName = "TestConfig",
+                SettingsTableName = "TestConfig",
                 KeyProperties = new Dictionary<string, KeyProperties>()
                 {
                     { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString }},
@@ -49,7 +49,7 @@ namespace SmartConfig.Tests.Data
             var dataSource = new DbSource<TestSetting>()
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
-                SettingTableName = "TestConfig",
+                SettingsTableName = "TestConfig",
                 KeyProperties = new Dictionary<string, KeyProperties>()
                 {
                     { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString }},

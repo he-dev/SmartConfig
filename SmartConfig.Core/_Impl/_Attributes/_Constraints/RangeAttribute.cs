@@ -16,7 +16,7 @@ namespace SmartConfig
         /// <summary>
         /// Creates a new instance of the <c>RangeAtrributes</c>.
         /// </summary>
-        /// <param name="type">Type of the values.</param>
+        /// <param name="type">SettingType of the values.</param>
         /// <param name="min">Minimum allowed value inclusive. If null there is no minimum.</param>
         /// <param name="max">Maximum allowed value inclusive. If null there is no maximum.</param>
         public RangeAttribute(Type type, string min, string max)

@@ -51,6 +51,16 @@ namespace SmartConfig
             }
         }
 
+        internal static SettingInfo From<TField>(Expression<Func<TField>> expression)
+        {
+            Debug.Assert(expression != null);
+
+            var memberExpression = expression.Body as MemberExpression;
+            if (memberExpression == null) throw new ArgumentException("Member expression expected.");
+
+            return new SettingInfo(memberExpression.Member);
+        }
+
         #region Config Info
 
         public Type ConfigType { get; private set; }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -43,12 +44,24 @@ namespace SmartConfig
             };
         }
 
+        internal static IDataSource GetDataSource(Type configType)
+        {
+            Debug.Assert(configType != null);
+
+            IDataSource dataSource;
+            if (!DataSources.TryGetValue(configType, out dataSource))
+            {
+                throw new InvalidOperationException("Data source for config [$ConfigTypeName] not found. Did you forget to initialize it?".FormatWith(new { ConfigTypeName = configType.Name }));
+            }
+            return dataSource;
+        }
+
         #region Loading
 
         /// <summary>
         /// Loads a configuration from the specified data source.
         /// </summary>
-        /// <param name="configType">Type that is marked with the <c>SmartCofnigAttribute</c> and specifies the configuration.</param>
+        /// <param name="configType">SettingType that is marked with the <c>SmartCofnigAttribute</c> and specifies the configuration.</param>
         /// <param name="dataSource">Data source that provides data.</param>
         public static void Load(Type configType, IDataSource dataSource)
         {
@@ -56,11 +69,9 @@ namespace SmartConfig
 
             if (configType == null) throw new ArgumentNullException("configType", "You need to specify a config type.");
             if (dataSource == null) throw new ArgumentNullException("dataSource", "You need to specify a data source.");
+
             if (!configType.IsStatic()) throw new InvalidOperationException("'configType' must be a static class.");
-            if (configType.GetCustomAttribute<SmartConfigAttribute>() == null)
-            {
-                throw new SmartConfigTypeNotFoundException() { ConfigType = configType };
-            }
+            if (configType.GetCustomAttribute<SmartConfigAttribute>() == null) throw new InvalidOperationException("'configType' must be marked with the SmartConfigAttribute.");
 
             #endregion
 
@@ -113,14 +124,13 @@ namespace SmartConfig
                 var obj = converter.DeserializeObject(value, settingInfo.SettingType, settingInfo.SettingConstraints);
                 settingInfo.Value = obj;
             }
+            catch (ConstraintException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
-                throw new ObjectConverterException(settingInfo, ex)
-                {
-                    Value = value,
-                    FromType = typeof(string),
-                    ToType = settingInfo.SettingType
-                };
+                throw new DeserializationException(value ,settingInfo, ex);
             }
         }
 
@@ -129,7 +139,7 @@ namespace SmartConfig
         {
             try
             {
-                var dataSource = DataSources[settingInfo.ConfigType];
+                var dataSource = GetDataSource(settingInfo.ConfigType);
                 var value = dataSource.Select(settingInfo.SettingPath);
                 return value;
             }
@@ -145,12 +155,16 @@ namespace SmartConfig
         /// <summary>
         /// Updates a configuration field.
         /// </summary>
-        /// <typeparam name="TField">Type of the field.</typeparam>
-        /// <param name="expression">Lambda expression of the field.</param>
+        /// <typeparam name="TField">SettingType of the field.</typeparam>
+        /// <param name="updateExpression">Lambda updateExpression of the field.</param>
         /// <param name="value">Value to be set.</param>
-        public static void Update<TField>(Expression<Func<TField>> expression, TField value)
+        public static void Update<TField>(Expression<Func<TField>> updateExpression, TField value)
         {
-            var settingInfo = new SettingInfo(Utilities.GetMemberInfo(expression));
+            if (updateExpression == null) throw new ArgumentNullException("updateExpression", "You need specify an exprestion for the setting you want to update.");
+
+            var settingInfo = SettingInfo.From(updateExpression);
+
+            Debug.Assert(settingInfo != null);
             UpdateSetting(settingInfo, value);
         }
 
@@ -168,10 +182,12 @@ namespace SmartConfig
 
         private static void UpdateSetting(SettingInfo settingInfo, object value, bool isInitialization = false)
         {
+            Debug.Assert(settingInfo != null);
+
             var serializedValue = SerializeValue(value, settingInfo);
             try
             {
-                var dataSource = DataSources[settingInfo.ConfigType];
+                var dataSource = GetDataSource(settingInfo.ConfigType);
                 dataSource.Update(settingInfo.SettingPath, serializedValue);
 
                 if (isInitialization)
@@ -181,18 +197,13 @@ namespace SmartConfig
 
                 settingInfo.Value = value;
             }
-            catch (ConstraintException<ConstraintAttribute>)
+            catch (ConstraintException)
             {
                 throw;
             }
             catch (Exception ex)
             {
-                throw new ObjectConverterException(settingInfo, ex)
-                {
-                    Value = value,
-                    FromType = settingInfo.SettingType,
-                    ToType = typeof(string),
-                };
+                throw new SerializationException(value, settingInfo, ex);
             }
         }
 
@@ -230,18 +241,13 @@ namespace SmartConfig
                 var serializedValue = converter.SerializeObject(value, settingInfo.SettingType, settingInfo.SettingConstraints);
                 return serializedValue;
             }
-            catch (ConstraintException<ConstraintAttribute>)
+            catch (ConstraintException)
             {
                 throw;
             }
             catch (Exception ex)
             {
-                throw new ObjectConverterException(settingInfo, ex)
-                {
-                    Value = value,
-                    FromType = settingInfo.SettingType,
-                    ToType = typeof(string),
-                };
+                throw new SerializationException(value, settingInfo, ex);
             }
         }
 

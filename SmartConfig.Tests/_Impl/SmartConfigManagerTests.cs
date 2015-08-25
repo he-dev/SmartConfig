@@ -227,7 +227,7 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void Load_Throws_DateTimeFormatException()
         {
-            var ex = ExceptionAssert.Throws<ObjectConverterException>(() =>
+            var ex = ExceptionAssert.Throws<DateTimeFormatException>(() =>
             {
                 SmartConfigManager.Load(typeof(DateTimeFormatTestConfig), new TestDataSource()
                 {
@@ -235,13 +235,13 @@ namespace SmartConfig.Tests
                 });
             }, Assert.Fail);
             Assert.IsNotNull(ex);
-            Assert.IsInstanceOfType(ex.InnerException, typeof(DateTimeFormatException));
+            Assert.IsNull(ex.InnerException);
         }
 
         [TestMethod]
         public void Load_Throws_RangeException()
         {
-            var ex = ExceptionAssert.Throws<ObjectConverterException>(() =>
+            var ex = ExceptionAssert.Throws<RangeException>(() =>
             {
                 SmartConfigManager.Load(typeof(RangeTestConfig), new TestDataSource()
                 {
@@ -249,13 +249,13 @@ namespace SmartConfig.Tests
                 });
             }, Assert.Fail);
             Assert.IsNotNull(ex);
-            Assert.IsInstanceOfType(ex.InnerException, typeof(RangeException));
+            Assert.IsNull(ex.InnerException);
         }
 
         [TestMethod]
         public void Load_Throws_RegulaExpressionException()
         {
-            var ex = ExceptionAssert.Throws<ObjectConverterException>(() =>
+            var ex = ExceptionAssert.Throws<RegularExpressionException>(() =>
             {
                 SmartConfigManager.Load(typeof(RegularExpressionTestConfig), new TestDataSource()
                 {
@@ -263,7 +263,7 @@ namespace SmartConfig.Tests
                 });
             }, Assert.Fail);
             Assert.IsNotNull(ex);
-            Assert.IsInstanceOfType(ex.InnerException, typeof(RegularExpressionException));
+            Assert.IsNull(ex.InnerException);
         }
 
         #endregion
@@ -288,7 +288,7 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void Load_Throws_ObjectConverterException()
         {
-            var ex = ExceptionAssert.Throws<ObjectConverterException>(() =>
+            var ex = ExceptionAssert.Throws<DeserializationException>(() =>
             {
                 SmartConfigManager.Load(typeof(ValueTypesTestConfig), new TestDataSource()
                 {
@@ -337,7 +337,7 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void Load_Throws_SmartConfigTypeNotFoundException()
         {
-            var ex = ExceptionAssert.Throws<SmartConfigTypeNotFoundException>(() =>
+            var ex = ExceptionAssert.Throws<InvalidOperationException>(() =>
             {
                 SmartConfigManager.Load(typeof(MissingSmartConfigAttribute), new TestDataSource()
                 {
@@ -380,7 +380,7 @@ namespace SmartConfig.Tests
             var dataSource = new DbSource<TestSetting>()
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
-                SettingTableName = "TestConfig",
+                SettingsTableName = "TestConfig",
                 SettingsInitializationEnabled = true,
                 KeyProperties = new Dictionary<string, KeyProperties>()
                 {
@@ -419,7 +419,7 @@ namespace SmartConfig.Tests
             var dataSource = new DbSource<TestSetting>()
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
-                SettingTableName = "TestConfig",
+                SettingsTableName = "TestConfig",
                 SettingsInitializationEnabled = true,
                 KeyProperties = new Dictionary<string, KeyProperties>()
                 {
@@ -440,6 +440,7 @@ namespace SmartConfig.Tests
             Assert.AreEqual("C", setting3);
             Assert.AreEqual("True", settingsInitialized);
         }
+
         [TestMethod]
         public void InitializeXmlSource()
         {

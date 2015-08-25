@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -17,6 +18,8 @@ namespace SmartConfig
     {
         internal static MemberInfo GetMemberInfo<TField>(Expression<Func<TField>> expression)
         {
+            Debug.Assert(expression != null);
+
             var memberExpression = expression.Body as MemberExpression;
             if (memberExpression == null)
             {

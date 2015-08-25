@@ -8,7 +8,7 @@ namespace SmartConfig
 {
     public class SmartConfigException : Exception
     {
-        public SmartConfigException(SettingInfo settingInfo, Exception innerException)
+        protected SmartConfigException(SettingInfo settingInfo, Exception innerException)
             : base(string.Empty, innerException)
         {
             SettingInfo = settingInfo;

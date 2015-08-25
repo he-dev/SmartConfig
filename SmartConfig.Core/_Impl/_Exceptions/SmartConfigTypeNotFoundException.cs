@@ -26,7 +26,7 @@ namespace SmartConfig
                 }
                 else
                 {
-                    return "Type [$TypeName] must have the [$AttributeName] if it is be used as a config."
+                    return "SettingType [$TypeName] must have the [$AttributeName] if it is be used as a config."
                         .FormatWith(new
                         {
                             TypeName = ConfigType.Name,
