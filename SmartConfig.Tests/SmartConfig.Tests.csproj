@@ -88,6 +88,12 @@
     <Compile Include="_Impl\_Attributes\_Constraints\DateTimeFormatAttributeTests.cs" />
     <Compile Include="_Impl\_Attributes\_Constraints\RegularExpressionAttributeTests.cs" />
     <Compile Include="_Impl\_Exceptions\ConstraintExceptionTests.cs" />
+    <Compile Include="_Impl\_Exceptions\DataSourceExceptionTests.cs" />
+    <Compile Include="_Impl\_Exceptions\ObjectConverterExceptionTests.cs" />
+    <Compile Include="_Impl\_Exceptions\ObjectConverterNotFoundExceptionTests.cs" />
+    <Compile Include="_Impl\_Exceptions\OptionalExceptionTests.cs" />
+    <Compile Include="_Impl\_Exceptions\UnsupportedTypeExceptionTests.cs" />
+    <Compile Include="_Impl\_Extensions\EnumerableExtensionsTests.cs" />
     <Compile Include="_TestHelpers\AssemblyInitializer.cs" />
     <Compile Include="_TestHelpers\TestDbInitializer.cs" />
     <Compile Include="_Impl\SmartConfigManagerTests.cs" />

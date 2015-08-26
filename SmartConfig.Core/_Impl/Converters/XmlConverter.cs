@@ -11,7 +11,7 @@ namespace SmartConfig.Converters
     /// <summary>
     /// Converts XML from and to a string.
     /// </summary>
-    public class XmlConverter : ObjectConverterBase
+    public class XmlConverter : ObjectConverter
     {
         public XmlConverter()
             : base(new[]

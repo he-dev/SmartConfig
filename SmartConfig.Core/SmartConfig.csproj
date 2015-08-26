@@ -124,8 +124,7 @@
     <Compile Include="_Impl\_Attributes\_Constraints\RegularExpressionAttribute.cs" />
     <Compile Include="_Impl\_Attributes\_Constraints\RangeAttribute.cs" />
     <Compile Include="_Impl\_Attributes\_Constraints\ConstraintAttribute.cs" />
-    <Compile Include="_Impl\_Exceptions\DeserializationException.cs" />
-    <Compile Include="_Impl\_Exceptions\SerializationException.cs" />
+    <Compile Include="_Impl\_Exceptions\ObjectConverterException.cs" />
     <Compile Include="_Impl\_Exceptions\OptionalException.cs" />
     <Compile Include="_Impl\_Exceptions\DataSourceException.cs" />
     <Compile Include="_Impl\_Exceptions\SmartConfigException.cs" />
@@ -141,13 +140,12 @@
     <Compile Include="_Impl\Converters\JsonConverter.cs" />
     <Compile Include="_Impl\Converters\ValueTypeConverter.cs" />
     <Compile Include="_Impl\_Attributes\ObjectConverterAttribute.cs" />
-    <Compile Include="_Impl\Converters\ObjectConverterBase.cs" />
+    <Compile Include="_Impl\Converters\ObjectConverter.cs" />
     <Compile Include="_Impl\SmartConfigManager.cs" />
     <Compile Include="_Impl\SettingPath.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="_Impl\_Attributes\SmartConfigAttribute.cs" />
     <Compile Include="_Impl\Data\IDataSource.cs" />
-    <Compile Include="_Impl\_Exceptions\SmartConfigTypeNotFoundException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

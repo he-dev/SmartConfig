@@ -22,6 +22,6 @@ namespace SmartConfig
             {
                 checkAction(constraint);
             }
-        }       
+        }
     }
 }

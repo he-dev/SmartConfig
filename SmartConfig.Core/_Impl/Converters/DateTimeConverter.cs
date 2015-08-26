@@ -11,7 +11,7 @@ namespace SmartConfig.Converters
     /// <summary>
     /// Converts <c>DateTime</c> from and to a string. Without this attribute the invariant culture is used.
     /// </summary>
-    public class DateTimeConverter : ObjectConverterBase
+    public class DateTimeConverter : ObjectConverter
     {
         public DateTimeConverter()
             : base(new[] { typeof(DateTime) })

@@ -11,7 +11,7 @@ namespace SmartConfig.Converters
     /// <summary>
     /// Converts value types from and to a string.
     /// </summary>
-    public class ValueTypeConverter : ObjectConverterBase
+    public class ValueTypeConverter : ObjectConverter
     {
         public ValueTypeConverter()
             : base(new[]

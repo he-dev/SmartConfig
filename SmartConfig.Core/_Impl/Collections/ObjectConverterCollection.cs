@@ -10,20 +10,20 @@ namespace SmartConfig.Collections
     /// <summary>
     /// Stores object converters.
     /// </summary>
-    public class ObjectConverterCollection : IEnumerable<ObjectConverterBase>
+    public class ObjectConverterCollection : IEnumerable<ObjectConverter>
     {
-        private readonly Dictionary<Type, ObjectConverterBase> _converters = new Dictionary<Type, ObjectConverterBase>();
+        private readonly Dictionary<Type, ObjectConverter> _converters = new Dictionary<Type, ObjectConverter>();
 
         /// <summary>
         /// Gets an object converter for the specified type or null.
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public ObjectConverterBase this[Type type]
+        public ObjectConverter this[Type type]
         {
             get
             {
-                ObjectConverterBase objectConverter;
+                ObjectConverter objectConverter;
                 return _converters.TryGetValue(type, out objectConverter) ? objectConverter : null;
             }
         }
@@ -33,7 +33,7 @@ namespace SmartConfig.Collections
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="objectConverter"></param>
-        public void Add<T>(T objectConverter) where T : ObjectConverterBase
+        public void Add<T>(T objectConverter) where T : ObjectConverter
         {
             if (objectConverter.IsDirectConverter)
             {
@@ -48,7 +48,7 @@ namespace SmartConfig.Collections
             }
         }
 
-        public IEnumerator<ObjectConverterBase> GetEnumerator()
+        public IEnumerator<ObjectConverter> GetEnumerator()
         {
             return _converters.Values.Distinct().GetEnumerator();
         }

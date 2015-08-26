@@ -288,7 +288,7 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void Load_Throws_ObjectConverterException()
         {
-            var ex = ExceptionAssert.Throws<DeserializationException>(() =>
+            var ex = ExceptionAssert.Throws<ObjectConverterException>(() =>
             {
                 SmartConfigManager.Load(typeof(ValueTypesTestConfig), new TestDataSource()
                 {

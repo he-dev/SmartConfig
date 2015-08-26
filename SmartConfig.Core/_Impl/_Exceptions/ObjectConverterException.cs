@@ -13,9 +13,10 @@ namespace SmartConfig
     /// </summary>
     public class ObjectConverterException : SmartConfigException
     {
-        public ObjectConverterException(SettingInfo settingInfo, Exception innerException)
+        public ObjectConverterException(object value, SettingInfo settingInfo, Exception innerException)
             : base(settingInfo, innerException)
         {
+            Value = value;
         }
 
         public override string Message
@@ -23,19 +24,15 @@ namespace SmartConfig
             get
             {
                 return
-                    "Value could not be be converted from [$fromType] into [$toType]. See inner exeption for details."
+                    "Error converting SettingPath = \"$SettingPath\" SettingType = \"$SettingType\". See inner exeption for details."
                     .FormatWith(new
                     {
-                        fromType = FromType.Name,
-                        toType = ToType.Name
+                        SettingPath = SettingInfo.SettingPath.ToString(),
+                        SettingType = SettingInfo.SettingType.Name
                     }, true);
             }
         }
 
-        public object Value { get; internal set; }
-
-        public Type FromType { get; internal set; }
-
-        public Type ToType { get; internal set; }
+        public object Value { get; private set; }
     }
 }

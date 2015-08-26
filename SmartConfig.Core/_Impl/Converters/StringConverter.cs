@@ -11,7 +11,7 @@ namespace SmartConfig.Converters
     /// <summary>
     /// Dummy string converter.
     /// </summary>
-    public class StringConverter : ObjectConverterBase
+    public class StringConverter : ObjectConverter
     {
         public StringConverter() : base(new[] { typeof(string) }) { }
 

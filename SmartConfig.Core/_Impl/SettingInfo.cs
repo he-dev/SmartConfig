@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using SmartUtilities;
 
 namespace SmartConfig
 {
@@ -46,7 +47,7 @@ namespace SmartConfig
 
                 if (type == null && smartConfigAttribute == null)
                 {
-                    throw new SmartConfigTypeNotFoundException();
+                    throw new InvalidOperationException("SmartConfigAttribute not found for SettingPath = \"$SettingPath\"".FormatWith(new { SettingPath = SettingPath.ToString() }));
                 }
             }
         }

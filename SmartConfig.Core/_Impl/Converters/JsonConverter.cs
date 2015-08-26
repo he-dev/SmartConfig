@@ -10,7 +10,7 @@ namespace SmartConfig.Converters
     /// <summary>
     /// Converts JSON data from and to a string.
     /// </summary>
-    public class JsonConverter : ObjectConverterBase
+    public class JsonConverter : ObjectConverter
     {
         public override object DeserializeObject(string value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {

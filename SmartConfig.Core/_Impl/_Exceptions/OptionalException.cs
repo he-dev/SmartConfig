@@ -20,7 +20,7 @@ namespace SmartConfig
             get
             {
                 return
-                    "[$ConfigTypeName]'s field [$SettingPath] is not optional. If you want it to be optional add the $OptionalAttributeName."
+                    "This setting is not optional ConfigType = \"$ConfigTypeName\" SettingPath = \"$SettingPath\". If you want it to be optional add the $OptionalAttributeName."
                     .FormatWith(new
                     {
                         ConfigTypeName = SettingInfo.ConfigType.Name,

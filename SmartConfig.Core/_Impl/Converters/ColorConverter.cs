@@ -12,7 +12,7 @@ namespace SmartConfig.Converters
     /// <summary>
     /// Converts colors from and to string. Allowed values are known names, rgb and hex.
     /// </summary>
-    public class ColorConverter : ObjectConverterBase
+    public class ColorConverter : ObjectConverter
     {
         public ColorConverter()
             : base(new[] { typeof(Color) })

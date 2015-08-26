@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartUtilities;
 
 namespace SmartConfig
 {
@@ -11,15 +12,26 @@ namespace SmartConfig
     /// </summary>
     public class UnsupportedTypeException : Exception
     {
-        public UnsupportedTypeException(Type type)
-            : base(string.Format("SettingType [{0}] is not supported.", type.Name))
+        internal UnsupportedTypeException(Type converterType, Type settingType)
         {
-            Type = type;
+            ConverterType = converterType;
+            SettingType = settingType;
         }
 
-        /// <summary>
-        /// Gets the unsupported type.
-        /// </summary>
-        public Type Type { get; private set; }
+        public override string Message
+        {
+            get
+            {
+                return "Converter = \"$ConverterTypeName\" does not support SettingType = \"$SettingTypeName\"".FormatWith(new
+                {
+                    ConverterTypeName = ConverterType.Name,
+                    SettingTypeName = SettingType.Name
+                });
+            }
+        }
+
+        public Type ConverterType { get; private set; }
+
+        public Type SettingType { get; private set; }
     }
 }

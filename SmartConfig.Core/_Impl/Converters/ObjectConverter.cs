@@ -13,14 +13,14 @@ namespace SmartConfig.Converters
     /// <summary>
     /// Base class for converters. Provides a helper method for type verification.
     /// </summary>
-    public abstract class ObjectConverterBase
+    public abstract class ObjectConverter
     {
-        protected ObjectConverterBase()
+        protected ObjectConverter()
         {
             SupportedTypes = new HashSet<Type>();
         }
 
-        protected ObjectConverterBase(IEnumerable<Type> supportedTypes)
+        protected ObjectConverter(IEnumerable<Type> supportedTypes)
         {
             SupportedTypes = new HashSet<Type>(supportedTypes);
         }
@@ -59,7 +59,7 @@ namespace SmartConfig.Converters
             var isSupportedType = SupportsAllTypes || SupportedTypes.Contains(type);
             if (!isSupportedType)
             {
-                throw new UnsupportedTypeException(type);
+                throw new UnsupportedTypeException(GetType(), type);
             }
         }
 
@@ -80,5 +80,6 @@ namespace SmartConfig.Converters
         /// <param name="constraints"></param>
         /// <returns></returns>
         public abstract string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints);
+
     }
 }

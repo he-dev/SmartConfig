@@ -130,22 +130,22 @@ namespace SmartConfig
             }
             catch (Exception ex)
             {
-                throw new DeserializationException(value ,settingInfo, ex);
+                throw new ObjectConverterException(value, settingInfo, ex);
             }
         }
 
         // gets a value for config field and throws detailed exception if failed
         private static string GetValue(SettingInfo settingInfo)
         {
+            var dataSource = GetDataSource(settingInfo.ConfigType);            
             try
             {
-                var dataSource = GetDataSource(settingInfo.ConfigType);
                 var value = dataSource.Select(settingInfo.SettingPath);
                 return value;
             }
             catch (Exception ex)
             {
-                throw new DataSourceException(settingInfo, ex);
+                throw new DataSourceException(dataSource, settingInfo, ex);
             }
         }
 
@@ -185,9 +185,9 @@ namespace SmartConfig
             Debug.Assert(settingInfo != null);
 
             var serializedValue = SerializeValue(value, settingInfo);
+            var dataSource = GetDataSource(settingInfo.ConfigType);
             try
             {
-                var dataSource = GetDataSource(settingInfo.ConfigType);
                 dataSource.Update(settingInfo.SettingPath, serializedValue);
 
                 if (isInitialization)
@@ -197,13 +197,9 @@ namespace SmartConfig
 
                 settingInfo.Value = value;
             }
-            catch (ConstraintException)
-            {
-                throw;
-            }
             catch (Exception ex)
             {
-                throw new SerializationException(value, settingInfo, ex);
+                throw new DataSourceException(dataSource, settingInfo, ex);
             }
         }
 
@@ -247,11 +243,11 @@ namespace SmartConfig
             }
             catch (Exception ex)
             {
-                throw new SerializationException(value, settingInfo, ex);
+                throw new ObjectConverterException(value, settingInfo, ex);
             }
         }
 
-        private static ObjectConverterBase GetConverter(SettingInfo settingInfo)
+        private static ObjectConverter GetConverter(SettingInfo settingInfo)
         {
             var objectConverter = Converters[settingInfo.ConverterType];
             if (objectConverter == null)
