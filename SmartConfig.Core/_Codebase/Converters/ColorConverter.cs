@@ -28,7 +28,7 @@ namespace SmartConfig.Converters
         public override string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
             ValidateType(type);
-            return value != null ? value.ToString() : null;
+            return value.ToString();
         }
     }
 }

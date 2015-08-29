@@ -21,18 +21,16 @@ namespace SmartConfig
     /// </summary>
     public static class SmartConfigManager
     {
-        private static readonly Dictionary<Type, IDataSource> DataSources;
+        private static readonly DataSourceDictionary DataSources = new DataSourceDictionary();
 
         /// <summary>
         /// Gets the converters collection that holds all the default converters and allows to add additional ones.
         /// </summary>
-        public static ObjectConverterCollection Converters { get; private set; }
+        public static ObjectConverterDictionary Converters { get; private set; }
 
         static SmartConfigManager()
         {
-            DataSources = new Dictionary<Type, IDataSource>();
-
-            Converters = new ObjectConverterCollection
+            Converters = new ObjectConverterDictionary
             {
                 new ColorConverter(),
                 new DateTimeConverter(),
@@ -42,19 +40,7 @@ namespace SmartConfig
                 new ValueTypeConverter(),
                 new XmlConverter(),
             };
-        }
-
-        internal static IDataSource GetDataSource(Type configType)
-        {
-            Debug.Assert(configType != null);
-
-            IDataSource dataSource;
-            if (!DataSources.TryGetValue(configType, out dataSource))
-            {
-                throw new InvalidOperationException("Data source for config [$ConfigTypeName] not found. Did you forget to initialize it?".FormatWith(new { ConfigTypeName = configType.Name }));
-            }
-            return dataSource;
-        }
+        }        
 
         #region Loading
 
@@ -100,28 +86,31 @@ namespace SmartConfig
 
             foreach (var settingInfo in settingInfos)
             {
-                LoadValue(settingInfo);
+                LoadSetting(settingInfo);
             }
         }
 
-        private static void LoadValue(SettingInfo settingInfo)
+        // loads a setting from a data source into the correspondig field in the config class
+        private static void LoadSetting(SettingInfo settingInfo)
         {
-            var value = GetValue(settingInfo);
+            var value = GetSetting(settingInfo);
 
+            // don't let pass null values to the converter
             if (string.IsNullOrEmpty(value))
             {
-                if (!settingInfo.IsOptional)
+                // null is ok if the setting is optional
+                if (settingInfo.IsOptional)
                 {
-                    throw new OptionalException(settingInfo);
+                    return;
                 }
-                return;
-            }
 
-            var converter = GetConverter(settingInfo);
+                // unfortunately this value is invalid, inform the user
+                throw new OptionalException(settingInfo);
+            }
 
             try
             {
-                var obj = converter.DeserializeObject(value, settingInfo.SettingType, settingInfo.SettingConstraints);
+                var obj = Converters[settingInfo].DeserializeObject(value, settingInfo.SettingType, settingInfo.SettingConstraints);
                 settingInfo.Value = obj;
             }
             catch (ConstraintException)
@@ -134,10 +123,10 @@ namespace SmartConfig
             }
         }
 
-        // gets a value for config field and throws detailed exception if failed
-        private static string GetValue(SettingInfo settingInfo)
+        // gets a setting from a data source
+        private static string GetSetting(SettingInfo settingInfo)
         {
-            var dataSource = GetDataSource(settingInfo.ConfigType);            
+            var dataSource = DataSources[settingInfo.ConfigType];
             try
             {
                 var value = dataSource.Select(settingInfo.SettingPath);
@@ -185,7 +174,7 @@ namespace SmartConfig
             Debug.Assert(settingInfo != null);
 
             var serializedValue = SerializeValue(value, settingInfo);
-            var dataSource = GetDataSource(settingInfo.ConfigType);
+            var dataSource = DataSources[settingInfo.ConfigType];
             try
             {
                 dataSource.Update(settingInfo.SettingPath, serializedValue);
@@ -224,56 +213,27 @@ namespace SmartConfig
 
         private static string SerializeValue(object value, SettingInfo settingInfo)
         {
-            // a null value that is not nullable is not allowed
-            //if (value == null && !settingInfo.FieldInfo.IsNullable())
-            //{
-            //    throw new OptionalException(settingInfo);
-            //}
-
-            var converter = GetConverter(settingInfo);
+            // don't let pass null value to the converter
+            if (value == null)
+            {
+                return null;
+            }
 
             try
             {
-                var serializedValue = converter.SerializeObject(value, settingInfo.SettingType, settingInfo.SettingConstraints);
+                var serializedValue = Converters[settingInfo].SerializeObject(value, settingInfo.SettingType, settingInfo.SettingConstraints);
                 return serializedValue;
             }
             catch (ConstraintException)
             {
+                // rethrow constraint violation
                 throw;
             }
             catch (Exception ex)
             {
+                // add more information about the setting to the generic exception
                 throw new ObjectConverterException(value, settingInfo, ex);
             }
-        }
-
-        private static ObjectConverter GetConverter(SettingInfo settingInfo)
-        {
-            var objectConverter = Converters[settingInfo.ConverterType];
-            if (objectConverter == null)
-            {
-                throw new ObjectConverterNotFoundException(settingInfo);
-            }
-
-            return objectConverter;
-        }
-
-        private static Type GetConverterType(FieldInfo fieldInfo)
-        {
-            var type = fieldInfo.FieldType;
-
-            if (type.BaseType == typeof(Enum))
-            {
-                return typeof(Enum);
-            }
-
-            var objectConverterAttribute = fieldInfo.GetCustomAttribute<ObjectConverterAttribute>(false);
-            if (objectConverterAttribute != null)
-            {
-                return objectConverterAttribute.Type;
-            }
-
-            return type;
-        }
+        }           
     }
 }

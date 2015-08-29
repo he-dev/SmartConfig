@@ -17,7 +17,9 @@ namespace SmartConfig.Converters
     {
         protected ObjectConverter()
         {
-            SupportedTypes = new HashSet<Type>();
+            // by default the only supported type is the own type 
+            // currently used only by the Json converter that supports "all" types natively
+            SupportedTypes = new HashSet<Type>() { GetType() };
         }
 
         protected ObjectConverter(IEnumerable<Type> supportedTypes)
@@ -31,33 +33,20 @@ namespace SmartConfig.Converters
         /// </summary>
         public HashSet<Type> SupportedTypes { get; protected set; }
 
-        /// <summary>
-        /// Gets a value indicating whether this converter can directly convert field values.
-        /// </summary>
-        internal bool IsDirectConverter
-        {
-            get { return SupportedTypes.Count > 0; }
-        }
-
-        public bool SupportsAllTypes
-        {
-            get { return SupportedTypes.Count == 0; }
-        }
-
         protected void ValidateType(Type type)
         {
-            if (type.IsNullable())
-            {
-                type = Nullable.GetUnderlyingType(type);
-            }
+            // nullable types are currently not supported
+            //if (type.IsNullable())
+            //{
+            //    type = Nullable.GetUnderlyingType(type);
+            //}
 
             if (type.IsEnum)
             {
                 type = typeof(Enum);
             }
 
-            var isSupportedType = SupportsAllTypes || SupportedTypes.Contains(type);
-            if (!isSupportedType)
+            if (!SupportedTypes.Contains(type))
             {
                 throw new UnsupportedTypeException(GetType(), type);
             }
@@ -70,6 +59,7 @@ namespace SmartConfig.Converters
         /// <param name="type">SettingType of the value.</param>
         /// <param name="constraints"></param>
         /// <returns></returns>
+        /// <remarks>It is not necessary to check for null value. <c>SmartConfigManager</c> dosn't pass null values.</remarks>
         public abstract object DeserializeObject(string value, Type type, IEnumerable<ConstraintAttribute> constraints);
 
         /// <summary>
@@ -79,6 +69,7 @@ namespace SmartConfig.Converters
         /// <param name="type"></param>
         /// <param name="constraints"></param>
         /// <returns></returns>
+        /// <remarks>It is not necessary to check for null value. <c>SmartConfigManager</c> dosn't pass null values.</remarks>
         public abstract string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints);
 
     }

@@ -96,6 +96,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="_Impl\Collections\DataSourceDictionary.cs" />
     <Compile Include="_Impl\CompositeKey.cs" />
     <Compile Include="_Impl\Data\_Sources\DbSource.cs" />
     <Compile Include="_Impl\Data\IIndexer.cs" />
@@ -106,7 +107,7 @@
     <Compile Include="_Impl\Converters\DateTimeConverter.cs" />
     <Compile Include="_Impl\Converters\EnumConverter.cs" />
     <Compile Include="_Impl\Data\_Sources\AppConfigSource.cs" />
-    <Compile Include="_Impl\Collections\ObjectConverterCollection.cs" />
+    <Compile Include="_Impl\Collections\ObjectConverterDictionary.cs" />
     <Compile Include="_Impl\Data\_AppConfigSectionHandlers\AppConfigSectionHandler.cs" />
     <Compile Include="_Impl\Data\_AppConfigSectionHandlers\AppSettingsSectionHandler.cs" />
     <Compile Include="_Impl\Data\Setting.cs" />
@@ -130,7 +131,6 @@
     <Compile Include="_Impl\_Exceptions\SmartConfigException.cs" />
     <Compile Include="_Impl\_Exceptions\ConstraintException.cs" />
     <Compile Include="_Impl\_Exceptions\UnsupportedTypeException.cs" />
-    <Compile Include="_Impl\_Extensions\FieldInfoExtensions.cs" />
     <Compile Include="_Impl\_Extensions\EnumerableExtensions.cs" />
     <Compile Include="_Impl\_Extensions\TypeExtensions.cs" />
     <Compile Include="_Impl\Converters\ColorConverter.cs" />

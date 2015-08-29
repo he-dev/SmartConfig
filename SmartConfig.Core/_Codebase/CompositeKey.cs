@@ -17,5 +17,7 @@ namespace SmartConfig
                 this[keyName] = keyProperties[keyName].Value;
             }
         }        
+
+        public string DefaultKey { get { return this[KeyNames.DefaultKeyName]; } }
     }
 }

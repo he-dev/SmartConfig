@@ -39,9 +39,10 @@ namespace SmartConfig.Converters
         {
             ValidateType(type);
 
-            if (value == null && !type.IsNullable())
+            // there's nothing to serialize
+            if (value == null)
             {
-                throw new ArgumentNullException("value", "This field does not allow null values.");
+                return null;
             }
 
             var result = string.Empty;

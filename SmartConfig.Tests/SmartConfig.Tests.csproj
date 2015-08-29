@@ -77,7 +77,10 @@
   <ItemGroup>
     <Compile Include="TestConfigs\SettingsInitializationTestConfig.cs" />
     <Compile Include="TestConfigs\NamedTestConfig.cs" />
+    <Compile Include="_Impl\Collections\ObjectConverterDictionaryTests.cs" />
     <Compile Include="_Impl\CompositeKeyTests.cs" />
+    <Compile Include="_Impl\Data\_AppConfigSectionHandlers\AppSettingsSectionHandlerTests.cs" />
+    <Compile Include="_Impl\Data\_AppConfigSectionHandlers\ConnectionStringsSectionHandlerTests.cs" />
     <Compile Include="_Impl\Data\_Sources\AppConfigTests.cs" />
     <Compile Include="_Impl\Converters\ColorConverterTests.cs" />
     <Compile Include="_Impl\Converters\XmlConverterTests.cs" />
@@ -94,6 +97,7 @@
     <Compile Include="_Impl\_Exceptions\OptionalExceptionTests.cs" />
     <Compile Include="_Impl\_Exceptions\UnsupportedTypeExceptionTests.cs" />
     <Compile Include="_Impl\_Extensions\EnumerableExtensionsTests.cs" />
+    <Compile Include="_Impl\_Extensions\TypeExtensionsTests.cs" />
     <Compile Include="_TestHelpers\AssemblyInitializer.cs" />
     <Compile Include="_TestHelpers\TestDbInitializer.cs" />
     <Compile Include="_Impl\SmartConfigManagerTests.cs" />

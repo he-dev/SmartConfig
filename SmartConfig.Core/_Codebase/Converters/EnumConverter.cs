@@ -22,16 +22,17 @@ namespace SmartConfig.Converters
         {
             ValidateType(type);
 
-            if (type.IsNullable())
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    // It is ok to return null for nullable types.
-                    return null;
-                }
-                // Otherwise get the underlying type.
-                type = Nullable.GetUnderlyingType(type);
-            }
+            // nullable types are not supported
+            //if (type.IsNullable())
+            //{
+            //    if (string.IsNullOrEmpty(value))
+            //    {
+            //        // It is ok to return null for nullable types.
+            //        return null;
+            //    }
+            //    // Otherwise get the underlying type.
+            //    type = Nullable.GetUnderlyingType(type);
+            //}           
 
             var result = Enum.Parse(type, value);
             return result;
@@ -39,13 +40,7 @@ namespace SmartConfig.Converters
 
         public override string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
-            ValidateType(type);
-
-            if (value == null)
-            {
-                // It is ok to return null for null objects.
-                return null;
-            }
+            ValidateType(type);         
 
             var result = value.ToString();
             return result;

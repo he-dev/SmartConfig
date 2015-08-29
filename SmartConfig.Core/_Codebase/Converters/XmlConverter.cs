@@ -32,12 +32,7 @@ namespace SmartConfig.Converters
 
         public override string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
-            ValidateType(type);
-            if (value == null)
-            {
-                return null;
-            }
-
+            ValidateType(type);           
             var result = value.ToString();
             return result;
         }

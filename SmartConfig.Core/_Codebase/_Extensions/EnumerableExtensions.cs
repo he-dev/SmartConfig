@@ -10,7 +10,7 @@ namespace SmartConfig
     public static class EnumerableExtensions
     {
         /// <summary>
-        /// Allows to check a constraint if it exists.
+        /// Makes checking constrains easier. It looks for the specified constraint and if found one calls the action.
         /// </summary>
         /// <typeparam name="TConstraint"></typeparam>
         /// <param name="contraints"></param>

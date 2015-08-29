@@ -40,15 +40,16 @@ namespace SmartConfig.Converters
         {
             ValidateType(type);
 
-            if (type.IsNullable())
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    // It is ok to return null for nullable types.
-                    return null;
-                }
-                type = Nullable.GetUnderlyingType(type);
-            }
+            // nullable types are not supported
+            //if (type.IsNullable())
+            //{
+            //    if (string.IsNullOrEmpty(value))
+            //    {
+            //        // It is ok to return null for nullable types.
+            //        return null;
+            //    }
+            //    type = Nullable.GetUnderlyingType(type);
+            //}
 
             object result = null;
 
@@ -76,13 +77,7 @@ namespace SmartConfig.Converters
 
         public override string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
-            ValidateType(type);
-
-            if (value == null)
-            {
-                // It is ok to return null for null objects.
-                return null;
-            }
+            ValidateType(type);           
 
             var toStringMethod = type.GetMethod("ToString", new[] { typeof(IFormatProvider) });
             if (toStringMethod != null)
