@@ -41,21 +41,23 @@ Not quite. There is _hidden_ beta features for generating setting keys and value
 
 ## Hallo SmartConfig! - Basic Example
 
-Let's assume we'd like to use a database for our configuration. (**SmartConfig** uses Entity Framework internaly and you can use any database that Entity Framework supports like the SQL Server or LocalDB.)
+In this short tutorial we'll create a very simple configuration to show how **SmartConfig** works and how easy it is.
 
-To be able to connect to the database we of course need a connection string. We define one in the `app.config` file:
+We use for our main configuration a database because nowadays it's actually a standard and all apps use some database to store data.
+
+To be able to use to the database, first we need a minimal `app.config` configuration. There two settings are required a connection string and the name of the table for our settings:
 
 ### app.config
 ```xml
 <connectionStrings>
-    <add name="ExampleDb" connectionString="..." />
+    <add name="ExampleDb" connectionString="Data Source=..." />
 </connectionStrings>
 <appSettings>
-    <add key="DbConfigTableName" value="ExampleConfigTable" />
+    <add key="SettingsTableName" value="Setting" />
 </appSettings>
 ```
 
-To read this connection string we'll create our first **SmartConfig** by defining a static class with the `SmartConfigAttribute`. We define one nested class that will represent the `connectionStrings` section in the `app.config`. The `ExampleDb` field is the name of the connection string.
+We use **SmartConfig** to read both settings. Becasue it loads settings into a static class we create one and we add a special `SmartConfigAttribute` to it. Inside the config class we define two nested static classes that will represent the `connectionStrings` and the `appSettings` sections:
 
 ### ExampleAppConfig.cs
 ```cs
@@ -68,25 +70,32 @@ static class ExampleAppConfig
     } 
     public static class AppSettings
     {   
-        public static string DbConfigTableName;
+        public static string SettingsTableName;
     }
 }
 ```
 
-(For validation it's important that we use the right data types for the fields.)
+Now you might think why I should do this? It's pretty simple to read `app.config`'s settings.
 
-Next we need to load the configuration like this:
+While reading those settings is indeed very simple the validation requires another few lines of code... that you write over and over agian in each and every application... or you don't... but then strange things occur and your application crashes at some random point. 
+
+**SmartConfig** minimizes this risk by loading and validating all settings at once. This way you can detect invalid settings before you start your application.
+
+We didn't mark any fields as optional so both settings are required and cannot be null/empty.
+
+Let's load them now:
 
 ## Program.cs
 ```cs
 SmartConfigManager.Load(typeof(ExampleAppConfig), new AppConfig());
 ```
-The first parameter specifies which configuration we want to load. The second onc tells **SmartConfig** which data source to use. That's all. 
 
-We can now use it to read a welcome message from a database with the following schema:
+As you see the call if really simple. You just need to say which setting you want to load and what the data source is.
+
+We're halfway there. Now we want to load the actual settings from the database table that in its simples form has just two columns:
 
 ```sql
-CREATE TABLE [dbo].[ExampleConfigTable]
+CREATE TABLE [dbo].[Setting]
 (
    [Name] NVARCHAR(255) NOT NULL, 
    [Value] NVARCHAR(MAX) NULL, 
@@ -94,29 +103,70 @@ CREATE TABLE [dbo].[ExampleConfigTable]
 )
 ```
 
-Here we'll also create a simple static class:
+In our table we can virtualy keep anything we want. Here we just have a welcome message, a monitor size and a list of prime numbers which is in this case optional:
 
 ```cs
 [SmartConfig]
 static class ExampleDbConfig
 {
     public static string Welcome;
+    
+    [ObjectConverter(typeof(JsonConverter)]
+    [Optional]
+    public static List<int> Primes = new List<int> { 3, 5, 7 };
+    
+    public static class MonitorSize
+    {
+        public static int Width;
+        public static int Height;
+    }
 }
 ```
 
-In the database there have to be a row with the following values: `[Name]='Welcome'`, `[Value]='Hallo SmartConfig!'`
+For two settings we must provide values, the primes are optional and have a default value already.
 
-Finally we need to load it and to do this we use the values that we got from the `app.config`:
+In the database we could have:
+
+```
+Name               | Value
+Welcome            | 'Hallo SmartConfig!'
+MonitorSize.Width  | 1024
+MonitorSize.Height | 768
+```
+
+It is important that the we define the right type of the setting so that **SmartConfig** can already verify its value and we don't have to do it later ourselfs.
+
+If we wanted to define other primes we could add such a setting to the database and **SmartConfig** would take its value then. We just need to use a json format in this case because it handles such types as lists, arrays and other more complex types. This is why we added the `ObjectConverterAttribute` to the field.
+
+```
+Name   | Value
+Primes | '[3, 5, 7, 11]'
+```
+
+As you can see **SmartConfig** uses the static class and field names to generate keys for the settings and it skips the name of the root class. The root class name is not used because if you want to have multiple configurations you can give them different names by providing it via the `SmartConfigAttribute`:
+
+```cs
+[SmartConfig(Name = "MyApp")]
+static class ExampleDbConfig
+{
+    ...
+}
+
+```
+
+In this case **SmartConfig** would generate names like ``MyApp.Welcome`
+
+Now we can finally load the settings from the database:
 
 ```cs
 SmartConfigManager.Load(typeof(ExampleDbConfig), new DbSource<BasicConfigElement>()
 {
     ConnectionString = ExampleAppConfig.ConnectionStrings.ExampleDb,
-    TableName = ExampleAppConfig.AppSettings.DbConfigTableName"
+    SettingsTableName = ExampleAppConfig.AppSettings.SettingsTableName"
 });
 ```
 
-We use the `DbSource` as a data source. We use the connection string from the previous configuration and we need to specify the table name of our configuration. 
+The `DbSource` requires two parameters and we provide them from the `app.config` loaded previously.
 
 And we're done!
 
