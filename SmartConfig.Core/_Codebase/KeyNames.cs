@@ -18,7 +18,7 @@ namespace SmartConfig
             internal const string SettingsInitializedKeyName = "__SettingsInitialized";
         }
 
-        public static KeyNames From<TSetting>() where TSetting : Setting
+        internal static KeyNames From<TSetting>() where TSetting : Setting
         {
             var keyMembers = new KeyNames()
             {

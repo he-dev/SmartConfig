@@ -8,7 +8,7 @@ using SmartConfig.Tests.TestConfigs;
 namespace SmartConfig.Tests.Data
 {
     [TestClass]
-    public class SqlClientTests
+    public class DbSourceTests
     {
         [TestInitialize]
         public void TestInitialize()
@@ -39,8 +39,7 @@ namespace SmartConfig.Tests.Data
                 }
             };
 
-            SmartConfigManager.Load(typeof(SimpteTestConfig), dataSource);
-            Assert.AreEqual(123, SimpteTestConfig.Int32Field);
+            Assert.AreEqual("123", dataSource.Select("Int32Field"));
         }
 
         [TestMethod]
@@ -57,17 +56,13 @@ namespace SmartConfig.Tests.Data
                 }
             };
 
-            SmartConfigManager.Load(typeof(SimpteTestConfig), dataSource);
+            Assert.AreEqual("123", dataSource.Select("Int32Field"));
 
-            Assert.AreEqual(123, SimpteTestConfig.Int32Field);
-
-            SmartConfigManager.Update(() => SimpteTestConfig.Int32Field, 456);
+            dataSource.Update("Int32Field", "456");
             Assert.AreEqual("456", dataSource.Select("Int32Field"));
-            Assert.AreEqual(456, SimpteTestConfig.Int32Field);
 
-            SmartConfigManager.Update(() => SimpteTestConfig.Int32Field, 789);
+            dataSource.Update("Int32Field", "789");
             Assert.AreEqual("789", dataSource.Select("Int32Field"));
-            Assert.AreEqual(789, SimpteTestConfig.Int32Field);
         }
     }
 }

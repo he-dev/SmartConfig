@@ -1,60 +1,90 @@
-﻿using System.Collections.Generic;
+﻿using SmartConfig;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SmartConfig.Data;
 
 namespace SmartConfig.Tests
 {
     [TestClass]
     public class FiltersTests
     {
-        private readonly TestSetting[] _testItems = new[]
-        {
-            new TestSetting("ABC|*|name|value"),
-            new TestSetting("XYZ|1.3.0|name|value"),
-            new TestSetting("XYZ|2.4.0|name|value"),
-            new TestSetting("*|3.0.0|name|value"),
-            new TestSetting("JKL|4.1.8|name|value"),
-        };
-
         [TestMethod]
         public void FilterByString()
-        {           
-            var result = Filters.FilterByString(_testItems, new KeyValuePair<string, string>("Environment", "ABC"));
-            var item = result.FirstOrDefault();
-            Assert.AreEqual(_testItems[0], item);
+        {
+            var settings = new[]
+            {
+                new TestSetting("a|1.0.0|name|value"),
+                new TestSetting("b|1.0.0|name|value"),
+                new TestSetting("*|1.0.0|name|value"),
+            };
 
-            result = Filters.FilterByString(_testItems, new KeyValuePair<string, string>("Environment", "JKL"));
-            item = result.FirstOrDefault();
-            Assert.AreEqual(_testItems[4], item);
+            IEnumerable<IIndexer> result;
+            IIndexer setting;
 
-            result = Filters.FilterByString(_testItems, new KeyValuePair<string, string>("Environment", "ASD"));
-            item = result.FirstOrDefault();
-            Assert.AreEqual(_testItems[3], item);
+            result = Filters.FilterByString(settings, new KeyValuePair<string, string>("Environment", "a"));
+            setting = result.FirstOrDefault();
+            Assert.IsNotNull(setting);
+            Assert.AreEqual(settings[0], setting);
+
+            result = Filters.FilterByString(settings, new KeyValuePair<string, string>("Environment", "b"));
+            setting = result.FirstOrDefault();
+            Assert.IsNotNull(setting);
+            Assert.AreEqual(settings[1], setting);
+
+            result = Filters.FilterByString(settings, new KeyValuePair<string, string>("Environment", "c"));
+            setting = result.FirstOrDefault();
+            Assert.IsNotNull(setting);
+            Assert.AreEqual(settings[2], setting);
         }
 
         [TestMethod]
         public void FilterByVersion()
         {
-            var result = Filters.FilterByVersion(_testItems, new KeyValuePair<string, string>("Version", "2.4.1"));
-            var item = result.FirstOrDefault();
-            Assert.AreEqual(_testItems[2], item);
+           var settings = new[]
+           {
+                new TestSetting("a|1.0.5|name|value"),
+                new TestSetting("a|*|name|value"),
+                new TestSetting("a|1.1.0|name|value"),
+                new TestSetting("a|2.0.5|name|value"),
+            };
 
-            result = Filters.FilterByVersion(_testItems, new KeyValuePair<string, string>("Version", "1.4.0"));
-            item = result.FirstOrDefault();
-            Assert.AreEqual(_testItems[1], item);
+            IEnumerable<IIndexer> result;
+            IIndexer setting;
 
-            result = Filters.FilterByVersion(_testItems, new KeyValuePair<string, string>("Version", "1.1.3"));
-            item = result.FirstOrDefault();
-            Assert.AreEqual(_testItems[0], item);
+            result = Filters.FilterByVersion(settings, new KeyValuePair<string, string>("Version", "1.0.5"));
+            setting = result.FirstOrDefault();
+            Assert.AreEqual(settings[0], setting);
+
+            result = Filters.FilterByVersion(settings, new KeyValuePair<string, string>("Version", "1.2.0"));
+            setting = result.FirstOrDefault();
+            Assert.AreEqual(settings[2], setting);
+
+            result = Filters.FilterByVersion(settings, new KeyValuePair<string, string>("Version", "1.0.0"));
+            setting = result.FirstOrDefault();
+            Assert.AreEqual(settings[1], setting);
         }
 
         [TestMethod]
         public void FilterByString_Then_FilterByVersion()
         {
-            var result = Filters.FilterByString(_testItems, new KeyValuePair<string, string>("Environment", "XYZ"));
-            result = Filters.FilterByVersion(result, new KeyValuePair<string, string>("Version", "1.4.0"));
-            var item = result.FirstOrDefault();
-            Assert.AreEqual(_testItems[1], item);
+            var settings = new[]
+            {
+                new TestSetting("a|*|name|value"),
+                new TestSetting("a|1.0.0|name|value"),
+                new TestSetting("b|1.0.0|name|value"),
+                new TestSetting("b|1.0.5|name|value"),
+                new TestSetting("b|*|name|value"),
+                new TestSetting("*|1.0.0|name|value"),
+            };
+
+            IEnumerable<IIndexer> result;
+            IIndexer setting;
+
+            result = Filters.FilterByString(settings, new KeyValuePair<string, string>("Environment", "b"));
+            result = Filters.FilterByVersion(result, new KeyValuePair<string, string>("Version", "1.0.1"));
+            setting = result.FirstOrDefault();
+            Assert.AreEqual(settings[2], setting);
         }
     }
 }

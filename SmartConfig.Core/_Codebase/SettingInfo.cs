@@ -14,12 +14,12 @@ namespace SmartConfig
         private readonly FieldInfo _fieldInfo;
         private readonly Type _settingType;
 
-        internal SettingInfo(Type configType, string settingName, Type settingType)
+        internal SettingInfo(Type configType, string settingPath, Type settingType)
         {
             ConfigType = configType;
             ConfigName = configType.GetCustomAttribute<SmartConfigAttribute>(false).Name;
             _settingType = settingType;
-            SettingPath = new SettingPath(ConfigName, settingName);
+            SettingPath = new SettingPath(ConfigName, settingPath);
         }
 
         internal SettingInfo(MemberInfo member)
@@ -39,6 +39,7 @@ namespace SmartConfig
                     ConfigType = type;
                     ConfigName = smartConfigAttribute.Name;
                     SettingPath = new SettingPath(((IEnumerable<string>)path).Reverse());
+                    break;
                 }
                 path.Add(type.Name);
                 type = type.DeclaringType;
@@ -123,6 +124,6 @@ namespace SmartConfig
         }
         #endregion
 
-        internal bool IsInternal => _settingType != null;
+        internal bool IsInternal => _fieldInfo == null;
     }
 }

@@ -80,8 +80,8 @@ namespace SmartConfig.Data
 
         private SmartConfigContext<TSetting> CreateDbContext()
         {
-            if (string.IsNullOrEmpty(ConnectionString)) throw new InvalidOperationException("ConnectionString must not be empty.");
-            if (string.IsNullOrEmpty(SettingsTableName)) throw new InvalidOperationException("SettingsTableName must not be empty.");
+            if (string.IsNullOrEmpty(ConnectionString)) throw new InvalidOperationException(nameof(ConnectionString) + " must not be empty.");
+            if (string.IsNullOrEmpty(SettingsTableName)) throw new InvalidOperationException(nameof(SettingsTableName) + " must not be empty.");
 
             return new SmartConfigContext<TSetting>(ConnectionString)
             {

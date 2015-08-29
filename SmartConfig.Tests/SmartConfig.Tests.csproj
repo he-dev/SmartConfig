@@ -88,6 +88,8 @@
     <Compile Include="_Codebase\Data\_Sources\XmlSourceTests.cs" />
     <Compile Include="_Codebase\Data\_Sources\DbSourceTests.cs" />
     <Compile Include="TestConfigs\SimpteTestConfig.cs" />
+    <Compile Include="_Codebase\KeyNamesTests.cs" />
+    <Compile Include="_Codebase\SettingInfoTests.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\DateTimeFormatAttributeTests.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\RegularExpressionAttributeTests.cs" />
     <Compile Include="_Codebase\_Exceptions\ConstraintExceptionTests.cs" />
