@@ -1,7 +1,7 @@
 # SmartConfig v2
 Configuration has never been easier!
 
-**SmartConfig** is a configuration framework that makes writing configuration easier then ever.
+**SmartConfig** is a configuration framework that makes writing configurations easier then ever.
 
 ## Why another one?
 Because I did't find anything simplier and as powerful as **SmartConfig**. It's main goal is simplicity. A configuration should be set up within few minutes and be easily extended if needed. Unfortunatelly most of the time we spend hours writing them over and over again. With **SmartConfig** it's over.
