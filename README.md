@@ -90,9 +90,9 @@ Let's load them now:
 SmartConfigManager.Load(typeof(ExampleAppConfig), new AppConfig());
 ```
 
-As you see the call if really simple. You just need to say which setting you want to load and what the data source is.
+As you see the call is really simple. You just need to say which settings you want to load and what the data source is.
 
-We're halfway there. Now we want to load the actual settings from the database table that in its simples form has just two columns:
+We're halfway there. Now we want to load the actual settings from the database table that in its simplest form has just two columns:
 
 ```sql
 CREATE TABLE [dbo].[Setting]
@@ -134,7 +134,7 @@ MonitorSize.Width  | 1024
 MonitorSize.Height | 768
 ```
 
-It is important that the we define the right type of the setting so that **SmartConfig** can already verify its value and we don't have to do it later ourselfs.
+It is important that we define the right type of the setting so that **SmartConfig** can already verify its value and type and we don't have to do it later ourselfs.
 
 If we wanted to define other primes we could add such a setting to the database and **SmartConfig** would take its value then. We just need to use a json format in this case because it handles such types as lists, arrays and other more complex types. This is why we added the `ObjectConverterAttribute` to the field.
 
