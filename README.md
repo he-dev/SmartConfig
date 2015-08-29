@@ -129,6 +129,7 @@ In the database we could have:
 
 ```
 Name               | Value
+---                | ---
 Welcome            | 'Hallo SmartConfig!'
 MonitorSize.Width  | 1024
 MonitorSize.Height | 768
@@ -140,6 +141,7 @@ If we wanted to define other primes we could add such a setting to the database 
 
 ```
 Name   | Value
+---    | ---
 Primes | '[3, 5, 7, 11]'
 ```
 
