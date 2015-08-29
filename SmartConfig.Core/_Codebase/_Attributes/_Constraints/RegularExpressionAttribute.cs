@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
 using SmartUtilities;
 
 namespace SmartConfig
@@ -6,6 +7,7 @@ namespace SmartConfig
     /// <summary>
     /// Provides a regular expression validation.
     /// </summary>
+    [DebuggerDisplay("Pattern = \"{_pattern}\" IgnoreCase = \"{IgnoreCase}\"")]
     public class RegularExpressionAttribute : ConstraintAttribute
     {
         private readonly string _pattern;
@@ -23,9 +25,11 @@ namespace SmartConfig
             return Regex.IsMatch(value, _pattern, IgnoreCase ? RegexOptions.IgnoreCase : RegexOptions.None);
         }
 
+        public override string Properties => $"Pattern = \"{_pattern}\" IgnoreCase = \"{IgnoreCase}\"";
+
         public override string ToString()
         {
-            return "Pattern = \"$Pattern\" IgnoreCase = \"$IgnoreCase\"".FormatWith(new { Pattern = _pattern, IgnoreCase = IgnoreCase.ToString() });
+            return _pattern;
         }
 
         //public static implicit operator string(RegularExpressionAttribute pattern)

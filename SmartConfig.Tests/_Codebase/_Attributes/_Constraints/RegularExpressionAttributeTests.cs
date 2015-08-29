@@ -9,7 +9,7 @@ namespace SmartConfig.Tests
         public void ctor_RegularExpressionAttribute()
         {
             var attr1 = new RegularExpressionAttribute("\\d[A-Z]");
-            Assert.AreEqual("\\d[A-Z]", attr1);
+            Assert.AreEqual("\\d[A-Z]", attr1.ToString());
         }
 
         [TestMethod()]

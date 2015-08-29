@@ -11,12 +11,10 @@ namespace SmartConfig
         {
         }
 
-        public override string Message => "Object converter not found. ConverterType = \"$ConverterTypeName\" ConfigType = \"$ConfigTypeName\" SettingPath = \"$SettingPath\""
-            .FormatWith(new
-            {
-                ConverterTypeName = SettingInfo.ConverterType.Name,
-                ConfigTypeName = SettingInfo.ConfigType.Name,
-                SettingPath = SettingInfo.SettingPath.ToString()
-            }, true);
+        public override string Message =>
+            $"Object converter not found. " +
+            $"ConverterType = \"{SettingInfo.ConverterType.Name}\" " +
+            $"ConfigType = \"{SettingInfo.ConfigType.Name}\" " +
+            $"SettingPath = \"{SettingInfo.SettingPath}\"";
     }
 }

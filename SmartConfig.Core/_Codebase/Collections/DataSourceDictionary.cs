@@ -29,7 +29,9 @@ namespace SmartConfig.Collections
                 if (!TryGetValue(configType, out dataSource))
                 {
                     // looks like the specified config type is not initialized
-                    throw new InvalidOperationException("Data source for config [$ConfigTypeName] not found. Did you forget to initialize it?".FormatWith(new { ConfigTypeName = configType.Name }));
+                    throw new InvalidOperationException(
+                        $"Data source for config \"{configType.Name}\" not found. " +
+                        $"Did you forget to initialize it?");
                 }
                 return dataSource;
             }

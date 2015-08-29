@@ -46,7 +46,9 @@ namespace SmartConfig
 
                 if (type == null && smartConfigAttribute == null)
                 {
-                    throw new InvalidOperationException("SmartConfigAttribute not found for SettingPath = \"$SettingPath\"".FormatWith(new { SettingPath = SettingPath.ToString() }));
+                    throw new InvalidOperationException(
+                        $"SmartConfigAttribute not found for " +
+                        $"SettingPath = \"{SettingPath}\"");
                 }
             }
         }

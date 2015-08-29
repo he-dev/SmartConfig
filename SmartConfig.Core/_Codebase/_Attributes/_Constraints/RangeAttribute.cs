@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using SmartUtilities;
 
 namespace SmartConfig
@@ -7,6 +8,7 @@ namespace SmartConfig
     /// <summary>
     /// Specifies the range for a field.
     /// </summary>
+    [DebuggerDisplay("Type = \"{Type.Name}\" Min = \"{Min}\" Max = \"{Max}\"")]
     public class RangeAttribute : ConstraintAttribute
     {
         /// <summary>
@@ -37,10 +39,7 @@ namespace SmartConfig
         /// </summary>
         internal string Max { get; private set; }
 
-        public override string ToString()
-        {
-            return "Type = \"$TypeName\" Min = \"$Min\" Max = \"$Max\"".FormatWith(new { TypeName = Type.Name, Min, Max });
-        }
+        public override string Properties => $"Type = \"{Type.Name}\" Min = \"{Min}\" Max = \"{Max}\"";
 
         /// <summary>
         /// Validates the value's range.

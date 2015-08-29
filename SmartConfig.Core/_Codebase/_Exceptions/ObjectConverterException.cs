@@ -14,12 +14,11 @@ namespace SmartConfig
             Value = value;
         }
 
-        public override string Message => "Error converting SettingPath = \"$SettingPath\" SettingType = \"$SettingType\". See inner exeption for details."
-            .FormatWith(new
-            {
-                SettingPath = SettingInfo.SettingPath.ToString(),
-                SettingType = SettingInfo.SettingType.Name
-            }, true);
+        public override string Message => 
+            $"Error converting " +
+            $"SettingPath = \"{SettingInfo.SettingPath}\" " +
+            $"SettingType = \"{SettingInfo.SettingType.Name}\". " +
+            $"See inner exeption for details.";
 
         public object Value { get; private set; }
     }

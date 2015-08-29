@@ -34,7 +34,7 @@ namespace SmartConfig
                 new ValueTypeConverter(),
                 new XmlConverter(),
             };
-        }        
+        }
 
         #region Loading
 
@@ -55,11 +55,7 @@ namespace SmartConfig
 
             #endregion
 
-            Logger.LogTrace(() => "Loading [$configTypeName] from [$dataSourceName]...".FormatWith(new
-            {
-                configTypeName = configType.Name,
-                dataSourceName = dataSource.GetType().Name
-            }, true));
+            Logger.LogTrace(() => $"Loading \"{configType.Name}\" from \"{dataSource.GetType().Name}\"...");
 
             DataSources[configType] = dataSource;
 
@@ -194,14 +190,14 @@ namespace SmartConfig
             bool result;
             bool.TryParse(settingInitialized, out result);
 
-            Logger.LogTrace(() => "$keyName = $result".FormatWith(new { keyName = KeyNames.Internal.SettingsInitializedKeyName, result }));
+            Logger.LogTrace(() => $"{KeyNames.Internal.SettingsInitializedKeyName} = \"{result}\"");
 
             return result;
         }
 
         private static void InitializeSetting(SettingInfo settingInfo)
         {
-            Logger.LogTrace(() => "Initializing: $SettingPath".FormatWith(new { settingInfo.SettingPath }, true));
+            Logger.LogTrace(() => $"Initializing SettingPath = \"{settingInfo.SettingPath}\"");
             UpdateSetting(settingInfo, settingInfo.Value, true);
         }
 
@@ -228,6 +224,6 @@ namespace SmartConfig
                 // add more information about the setting to the generic exception
                 throw new ObjectConverterException(value, settingInfo, ex);
             }
-        }           
+        }
     }
 }

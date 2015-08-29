@@ -14,11 +14,9 @@ namespace SmartConfig
             SettingType = settingType;
         }
 
-        public override string Message => "Converter = \"$ConverterTypeName\" does not support SettingType = \"$SettingTypeName\"".FormatWith(new
-        {
-            ConverterTypeName = ConverterType.Name,
-            SettingTypeName = SettingType.Name
-        });
+        public override string Message =>
+            $"Converter = \"{ConverterType.Name}\" does not support " +
+            $"SettingType = \"{SettingType.Name}\"";
 
         public Type ConverterType { get; private set; }
 

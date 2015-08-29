@@ -12,7 +12,6 @@ namespace SmartConfig.Tests
             const string format = "ddMMyyyy";
             var attr = new DateTimeFormatAttribute(format);
             Assert.AreEqual(format, attr.Format);
-            Assert.AreEqual(format, attr);
             Assert.AreEqual(format, attr.ToString());
         }
 

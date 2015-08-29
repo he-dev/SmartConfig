@@ -298,7 +298,7 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void Load_Throws_ObjectConverterNotFoundException()
         {
-            var ex = ExceptionAssert.Throws<ObjectConverterNotFoundException>(() =>
+            var ex = ExceptionAssert.Throws<ObjectConverterException>(() =>
             {
                 SmartConfigManager.Load(typeof(UnsupportedTypeTestConfig), new TestDataSource()
                 {

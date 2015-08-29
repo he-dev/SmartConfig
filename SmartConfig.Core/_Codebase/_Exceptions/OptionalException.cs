@@ -9,12 +9,10 @@ namespace SmartConfig
     {
         internal OptionalException(SettingInfo settingInfo) : base(settingInfo, null) { }
 
-        public override string Message => "This setting is not optional ConfigType = \"$ConfigTypeName\" SettingPath = \"$SettingPath\". If you want it to be optional add the $OptionalAttributeName."
-            .FormatWith(new
-            {
-                ConfigTypeName = SettingInfo.ConfigType.Name,
-                SettingPath = SettingInfo.SettingPath.ToString(),
-                OptionalAttributeName = typeof(OptionalAttribute).Name
-            }, true);
+        public override string Message =>
+            $"This setting is not optional " +
+            $"ConfigType = \"{SettingInfo.ConfigType.Name}\" " +
+            $"SettingPath = \"{SettingInfo.SettingPath}\". " +
+            $"If you want it to be optional add the {typeof (OptionalAttribute).Name}.";
     }
 }

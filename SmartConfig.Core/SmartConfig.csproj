@@ -155,8 +155,8 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="SQL-Scripts\dbo.BasicTable.sql" />
-    <Content Include="SQL-Scripts\dbo.CustomTable.sql" />
+    <Content Include="SQL-Scripts\dbo.BasicSetting.sql" />
+    <Content Include="SQL-Scripts\dbo.CustomSetting.sql" />
     <Content Include="LICENSE.txt" />
   </ItemGroup>
   <ItemGroup />

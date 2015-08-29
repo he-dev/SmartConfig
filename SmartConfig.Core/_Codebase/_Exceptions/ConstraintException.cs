@@ -15,12 +15,7 @@ namespace SmartConfig
             Value = value;
         }
 
-        public override string Message => "Constraint \"$AbbreviatedAttributeName\" failed for $Constraint"
-            .FormatWith(new
-            {
-                AbbreviatedAttributeName,
-                Constraint = Constraint.ToString()
-            }, true);
+        public override string Message => $"Constraint \"{AbbreviatedAttributeName}\" failed for {Constraint.Properties}";
 
         public ConstraintAttribute Constraint { get; private set; }
 

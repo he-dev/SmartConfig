@@ -59,13 +59,9 @@ namespace SmartConfig.Data
 
             var compositeKey = CreateCompositeKey(defaultKeyValue);
 
-            var defaultKeyXPath = "//$rootElementName/$settingElementName[@$attributeName='$attributeValue']".FormatWith(new
-            {
-                RootElementName,
-                SettingElementName,
-                attributeName = EncodeKeyName(KeyNames.DefaultKeyName),
-                attributeValue = compositeKey[KeyNames.DefaultKeyName]
-            }, true);
+            var attributeName = EncodeKeyName(KeyNames.DefaultKeyName);
+            var attributeValue = compositeKey[KeyNames.DefaultKeyName];
+            var defaultKeyXPath = $"//{RootElementName}/{SettingElementName}[@{attributeName}='{attributeValue}']";
 
             var xSettings = xConfig.XPathSelectElements(defaultKeyXPath);
 
@@ -102,20 +98,16 @@ namespace SmartConfig.Data
             var compositeKey = new CompositeKey(defaultKeyValue, KeyNames, KeyProperties);
 
             // try get item from loaded config
-            var attributeCondition = compositeKey.Select(x => "@$attributeName = '$attributeValue'".FormatWith(new
+            var attributeCondition = compositeKey.Select(x =>
             {
-                attributeName = EncodeKeyName(x.Key),
-                attributeValue = x.Value
-            }, true));
+                var attributeName = EncodeKeyName(x.Key);
+                var attributeValue = x.Value;
+                return $"@{attributeName} = '{attributeValue}'";
+            });
 
             var attributeConditions = string.Join(" and ", attributeCondition);
 
-            var settingXPath = "//$rootElementName/$settingElementName[$attributeConditions]".FormatWith(new
-            {
-                RootElementName,
-                SettingElementName,
-                attributeConditions = attributeConditions
-            }, true);
+            var settingXPath = $"//{RootElementName}/{SettingElementName}[{attributeConditions}]";
 
             var xSettings = xConfig.XPathSelectElements(settingXPath);
             var xSetting = xSettings.SingleOrDefault();
@@ -124,8 +116,8 @@ namespace SmartConfig.Data
             if (xSetting == null)
             {
                 xSetting = new XElement(
-                    SettingElementName, 
-                    new XAttribute(EncodeKeyName(KeyNames.DefaultKeyName), defaultKeyValue), 
+                    SettingElementName,
+                    new XAttribute(EncodeKeyName(KeyNames.DefaultKeyName), defaultKeyValue),
                     value);
                 xConfig.Root.Add(xSetting);
             }
@@ -157,7 +149,7 @@ namespace SmartConfig.Data
 
             if (!File.Exists(FullName))
             {
-                Logger.LogWarn(() => "Xml file not found. Creating a empty file. FileName = $FullName".FormatWith(new { FullName }, true));
+                Logger.LogWarn(() => $"Xml file not found. Creating a empty file. FileName = \"{FullName}\"");
                 var xDoc = new XDocument(new XElement(RootElementName));
                 return xDoc;
             }
