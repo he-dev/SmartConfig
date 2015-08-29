@@ -35,7 +35,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.6' ">
     <DefineConstants>NET46</DefineConstants>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -96,56 +96,56 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="_Impl\Collections\DataSourceDictionary.cs" />
-    <Compile Include="_Impl\CompositeKey.cs" />
-    <Compile Include="_Impl\Data\_Sources\DbSource.cs" />
-    <Compile Include="_Impl\Data\IIndexer.cs" />
-    <Compile Include="_Impl\Data\SmartConfigContext.cs" />
-    <Compile Include="_Impl\SettingInfo.cs" />
-    <Compile Include="_Impl\KeyProperties.cs" />
-    <Compile Include="_Impl\KeyNames.cs" />
-    <Compile Include="_Impl\Converters\DateTimeConverter.cs" />
-    <Compile Include="_Impl\Converters\EnumConverter.cs" />
-    <Compile Include="_Impl\Data\_Sources\AppConfigSource.cs" />
-    <Compile Include="_Impl\Collections\ObjectConverterDictionary.cs" />
-    <Compile Include="_Impl\Data\_AppConfigSectionHandlers\AppConfigSectionHandler.cs" />
-    <Compile Include="_Impl\Data\_AppConfigSectionHandlers\AppSettingsSectionHandler.cs" />
-    <Compile Include="_Impl\Data\Setting.cs" />
-    <Compile Include="_Impl\Data\_AppConfigSectionHandlers\ConnectionStringsSectionHandler.cs" />
-    <Compile Include="_Impl\Data\DataSource.cs" />
-    <Compile Include="_Impl\Data\_Sources\XmlSource.cs" />
-    <Compile Include="_Impl\Filters.cs" />
-    <Compile Include="_Impl\Logger.cs" />
-    <Compile Include="_Impl\SettingInfoFactory.cs" />
-    <Compile Include="_Impl\Utilities.cs" />
-    <Compile Include="_Impl\Wildcards.cs" />
-    <Compile Include="_Impl\_Attributes\IgnoreAttribute.cs" />
-    <Compile Include="_Impl\_Attributes\OptionalAttribute.cs" />
-    <Compile Include="_Impl\_Attributes\_Constraints\DateTimeFormatAttribute.cs" />
-    <Compile Include="_Impl\_Attributes\_Constraints\RegularExpressionAttribute.cs" />
-    <Compile Include="_Impl\_Attributes\_Constraints\RangeAttribute.cs" />
-    <Compile Include="_Impl\_Attributes\_Constraints\ConstraintAttribute.cs" />
-    <Compile Include="_Impl\_Exceptions\ObjectConverterException.cs" />
-    <Compile Include="_Impl\_Exceptions\OptionalException.cs" />
-    <Compile Include="_Impl\_Exceptions\DataSourceException.cs" />
-    <Compile Include="_Impl\_Exceptions\SmartConfigException.cs" />
-    <Compile Include="_Impl\_Exceptions\ConstraintException.cs" />
-    <Compile Include="_Impl\_Exceptions\UnsupportedTypeException.cs" />
-    <Compile Include="_Impl\_Extensions\EnumerableExtensions.cs" />
-    <Compile Include="_Impl\_Extensions\TypeExtensions.cs" />
-    <Compile Include="_Impl\Converters\ColorConverter.cs" />
-    <Compile Include="_Impl\Converters\StringConverter.cs" />
-    <Compile Include="_Impl\Converters\XmlConverter.cs" />
-    <Compile Include="_Impl\_Exceptions\ObjectConverterNotFoundException.cs" />
-    <Compile Include="_Impl\Converters\JsonConverter.cs" />
-    <Compile Include="_Impl\Converters\ValueTypeConverter.cs" />
-    <Compile Include="_Impl\_Attributes\ObjectConverterAttribute.cs" />
-    <Compile Include="_Impl\Converters\ObjectConverter.cs" />
-    <Compile Include="_Impl\SmartConfigManager.cs" />
-    <Compile Include="_Impl\SettingPath.cs" />
+    <Compile Include="_Codebase\Collections\DataSourceDictionary.cs" />
+    <Compile Include="_Codebase\CompositeKey.cs" />
+    <Compile Include="_Codebase\Data\_Sources\DbSource.cs" />
+    <Compile Include="_Codebase\Data\IIndexer.cs" />
+    <Compile Include="_Codebase\Data\SmartConfigContext.cs" />
+    <Compile Include="_Codebase\SettingInfo.cs" />
+    <Compile Include="_Codebase\KeyProperties.cs" />
+    <Compile Include="_Codebase\KeyNames.cs" />
+    <Compile Include="_Codebase\Converters\DateTimeConverter.cs" />
+    <Compile Include="_Codebase\Converters\EnumConverter.cs" />
+    <Compile Include="_Codebase\Data\_Sources\AppConfigSource.cs" />
+    <Compile Include="_Codebase\Collections\ObjectConverterDictionary.cs" />
+    <Compile Include="_Codebase\Data\_AppConfigSectionHandlers\AppConfigSectionHandler.cs" />
+    <Compile Include="_Codebase\Data\_AppConfigSectionHandlers\AppSettingsSectionHandler.cs" />
+    <Compile Include="_Codebase\Data\Setting.cs" />
+    <Compile Include="_Codebase\Data\_AppConfigSectionHandlers\ConnectionStringsSectionHandler.cs" />
+    <Compile Include="_Codebase\Data\DataSource.cs" />
+    <Compile Include="_Codebase\Data\_Sources\XmlSource.cs" />
+    <Compile Include="_Codebase\Filters.cs" />
+    <Compile Include="_Codebase\Logger.cs" />
+    <Compile Include="_Codebase\SettingInfoFactory.cs" />
+    <Compile Include="_Codebase\Utilities.cs" />
+    <Compile Include="_Codebase\Wildcards.cs" />
+    <Compile Include="_Codebase\_Attributes\IgnoreAttribute.cs" />
+    <Compile Include="_Codebase\_Attributes\OptionalAttribute.cs" />
+    <Compile Include="_Codebase\_Attributes\_Constraints\DateTimeFormatAttribute.cs" />
+    <Compile Include="_Codebase\_Attributes\_Constraints\RegularExpressionAttribute.cs" />
+    <Compile Include="_Codebase\_Attributes\_Constraints\RangeAttribute.cs" />
+    <Compile Include="_Codebase\_Attributes\_Constraints\ConstraintAttribute.cs" />
+    <Compile Include="_Codebase\_Exceptions\ObjectConverterException.cs" />
+    <Compile Include="_Codebase\_Exceptions\OptionalException.cs" />
+    <Compile Include="_Codebase\_Exceptions\DataSourceException.cs" />
+    <Compile Include="_Codebase\_Exceptions\SmartConfigException.cs" />
+    <Compile Include="_Codebase\_Exceptions\ConstraintException.cs" />
+    <Compile Include="_Codebase\_Exceptions\UnsupportedTypeException.cs" />
+    <Compile Include="_Codebase\_Extensions\EnumerableExtensions.cs" />
+    <Compile Include="_Codebase\_Extensions\TypeExtensions.cs" />
+    <Compile Include="_Codebase\Converters\ColorConverter.cs" />
+    <Compile Include="_Codebase\Converters\StringConverter.cs" />
+    <Compile Include="_Codebase\Converters\XmlConverter.cs" />
+    <Compile Include="_Codebase\_Exceptions\ObjectConverterNotFoundException.cs" />
+    <Compile Include="_Codebase\Converters\JsonConverter.cs" />
+    <Compile Include="_Codebase\Converters\ValueTypeConverter.cs" />
+    <Compile Include="_Codebase\_Attributes\ObjectConverterAttribute.cs" />
+    <Compile Include="_Codebase\Converters\ObjectConverter.cs" />
+    <Compile Include="_Codebase\SmartConfigManager.cs" />
+    <Compile Include="_Codebase\SettingPath.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="_Impl\_Attributes\SmartConfigAttribute.cs" />
-    <Compile Include="_Impl\Data\IDataSource.cs" />
+    <Compile Include="_Codebase\_Attributes\SmartConfigAttribute.cs" />
+    <Compile Include="_Codebase\Data\IDataSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

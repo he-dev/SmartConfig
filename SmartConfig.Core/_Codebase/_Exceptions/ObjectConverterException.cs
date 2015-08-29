@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SmartConfig.Data;
 using SmartUtilities;
 
 namespace SmartConfig
@@ -19,19 +14,12 @@ namespace SmartConfig
             Value = value;
         }
 
-        public override string Message
-        {
-            get
+        public override string Message => "Error converting SettingPath = \"$SettingPath\" SettingType = \"$SettingType\". See inner exeption for details."
+            .FormatWith(new
             {
-                return
-                    "Error converting SettingPath = \"$SettingPath\" SettingType = \"$SettingType\". See inner exeption for details."
-                    .FormatWith(new
-                    {
-                        SettingPath = SettingInfo.SettingPath.ToString(),
-                        SettingType = SettingInfo.SettingType.Name
-                    }, true);
-            }
-        }
+                SettingPath = SettingInfo.SettingPath.ToString(),
+                SettingType = SettingInfo.SettingType.Name
+            }, true);
 
         public object Value { get; private set; }
     }

@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using SmartUtilities;
 
 namespace SmartConfig
@@ -72,10 +70,7 @@ namespace SmartConfig
 
         #region Setting Info
 
-        public Type SettingType
-        {
-            get { return IsInternal ? _settingType : _fieldInfo.FieldType; }
-        }
+        public Type SettingType => IsInternal ? _settingType : _fieldInfo.FieldType;
 
         public Type ConverterType
         {
@@ -103,21 +98,12 @@ namespace SmartConfig
 
         public SettingPath SettingPath { get; private set; }
 
-        public IEnumerable<ConstraintAttribute> SettingConstraints
-        {
-            get
-            {
-                return
-                  _fieldInfo == null
-                  ? Enumerable.Empty<ConstraintAttribute>()
-                  : _fieldInfo.GetCustomAttributes<ConstraintAttribute>(false);
-            }
-        }
+        public IEnumerable<ConstraintAttribute> SettingConstraints =>
+            _fieldInfo == null
+            ? Enumerable.Empty<ConstraintAttribute>()
+            : _fieldInfo.GetCustomAttributes<ConstraintAttribute>(false);
 
-        public bool IsOptional
-        {
-            get { return _fieldInfo.GetCustomAttribute<OptionalAttribute>() != null; }
-        }
+        public bool IsOptional => _fieldInfo.GetCustomAttribute<OptionalAttribute>() != null;
 
         //public bool IsNullable
         //{
@@ -137,9 +123,6 @@ namespace SmartConfig
         }
         #endregion
 
-        internal bool IsInternal
-        {
-            get { return _settingType != null; }
-        }
+        internal bool IsInternal => _settingType != null;
     }
 }

@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace SmartConfig.Converters
@@ -25,7 +21,7 @@ namespace SmartConfig.Converters
         public override object DeserializeObject(string value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
             ValidateType(type);
-            var parseMethod = type.GetMethod("Parse", new Type[] { typeof(string) });
+            var parseMethod = type.GetMethod("Parse", new[] { typeof(string) });
             var result = parseMethod.Invoke(null, new object[] { value });
             return result;
         }

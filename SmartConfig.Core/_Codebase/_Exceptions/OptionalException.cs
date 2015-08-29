@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SmartConfig.Data;
-using SmartUtilities;
+﻿using SmartUtilities;
 
 namespace SmartConfig
 {
@@ -15,19 +9,12 @@ namespace SmartConfig
     {
         internal OptionalException(SettingInfo settingInfo) : base(settingInfo, null) { }
 
-        public override string Message
-        {
-            get
+        public override string Message => "This setting is not optional ConfigType = \"$ConfigTypeName\" SettingPath = \"$SettingPath\". If you want it to be optional add the $OptionalAttributeName."
+            .FormatWith(new
             {
-                return
-                    "This setting is not optional ConfigType = \"$ConfigTypeName\" SettingPath = \"$SettingPath\". If you want it to be optional add the $OptionalAttributeName."
-                    .FormatWith(new
-                    {
-                        ConfigTypeName = SettingInfo.ConfigType.Name,
-                        SettingPath = SettingInfo.SettingPath.ToString(),
-                        OptionalAttributeName = typeof(OptionalAttribute).Name
-                    }, true);
-            }
-        }
+                ConfigTypeName = SettingInfo.ConfigType.Name,
+                SettingPath = SettingInfo.SettingPath.ToString(),
+                OptionalAttributeName = typeof(OptionalAttribute).Name
+            }, true);
     }
 }

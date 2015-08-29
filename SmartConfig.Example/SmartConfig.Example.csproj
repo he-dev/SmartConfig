@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartConfig.Example</RootNamespace>
     <AssemblyName>SmartConfig.Example</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
@@ -67,12 +67,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="_Impl\Data\CustomSetting.cs" />
-    <Compile Include="_Impl\Data\_Configs\ExampleXmlConfig.cs" />
-    <Compile Include="_Impl\Data\_Configs\ExampleDbConfig2.cs" />
-    <Compile Include="_Impl\Data\_Configs\ExampleDbConfig1.cs" />
-    <Compile Include="_Impl\Data\_Configs\ExampleAppConfig.cs" />
-    <Compile Include="_Impl\Program.cs" />
+    <Compile Include="_Codebase\Data\CustomSetting.cs" />
+    <Compile Include="_Codebase\Data\_Configs\ExampleXmlConfig.cs" />
+    <Compile Include="_Codebase\Data\_Configs\ExampleDbConfig2.cs" />
+    <Compile Include="_Codebase\Data\_Configs\ExampleDbConfig1.cs" />
+    <Compile Include="_Codebase\Data\_Configs\ExampleAppConfig.cs" />
+    <Compile Include="_Codebase\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

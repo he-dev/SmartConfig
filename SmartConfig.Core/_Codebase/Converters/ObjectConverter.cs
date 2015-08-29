@@ -1,12 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using Newtonsoft.Json;
 
 namespace SmartConfig.Converters
 {
@@ -19,19 +12,20 @@ namespace SmartConfig.Converters
         {
             // by default the only supported type is the own type 
             // currently used only by the Json converter that supports "all" types natively
-            SupportedTypes = new HashSet<Type>() { GetType() };
+            SupportedTypes.Add(GetType());
         }
 
         protected ObjectConverter(IEnumerable<Type> supportedTypes)
         {
-            SupportedTypes = new HashSet<Type>(supportedTypes);
+            SupportedTypes.Clear();
+            SupportedTypes.UnionWith(supportedTypes);
         }
 
         /// <summary>
         /// Gets field types directly supported by the converter. 
         /// If left empty the conveter type will by used and you need to set the <c>ObjectConverterAttributes</c> on your field(s).
         /// </summary>
-        public HashSet<Type> SupportedTypes { get; protected set; }
+        public HashSet<Type> SupportedTypes { get; } = new HashSet<Type>();
 
         protected void ValidateType(Type type)
         {

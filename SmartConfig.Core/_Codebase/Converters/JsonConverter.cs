@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace SmartConfig.Converters
 {
@@ -16,7 +13,7 @@ namespace SmartConfig.Converters
         {
             var result =
                 !string.IsNullOrEmpty(value)
-                ? Newtonsoft.Json.JsonConvert.DeserializeObject(value, type)
+                ? JsonConvert.DeserializeObject(value, type)
                 : null;
             return result;
         }
@@ -25,7 +22,7 @@ namespace SmartConfig.Converters
         {
             var result =
                 value != null
-                ? Newtonsoft.Json.JsonConvert.SerializeObject(value)
+                ? JsonConvert.SerializeObject(value)
                 : null;
             return result;
         }

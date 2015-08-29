@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using SmartUtilities;
 
 namespace SmartConfig
@@ -19,19 +15,12 @@ namespace SmartConfig
             Value = value;
         }
 
-        public override string Message
-        {
-            get
+        public override string Message => "Constraint \"$AbbreviatedAttributeName\" failed for $Constraint"
+            .FormatWith(new
             {
-                return 
-                    "Constraint \"$AbbreviatedAttributeName\" failed for $Constraint"
-                    .FormatWith(new
-                    {
-                        AbbreviatedAttributeName,
-                        Constraint = Constraint.ToString()
-                    }, true);
-            }
-        }
+                AbbreviatedAttributeName,
+                Constraint = Constraint.ToString()
+            }, true);
 
         public ConstraintAttribute Constraint { get; private set; }
 
@@ -40,9 +29,6 @@ namespace SmartConfig
         /// </summary>
         public object Value { get; private set; }
 
-        private string AbbreviatedAttributeName
-        {
-            get { return Regex.Replace(Constraint.GetType().Name, "Attribute$", string.Empty); }
-        }
+        private string AbbreviatedAttributeName => Regex.Replace(Constraint.GetType().Name, "Attribute$", string.Empty);
     }
 }

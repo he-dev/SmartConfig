@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Configuration;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartConfig.Data
 {
@@ -18,10 +13,7 @@ namespace SmartConfig.Data
 
             var connectionStrings = (ConnectionStringsSection)section;
             var connectionStringSettings = connectionStrings.ConnectionStrings[key];
-            return 
-                connectionStringSettings == null
-                ? null
-                : connectionStringSettings.ConnectionString;
+            return connectionStringSettings?.ConnectionString;
         }
 
         public override void Update(ConfigurationSection section, string key, string value)

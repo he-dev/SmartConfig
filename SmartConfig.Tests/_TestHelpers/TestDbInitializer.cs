@@ -1,9 +1,10 @@
-﻿using System.Linq;
+﻿using System.Data.Entity;
+using System.Linq;
 using SmartConfig.Data;
 
 namespace SmartConfig.Tests.Data
 {
-    class TestDbInitializer : System.Data.Entity.DropCreateDatabaseAlways<SmartConfigContext<TestSetting>>
+    class TestDbInitializer : DropCreateDatabaseAlways<SmartConfigContext<TestSetting>>
     {
         protected override void Seed(SmartConfigContext<TestSetting> context)
         {

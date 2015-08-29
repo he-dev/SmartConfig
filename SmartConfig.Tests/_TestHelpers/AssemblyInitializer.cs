@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Data.Entity;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Tests.Data;
 
 namespace SmartConfig.Tests
@@ -9,7 +10,7 @@ namespace SmartConfig.Tests
         [AssemblyInitialize]
         public static void AssemblyInitialize(TestContext context)
         {
-            System.Data.Entity.Database.SetInitializer(new TestDbInitializer());
+            Database.SetInitializer(new TestDbInitializer());
         }
     }
 }

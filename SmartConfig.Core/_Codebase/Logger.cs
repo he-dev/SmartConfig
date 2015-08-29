@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartConfig
 {
@@ -15,22 +11,22 @@ namespace SmartConfig
 
         internal static void LogTrace(Func<string> message)
         {
-            if (Trace != null) Trace(message());
+            Trace?.Invoke(message());
         }
 
         internal static void LogDebug(Func<string> message)
         {
-            if (Debug != null) Debug(message());
+            Debug?.Invoke(message());
         }
 
         internal static void LogInfo(Func<string> message)
         {
-            if (Info != null) Info(message());
+            Info?.Invoke(message());
         }
 
         internal static void LogWarn(Func<string> message)
         {
-            if (Warn != null) Warn(message());
+            Warn?.Invoke(message());
         }
     }
 }

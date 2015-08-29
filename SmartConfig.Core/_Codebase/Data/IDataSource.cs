@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace SmartConfig.Data
 {
     /// <summary>
     /// Delegate for defining filtering methods.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     /// <param name="elements">Elements to be filtered.</param>
     /// <param name="criteria">Filter criteria as key & value.</param>
     /// <returns>Filtered elements.</returns>

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Converters;
 
@@ -24,7 +23,7 @@ namespace SmartConfig.Tests.Converters
             var valueTypeConverter = new ValueTypeConverter();
             Assert.AreEqual("123", valueTypeConverter.SerializeObject(123, typeof(int), Enumerable.Empty<ConstraintAttribute>()));
             Assert.AreEqual("123", valueTypeConverter.SerializeObject((Int32?)123, typeof(int), Enumerable.Empty<ConstraintAttribute>()));
-            Assert.IsNull(valueTypeConverter.SerializeObject((Int32?)null, typeof(int?), Enumerable.Empty<ConstraintAttribute>()));
+            Assert.IsNull(valueTypeConverter.SerializeObject(null, typeof(int?), Enumerable.Empty<ConstraintAttribute>()));
         }
     }
 }

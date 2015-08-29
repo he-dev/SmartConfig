@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Configuration;
 using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using SmartUtilities;
 
 namespace SmartConfig.Data
 {
@@ -21,10 +13,7 @@ namespace SmartConfig.Data
 
             var appSettings = (AppSettingsSection)section;
             var keyValueConfigurationElement = appSettings.Settings[key];
-            return
-                keyValueConfigurationElement == null
-                ? null
-                : keyValueConfigurationElement.Value;
+            return keyValueConfigurationElement?.Value;
         }
 
         public override void Update(ConfigurationSection section, string key, string value)

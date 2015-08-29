@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using SmartUtilities;
@@ -87,14 +85,14 @@ namespace SmartConfig.Data
                     var attr = x.Attribute(EncodeKeyName(keyName));
 
                     // use the attribute value or an asterisk if attribute not found
-                    element[keyName] = (attr == null ? Wildcards.Asterisk : attr.Value);
+                    element[keyName] = attr?.Value ?? Wildcards.Asterisk;
                 }
                 return element;
             }).ToList() as IEnumerable<TSetting>;
 
             elements = ApplyFilters(elements, compositeKey);
             var result = elements.FirstOrDefault();
-            return result != null ? result.Value : null;
+            return result?.Value;
         }
 
         public override void Update(string defaultKeyValue, string value)

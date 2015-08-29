@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading;
+using System.Globalization;
 using System.Xml.Linq;
-using Microsoft.QualityTools.Testing.Fakes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Data;
 using SmartConfig.Tests.TestConfigs;
@@ -93,7 +90,7 @@ namespace SmartConfig.Tests
             var dateTime = DateTime.Now;
             var dataSource = new TestDataSource()
             {
-                SelectFunc = keys => dateTime.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                SelectFunc = keys => dateTime.ToString(CultureInfo.InvariantCulture)
             };
             SmartConfigManager.Load(typeof(DateTimeFields), dataSource);
             Assert.AreEqual(dateTime.Date, DateTimeFields.DateTimeField.Date);
@@ -278,7 +275,7 @@ namespace SmartConfig.Tests
                 SmartConfigManager.Load(typeof(StringTestConfig), new TestDataSource()
                 {
                     // ReSharper disable once NotResolvedInText
-                    SelectFunc = (keys) => { throw new ArgumentNullException("TestArgument"); }
+                    SelectFunc = keys => { throw new ArgumentNullException("TestArgument"); }
                 });
             }, Assert.Fail);
             Assert.IsNotNull(ex);

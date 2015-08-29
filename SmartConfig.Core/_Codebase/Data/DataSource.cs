@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartConfig.Data
 {
@@ -14,31 +10,14 @@ namespace SmartConfig.Data
     {
         private KeyNames _keyNames;
 
-        private IDictionary<string, KeyProperties> _keyProperties = new Dictionary<string, KeyProperties>();       
+        public KeyNames KeyNames => _keyNames ?? (_keyNames = KeyNames.From<TSetting>());
 
-        public KeyNames KeyNames
-        {
-            get
-            {
-                if (_keyNames != null)
-                {
-                    return _keyNames;
-                }
-                _keyNames = KeyNames.From<TSetting>();
-                return _keyNames;
-            }
-        }
-
-        public IEnumerable<string> KeyNamesWithoutDefault
+        protected IEnumerable<string> KeyNamesWithoutDefault
         {
             get { return KeyNames.Where(k => k != KeyNames.DefaultKeyName); }
         }
 
-        public IDictionary<string, KeyProperties> KeyProperties
-        {
-            get { return _keyProperties; }
-            set { _keyProperties = value; }
-        }
+        public IDictionary<string, KeyProperties> KeyProperties { get; set; } = new Dictionary<string, KeyProperties>();
 
         public bool SettingsInitializationEnabled { get; set; }
 

@@ -1,9 +1,5 @@
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 using System.Reflection;
 
 namespace SmartConfig.Data
@@ -12,13 +8,16 @@ namespace SmartConfig.Data
     public delegate void SetStringDelegate(string value);
 
     /// <summary>
-    /// This is the default basic config element. Custom config elements must be derived from this type.
+    /// Basic setting class. Custom setting must be derived from this type.
     /// </summary>
     public class Setting : IIndexer
     {
         private readonly IDictionary<string, GetStringDelegate> _getStringDelegates;
         private readonly IDictionary<string, SetStringDelegate> _setStringDelegates;
 
+        /// <summary>
+        /// Creates a new setting.
+        /// </summary>
         public Setting()
         {
             _getStringDelegates = new Dictionary<string, GetStringDelegate>();
@@ -36,14 +35,25 @@ namespace SmartConfig.Data
             }
         }
 
+        /// <summary>
+        /// Gets or sets the specified property.
+        /// </summary>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
         public string this[string propertyName]
         {
             get { return _getStringDelegates[propertyName](); }
             set { _setStringDelegates[propertyName](value); }
         }
 
+        /// <summary>
+        /// Gets or sets the name of the setting.
+        /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// Gets or sets the value of the setting.
+        /// </summary>
         public string Value { get; set; }
     }
 }

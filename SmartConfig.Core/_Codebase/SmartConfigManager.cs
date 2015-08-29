@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using SmartConfig.Collections;
 using SmartConfig.Converters;
 using SmartConfig.Data;
@@ -53,8 +47,8 @@ namespace SmartConfig
         {
             #region check arguments
 
-            if (configType == null) throw new ArgumentNullException("configType", "You need to specify a config type.");
-            if (dataSource == null) throw new ArgumentNullException("dataSource", "You need to specify a data source.");
+            if (configType == null) throw new ArgumentNullException(nameof(configType), "You need to specify a config type.");
+            if (dataSource == null) throw new ArgumentNullException(nameof(dataSource), "You need to specify a data source.");
 
             if (!configType.IsStatic()) throw new InvalidOperationException("'configType' must be a static class.");
             if (configType.GetCustomAttribute<SmartConfigAttribute>() == null) throw new InvalidOperationException("'configType' must be marked with the SmartConfigAttribute.");
@@ -149,7 +143,7 @@ namespace SmartConfig
         /// <param name="value">Value to be set.</param>
         public static void Update<TField>(Expression<Func<TField>> updateExpression, TField value)
         {
-            if (updateExpression == null) throw new ArgumentNullException("updateExpression", "You need specify an exprestion for the setting you want to update.");
+            if (updateExpression == null) throw new ArgumentNullException(nameof(updateExpression), "You need specify an exprestion for the setting you want to update.");
 
             var settingInfo = SettingInfo.From(updateExpression);
 
@@ -197,7 +191,7 @@ namespace SmartConfig
         private static bool CheckSettingsInitialized(IDataSource dataSource)
         {
             var settingInitialized = dataSource.Select(KeyNames.Internal.SettingsInitializedKeyName);
-            var result = false;
+            bool result;
             bool.TryParse(settingInitialized, out result);
 
             Logger.LogTrace(() => "$keyName = $result".FormatWith(new { keyName = KeyNames.Internal.SettingsInitializedKeyName, result }));

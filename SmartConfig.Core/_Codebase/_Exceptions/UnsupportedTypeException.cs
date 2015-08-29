@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SmartUtilities;
 
 namespace SmartConfig
@@ -18,17 +14,11 @@ namespace SmartConfig
             SettingType = settingType;
         }
 
-        public override string Message
+        public override string Message => "Converter = \"$ConverterTypeName\" does not support SettingType = \"$SettingTypeName\"".FormatWith(new
         {
-            get
-            {
-                return "Converter = \"$ConverterTypeName\" does not support SettingType = \"$SettingTypeName\"".FormatWith(new
-                {
-                    ConverterTypeName = ConverterType.Name,
-                    SettingTypeName = SettingType.Name
-                });
-            }
-        }
+            ConverterTypeName = ConverterType.Name,
+            SettingTypeName = SettingType.Name
+        });
 
         public Type ConverterType { get; private set; }
 

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SmartConfig.Converters;
 using ColorConverter = SmartConfig.Converters.ColorConverter;
 
 namespace SmartConfig.Tests.Converters

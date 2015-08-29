@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SmartConfig.Converters;
 
 namespace SmartConfig.Collections
@@ -27,7 +24,7 @@ namespace SmartConfig.Collections
                 ObjectConverter objectConverter;
                 return TryGetValue(type, out objectConverter) ? objectConverter : null;
             }
-            set { ((Dictionary<Type, ObjectConverter>)this)[type] = value; }
+            private set { ((Dictionary<Type, ObjectConverter>)this)[type] = value; }
         }
 
         public ObjectConverter this[SettingInfo settingInfo]

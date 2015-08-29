@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using SmartUtilities;
 
 namespace SmartConfig.Data
 {
@@ -46,7 +41,7 @@ namespace SmartConfig.Data
 
         public override string Select(string defaultKeyValue)
         {
-            if (string.IsNullOrEmpty(defaultKeyValue)) throw new ArgumentNullException("defaultKeyValue");
+            if (string.IsNullOrEmpty(defaultKeyValue)) throw new ArgumentNullException(nameof(defaultKeyValue));
 
             var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             var compositeKey = CreateCompositeKey(defaultKeyValue);
@@ -58,7 +53,7 @@ namespace SmartConfig.Data
 
         public override void Update(string defaultKeyValue, string value)
         {
-            if (string.IsNullOrEmpty(defaultKeyValue)) throw new ArgumentNullException("defaultKeyValue");
+            if (string.IsNullOrEmpty(defaultKeyValue)) throw new ArgumentNullException(nameof(defaultKeyValue));
 
             var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             var compositeKey = CreateCompositeKey(defaultKeyValue);
