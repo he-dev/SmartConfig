@@ -25,13 +25,12 @@ https://www.nuget.org/packages/SmartConfig/
 ## Features
 - Strongly typed values.
 - Supports many common types:
-  - Value types: `bool`, `short`, `int`, `long`, `single`, `float`, `decimal`
+  - Value types: `char`, `bool`, `short`, `int`, `long`, `single`, `float`, `decimal`, `enum`
   - JSON (via `ObjectConverterAttribute`: `[ObjectConverter(typeof(JsonConverter)]`)
   - XML (`XDocument`,`XElement`)
   - Colors (`System.Drawing.Color` as Name (Red), HEX (#FF00AA), Decimal (122, 134,90)
-  - enums
-  - DateTime
-  - string
+  - `DateTime`
+  - `string`
 - Read/Write value validation:
   - Strongly typed
   - `OptionalAttribute`
