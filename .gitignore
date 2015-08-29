@@ -190,3 +190,6 @@ ModelManifest.xml
 
 # NuGet folder
 .nuget
+
+# R#
+*.DotSettings
