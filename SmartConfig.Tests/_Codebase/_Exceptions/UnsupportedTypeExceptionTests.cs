@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Converters;
-using SmartUtilities;
+using SmartUtilities.UnitTesting;
 
 namespace SmartConfig.Tests
 {

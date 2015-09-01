@@ -47,10 +47,6 @@
     <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="SmartUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SmartUtilities.1.0.2\lib\net452\SmartUtilities.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -75,6 +71,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="..\..\SmartUtilities\SmartUtilities\_Codebase\UnitTesting\ExceptionAssert.cs">
+      <Link>_SmartUtilities\UnitTesting\ExceptionAssert.cs</Link>
+    </Compile>
     <Compile Include="TestConfigs\SettingsInitializationTestConfig.cs" />
     <Compile Include="TestConfigs\NamedTestConfig.cs" />
     <Compile Include="_Codebase\Collections\ObjectConverterDictionaryTests.cs" />
@@ -164,6 +163,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

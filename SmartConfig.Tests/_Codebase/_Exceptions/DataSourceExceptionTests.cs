@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Data;
 using SmartConfig.Tests.TestConfigs;
-using SmartUtilities;
+using SmartUtilities.UnitTesting;
 
 namespace SmartConfig.Tests
 {
