@@ -142,7 +142,7 @@
     <Compile Include="_Codebase\Converters\ValueTypeConverter.cs" />
     <Compile Include="_Codebase\_Attributes\ObjectConverterAttribute.cs" />
     <Compile Include="_Codebase\Converters\ObjectConverter.cs" />
-    <Compile Include="_Codebase\SmartConfigManager.cs" />
+    <Compile Include="_Codebase\Configuration.cs" />
     <Compile Include="_Codebase\SettingPath.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="_Codebase\_Attributes\SmartConfigAttribute.cs" />

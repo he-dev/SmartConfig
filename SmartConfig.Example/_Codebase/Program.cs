@@ -22,12 +22,12 @@ namespace SmartConfig.Example
 
         private static void AppConfigSourceExample()
         {
-            SmartConfigManager.Load(typeof(ExampleAppConfig), new AppConfigSource());
+            Configuration.LoadSettings(typeof(ExampleAppConfig), new AppConfigSource());
 
             Console.WriteLine(ExampleAppConfig.AppSettings.Greeting);
             Console.WriteLine(ExampleAppConfig.AppSettings.Farewell);
 
-            SmartConfigManager.Update(() => ExampleAppConfig.AppSettings.Farewell, "Bye!");
+            Configuration.UpdateSetting(() => ExampleAppConfig.AppSettings.Farewell, "Bye!");
             Console.WriteLine(ExampleAppConfig.AppSettings.Farewell);
         }
 
@@ -40,7 +40,7 @@ namespace SmartConfig.Example
         }
         private static void BasicDbSourceExample()
         {
-            SmartConfigManager.Load(typeof(ExampleDbConfig1), new DbSource<Setting>()
+            Configuration.LoadSettings(typeof(ExampleDbConfig1), new DbSource<Setting>()
             {
                 ConnectionString = ExampleAppConfig.ConnectionStrings.ExampleDb,
                 SettingsTableName = "ExampleConfigTable",
@@ -51,7 +51,7 @@ namespace SmartConfig.Example
 
         private static void CustomDbSourceExample()
         {
-            SmartConfigManager.Load(typeof(ExampleDbConfig2), new DbSource<CustomSetting>()
+            Configuration.LoadSettings(typeof(ExampleDbConfig2), new DbSource<CustomSetting>()
             {
                 ConnectionString = ExampleAppConfig.ConnectionStrings.ExampleDb,
                 SettingsTableName = "ExampleConfigTable",
@@ -67,7 +67,7 @@ namespace SmartConfig.Example
 
         private static void XmlSourceExample()
         {
-            SmartConfigManager.Load(typeof(ExampleXmlConfig), new XmlSource<CustomSetting>()
+            Configuration.LoadSettings(typeof(ExampleXmlConfig), new XmlSource<CustomSetting>()
             {
                 FileName = @"Configs\XmlSource.xml",
                 SettingsInitializationEnabled = false,

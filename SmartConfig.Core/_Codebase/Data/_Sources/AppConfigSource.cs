@@ -63,7 +63,7 @@ namespace SmartConfig.Data
             exeConfig.Save(ConfigurationSaveMode.Minimal);
         }
 
-        private static ConfigurationSection GetConfigurationSection(Configuration configuration, CompositeKey compositeKey)
+        private static ConfigurationSection GetConfigurationSection(System.Configuration.Configuration configuration, CompositeKey compositeKey)
         {
             Debug.Assert(configuration != null);
             Debug.Assert(compositeKey != null);

@@ -9,7 +9,7 @@ namespace SmartConfig.Tests.Data
         //[TestMethod]
         //public void Load_AppConfig()
         //{
-        //    SmartConfigManager.Load(typeof(TestConfigs.AppConfig), new SmartConfig.Data.AppConfigSource());
+        //    Configuration.LoadSettings(typeof(TestConfigs.AppConfig), new SmartConfig.Data.AppConfigSource());
         //    Assert.AreEqual("TestValue", TestConfigs.AppConfig.AppSettings.TestKey);
         //    Assert.AreEqual("TestConnectionString", TestConfigs.AppConfig.ConnectionStrings.TestName);
         //}

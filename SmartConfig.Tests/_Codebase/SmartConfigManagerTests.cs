@@ -36,7 +36,7 @@ namespace SmartConfig.Tests
                 SelectFunc = key => testData[key]
             };
 
-            SmartConfigManager.Load(typeof(ValueTypesTestConfig), dataSource);
+            Configuration.LoadSettings(typeof(ValueTypesTestConfig), dataSource);
 
             Assert.AreEqual(true, ValueTypesTestConfig.BooleanField);
             Assert.AreEqual('a', ValueTypesTestConfig.CharField);
@@ -55,7 +55,7 @@ namespace SmartConfig.Tests
             {
                 SelectFunc = keys => "TestValue2"
             };
-            SmartConfigManager.Load(typeof(EnumField), dataSource);
+            Configuration.LoadSettings(typeof(EnumField), dataSource);
             Assert.AreEqual(TestEnum.TestValue2, EnumField.EnumField1);
         }
 
@@ -66,7 +66,7 @@ namespace SmartConfig.Tests
             {
                 SelectFunc = keys => "abcd"
             };
-            SmartConfigManager.Load(typeof(StringTestConfig), dataSource);
+            Configuration.LoadSettings(typeof(StringTestConfig), dataSource);
             Assert.AreEqual("abcd", StringTestConfig.StringField);
         }
 
@@ -81,7 +81,7 @@ namespace SmartConfig.Tests
                     return null;
                 }
             };
-            SmartConfigManager.Load(typeof(ConfigNameTestConfig), dataSource);
+            Configuration.LoadSettings(typeof(ConfigNameTestConfig), dataSource);
         }        
 
         [TestMethod]
@@ -92,7 +92,7 @@ namespace SmartConfig.Tests
             {
                 SelectFunc = keys => dateTime.ToString(CultureInfo.InvariantCulture)
             };
-            SmartConfigManager.Load(typeof(DateTimeFields), dataSource);
+            Configuration.LoadSettings(typeof(DateTimeFields), dataSource);
             Assert.AreEqual(dateTime.Date, DateTimeFields.DateTimeField.Date);
             Assert.AreEqual(dateTime.Hour, DateTimeFields.DateTimeField.Hour);
             Assert.AreEqual(dateTime.Minute, DateTimeFields.DateTimeField.Minute);
@@ -109,7 +109,7 @@ namespace SmartConfig.Tests
                 { "HexColorField", "#FF00AA" },
             };
 
-            SmartConfigManager.Load(typeof(ColorsTestConfig), new TestDataSource()
+            Configuration.LoadSettings(typeof(ColorsTestConfig), new TestDataSource()
             {
                 SelectFunc = key => testData[key]
             });
@@ -126,7 +126,7 @@ namespace SmartConfig.Tests
                 { "XDocumentField", @"<?xml version=""1.0""?><testXml></testXml>" },
                 { "XElementField", @"<testXml></testXml>" },
             };
-            SmartConfigManager.Load(typeof(XmlTestConfig), new TestDataSource()
+            Configuration.LoadSettings(typeof(XmlTestConfig), new TestDataSource()
             {
                 SelectFunc = key => testData[key]
             });
@@ -145,7 +145,7 @@ namespace SmartConfig.Tests
             {
                 SelectFunc = keys => "[1, 2, 3]"
             };
-            SmartConfigManager.Load(typeof(JsonField), dataSource);
+            Configuration.LoadSettings(typeof(JsonField), dataSource);
             CollectionAssert.AreEqual(new[] { 1, 2, 3 }, JsonField.ListInt32Field);
         }
 
@@ -166,7 +166,7 @@ namespace SmartConfig.Tests
             {
                 SelectFunc = key => testData[key]
             };
-            SmartConfigManager.Load(typeof(OneNestedClass), dataSource);
+            Configuration.LoadSettings(typeof(OneNestedClass), dataSource);
 
             Assert.AreEqual("abc", OneNestedClass.StringField);
             Assert.AreEqual("xyz", OneNestedClass.SubClass.StringField);
@@ -183,7 +183,7 @@ namespace SmartConfig.Tests
                     return "abc";
                 }
             };
-            SmartConfigManager.Load(typeof(TwoNestedClasses), dataSource);
+            Configuration.LoadSettings(typeof(TwoNestedClasses), dataSource);
             Assert.AreEqual("abc", TwoNestedClasses.SubClass.SubSubClass.SubSubStringField);
         }
 
@@ -200,7 +200,7 @@ namespace SmartConfig.Tests
             {
                 SelectFunc = keys => null
             };
-            SmartConfigManager.Load(typeof(OptionalTestConfig), dataSource);
+            Configuration.LoadSettings(typeof(OptionalTestConfig), dataSource);
             Assert.AreEqual("xyz", OptionalTestConfig.StringField, "Invalid defualt value.");
 
             #endregion
@@ -211,7 +211,7 @@ namespace SmartConfig.Tests
             {
                 SelectFunc = keys => "abcd"
             };
-            SmartConfigManager.Load(typeof(OptionalTestConfig), dataSource);
+            Configuration.LoadSettings(typeof(OptionalTestConfig), dataSource);
             Assert.AreEqual("abcd", OptionalTestConfig.StringField, "Invalid config value.");
 
             #endregion
@@ -226,7 +226,7 @@ namespace SmartConfig.Tests
         {
             var ex = ExceptionAssert.Throws<ConstraintException>(() =>
             {
-                SmartConfigManager.Load(typeof(DateTimeFormatTestConfig), new TestDataSource()
+                Configuration.LoadSettings(typeof(DateTimeFormatTestConfig), new TestDataSource()
                 {
                     SelectFunc = keys => "14AUG2015"
                 });
@@ -240,7 +240,7 @@ namespace SmartConfig.Tests
         {
             var ex = ExceptionAssert.Throws<ConstraintException>(() =>
             {
-                SmartConfigManager.Load(typeof(RangeTestConfig), new TestDataSource()
+                Configuration.LoadSettings(typeof(RangeTestConfig), new TestDataSource()
                 {
                     SelectFunc = keys => "3"
                 });
@@ -254,7 +254,7 @@ namespace SmartConfig.Tests
         {
             var ex = ExceptionAssert.Throws<ConstraintException>(() =>
             {
-                SmartConfigManager.Load(typeof(RegularExpressionTestConfig), new TestDataSource()
+                Configuration.LoadSettings(typeof(RegularExpressionTestConfig), new TestDataSource()
                 {
                     SelectFunc = keys => "3"
                 });
@@ -272,7 +272,7 @@ namespace SmartConfig.Tests
         {
             var ex = ExceptionAssert.Throws<DataSourceException>(() =>
             {
-                SmartConfigManager.Load(typeof(StringTestConfig), new TestDataSource()
+                Configuration.LoadSettings(typeof(StringTestConfig), new TestDataSource()
                 {
                     // ReSharper disable once NotResolvedInText
                     SelectFunc = keys => { throw new ArgumentNullException("TestArgument"); }
@@ -287,7 +287,7 @@ namespace SmartConfig.Tests
         {
             var ex = ExceptionAssert.Throws<ObjectConverterException>(() =>
             {
-                SmartConfigManager.Load(typeof(ValueTypesTestConfig), new TestDataSource()
+                Configuration.LoadSettings(typeof(ValueTypesTestConfig), new TestDataSource()
                 {
                     SelectFunc = keys => "Lorem ipsum."
                 });
@@ -300,7 +300,7 @@ namespace SmartConfig.Tests
         {
             var ex = ExceptionAssert.Throws<ObjectConverterException>(() =>
             {
-                SmartConfigManager.Load(typeof(UnsupportedTypeTestConfig), new TestDataSource()
+                Configuration.LoadSettings(typeof(UnsupportedTypeTestConfig), new TestDataSource()
                 {
                     SelectFunc = keys => "Lorem ipsum."
                 });
@@ -317,7 +317,7 @@ namespace SmartConfig.Tests
             };
             var ex = ExceptionAssert.Throws<OptionalException>(() =>
             {
-                SmartConfigManager.Load(typeof(MissingOptionalAttribute), dataSource);
+                Configuration.LoadSettings(typeof(MissingOptionalAttribute), dataSource);
             }, Assert.Fail);
 
             Assert.IsNotNull(ex);
@@ -336,7 +336,7 @@ namespace SmartConfig.Tests
         {
             var ex = ExceptionAssert.Throws<InvalidOperationException>(() =>
             {
-                SmartConfigManager.Load(typeof(MissingSmartConfigAttribute), new TestDataSource()
+                Configuration.LoadSettings(typeof(MissingSmartConfigAttribute), new TestDataSource()
                 {
                     SelectFunc = keys => null
                 });
@@ -386,7 +386,7 @@ namespace SmartConfig.Tests
                 }
             };
 
-            SmartConfigManager.Load(typeof(SettingsInitializationTestConfig), dataSource);
+            Configuration.LoadSettings(typeof(SettingsInitializationTestConfig), dataSource);
 
             var setting1 = dataSource.Select("Setting1");
             var setting2 = dataSource.Select("Nested1.Setting2");
@@ -425,7 +425,7 @@ namespace SmartConfig.Tests
                 }
             };
 
-            SmartConfigManager.Load(typeof(NamedTestConfig), dataSource);
+            Configuration.LoadSettings(typeof(NamedTestConfig), dataSource);
 
             var setting1 = dataSource.Select("UnitTest.Setting1");
             var setting2 = dataSource.Select("UnitTest.Nested1.Setting2");

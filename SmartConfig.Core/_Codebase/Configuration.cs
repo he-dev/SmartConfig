@@ -11,19 +11,20 @@ using SmartUtilities;
 namespace SmartConfig
 {
     /// <summary>
-    /// This class takes care of loading and updating config values.
+    /// Represents a configuration a provides methods for loading and updating settings.
     /// </summary>
-    public static class SmartConfigManager
+    public static class Configuration
     {
         private static readonly DataSourceDictionary DataSources = new DataSourceDictionary();
 
         /// <summary>
-        /// Gets the converters collection that holds all the default converters and allows to add additional ones.
+        /// Gets the current converters and allows to add additional ones.
         /// </summary>
         public static ObjectConverterDictionary Converters { get; private set; }
 
-        static SmartConfigManager()
+        static Configuration()
         {
+            // initialize default converters
             Converters = new ObjectConverterDictionary
             {
                 new ColorConverter(),
@@ -36,14 +37,14 @@ namespace SmartConfig
             };
         }
 
-        #region Loading
+        #region setting loading
 
         /// <summary>
-        /// Loads a configuration from the specified data source.
+        /// Loads settings for a a configuration from the specified data source.
         /// </summary>
         /// <param name="configType">SettingType that is marked with the <c>SmartCofnigAttribute</c> and specifies the configuration.</param>
         /// <param name="dataSource">Data source that provides data.</param>
-        public static void Load(Type configType, IDataSource dataSource)
+        public static void LoadSettings(Type configType, IDataSource dataSource)
         {
             #region check arguments
 
@@ -130,18 +131,19 @@ namespace SmartConfig
 
         #endregion
 
-        #region updating
-        /// <summary>
-        /// Updates a configuration field.
-        /// </summary>
-        /// <typeparam name="TField">SettingType of the field.</typeparam>
-        /// <param name="updateExpression">Lambda updateExpression of the field.</param>
-        /// <param name="value">Value to be set.</param>
-        public static void Update<TField>(Expression<Func<TField>> updateExpression, TField value)
-        {
-            if (updateExpression == null) throw new ArgumentNullException(nameof(updateExpression), "You need specify an exprestion for the setting you want to update.");
+        #region setting updating
 
-            var settingInfo = SettingInfo.From(updateExpression);
+        /// <summary>
+        /// Updates a setting.
+        /// </summary>
+        /// <typeparam name="TField">The type of the setting field to be updated.</typeparam>
+        /// <param name="memberExpression">Member expression of the setting field.</param>
+        /// <param name="value">Value to be set.</param>
+        public static void UpdateSetting<TField>(Expression<Func<TField>> memberExpression, TField value)
+        {
+            if (memberExpression == null) throw new ArgumentNullException(nameof(memberExpression), "You need specify an exprestion for the setting you want to update.");
+
+            var settingInfo = SettingInfo.From(memberExpression);
 
             Debug.Assert(settingInfo != null);
             UpdateSetting(settingInfo, value);
@@ -184,6 +186,8 @@ namespace SmartConfig
 
         #endregion
 
+        #region setting initialization
+
         private static bool CheckSettingsInitialized(IDataSource dataSource)
         {
             var settingInitialized = dataSource.Select(KeyNames.Internal.SettingsInitializedKeyName);
@@ -225,5 +229,7 @@ namespace SmartConfig
                 throw new ObjectConverterException(value, settingInfo, ex);
             }
         }
+
+        #endregion
     }
 }
