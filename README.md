@@ -1,30 +1,34 @@
 # SmartConfig v2
 Configuration has never been easier!
 
-**SmartConfig** is a configuration framework that makes writing configurations easier then ever.
+This section briefly describes **`SmartConfig`**'s features.
+
+**`SmartConfig`** is a configuration framework that makes writing configurations easier then ever.
 
 ## Why another one?
-Because I did't find anything simplier and as powerful as **SmartConfig**. It's main goal is simplicity. A configuration should be set up within few minutes and be easily extended if needed. Unfortunatelly most of the time we spend hours writing them over and over again. With **SmartConfig** it's over.
+Because I did't find anything simplier and as powerful as **`SmartConfig`**. I find a configuration should be set up within a few minutes and be easily extended if needed. Unfortunatelly most of the time we spend hours writing them over and over again. With **`SmartConfig`** it's over.
 
 ## How does it work?
-With **SmartConfig** you write a static class with static fields that will hold the settings when they are loaded. Its structure will be used to build keys. There is no need to use any hardcoded strings to get any values. The idea of **SmartConfig** is to eliminate all magic strings.
+With **`SmartConfig`** you write a `static class` with static fields that will hold the settings when they are loaded. Its structure is used to build setting names. There is no need to use any hardcoded strings or create enums etc to get any values. The idea of **`SmartConfig`** is to eliminate all magic strings.
 
 ## Where are all the settings stored?
-**SmartConfig** can read/write the `App.config`'s `connectionStrings` and `appSettings` sections, database (with `Entity Framework` and an own xml format that resembles a database. It is however possible to add your own data source.
+Currently **`SmartConfig`** can read & write the `App.config`'s `connectionStrings` and `appSettings` sections, databases (with `Entity Framework` and an own xml format that resembles a database. It is however possible to add your own data source.
 
 ## Are there any other benefits?
-Yes there are :-) **SmartConfig** is strongly typed and can validate the values as well during loading as during updating. Thus you know always know if you read/write valid settings. It supports many popular types and provides an interface to add you own types if you need to. **SmartCofnig** can filter your settings based on various additional criteria. To start with it provides two filters: by string and by version (semver). You can add other criteria if you need to.
+Yes there are :-) **`SmartConfig`** is strongly typed and can validate all values as well during loading as during updating. Thus you know always know if you read/write valid settings. It supports many popular types and provides an interface to add you own types if you need to. **`SmartConfig`** can filter your settings based on various additional criteria. To start with it provides two filters: by string and by version ([Semantic Version](http://semver.org)). You can add other criteria if you need to.
 
 ## Is it stable yet?
 It looks like it is ;-)
 
 ## Where can I get it?
-You can install the current pre-release version via the NuGet package manager: _Install-Package SmartConfig -Pre_
-https://www.nuget.org/packages/SmartConfig/
+You can install the latest version via the [NuGet](https://www.nuget.org/packages/SmartConfig/) package manager: 
+
+```
+_Install-Package SmartConfig
+```
 
 ## Features
-- Strongly typed values.
-- Supports many common types:
+- Strongly typed values:
   - Value types: `char`, `bool`, `short`, `int`, `long`, `single`, `float`, `decimal`, `enum`
   - JSON (via `ObjectConverterAttribute`: `[ObjectConverter(typeof(JsonConverter)]`)
   - XML (`XDocument`,`XElement`)
@@ -44,14 +48,12 @@ https://www.nuget.org/packages/SmartConfig/
 - Multiple configurations in a single storage.
 - Multiple data sources: app.config (read-only) (connectionsStrings & appSettings), SQL database (read-write)
 
-## Is this all it offers?
-Not quite. There is _hidden_ beta features for generating setting keys and values based on the current configuration. Besides planned are:
-- Database settings override from app.config.
-- Automatic reloading when datasource changes and change notifications.
+## What else can it do?
+There is one _hidden_ beta feature for generating setting name and default values based on the current configuration. You can activate it by setting the `IDataSource.SettingsInitializationEnabled` property to `true`.
 
 ## Hallo SmartConfig! - Basic Example
 
-In this short tutorial we'll create a very simple configuration to show how **SmartConfig** works and how easy it is.
+In this short tutorial we'll create a very simple configuration to show how **`SmartConfig`** works and how easy it is.
 
 We use for our main configuration a database because nowadays it's actually a standard and all apps use some database to store data.
 
@@ -67,7 +69,7 @@ To be able to use to the database, first we need a minimal `app.config` configur
 </appSettings>
 ```
 
-We use **SmartConfig** to read both settings. Becasue it loads settings into a static class we create one and we add a special `SmartConfigAttribute` to it. Inside the config class we define two nested static classes that will represent the `connectionStrings` and the `appSettings` sections:
+We use **`SmartConfig`** to read both settings. Becasue it loads settings into a static class we create one and we add a special `SmartConfigAttribute` to it. Inside the config class we define two nested static classes that will represent the `connectionStrings` and the `appSettings` sections:
 
 ### ExampleAppConfig.cs
 ```cs
