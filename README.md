@@ -24,7 +24,7 @@ It looks like it is ;-)
 You can install the latest version via the [NuGet](https://www.nuget.org/packages/SmartConfig/) package manager: 
 
 ```
-_Install-Package SmartConfig
+Install-Package SmartConfig
 ```
 
 ## Features
