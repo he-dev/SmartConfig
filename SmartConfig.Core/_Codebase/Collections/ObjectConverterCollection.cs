@@ -9,7 +9,7 @@ namespace SmartConfig.Collections
     /// <summary>
     /// Maps types to their supporting converters.
     /// </summary>
-    public sealed class ObjectConverterCollection : IEnumerable<ObjectConverter>
+    public sealed class ObjectConverterCollection : IObjectConverterCollection
     {
         private readonly Dictionary<Type, ObjectConverter> _converters = new Dictionary<Type, ObjectConverter>();
 

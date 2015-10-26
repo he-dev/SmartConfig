@@ -14,11 +14,14 @@ namespace SmartConfig
     {
         private readonly IConfigReflector _configReflector;
 
-        private readonly ObjectConverterCollection _converters;
+        private readonly IObjectConverterCollection _converters;
 
-        private readonly DataSourceCollection _dataSources;
+        private readonly IDataSourceCollection _dataSources;
 
-        public SettingsLoader(IConfigReflector configReflector, ObjectConverterCollection converters, DataSourceCollection dataSources)
+        public SettingsLoader(
+            IConfigReflector configReflector, 
+            IObjectConverterCollection converters, 
+            IDataSourceCollection dataSources)
         {
             _configReflector = configReflector;
             _converters = converters;

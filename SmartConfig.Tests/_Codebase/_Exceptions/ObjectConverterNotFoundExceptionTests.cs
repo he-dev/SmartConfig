@@ -12,7 +12,7 @@ namespace SmartConfig.Tests
         {
             var ex = ExceptionAssert.Throws<ObjectConverterNotFoundException>(() =>
             {
-                throw new ObjectConverterNotFoundException(SettingInfo.From(() => ValueTypesTestConfig.BooleanField));
+                //throw new ObjectConverterNotFoundException(SettingInfo.From(() => ValueTypesTestConfig.BooleanField));
 
             }, Assert.Fail);
             Assert.IsNotNull(ex);

@@ -14,9 +14,9 @@ namespace SmartConfig
 
         private readonly SettingsUpdater _settingsUpdater;
 
-        private readonly DataSourceCollection _dataSources;
+        private readonly IDataSourceCollection _dataSources;
 
-        public SettingsInitializer(IConfigReflector configReflector, SettingsUpdater settingsUpdater, DataSourceCollection dataSources)
+        public SettingsInitializer(IConfigReflector configReflector, SettingsUpdater settingsUpdater, IDataSourceCollection dataSources)
         {
             _configReflector = configReflector;
             _settingsUpdater = settingsUpdater;

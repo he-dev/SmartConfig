@@ -11,7 +11,7 @@ namespace SmartConfig
     [DebuggerDisplay("ConfigType.Name = {ConfigType.Name} SettingPath = \"{SettingPath}\" IsInternal = \"{IsInternal}\"")]
     public class SettingInfo
     {
-        private readonly FieldInfo _fieldInfo;
+        private readonly PropertyInfo _propertyInfo;
         private readonly Type _settingType;
 
         internal SettingInfo(Type configType, string settingPath, Type settingType)
@@ -24,7 +24,7 @@ namespace SmartConfig
 
         internal SettingInfo(MemberInfo member)
         {
-            _fieldInfo = (FieldInfo)member;
+            _propertyInfo = (PropertyInfo)member;
 
             var path = new List<string> { member.Name };
 
@@ -73,7 +73,7 @@ namespace SmartConfig
 
         #region Setting Info
 
-        public Type SettingType => IsInternal ? _settingType : _fieldInfo.FieldType;
+        public Type SettingType => IsInternal ? _settingType : _propertyInfo.FieldType;
 
         public Type ConverterType
         {
@@ -89,7 +89,7 @@ namespace SmartConfig
                     return typeof(Enum);
                 }
 
-                var objectConverterAttribute = _fieldInfo.GetCustomAttribute<ObjectConverterAttribute>(false);
+                var objectConverterAttribute = _propertyInfo.GetCustomAttribute<ObjectConverterAttribute>(false);
                 if (objectConverterAttribute != null)
                 {
                     return objectConverterAttribute.Type;
@@ -102,30 +102,30 @@ namespace SmartConfig
         public SettingPath SettingPath { get; private set; }
 
         public IEnumerable<ConstraintAttribute> SettingConstraints =>
-            _fieldInfo == null
+            _propertyInfo == null
             ? Enumerable.Empty<ConstraintAttribute>()
-            : _fieldInfo.GetCustomAttributes<ConstraintAttribute>(false);
+            : _propertyInfo.GetCustomAttributes<ConstraintAttribute>(false);
 
-        public bool IsOptional => _fieldInfo.GetCustomAttribute<OptionalAttribute>() != null;
+        public bool IsOptional => _propertyInfo.GetCustomAttribute<OptionalAttribute>() != null;
 
         //public bool IsNullable
         //{
         //    get
         //    {
         //        var isNullable =
-        //            (_fieldInfo.FieldType.IsValueType && _fieldInfo.FieldType.IsNullable())
-        //            || _fieldInfo.GetCustomAttribute<OptionalAttribute>() != null;
+        //            (_propertyInfo.FieldType.IsValueType && _propertyInfo.FieldType.IsNullable())
+        //            || _propertyInfo.GetCustomAttribute<OptionalAttribute>() != null;
         //        return isNullable;
         //    }
         //}
 
         public object Value
         {
-            get { return _fieldInfo.GetValue(null); }
-            set { _fieldInfo.SetValue(null, value); }
+            get { return _propertyInfo.GetValue(null); }
+            set { _propertyInfo.SetValue(null, value); }
         }
         #endregion
 
-        internal bool IsInternal => _fieldInfo == null;
+        internal bool IsInternal => _propertyInfo == null;
     }
 }

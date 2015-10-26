@@ -27,13 +27,17 @@ namespace SmartConfig
 
         public IEnumerable<SettingInfo> GetSettingInfos(Type currentType)
         {
-            var fields = currentType
-                .GetFields(BindingFlags.Public | BindingFlags.Static)
+            //var fields = currentType
+            //    .GetFields(BindingFlags.Public | BindingFlags.Static)
+            //    .Where(f => f.GetCustomAttribute<IgnoreAttribute>() == null);
+
+            var properties = currentType
+                .GetProperties(BindingFlags.Public | BindingFlags.Static)
                 .Where(f => f.GetCustomAttribute<IgnoreAttribute>() == null);
 
-            foreach (var field in fields)
+            foreach (var property in properties)
             {
-                yield return new SettingInfo(field);
+                yield return new SettingInfo(property);
             }
 
             var settingInfos = currentType

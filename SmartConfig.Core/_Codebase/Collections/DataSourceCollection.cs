@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using SmartConfig.Data;
@@ -6,10 +7,12 @@ using SmartUtilities;
 
 namespace SmartConfig.Collections
 {
+    
+
     /// <summary>
     /// Maps config types to their data sources.
     /// </summary>
-    public sealed class DataSourceCollection
+    public sealed class DataSourceCollection : IDataSourceCollection
     {
         private readonly Dictionary<Type, IDataSource> _dataSources = new Dictionary<Type, IDataSource>();
 
@@ -35,6 +38,16 @@ namespace SmartConfig.Collections
                 return dataSource;
             }
             set { _dataSources[configType] = value; }
+        }
+
+        public IEnumerator<IDataSource> GetEnumerator()
+        {
+            return _dataSources.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

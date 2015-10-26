@@ -3,6 +3,6 @@
     [SmartConfig]
     public static class StringTestConfig
     {
-        public static string StringField;
+        public static string StringField { get; set; }
     }    
 }

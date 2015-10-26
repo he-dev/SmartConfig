@@ -6,6 +6,8 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using SmartConfig.Collections;
+using SmartConfig.Converters;
+using SmartConfig.Data;
 
 namespace SmartConfig
 {
@@ -13,11 +15,14 @@ namespace SmartConfig
     {
         private readonly IConfigReflector _configReflector;
 
-        private readonly ObjectConverterCollection _objectConverters;
+        private readonly IObjectConverterCollection _objectConverters;
 
-        private readonly DataSourceCollection _dataSources;
+        private readonly IDataSourceCollection _dataSources;
 
-        public SettingsUpdater(IConfigReflector configReflector, ObjectConverterCollection objectConverters, DataSourceCollection dataSources)
+        public SettingsUpdater(
+            IConfigReflector configReflector,
+            IObjectConverterCollection objectConverters,
+            IDataSourceCollection dataSources)
         {
             _configReflector = configReflector;
             _objectConverters = objectConverters;
