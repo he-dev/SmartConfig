@@ -12,7 +12,7 @@ namespace SmartConfig.Tests.Collections
         public void Add_Converter()
         {
             var valueTypeConverter = new ValueTypeConverter();
-            var objectConverterDictionary = new ObjectConverterDictionary
+            var objectConverterDictionary = new ObjectConverterCollection
             {
                 valueTypeConverter
             };

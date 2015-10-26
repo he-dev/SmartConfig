@@ -1,20 +1,20 @@
-﻿using SmartUtilities;
+﻿using System;
+using SmartUtilities;
 
 namespace SmartConfig
 {
     /// <summary>
     /// Occurs when an object converter could not be found.
     /// </summary>
-    public class ObjectConverterNotFoundException : SmartConfigException
+    public class ObjectConverterNotFoundException : Exception
     {
-        internal ObjectConverterNotFoundException(SettingInfo settingInfo) : base(settingInfo, null)
+        private readonly Type _converterType;
+
+        internal ObjectConverterNotFoundException(Type converterType)
         {
+            _converterType = converterType;
         }
 
-        public override string Message =>
-            $"Object converter not found. " +
-            $"ConverterType = \"{SettingInfo.ConverterType.Name}\" " +
-            $"ConfigType = \"{SettingInfo.ConfigType.Name}\" " +
-            $"SettingPath = \"{SettingInfo.SettingPath}\"";
+        public override string Message => $"Object converter not found. ConverterType = \"{_converterType.Name}\"";
     }
 }

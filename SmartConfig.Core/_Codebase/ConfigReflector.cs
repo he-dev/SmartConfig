@@ -4,29 +4,28 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SmartConfig
 {
-    /// <summary>
-    /// Provides general utilities.
-    /// </summary>
-    internal static class Utilities
+    internal class ConfigReflector : IConfigReflector
     {
-        internal static MemberInfo GetMemberInfo<TField>(Expression<Func<TField>> expression)
-        {
-            Debug.Assert(expression != null);
+        //internal static MemberInfo GetMemberInfo<TField>(Expression<Func<TField>> expression)
+        //{
+        //    Debug.Assert(expression != null);
 
-            var memberExpression = expression.Body as MemberExpression;
-            if (memberExpression == null)
-            {
-                var unaryExpression = expression.Body as UnaryExpression;
-                memberExpression = unaryExpression.Operand as MemberExpression;
-            }
+        //    var memberExpression = expression.Body as MemberExpression;
+        //    if (memberExpression == null)
+        //    {
+        //        var unaryExpression = expression.Body as UnaryExpression;
+        //        memberExpression = unaryExpression.Operand as MemberExpression;
+        //    }
 
-            return memberExpression.Member;
-        }
+        //    return memberExpression.Member;
+        //}
 
-        internal static IEnumerable<SettingInfo> GetSettingInfos(Type currentType)
+        public IEnumerable<SettingInfo> GetSettingInfos(Type currentType)
         {
             var fields = currentType
                 .GetFields(BindingFlags.Public | BindingFlags.Static)
@@ -48,11 +47,9 @@ namespace SmartConfig
             }
         }
 
-        internal static SettingInfo FindSettingInfo(Type configType, string settingPath)
+        public SettingInfo FindSettingInfo(Type configType, string settingPath)
         {
             return GetSettingInfos(configType).SingleOrDefault(si => si.SettingPath == settingPath);
         }
     }
-
-
 }

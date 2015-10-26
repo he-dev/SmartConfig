@@ -15,17 +15,17 @@ namespace SmartConfig
     /// </summary>
     public static class Configuration
     {
-        private static readonly DataSourceDictionary DataSources = new DataSourceDictionary();
+        private static readonly DataSourceCollection DataSources = new DataSourceCollection();
 
         /// <summary>
         /// Gets the current converters and allows to add additional ones.
         /// </summary>
-        public static ObjectConverterDictionary Converters { get; private set; }
+        public static ObjectConverterCollection Converters { get; }
 
         static Configuration()
         {
             // initialize default converters
-            Converters = new ObjectConverterDictionary
+            Converters = new ObjectConverterCollection
             {
                 new ColorConverter(),
                 new DateTimeConverter(),
@@ -36,8 +36,6 @@ namespace SmartConfig
                 new XmlConverter(),
             };
         }
-
-        #region setting loading
 
         /// <summary>
         /// Loads settings for a a configuration from the specified data source.
@@ -56,82 +54,20 @@ namespace SmartConfig
 
             #endregion
 
-            Logger.LogTrace(() => $"Loading \"{configType.Name}\" from \"{dataSource.GetType().Name}\"...");
+            //Logger.LogTrace(() => $"Loading \"{configType.Name}\" from \"{dataSource.GetType().Name}\"...");
 
             DataSources[configType] = dataSource;
 
-            var settingInfos = Utilities.GetSettingInfos(configType).ToList();
-
-            // initialize settings
-            if (dataSource.SettingsInitializationEnabled && !CheckSettingsInitialized(dataSource))
+            if (dataSource.SettingsInitializationEnabled)
             {
-                Logger.LogTrace(() => "Initializing settings...");
-                foreach (var settingInfo in settingInfos)
-                {
-                    InitializeSetting(settingInfo);
-                }
-
-                var settingInitializedSettingInfo = SettingInfoFactory.CreateSettingsInitializedSettingInfo(configType);
-                UpdateSetting(settingInitializedSettingInfo, true, true);
+                var settingsUpdater = new SettingsUpdater(new ConfigReflector(), Converters, DataSources);
+                var settingsInitializer = new SettingsInitializer(new ConfigReflector(), settingsUpdater, DataSources);
+                settingsInitializer.InitializeSettings(configType);
             }
 
-            foreach (var settingInfo in settingInfos)
-            {
-                LoadSetting(settingInfo);
-            }
+            var settingsLoader = new SettingsLoader(new ConfigReflector(), Converters, DataSources);
+            settingsLoader.LoadSettings(configType);
         }
-
-        // loads a setting from a data source into the correspondig field in the config class
-        private static void LoadSetting(SettingInfo settingInfo)
-        {
-            var value = GetSetting(settingInfo);
-
-            // don't let pass null values to the converter
-            if (string.IsNullOrEmpty(value))
-            {
-                // null is ok if the setting is optional
-                if (settingInfo.IsOptional)
-                {
-                    return;
-                }
-
-                // unfortunately this value is invalid, inform the user
-                throw new OptionalException(settingInfo);
-            }
-
-            try
-            {
-                var obj = Converters[settingInfo].DeserializeObject(value, settingInfo.SettingType, settingInfo.SettingConstraints);
-                settingInfo.Value = obj;
-            }
-            catch (ConstraintException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new ObjectConverterException(value, settingInfo, ex);
-            }
-        }
-
-        // gets a setting from a data source
-        private static string GetSetting(SettingInfo settingInfo)
-        {
-            var dataSource = DataSources[settingInfo.ConfigType];
-            try
-            {
-                var value = dataSource.Select(settingInfo.SettingPath);
-                return value;
-            }
-            catch (Exception ex)
-            {
-                throw new DataSourceException(dataSource, settingInfo, ex);
-            }
-        }
-
-        #endregion
-
-        #region setting updating
 
         /// <summary>
         /// Updates a setting.
@@ -141,95 +77,17 @@ namespace SmartConfig
         /// <param name="value">Value to be set.</param>
         public static void UpdateSetting<TField>(Expression<Func<TField>> memberExpression, TField value)
         {
-            if (memberExpression == null) throw new ArgumentNullException(nameof(memberExpression), "You need specify an exprestion for the setting you want to update.");
+            if (memberExpression == null)
+            {
+                throw new ArgumentNullException(nameof(memberExpression), "You need specify an exprestion for the setting you want to update.");
+            }
 
             var settingInfo = SettingInfo.From(memberExpression);
-
-            Debug.Assert(settingInfo != null);
-            UpdateSetting(settingInfo, value);
-        }
-
-        public static void UpdateSetting(Type configType, string settingPath, object value)
-        {
-            var settingInfo = Utilities.FindSettingInfo(configType, settingPath);
-            if (settingInfo == null)
-            {
-                // todo: create a meaningfull exception
-                throw new Exception("Setting not found.");
-            }
-
-            UpdateSetting(settingInfo, value);
-        }
-
-        private static void UpdateSetting(SettingInfo settingInfo, object value, bool isInitialization = false)
-        {
             Debug.Assert(settingInfo != null);
 
-            var serializedValue = SerializeValue(value, settingInfo);
-            var dataSource = DataSources[settingInfo.ConfigType];
-            try
-            {
-                dataSource.Update(settingInfo.SettingPath, serializedValue);
-
-                if (isInitialization)
-                {
-                    return;
-                }
-
-                settingInfo.Value = value;
-            }
-            catch (Exception ex)
-            {
-                throw new DataSourceException(dataSource, settingInfo, ex);
-            }
+            var settingsUdater = new SettingsUpdater(new ConfigReflector(), Converters, DataSources);
+            settingsUdater.UpdateSetting(settingInfo, value);
+            settingInfo.Value = value;
         }
-
-        #endregion
-
-        #region setting initialization
-
-        private static bool CheckSettingsInitialized(IDataSource dataSource)
-        {
-            var settingInitialized = dataSource.Select(KeyNames.Internal.SettingsInitializedKeyName);
-            bool result;
-            bool.TryParse(settingInitialized, out result);
-
-            Logger.LogTrace(() => $"{KeyNames.Internal.SettingsInitializedKeyName} = \"{result}\"");
-
-            return result;
-        }
-
-        private static void InitializeSetting(SettingInfo settingInfo)
-        {
-            Logger.LogTrace(() => $"Initializing SettingPath = \"{settingInfo.SettingPath}\"");
-            UpdateSetting(settingInfo, settingInfo.Value, true);
-        }
-
-        private static string SerializeValue(object value, SettingInfo settingInfo)
-        {
-            // don't let pass null value to the converter
-            if (value == null)
-            {
-                return null;
-            }
-
-            try
-            {
-                var serializedValue = Converters[settingInfo].SerializeObject(value, settingInfo.SettingType, settingInfo.SettingConstraints);
-                return serializedValue;
-            }
-            catch (ConstraintException)
-            {
-                // rethrow constraint violation
-                throw;
-            }
-            catch (Exception ex)
-            {
-                // add more information about the setting to the generic exception
-                throw new ObjectConverterException(value, settingInfo, ex);
-            }
-        }
-
-        #endregion
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using SmartConfig.Converters;
 
 namespace SmartConfig.Collections
@@ -7,38 +9,30 @@ namespace SmartConfig.Collections
     /// <summary>
     /// Maps types to their supporting converters.
     /// </summary>
-    public sealed class ObjectConverterDictionary : Dictionary<Type, ObjectConverter>
+    public sealed class ObjectConverterCollection : IEnumerable<ObjectConverter>
     {
+        private readonly Dictionary<Type, ObjectConverter> _converters = new Dictionary<Type, ObjectConverter>();
+
         // don't let create this dictionary outside the assembly
-        internal ObjectConverterDictionary() { }
+        internal ObjectConverterCollection() { }
 
         /// <summary>
         /// Gets an object converter for the specified type or null.
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="converterType"></param>
         /// <returns></returns>
-        new public ObjectConverter this[Type type]
+        public ObjectConverter this[Type converterType]
         {
             get
             {
                 ObjectConverter objectConverter;
-                return TryGetValue(type, out objectConverter) ? objectConverter : null;
-            }
-            private set { ((Dictionary<Type, ObjectConverter>)this)[type] = value; }
-        }
-
-        public ObjectConverter this[SettingInfo settingInfo]
-        {
-            get
-            {
-                var objectConverter = this[settingInfo.ConverterType];
-                if (objectConverter == null)
+                if (!_converters.TryGetValue(converterType, out objectConverter))
                 {
-                    throw new ObjectConverterNotFoundException(settingInfo);
+                    throw new ObjectConverterNotFoundException(converterType);
                 }
                 return objectConverter;
             }
-            set { this[settingInfo.ConfigType] = value; }
+            private set { _converters[converterType] = value; }
         }
 
         /// <summary>
@@ -52,6 +46,16 @@ namespace SmartConfig.Collections
             {
                 this[supportedType] = objectConverter;
             }
+        }
+
+        public IEnumerator<ObjectConverter> GetEnumerator()
+        {
+            return _converters.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

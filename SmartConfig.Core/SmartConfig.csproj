@@ -97,18 +97,20 @@
     <Compile Include="..\..\SmartUtilities\SmartUtilities\_Codebase\_Extensions\EnumerableExtensions.cs">
       <Link>_SmartUtilities\_Extensions\EnumerableExtensions.cs</Link>
     </Compile>
-    <Compile Include="_Codebase\Collections\DataSourceDictionary.cs" />
+    <Compile Include="_Codebase\Collections\DataSourceCollection.cs" />
     <Compile Include="_Codebase\CompositeKey.cs" />
+    <Compile Include="_Codebase\ConfigReflector.cs" />
     <Compile Include="_Codebase\Data\_Sources\DbSource.cs" />
     <Compile Include="_Codebase\Data\IIndexer.cs" />
     <Compile Include="_Codebase\Data\SmartConfigContext.cs" />
+    <Compile Include="_Codebase\IConfigReflector.cs" />
     <Compile Include="_Codebase\SettingInfo.cs" />
     <Compile Include="_Codebase\KeyProperties.cs" />
     <Compile Include="_Codebase\KeyNames.cs" />
     <Compile Include="_Codebase\Converters\DateTimeConverter.cs" />
     <Compile Include="_Codebase\Converters\EnumConverter.cs" />
     <Compile Include="_Codebase\Data\_Sources\AppConfigSource.cs" />
-    <Compile Include="_Codebase\Collections\ObjectConverterDictionary.cs" />
+    <Compile Include="_Codebase\Collections\ObjectConverterCollection.cs" />
     <Compile Include="_Codebase\Data\_AppConfigSectionHandlers\AppConfigSectionHandler.cs" />
     <Compile Include="_Codebase\Data\_AppConfigSectionHandlers\AppSettingsSectionHandler.cs" />
     <Compile Include="_Codebase\Data\Setting.cs" />
@@ -118,7 +120,9 @@
     <Compile Include="_Codebase\Filters.cs" />
     <Compile Include="_Codebase\Logger.cs" />
     <Compile Include="_Codebase\SettingInfoFactory.cs" />
-    <Compile Include="_Codebase\Utilities.cs" />
+    <Compile Include="_Codebase\SettingsInitializer.cs" />
+    <Compile Include="_Codebase\SettingsLoader.cs" />
+    <Compile Include="_Codebase\SettingsUpdater.cs" />
     <Compile Include="_Codebase\Wildcards.cs" />
     <Compile Include="_Codebase\_Attributes\IgnoreAttribute.cs" />
     <Compile Include="_Codebase\_Attributes\OptionalAttribute.cs" />
@@ -127,6 +131,7 @@
     <Compile Include="_Codebase\_Attributes\_Constraints\RangeAttribute.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\ConstraintAttribute.cs" />
     <Compile Include="_Codebase\_Exceptions\ObjectConverterException.cs" />
+    <Compile Include="_Codebase\_Exceptions\DataSourceNotFoundException.cs" />
     <Compile Include="_Codebase\_Exceptions\OptionalException.cs" />
     <Compile Include="_Codebase\_Exceptions\DataSourceException.cs" />
     <Compile Include="_Codebase\_Exceptions\SmartConfigException.cs" />

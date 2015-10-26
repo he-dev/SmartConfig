@@ -1,0 +1,81 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
+using SmartConfig.Collections;
+
+namespace SmartConfig
+{
+    internal class SettingsUpdater
+    {
+        private readonly IConfigReflector _configReflector;
+
+        private readonly ObjectConverterCollection _objectConverters;
+
+        private readonly DataSourceCollection _dataSources;
+
+        public SettingsUpdater(IConfigReflector configReflector, ObjectConverterCollection objectConverters, DataSourceCollection dataSources)
+        {
+            _configReflector = configReflector;
+            _objectConverters = objectConverters;
+            _dataSources = dataSources;
+        }        
+
+        public void UpdateSetting(Type configType, string settingPath, object value)
+        {
+            var settingInfo = _configReflector.FindSettingInfo(configType, settingPath);
+            if (settingInfo == null)
+            {
+                // todo: create a meaningfull exception
+                throw new Exception("Setting not found.");
+            }
+
+            UpdateSetting(settingInfo, value);
+        }
+
+        public void UpdateSetting(SettingInfo settingInfo, object value)
+        {
+            Debug.Assert(settingInfo != null);
+
+            var serializedValue = SerializeValue(value, settingInfo);
+            var dataSource = _dataSources[settingInfo.ConfigType];
+            try
+            {
+                dataSource.Update(settingInfo.SettingPath, serializedValue);                
+            }
+            catch (Exception ex)
+            {
+                throw new DataSourceException(dataSource, settingInfo, ex);
+            }
+        }
+
+        private string SerializeValue(object value, SettingInfo settingInfo)
+        {
+            // don't let pass null value to the converter
+            if (value == null)
+            {
+                return null;
+            }
+
+            try
+            {
+                var converter = _objectConverters[settingInfo.ConverterType];
+                var serializedValue = converter.SerializeObject(value, settingInfo.SettingType, settingInfo.SettingConstraints);
+                return serializedValue;
+            }
+            catch (ConstraintException)
+            {
+                // rethrow constraint violation
+                throw;
+            }
+            catch (Exception ex)
+            {
+                // add more information about the setting to the generic exception
+                throw new ObjectConverterException(value, settingInfo, ex);
+            }
+        }
+    }
+}
