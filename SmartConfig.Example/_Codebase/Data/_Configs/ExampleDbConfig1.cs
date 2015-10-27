@@ -4,6 +4,6 @@
     static class ExampleDbConfig1
     {
         [Optional]
-        public static string Welcome = "Hello World!";
+        public static string Welcome { get; set; } = "Hello World!";
     }
 }

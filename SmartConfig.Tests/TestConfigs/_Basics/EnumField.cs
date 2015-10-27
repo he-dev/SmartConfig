@@ -3,6 +3,6 @@
     [SmartConfig]
     public static class EnumField
     {
-        public static TestEnum EnumField1;
+        public static TestEnum EnumField1 { get; set; }
     }
 }

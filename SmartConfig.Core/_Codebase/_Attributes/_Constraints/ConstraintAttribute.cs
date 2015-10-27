@@ -5,7 +5,7 @@ namespace SmartConfig
     /// <summary>
     /// Base class for constraint attributes.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field)]
+    [AttributeUsage(AttributeTargets.Property)]
     public abstract class ConstraintAttribute : Attribute
     {
         public abstract string Properties { get; }

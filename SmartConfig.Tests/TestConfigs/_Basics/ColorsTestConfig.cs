@@ -5,8 +5,8 @@ namespace SmartConfig.Tests.TestConfigs
     [SmartConfig]
     public static class ColorsTestConfig
     {
-        public static Color NameColorField;
-        public static Color DecColorField;
-        public static Color HexColorField;
+        public static Color NameColorField { get; set; }
+        public static Color DecColorField { get; set; }
+        public static Color HexColorField { get; set; }
     }
 }

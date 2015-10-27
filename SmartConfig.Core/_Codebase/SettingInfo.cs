@@ -26,31 +26,27 @@ namespace SmartConfig
         {
             _propertyInfo = (PropertyInfo)member;
 
-            var path = new List<string> { member.Name };
-
-            var type = member.DeclaringType;
-            while (type != null)
+            var path = new List<string>
             {
-                var smartConfigAttribute = type.GetCustomAttribute<SmartConfigAttribute>(false);
-                var isSmartConfigType = smartConfigAttribute != null;
-                if (isSmartConfigType)
-                {
-                    path.Add(smartConfigAttribute.Name);
-                    ConfigType = type;
-                    ConfigName = smartConfigAttribute.Name;
-                    SettingPath = new SettingPath(((IEnumerable<string>)path).Reverse());
-                    break;
-                }
-                path.Add(type.Name);
-                type = type.DeclaringType;
+                member.Name
+            };
 
-                if (type == null && smartConfigAttribute == null)
-                {
-                    throw new InvalidOperationException(
-                        $"SmartConfigAttribute not found for " +
-                        $"SettingPath = \"{SettingPath}\"");
-                }
+            var types = ConfigReflector.GetDeclaringTypes(member).ToList();
+
+            for (var i = 0; i < types.Count - 1; i++)
+            {
+                path.Add(types[i].Name);
             }
+
+            ConfigType = types[types.Count - 1];
+            ConfigName = ConfigType.GetCustomAttribute<SmartConfigAttribute>().Name;
+
+            if (!string.IsNullOrEmpty(ConfigName))
+            {
+                path.Add(ConfigName);
+            }
+
+            SettingPath = SettingPath.From(path, true);            
         }
 
         internal static SettingInfo From<TField>(Expression<Func<TField>> expression)
@@ -65,15 +61,15 @@ namespace SmartConfig
 
         #region Config Info
 
-        public Type ConfigType { get; private set; }
+        public Type ConfigType { get; }
 
-        public string ConfigName { get; private set; }
+        public string ConfigName { get; }
 
         #endregion
 
         #region Setting Info
 
-        public Type SettingType => IsInternal ? _settingType : _propertyInfo.FieldType;
+        public Type SettingType => IsInternal ? _settingType : _propertyInfo.PropertyType;
 
         public Type ConverterType
         {
@@ -99,7 +95,7 @@ namespace SmartConfig
             }
         }
 
-        public SettingPath SettingPath { get; private set; }
+        public SettingPath SettingPath { get; }
 
         public IEnumerable<ConstraintAttribute> SettingConstraints =>
             _propertyInfo == null

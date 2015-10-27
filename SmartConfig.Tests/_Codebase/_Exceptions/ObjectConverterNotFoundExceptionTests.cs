@@ -4,21 +4,20 @@ using SmartUtilities.UnitTesting;
 
 namespace SmartConfig.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class ObjectConverterNotFoundExceptionTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void ctor_ObjectConverterNotFoundException()
         {
             var ex = ExceptionAssert.Throws<ObjectConverterNotFoundException>(() =>
             {
-                //throw new ObjectConverterNotFoundException(SettingInfo.From(() => ValueTypesTestConfig.BooleanField));
-
+                throw new ObjectConverterNotFoundException(typeof(bool));
             }, Assert.Fail);
             Assert.IsNotNull(ex);
             Assert.IsTrue(ex.Message.Contains("ConverterType = \"Boolean\""));
-            Assert.IsTrue(ex.Message.Contains("ConfigType = \"ValueTypesTestConfig\""));
-            Assert.IsTrue(ex.Message.Contains("SettingPath = \"BooleanField\""));
+            //Assert.IsTrue(ex.Message.Contains("ConfigType = \"ValueTypesTestConfig\""));
+            //Assert.IsTrue(ex.Message.Contains("SettingPath = \"BooleanField\""));
         }
     }
 }

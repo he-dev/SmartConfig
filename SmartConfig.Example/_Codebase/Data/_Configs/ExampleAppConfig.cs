@@ -5,19 +5,19 @@
     {
         public static class AppSettings
         {
-            public static string Environment;
-            public static string Greeting;
+            public static string Environment { get; set; }
+            public static string Greeting { get; set; }
 
             [Optional]
-            public static string Farewell = "Good bye!";
+            public static string Farewell { get; set; } = "Good bye!";
         }
 
         public static class ConnectionStrings
         {
-            public static string ExampleDb;
+            public static string ExampleDb { get; set; }
 
             [Optional]
-            public static string TestDb;
+            public static string TestDb { get; set; }
         }        
     }
 }

@@ -34,14 +34,21 @@ namespace SmartConfig
 
         public SettingPath(IEnumerable<string> names)
         {
-            foreach (var name in names)
-            {
-                Add(name);
-            }
+            AddRange(names);
         }
 
         public SettingPath(params string[] names) : this((IEnumerable<string>)names)
         {
+        }
+
+        public static SettingPath From(IEnumerable<string> names, bool reversed)
+        {
+            if (reversed)
+            {
+                names = names.Reverse();
+            }
+
+            return new SettingPath(names);
         }
 
         public override string ToString()

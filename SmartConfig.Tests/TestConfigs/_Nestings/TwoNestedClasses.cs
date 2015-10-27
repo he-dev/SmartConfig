@@ -7,7 +7,7 @@
         {
             public static class SubSubClass
             {
-                public static string SubSubStringField;
+                public static string SubSubStringField { get; set; }
             }
         }
     }

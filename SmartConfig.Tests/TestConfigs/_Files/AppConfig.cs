@@ -5,12 +5,12 @@
     {
         public class ConnectionStrings
         {
-            public static string TestName;
+            public static string TestName { get; set; }
         }
 
         public class AppSettings
         {
-            public static string TestKey;
+            public static string TestKey { get; set; }
         }
     }
 }

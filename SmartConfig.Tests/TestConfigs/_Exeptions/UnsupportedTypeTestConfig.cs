@@ -3,6 +3,6 @@
     [SmartConfig]
     public static class UnsupportedTypeTestConfig
     {
-        public static object UnsupportedField;
+        public static object UnsupportedField { get; set; }
     }
 }

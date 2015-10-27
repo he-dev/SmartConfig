@@ -133,6 +133,7 @@
     <Compile Include="_Codebase\_Attributes\_Constraints\RegularExpressionAttribute.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\RangeAttribute.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\ConstraintAttribute.cs" />
+    <Compile Include="_Codebase\_Exceptions\LoadSettingException.cs" />
     <Compile Include="_Codebase\_Exceptions\ObjectConverterException.cs" />
     <Compile Include="_Codebase\_Exceptions\DataSourceNotFoundException.cs" />
     <Compile Include="_Codebase\_Exceptions\OptionalException.cs" />

@@ -3,6 +3,6 @@
     [SmartConfig]
     public static class MissingOptionalAttribute
     {
-        public static int Int32Field;
+        public static int Int32Field { get; set; }
     }
 }

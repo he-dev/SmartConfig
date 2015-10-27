@@ -46,11 +46,24 @@ namespace SmartConfig
         {
             #region check arguments
 
-            if (configType == null) throw new ArgumentNullException(nameof(configType), "You need to specify a config type.");
-            if (dataSource == null) throw new ArgumentNullException(nameof(dataSource), "You need to specify a data source.");
+            if (configType == null)
+            {
+                throw new ArgumentNullException(nameof(configType), "You need to specify a config type.");
+            }
+            if (dataSource == null)
+            {
+                throw new ArgumentNullException(nameof(dataSource), "You need to specify a data source.");
+            }
 
-            if (!configType.IsStatic()) throw new InvalidOperationException("'configType' must be a static class.");
-            if (configType.GetCustomAttribute<SmartConfigAttribute>() == null) throw new InvalidOperationException("'configType' must be marked with the SmartConfigAttribute.");
+            if (!configType.IsStatic())
+            {
+                throw new InvalidOperationException("'configType' must be a static class.");
+            }
+
+            if (configType.GetCustomAttribute<SmartConfigAttribute>() == null)
+            {
+                throw new InvalidOperationException("'configType' must be marked with the SmartConfigAttribute.");
+            }
 
             #endregion
 
@@ -58,12 +71,12 @@ namespace SmartConfig
 
             DataSources[configType] = dataSource;
 
-            if (dataSource.SettingsInitializationEnabled)
-            {
-                var settingsUpdater = new SettingsUpdater(new ConfigReflector(), Converters, DataSources);
-                var settingsInitializer = new SettingsInitializer(new ConfigReflector(), settingsUpdater, DataSources);
-                settingsInitializer.InitializeSettings(configType);
-            }
+            //if (dataSource.SettingsInitializationEnabled)
+            //{
+            //    var settingsUpdater = new SettingsUpdater(new ConfigReflector(), Converters, DataSources);
+            //    var settingsInitializer = new SettingsInitializer(new ConfigReflector(), settingsUpdater, DataSources);
+            //    settingsInitializer.InitializeSettings(configType);
+            //}
 
             var settingsLoader = new SettingsLoader(new ConfigReflector(), Converters, DataSources);
             settingsLoader.LoadSettings(configType);
@@ -72,10 +85,10 @@ namespace SmartConfig
         /// <summary>
         /// Updates a setting.
         /// </summary>
-        /// <typeparam name="TField">The type of the setting field to be updated.</typeparam>
-        /// <param name="memberExpression">Member expression of the setting field.</param>
+        /// <typeparam name="T">The type of the setting property.</typeparam>
+        /// <param name="memberExpression">Member expression of the setting to be updated.</param>
         /// <param name="value">Value to be set.</param>
-        public static void UpdateSetting<TField>(Expression<Func<TField>> memberExpression, TField value)
+        public static void UpdateSetting<T>(Expression<Func<T>> memberExpression, T value)
         {
             if (memberExpression == null)
             {

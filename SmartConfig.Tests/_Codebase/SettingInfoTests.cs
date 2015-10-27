@@ -16,10 +16,10 @@ namespace SmartConfig.Tests
         private static class LocalTestConfig
         {
             [DateTimeFormat("abc")]
-            public static string StringField = "xyz";
+            public static string StringField { get; set; } = "xyz";
 
             [ObjectConverter(typeof(JsonConverter))]
-            public static List<int> ListField;
+            public static List<int> ListField { get; set; }
         }
 
         [TestMethod()]

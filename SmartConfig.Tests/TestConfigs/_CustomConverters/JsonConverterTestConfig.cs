@@ -7,6 +7,6 @@ namespace SmartConfig.Tests.TestConfigs
     public static class JsonField
     {
         [ObjectConverter(typeof(JsonConverter))]
-        public static List<int> ListInt32Field;
+        public static List<int> ListInt32Field { get; set; }
     }
 }

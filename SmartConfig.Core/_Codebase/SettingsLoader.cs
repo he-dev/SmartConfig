@@ -74,8 +74,7 @@ namespace SmartConfig
             }
             catch (Exception ex)
             {
-                // todo: throw a new SettingLoaderException here
-                //throw new ObjectConverterException(value, settingInfo, ex);
+                throw new LoadSettingException(settingInfo, dataSource, ex);
             }
         }
     }

@@ -27,10 +27,6 @@ namespace SmartConfig
 
         public IEnumerable<SettingInfo> GetSettingInfos(Type currentType)
         {
-            //var fields = currentType
-            //    .GetFields(BindingFlags.Public | BindingFlags.Static)
-            //    .Where(f => f.GetCustomAttribute<IgnoreAttribute>() == null);
-
             var properties = currentType
                 .GetProperties(BindingFlags.Public | BindingFlags.Static)
                 .Where(f => f.GetCustomAttribute<IgnoreAttribute>() == null);
@@ -55,5 +51,23 @@ namespace SmartConfig
         {
             return GetSettingInfos(configType).SingleOrDefault(si => si.SettingPath == settingPath);
         }
+
+        public static IEnumerable<Type> GetDeclaringTypes(MemberInfo memberInfo)
+        {
+            var type = memberInfo.DeclaringType;
+            while (type != null)
+            {
+                yield return type;
+                if (type.GetCustomAttribute<SmartConfigAttribute>(false) != null)
+                {
+                    yield break;
+                }
+                type = type.DeclaringType;
+            }
+
+            throw new InvalidOperationException("SmartConfigAttribute not found for");
+        }
     }
 }
+
+

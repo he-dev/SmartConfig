@@ -5,20 +5,20 @@
     {
         public static class AppSettings
         {
-            public static string Environment = "TEST";
-            public static string Greeting = "Hallo SmartConfig!";
+            public static string Environment { get; set; } = "TEST";
+            public static string Greeting { get; set; } = "Hallo SmartConfig!";
 
             [Optional]
-            public static string Farewell = "Good bye!";
+            public static string Farewell { get; set; } = "Good bye!";
         }
 
         public static class ConnectionStrings
         {
             [Optional]
-            public static string ExampleDb;
+            public static string ExampleDb { get; set; }
 
             [Optional]
-            public static string TestDb;
+            public static string TestDb { get; set; }
         }        
     }
 }

@@ -4,6 +4,6 @@
     public static class RegularExpressionTestConfig
     {
         [RegularExpression(@"\d{2}")]
-        public static string StringField;
+        public static string StringField { get; set; }
     }
 }

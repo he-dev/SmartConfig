@@ -18,7 +18,6 @@ namespace SmartConfig.Tests.Collections
             };
 
             Assert.IsNotNull(objectConverterDictionary[typeof(int)]);
-            Assert.IsNull(objectConverterDictionary[typeof(DateTime)]);
         }
     }
 }

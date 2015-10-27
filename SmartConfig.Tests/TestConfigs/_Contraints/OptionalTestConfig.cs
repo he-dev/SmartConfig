@@ -4,6 +4,6 @@
     public static class OptionalTestConfig
     {
         [Optional]
-        public static string StringField = "xyz";
+        public static string StringField { get; set; } = "xyz";
     }
 }

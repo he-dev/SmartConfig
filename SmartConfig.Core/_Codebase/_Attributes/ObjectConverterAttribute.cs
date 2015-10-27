@@ -5,7 +5,7 @@ namespace SmartConfig
     /// <summary>
     /// Specifies the type of a custom object converter.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field)]
+    [AttributeUsage(AttributeTargets.Property)]
     public class ObjectConverterAttribute : Attribute
     {
         public ObjectConverterAttribute(Type type)

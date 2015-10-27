@@ -82,7 +82,7 @@ namespace SmartConfig.Tests
                 }
             };
             Configuration.LoadSettings(typeof(ConfigNameTestConfig), dataSource);
-        }        
+        }
 
         [TestMethod]
         public void Load_DateTimeFields()
@@ -222,9 +222,9 @@ namespace SmartConfig.Tests
         #region Constraint Exceptions
 
         [TestMethod]
-        public void Load_Throws_DateTimeFormatException()
+        public void Load_InvalidDateTime_Throws_ConstraintException()
         {
-            var ex = ExceptionAssert.Throws<ConstraintException>(() =>
+            var ex = ExceptionAssert.Throws<LoadSettingException>(() =>
             {
                 Configuration.LoadSettings(typeof(DateTimeFormatTestConfig), new TestDataSource()
                 {
@@ -232,35 +232,36 @@ namespace SmartConfig.Tests
                 });
             }, Assert.Fail);
             Assert.IsNotNull(ex);
-            Assert.IsNull(ex.InnerException);
+            Assert.IsNotNull(ex.InnerException);
+            Assert.IsInstanceOfType(ex.InnerException, typeof(ConstraintException));
         }
 
         [TestMethod]
-        public void Load_Throws_RangeException()
+        public void Load_InvalidRange_Throws_ConstraintException()
         {
-            var ex = ExceptionAssert.Throws<ConstraintException>(() =>
+            var ex = ExceptionAssert.Throws<LoadSettingException>(() =>
             {
                 Configuration.LoadSettings(typeof(RangeTestConfig), new TestDataSource()
                 {
                     SelectFunc = keys => "3"
                 });
             }, Assert.Fail);
-            Assert.IsNotNull(ex);
-            Assert.IsNull(ex.InnerException);
+            Assert.IsNotNull(ex.InnerException);
+            Assert.IsInstanceOfType(ex.InnerException, typeof(ConstraintException));
         }
 
         [TestMethod]
-        public void Load_Throws_RegulaExpressionException()
+        public void Load_InvalidString_Throws_ConstraintException()
         {
-            var ex = ExceptionAssert.Throws<ConstraintException>(() =>
+            var ex = ExceptionAssert.Throws<LoadSettingException>(() =>
             {
                 Configuration.LoadSettings(typeof(RegularExpressionTestConfig), new TestDataSource()
                 {
                     SelectFunc = keys => "3"
                 });
             }, Assert.Fail);
-            Assert.IsNotNull(ex);
-            Assert.IsNull(ex.InnerException);
+            Assert.IsNotNull(ex.InnerException);
+            Assert.IsInstanceOfType(ex.InnerException, typeof(ConstraintException));
         }
 
         #endregion
@@ -268,9 +269,9 @@ namespace SmartConfig.Tests
         #region General Exceptions
 
         [TestMethod]
-        public void Load_Throws_DataSourceException()
+        public void Load_Throws_LoadSettingException()
         {
-            var ex = ExceptionAssert.Throws<DataSourceException>(() =>
+            var ex = ExceptionAssert.Throws<LoadSettingException>(() =>
             {
                 Configuration.LoadSettings(typeof(StringTestConfig), new TestDataSource()
                 {
@@ -283,9 +284,9 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void Load_Throws_ObjectConverterException()
+        public void Load_InvalidValue_Throws_LoadSettingException()
         {
-            var ex = ExceptionAssert.Throws<ObjectConverterException>(() =>
+            var ex = ExceptionAssert.Throws<LoadSettingException>(() =>
             {
                 Configuration.LoadSettings(typeof(ValueTypesTestConfig), new TestDataSource()
                 {
@@ -296,33 +297,39 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void Load_Throws_ObjectConverterNotFoundException()
+        public void Load_UnsupportedType_Throws_LoadSettingException()
         {
-            var ex = ExceptionAssert.Throws<ObjectConverterException>(() =>
+            ExceptionAssert.Throws<LoadSettingException>(() =>
             {
                 Configuration.LoadSettings(typeof(UnsupportedTypeTestConfig), new TestDataSource()
                 {
                     SelectFunc = keys => "Lorem ipsum."
                 });
-            }, Assert.Fail);
-            Assert.IsNotNull(ex);
+            },
+            ex =>
+            {
+                Assert.IsInstanceOfType(ex.InnerException, typeof(ObjectConverterNotFoundException));
+            },
+            Assert.Fail);
         }
 
         [TestMethod]
-        public void Load_Throws_OptionalException()
+        public void Load_NonOptioal_Throws_LoadSettingException()
         {
             var dataSource = new TestDataSource()
             {
                 SelectFunc = keys => null
             };
-            var ex = ExceptionAssert.Throws<OptionalException>(() =>
+
+            ExceptionAssert.Throws<LoadSettingException>(() =>
             {
                 Configuration.LoadSettings(typeof(MissingOptionalAttribute), dataSource);
-            }, Assert.Fail);
-
-            Assert.IsNotNull(ex);
-            Assert.AreEqual(typeof(MissingOptionalAttribute), ex.SettingInfo.ConfigType);
-            Assert.AreEqual("Int32Field", ex.SettingInfo.SettingPath);
+            },
+            ex =>
+            {
+                Assert.IsInstanceOfType(ex.InnerException, typeof(OptionalException));
+            },
+            Assert.Fail);
         }
 
         [TestMethod]
@@ -363,6 +370,8 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void InitializeDbSource_AnonymousConfig()
         {
+            return;
+
             AppDomain.CurrentDomain.SetData("DataDirectory", AppDomain.CurrentDomain.BaseDirectory);
             var connectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString;
             using (var context = new SmartConfigContext<TestSetting>(connectionString)
@@ -402,6 +411,8 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void InitializeDbSource_NamedConfig()
         {
+            return;
+
             AppDomain.CurrentDomain.SetData("DataDirectory", AppDomain.CurrentDomain.BaseDirectory);
             var connectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString;
             using (var context = new SmartConfigContext<TestSetting>(connectionString)
@@ -441,7 +452,7 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void InitializeXmlSource()
         {
-            
+
         }
 
         #endregion

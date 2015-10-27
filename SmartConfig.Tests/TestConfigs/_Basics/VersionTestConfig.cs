@@ -4,6 +4,6 @@
     public static class VersionTestConfig
     {
         [Optional]
-        public static string StringField;
+        public static string StringField { get; set; }
     }
 }

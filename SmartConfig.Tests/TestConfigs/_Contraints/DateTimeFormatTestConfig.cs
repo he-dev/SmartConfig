@@ -6,6 +6,6 @@ namespace SmartConfig.Tests.TestConfigs
     public static class DateTimeFormatTestConfig
     {
         [DateTimeFormat("ddMMyy")]
-        public static DateTime DateTimeField;
+        public static DateTime DateTimeField { get; set; }
     }
 }
