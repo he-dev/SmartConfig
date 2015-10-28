@@ -1,9 +1,10 @@
-# SmartConfig v2
+# SmartConfig v3
+
 Configuration has never been easier!
 
 This section briefly describes **`SmartConfig`**'s features.
 
-**`SmartConfig`** is a configuration framework that makes writing configurations easier then ever.
+**`SmartConfig`** is a configuration framework that makes writing configurations easier then ever. Version 3 brings an improved and easier to use API.
 
 ## Why another one?
 Because I did't find anything simplier and as powerful as **`SmartConfig`**. I find a configuration should be set up within a few minutes and be easily extended if needed. Unfortunatelly most of the time we spend hours writing them over and over again. With **`SmartConfig`** it's over.
@@ -125,12 +126,12 @@ static class ExampleDbConfig
     
     [ObjectConverter(typeof(JsonConverter)]
     [Optional]
-    public static List<int> Primes = new List<int> { 3, 5, 7 };
+    public static List<int> Primes { get; set; } = new List<int> { 3, 5, 7 };
     
     public static class MonitorSize
     {
-        public static int Width;
-        public static int Height;
+        public static int Width { get; set; }
+        public static int Height { get; set; }
     }
 }
 ```
