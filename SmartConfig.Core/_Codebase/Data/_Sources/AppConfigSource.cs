@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace SmartConfig.Data
 {
@@ -11,29 +12,30 @@ namespace SmartConfig.Data
     /// </summary>
     public class AppConfigSource : DataSource<Setting>
     {
-        private IDictionary<Type, AppConfigSectionHandler> _sectionHandlers;
+        private IDictionary<Type, IAppConfigSectionHandler> _sectionHandlers;
 
         public AppConfigSource()
         {
-            _sectionHandlers = new AppConfigSectionHandler[]
+            _sectionHandlers = new object[]
             {
                 new AppSettingsSectionHandler(),
                 new ConnectionStringsSectionHandler(),
             }
+            .Cast<IAppConfigSectionHandler>()
             .ToDictionary(x => x.SectionType, x => x);
         }      
 
         /// <summary>
         /// Gets or sets section handlers.
         /// </summary>
-        public IEnumerable<AppConfigSectionHandler> SectionHandlers
+        public IEnumerable<IAppConfigSectionHandler> SectionHandlers
         {
             get { return _sectionHandlers.Values.ToList(); }
             set
             {
                 if (value == null || !value.Any())
                 {
-                    throw new ArgumentNullException("SectionHandlers", "There must be at least one section handler.");
+                    throw new ArgumentNullException(nameof(SectionHandlers), "There must be at least one section handler.");
                 }
                 _sectionHandlers = value.ToDictionary(x => x.SectionType);
             }
@@ -47,7 +49,8 @@ namespace SmartConfig.Data
             var compositeKey = CreateCompositeKey(defaultKeyValue);
             var configurationSection = GetConfigurationSection(exeConfig, compositeKey);
             var sectionHandler = _sectionHandlers[configurationSection.GetType()];
-            var value = sectionHandler.Select(configurationSection, GetSettingName(compositeKey));
+            var settingName = GetSettingName(compositeKey);
+            var value = sectionHandler.Select(configurationSection, settingName);
             return value;
         }
 
@@ -63,7 +66,7 @@ namespace SmartConfig.Data
             exeConfig.Save(ConfigurationSaveMode.Minimal);
         }
 
-        private static ConfigurationSection GetConfigurationSection(System.Configuration.Configuration configuration, CompositeKey compositeKey)
+        private ConfigurationSection GetConfigurationSection(System.Configuration.Configuration configuration, CompositeKey compositeKey)
         {
             Debug.Assert(configuration != null);
             Debug.Assert(compositeKey != null);
@@ -74,20 +77,39 @@ namespace SmartConfig.Data
             return section;
         }
 
-        private static string GetSectionName(CompositeKey compositeKey)
+        private string GetSectionName(CompositeKey compositeKey)
         {
             Debug.Assert(compositeKey != null);
 
-            var sectionName = compositeKey.DefaultKey.Substring(0, compositeKey.DefaultKey.IndexOf('.'));
-            return sectionName;
+            var defaultKeyValue = compositeKey[KeyNames.DefaultKeyName];
+
+            var sectionNames = _sectionHandlers.Select(x => x.Value.SectionName);
+            var sectionNamePattern = @"(?<SectionName>" + string.Join("|", sectionNames) + @")";
+
+            var sectionNameMatch = Regex.Match(defaultKeyValue, sectionNamePattern, RegexOptions.ExplicitCapture);
+            if (!sectionNameMatch.Groups["SectionName"].Success)
+            {
+                throw new InvalidOperationException($"Section name not found in '{defaultKeyValue}'");
+            }
+
+            return sectionNameMatch.Groups["SectionName"].Value;
         }
 
-        private static string GetSettingName(CompositeKey compositeKey)
+        private string GetSettingName(CompositeKey compositeKey)
         {
             Debug.Assert(compositeKey != null);
 
-            var settingName = compositeKey.DefaultKey.Substring(compositeKey.DefaultKey.IndexOf('.') + 1);
-            return settingName;
+            // (?<= AppSettings | ConnectionStrings)\.(?< Key >.+$)
+
+            var sectionName = GetSectionName(compositeKey);
+            var keyPattern = $"(?<={sectionName})\\.(?<Key>.+$)";
+            var keyMatch = Regex.Match(compositeKey[KeyNames.DefaultKeyName], keyPattern, RegexOptions.ExplicitCapture);
+            if (!keyMatch.Groups["Key"].Success)
+            {
+                throw new InvalidOperationException($"Key not found in '{compositeKey[KeyNames.DefaultKeyName]}'");
+            }
+
+            return keyMatch.Groups["Key"].Value;
         }
     }
 }

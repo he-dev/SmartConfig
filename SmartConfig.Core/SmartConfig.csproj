@@ -103,12 +103,13 @@
     <Compile Include="_Codebase\Collections\_Interfaces\IObjectConverterCollection.cs" />
     <Compile Include="_Codebase\CompositeKey.cs" />
     <Compile Include="_Codebase\ConfigReflector.cs" />
+    <Compile Include="_Codebase\Data\_AppConfigSectionHandlers\IAppConfigSectionHandler.cs" />
     <Compile Include="_Codebase\Data\_Sources\DbSource.cs" />
     <Compile Include="_Codebase\Data\IIndexer.cs" />
     <Compile Include="_Codebase\Data\SmartConfigContext.cs" />
     <Compile Include="_Codebase\IConfigReflector.cs" />
     <Compile Include="_Codebase\SettingInfo.cs" />
-    <Compile Include="_Codebase\KeyProperties.cs" />
+    <Compile Include="_Codebase\CustomKey.cs" />
     <Compile Include="_Codebase\KeyNames.cs" />
     <Compile Include="_Codebase\Converters\DateTimeConverter.cs" />
     <Compile Include="_Codebase\Converters\EnumConverter.cs" />

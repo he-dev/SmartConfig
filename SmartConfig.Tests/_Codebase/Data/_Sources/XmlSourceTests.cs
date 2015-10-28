@@ -26,11 +26,11 @@ namespace SmartConfig.Tests.Data
         {
             var value = new XmlSource<TestSetting>()
             {
-                FileName = @"TestFiles\XmlConfigs\XmlConfig_SelectTests.xml",
-                KeyProperties = new Dictionary<string, KeyProperties>
+                FileName = @"TestFiles\XmlConfigs\XmlConfig_SelectTests.xml",               
+                CustomKeys = new[]
                 {
-                    { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "JKL", Filter = Filters.FilterByString } },
-                    { KeyNames.VersionKeyName, new KeyProperties() { Value = "1.2.1", Filter = Filters.FilterByVersion } }
+                    new CustomKey(KeyNames.EnvironmentKeyName, "JKL", Filters.FilterByString),
+                    new CustomKey(KeyNames.VersionKeyName, "1.2.1", Filters.FilterByVersion)
                 }
             }
             .Select("Setting2");
@@ -42,11 +42,11 @@ namespace SmartConfig.Tests.Data
         {
             var value = new XmlSource<TestSetting>()
             {
-                FileName = @"TestFiles\XmlConfigs\XmlConfig_SelectTests.xml",
-                KeyProperties = new Dictionary<string, KeyProperties>
+                FileName = @"TestFiles\XmlConfigs\XmlConfig_SelectTests.xml",                
+                CustomKeys = new[]
                 {
-                    { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString } },
-                    { KeyNames.VersionKeyName, new KeyProperties() { Value = "1.2.1", Filter = Filters.FilterByVersion } }
+                    new CustomKey(KeyNames.EnvironmentKeyName, "ABC", Filters.FilterByString),
+                    new CustomKey(KeyNames.VersionKeyName, "1.2.1", Filters.FilterByVersion)
                 }
             }
             .Select("Setting2");
@@ -59,10 +59,10 @@ namespace SmartConfig.Tests.Data
             var value = new XmlSource<TestSetting>()
             {
                 FileName = @"TestFiles\XmlConfigs\XmlConfig_SelectTests.xml",
-                KeyProperties = new Dictionary<string, KeyProperties>
+                CustomKeys = new[]
                 {
-                    { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "XYZ", Filter = Filters.FilterByString } },
-                    { KeyNames.VersionKeyName, new KeyProperties() { Value = "1.2.1", Filter = Filters.FilterByVersion } }
+                    new CustomKey(KeyNames.EnvironmentKeyName, "XYZ", Filters.FilterByString),
+                    new CustomKey(KeyNames.VersionKeyName, "1.2.1", Filters.FilterByVersion)
                 }
             }
             .Select("Setting2");
@@ -75,10 +75,10 @@ namespace SmartConfig.Tests.Data
             var value = new XmlSource<TestSetting>()
             {
                 FileName = @"TestFiles\XmlConfigs\XmlConfig_SelectTests.xml",
-                KeyProperties = new Dictionary<string, KeyProperties>
+                CustomKeys = new[]
                 {
-                    { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString } },
-                    { KeyNames.VersionKeyName, new KeyProperties() { Value = "1.2.1", Filter = Filters.FilterByVersion } }
+                    new CustomKey(KeyNames.EnvironmentKeyName, "ABC", Filters.FilterByString),
+                    new CustomKey(KeyNames.VersionKeyName, "1.2.1", Filters.FilterByVersion)
                 }
             }
             .Select("Setting3");

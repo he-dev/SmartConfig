@@ -3,10 +3,8 @@ using System.Diagnostics;
 
 namespace SmartConfig.Data
 {
-    public class ConnectionStringsSectionHandler : AppConfigSectionHandler
+    public class ConnectionStringsSectionHandler : AppConfigSectionHandler<ConnectionStringsSection>, IAppConfigSectionHandler
     {
-        public ConnectionStringsSectionHandler() : base(typeof(ConnectionStringsSection)) { }
-
         public override string Select(ConfigurationSection section, string key)
         {
             Debug.Assert(section is ConnectionStringsSection);

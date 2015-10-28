@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Configuration;
+using System.Security.AccessControl;
+using System.Text.RegularExpressions;
 
 namespace SmartConfig.Data
 {
-    public abstract class AppConfigSectionHandler
+    public abstract class AppConfigSectionHandler<T> where T : ConfigurationSection
     {
-        protected AppConfigSectionHandler(Type sectionType)
-        {
-            SectionType = sectionType;
-        }
+        public Type SectionType => typeof (T);
 
-        public Type SectionType { get; private set; }
+        public string SectionName => Regex.Replace(typeof (T).Name, @"Section$", string.Empty);
 
         public abstract string Select(ConfigurationSection section, string key);
 

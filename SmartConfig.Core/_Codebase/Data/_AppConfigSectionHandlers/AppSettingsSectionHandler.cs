@@ -3,10 +3,8 @@ using System.Diagnostics;
 
 namespace SmartConfig.Data
 {
-    public class AppSettingsSectionHandler : AppConfigSectionHandler
+    public class AppSettingsSectionHandler : AppConfigSectionHandler<AppSettingsSection>, IAppConfigSectionHandler
     {
-        public AppSettingsSectionHandler() : base(typeof(AppSettingsSection)) { }
-
         public override string Select(ConfigurationSection section, string key)
         {
             Debug.Assert(section is AppSettingsSection);
@@ -30,6 +28,6 @@ namespace SmartConfig.Data
             {
                 keyValueConfigurationElement.Value = value;
             }
-        }       
+        }
     }
 }

@@ -1,20 +1,34 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SmartConfig
 {
-    public class CompositeKey : Dictionary<string, string>
+    public class CompositeKey : IEnumerable<KeyValuePair<string, string>>
     {
-        public CompositeKey(string defaultKeyValue, IEnumerable<string> keyNames, IDictionary<string, KeyProperties> keyProperties)
+        private readonly IDictionary<string, string> Keys = new Dictionary<string, string>();
+
+        public CompositeKey(string defaultKeyValue, IEnumerable<string> keyNames, IDictionary<string, CustomKey> customKeys)
         {
-            this[KeyNames.DefaultKeyName] = defaultKeyValue;
+            Keys[KeyNames.DefaultKeyName] = defaultKeyValue;
 
             foreach (var keyName in keyNames.Where(k => k != KeyNames.DefaultKeyName))
             {
-                this[keyName] = keyProperties[keyName].Value;
+                Keys[keyName] = customKeys[keyName].Value;
             }
-        }        
+        }
 
-        public string DefaultKey => this[KeyNames.DefaultKeyName];
+        public string this[string keyName] => Keys[keyName];
+
+        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+        {
+            return Keys.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

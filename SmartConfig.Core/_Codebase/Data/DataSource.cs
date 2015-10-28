@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SmartConfig.Data
@@ -10,6 +11,8 @@ namespace SmartConfig.Data
     {
         private KeyNames _keyNames;
 
+        private IDictionary<string, CustomKey> _customKeys = new Dictionary<string, CustomKey>();
+
         public KeyNames KeyNames => _keyNames ?? (_keyNames = KeyNames.From<TSetting>());
 
         protected IEnumerable<string> KeyNamesWithoutDefault
@@ -17,7 +20,15 @@ namespace SmartConfig.Data
             get { return KeyNames.Where(k => k != KeyNames.DefaultKeyName); }
         }
 
-        public IDictionary<string, KeyProperties> KeyProperties { get; set; } = new Dictionary<string, KeyProperties>();
+        public CustomKey[] CustomKeys
+        {
+            get { return _customKeys.Values.ToArray(); }
+            set
+            {
+                if (value == null) throw new ArgumentNullException(nameof(CustomKeys));
+                _customKeys = value.ToDictionary(x => x.Name);
+            }
+        }
 
         public bool SettingsInitializationEnabled { get; set; }
 
@@ -29,19 +40,19 @@ namespace SmartConfig.Data
         /// Applies all of the specified filters.
         /// </summary>
         /// <param name="elements"></param>
-        /// <param name="keys"></param>
+        /// <param name="compositeKey"></param>
         /// <returns></returns>
-        protected IEnumerable<TSetting> ApplyFilters(IEnumerable<TSetting> elements, IDictionary<string, string> keys)
+        protected IEnumerable<TSetting> ApplyFilters(IEnumerable<TSetting> elements, CompositeKey compositeKey)
         {
-            elements = keys
+            elements = compositeKey
                 .Where(x => x.Key != KeyNames.DefaultKeyName)
-                .Aggregate(elements, (current, item) => KeyProperties[item.Key].Filter(current, item).Cast<TSetting>());
+                .Aggregate(elements, (current, item) => _customKeys[item.Key].Filter(current, item).Cast<TSetting>());
             return elements;
         }
 
         protected CompositeKey CreateCompositeKey(string defaultKeyValue)
         {
-            return new CompositeKey(defaultKeyValue, KeyNames, KeyProperties);
+            return new CompositeKey(defaultKeyValue, KeyNames, _customKeys);
         }
     }
 }

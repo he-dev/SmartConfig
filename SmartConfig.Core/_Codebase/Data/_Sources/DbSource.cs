@@ -45,7 +45,7 @@ namespace SmartConfig.Data
                 var compositeKey = CreateCompositeKey(defaultKeyValue);
 
                 // get key values
-                var keyValues = compositeKey.Values.Cast<object>().ToArray();
+                var keyValues = compositeKey.Select(x => x.Value).Cast<object>().ToArray();
 
                 // find entity to update
                 var entity = context.Settings.Find(keyValues);

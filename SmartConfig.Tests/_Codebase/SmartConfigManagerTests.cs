@@ -387,11 +387,11 @@ namespace SmartConfig.Tests
             {
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
                 SettingsTableName = "TestConfig",
-                SettingsInitializationEnabled = true,
-                KeyProperties = new Dictionary<string, KeyProperties>()
+                SettingsInitializationEnabled = true,                
+                CustomKeys = new[]
                 {
-                    { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString }},
-                    { KeyNames.VersionKeyName, new KeyProperties() { Value = "1.1.0", Filter = Filters.FilterByVersion }},
+                    new CustomKey(KeyNames.EnvironmentKeyName, "ABC", Filters.FilterByString),
+                    new CustomKey(KeyNames.VersionKeyName, "1.1.0", Filters.FilterByVersion)
                 }
             };
 
@@ -429,10 +429,10 @@ namespace SmartConfig.Tests
                 ConnectionString = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString,
                 SettingsTableName = "TestConfig",
                 SettingsInitializationEnabled = true,
-                KeyProperties = new Dictionary<string, KeyProperties>()
+                CustomKeys = new[]
                 {
-                    { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString }},
-                    { KeyNames.VersionKeyName, new KeyProperties() { Value = "1.1.0", Filter = Filters.FilterByVersion }},
+                    new CustomKey(KeyNames.EnvironmentKeyName, "ABC", Filters.FilterByString),
+                    new CustomKey(KeyNames.VersionKeyName, "1.1.0", Filters.FilterByVersion)
                 }
             };
 

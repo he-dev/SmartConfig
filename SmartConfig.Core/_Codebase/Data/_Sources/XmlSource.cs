@@ -95,7 +95,7 @@ namespace SmartConfig.Data
         {
             var xConfig = LoadXml();
 
-            var compositeKey = new CompositeKey(defaultKeyValue, KeyNames, KeyProperties);
+            var compositeKey = CreateCompositeKey(defaultKeyValue);
 
             // try get item from loaded config
             var attributeCondition = compositeKey.Select(x =>

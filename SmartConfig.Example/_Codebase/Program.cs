@@ -55,10 +55,10 @@ namespace SmartConfig.Example
             {
                 ConnectionString = ExampleAppConfig.ConnectionStrings.ExampleDb,
                 SettingsTableName = "ExampleConfigTable",
-                KeyProperties = new Dictionary<string, KeyProperties>()
+                CustomKeys = new[]
                 {
-                    { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString } },
-                    { KeyNames.VersionKeyName, new KeyProperties() { Value = "2.0.0", Filter = Filters.FilterByVersion } },
+                    new CustomKey(KeyNames.EnvironmentKeyName, "ABC", Filters.FilterByString),
+                    new CustomKey(KeyNames.VersionKeyName, "2.0.0", Filters.FilterByVersion )
                 }
             });
 
@@ -71,10 +71,10 @@ namespace SmartConfig.Example
             {
                 FileName = @"Configs\XmlSource.xml",
                 SettingsInitializationEnabled = false,
-                KeyProperties = new Dictionary<string, KeyProperties>()
+                CustomKeys = new []
                 {
-                    { KeyNames.EnvironmentKeyName, new KeyProperties() { Value = "ABC", Filter = Filters.FilterByString } },
-                    { KeyNames.VersionKeyName, new KeyProperties() { Value = "1.0.0", Filter = Filters.FilterByVersion } },
+                    new CustomKey(KeyNames.EnvironmentKeyName, "ABC", Filters.FilterByString),
+                    new CustomKey(KeyNames.VersionKeyName, "1.0.0", Filters.FilterByVersion )
                 }
             });
         }
