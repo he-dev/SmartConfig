@@ -1,4 +1,6 @@
-# SmartConfig v3 (wiki is being updated...)
+# SmartConfig v3 
+
+(wiki is being updated...)
 
 Configuration has never been easier!
 
