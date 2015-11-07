@@ -35,7 +35,7 @@ namespace SmartConfig.Tests.Data
                 }
             };
 
-            Assert.AreEqual("123", dataSource.Select("Int32Field"));
+            Assert.AreEqual("123", dataSource.Select("Int32Setting"));
         }
 
         [TestMethod]
@@ -52,13 +52,13 @@ namespace SmartConfig.Tests.Data
                 }
             };
 
-            Assert.AreEqual("123", dataSource.Select("Int32Field"));
+            Assert.AreEqual("123", dataSource.Select("Int32Setting"));
 
-            dataSource.Update("Int32Field", "456");
-            Assert.AreEqual("456", dataSource.Select("Int32Field"));
+            dataSource.Update("Int32Setting", "456");
+            Assert.AreEqual("456", dataSource.Select("Int32Setting"));
 
-            dataSource.Update("Int32Field", "789");
-            Assert.AreEqual("789", dataSource.Select("Int32Field"));
+            dataSource.Update("Int32Setting", "789");
+            Assert.AreEqual("789", dataSource.Select("Int32Setting"));
         }
     }
 }

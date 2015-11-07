@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 
 namespace SmartConfig.Converters
 {
@@ -16,7 +17,14 @@ namespace SmartConfig.Converters
 
             constraints.Check<RegularExpressionAttribute>(regex =>
             {
-                if (!regex.IsMatch(value)) throw new ConstraintException(regex, value);
+                if (!regex.IsMatch(value))
+                {
+                    throw new RegularExpressionViolationException
+                    {
+                        Pattern = regex.ToString(),
+                        Value = value
+                    };
+                }
             });
 
             return value;
@@ -28,7 +36,14 @@ namespace SmartConfig.Converters
 
             constraints.Check<RegularExpressionAttribute>(regex =>
             {
-                if (!regex.IsMatch((string)value)) throw new ConstraintException(regex, (string)value);
+                if (!regex.IsMatch((string)value))
+                {
+                    throw new RegularExpressionViolationException
+                    {
+                        Pattern = regex.ToString(),
+                        Value = (string)value
+                    };
+                }
             });
 
             return (string)value;

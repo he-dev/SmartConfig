@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
 using System.Globalization;
+using System.Reflection;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Data;
@@ -99,9 +100,9 @@ namespace SmartConfig.Tests
                     { nameof(NumericSettings.uintSetting), uint.MaxValue.ToString() },
                     { nameof(NumericSettings.longSetting), long.MaxValue.ToString() },
                     { nameof(NumericSettings.ulongSetting), ulong.MaxValue.ToString() },
-                    { nameof(NumericSettings.floatSetting), float.MaxValue.ToString("R", ci)},
-                    { nameof(NumericSettings.doubleSetting), double.MaxValue.ToString("R", ci)},
-                    { nameof(NumericSettings.decimalSetting), decimal.MaxValue.ToString(ci)},
+                    { nameof(NumericSettings.floatSetting), float.MaxValue.ToString("R", ci) },
+                    { nameof(NumericSettings.doubleSetting), double.MaxValue.ToString("R", ci) },
+                    { nameof(NumericSettings.decimalSetting), decimal.MaxValue.ToString(ci) },
                 };
 
                 var dataSource = new TestDataSource()
@@ -123,6 +124,19 @@ namespace SmartConfig.Tests
                 Assert.AreEqual(float.MaxValue, NumericSettings.floatSetting);
                 Assert.AreEqual(double.MaxValue, NumericSettings.doubleSetting);
                 Assert.AreEqual(decimal.MaxValue, NumericSettings.decimalSetting);
+
+                dataSource = new TestDataSource()
+                {
+                    SelectFunc = key => "abc"
+                };
+
+                ExceptionAssert.Throws<LoadSettingFailedException>(() =>
+                {
+                    Configuration.LoadSettings(typeof(NumericSettings), dataSource);
+                }, ex =>
+                {
+                    Assert.IsInstanceOfType(ex.InnerException, typeof(TargetInvocationException));
+                }, Assert.Fail);
             }
 
             [TestMethod]
@@ -324,113 +338,89 @@ namespace SmartConfig.Tests
                 },
                 Assert.Fail);
             }
-        }
 
-        #region Constraint Exceptions
-
-
-
-
-
-        [TestMethod]
-        public void Load_InvalidString_Throws_ConstraintException()
-        {
-            var ex = ExceptionAssert.Throws<LoadSettingFailedException>(() =>
+            [TestMethod]
+            public void LoadSettings_CanValidateRegularExpression()
             {
-                Configuration.LoadSettings(typeof(RegularExpressionTestConfig), new TestDataSource()
+                // value matchs pattern
+                Configuration.LoadSettings(typeof(CustomRegularExpressionSettings), new TestDataSource()
                 {
-                    SelectFunc = keys => "3"
+                    SelectFunc = keys => "21"
                 });
-            }, Assert.Fail);
-            Assert.IsNotNull(ex.InnerException);
-            Assert.IsInstanceOfType(ex.InnerException, typeof(ConstraintException));
-        }
 
-        #endregion
+                Assert.AreEqual("21", CustomRegularExpressionSettings.StringSetting);
 
-        #region General Exceptions
-
-        [TestMethod]
-        public void Load_Throws_LoadSettingException()
-        {
-            var ex = ExceptionAssert.Throws<LoadSettingFailedException>(() =>
-            {
-                Configuration.LoadSettings(typeof(StringSettings), new TestDataSource()
+                // value does not match pattern
+                ExceptionAssert.Throws<LoadSettingFailedException>(() =>
                 {
-                    // ReSharper disable once NotResolvedInText
-                    SelectFunc = keys => { throw new ArgumentNullException("TestArgument"); }
-                });
-            }, Assert.Fail);
-            Assert.IsNotNull(ex);
-            Assert.IsInstanceOfType(ex.InnerException, typeof(ArgumentNullException));
-        }
-
-        [TestMethod]
-        public void Load_InvalidValue_Throws_LoadSettingException()
-        {
-            var ex = ExceptionAssert.Throws<LoadSettingFailedException>(() =>
-            {
-                Configuration.LoadSettings(typeof(ValueTypesTestConfig), new TestDataSource()
+                    Configuration.LoadSettings(typeof(CustomRegularExpressionSettings), new TestDataSource()
+                    {
+                        SelectFunc = keys => "7"
+                    });
+                }, ex =>
                 {
-                    SelectFunc = keys => "Lorem ipsum."
-                });
-            }, Assert.Fail);
-            Assert.IsNotNull(ex);
-        }
+                    Assert.IsNotNull(ex.InnerException);
+                    Assert.IsInstanceOfType(ex.InnerException, typeof(RegularExpressionViolationException));
+                },
+                Assert.Fail);
+            }
 
-        [TestMethod]
-        public void Load_UnsupportedType_Throws_LoadSettingException()
-        {
-            ExceptionAssert.Throws<LoadSettingFailedException>(() =>
+            [TestMethod]
+            public void LoadSettings_FailsToLoadInvalidNumericSettings()
             {
-                Configuration.LoadSettings(typeof(UnsupportedTypeTestConfig), new TestDataSource()
+                ExceptionAssert.Throws<LoadSettingFailedException>(() =>
                 {
-                    SelectFunc = keys => "Lorem ipsum."
-                });
-            },
-            ex =>
+                    Configuration.LoadSettings(typeof(NumericSettings), new TestDataSource()
+                    {
+                        SelectFunc = key => "abc"
+                    });
+                }, ex =>
+                {
+                    Assert.IsInstanceOfType(ex.InnerException, typeof(TargetInvocationException));
+                }, Assert.Fail);
+            }
+
+            [TestMethod]
+            public void LoadSettings_FailsToLoadUnsupportedType()
             {
-                Assert.IsInstanceOfType(ex.InnerException, typeof(ObjectConverterNotFoundException));
-            },
-            Assert.Fail);
+                ExceptionAssert.Throws<LoadSettingFailedException>(() =>
+                {
+                    Configuration.LoadSettings(typeof(UnsupportedTypeSettings), new TestDataSource()
+                    {
+                        SelectFunc = keys => "Lorem ipsum."
+                    });
+                },
+                ex =>
+                {
+                    Assert.IsInstanceOfType(ex.InnerException, typeof(ObjectConverterNotFoundException));
+                },
+                Assert.Fail);
+            }
+
+            [TestMethod]
+            public void LoadSettings_FailsToLoadNonOptioalSettings()
+            {
+                var dataSource = new TestDataSource()
+                {
+                    SelectFunc = keys => null
+                };
+
+                ExceptionAssert.Throws<LoadSettingFailedException>(() =>
+                {
+                    Configuration.LoadSettings(typeof(NonOptionalSettings), dataSource);
+                },
+                ex =>
+                {
+                    Assert.IsInstanceOfType(ex.InnerException, typeof(SettingNotOptionalException));
+                },
+                Assert.Fail);
+            }
         }
 
-        [TestMethod]
-        public void Load_NonOptioal_Throws_LoadSettingException()
-        {
-            var dataSource = new TestDataSource()
-            {
-                SelectFunc = keys => null
-            };
 
-            ExceptionAssert.Throws<LoadSettingFailedException>(() =>
-            {
-                Configuration.LoadSettings(typeof(MissingOptionalAttribute), dataSource);
-            },
-            ex =>
-            {
-                Assert.IsInstanceOfType(ex.InnerException, typeof(SettingNotOptionalException));
-            },
-            Assert.Fail);
-        }
-
-
-
-        [TestMethod]
-        public void Load_Throws_UnsupportedTypeException()
-        {
-            // User cannot create this exception.
-        }
-
-        #endregion
-
+        
         #region settings initialization
 
-        [TestMethod]
-        public void InitializeAppConfigSource()
-        {
-
-        }
 
         [TestMethod]
         public void InitializeDbSource_AnonymousConfig()

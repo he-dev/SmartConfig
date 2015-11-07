@@ -142,6 +142,7 @@
     <Compile Include="_Codebase\_Attributes\_Constraints\RegularExpressionAttribute.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\RangeAttribute.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\ConstraintAttribute.cs" />
+    <Compile Include="_Codebase\_Exceptions\RegularExpressionViolationException.cs" />
     <Compile Include="_Codebase\_Exceptions\RangeViolationException.cs" />
     <Compile Include="_Codebase\_Exceptions\DateTimeFormatViolationException.cs" />
     <Compile Include="_Codebase\_Exceptions\SmartConfigAttributeMissingException.cs" />

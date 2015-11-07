@@ -1,9 +1,9 @@
 ﻿namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    public static class RegularExpressionTestConfig
+    public static class CustomRegularExpressionSettings
     {
         [RegularExpression(@"\d{2}")]
-        public static string StringField { get; set; }
+        public static string StringSetting { get; set; }
     }
 }

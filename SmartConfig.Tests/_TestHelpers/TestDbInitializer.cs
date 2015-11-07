@@ -11,7 +11,7 @@ namespace SmartConfig.Tests.Data
             var testSettings = new[]
             {
                 "ABC|1.0.0|StringSetting|abc",
-                "ABC|1.2.0|Int32Field|123",
+                "ABC|1.2.0|Int32Setting|123",
                 "ABC|2.1.1|StringSetting|jkl",
                 "JKL|3.2.4|StringSetting|xyz",
             }
