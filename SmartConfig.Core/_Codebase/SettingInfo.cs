@@ -31,7 +31,7 @@ namespace SmartConfig
                 member.Name
             };
 
-            var types = ConfigReflector.GetDeclaringTypes(member).ToList();
+            var types = ConfigurationReflector.GetDeclaringTypes(member).ToList();
 
             for (var i = 0; i < types.Count - 1; i++)
             {

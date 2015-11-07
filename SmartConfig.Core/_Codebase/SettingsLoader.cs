@@ -12,18 +12,18 @@ namespace SmartConfig
 {
     internal class SettingsLoader
     {
-        private readonly IConfigReflector _configReflector;
+        private readonly IConfigurationReflector _configurationReflector;
 
         private readonly IObjectConverterCollection _converters;
 
         private readonly IDataSourceCollection _dataSources;
 
         public SettingsLoader(
-            IConfigReflector configReflector, 
-            IObjectConverterCollection converters, 
+            IConfigurationReflector configurationReflector,
+            IObjectConverterCollection converters,
             IDataSourceCollection dataSources)
         {
-            _configReflector = configReflector;
+            _configurationReflector = configurationReflector;
             _converters = converters;
             _dataSources = dataSources;
         }
@@ -40,7 +40,7 @@ namespace SmartConfig
 
             Logger.LogTrace(() => $"Loading \"{configType.Name}\" from \"{dataSource.GetType().Name}\"...");
 
-            var settingInfos = _configReflector.GetSettingInfos(configType).ToList();
+            var settingInfos = _configurationReflector.GetSettingInfos(configType).ToList();
 
             foreach (var settingInfo in settingInfos)
             {
@@ -64,8 +64,11 @@ namespace SmartConfig
                         return;
                     }
 
-                    // unfortunately this value is invalid, inform the user
-                    throw new OptionalException(settingInfo);
+                    throw new SettingNotOptionalException
+                    {
+                        ConfigTypeFullName = settingInfo.ConfigType.FullName,
+                        SettingPath = settingInfo.SettingPath
+                    };
                 }
 
                 var converter = _converters[settingInfo.ConverterType];
@@ -74,7 +77,12 @@ namespace SmartConfig
             }
             catch (Exception ex)
             {
-                throw new LoadSettingException(settingInfo, dataSource, ex);
+                throw new LoadSettingFailedException(ex)
+                {
+                    DataSourceTypeName = dataSource.GetType().Name,
+                    ConfigTypeFullName = settingInfo.ConfigType.FullName,
+                    SettingPath = settingInfo.SettingPath
+                };
             }
         }
     }

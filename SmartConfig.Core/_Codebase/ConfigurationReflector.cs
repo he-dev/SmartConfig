@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SmartConfig
 {
-    internal class ConfigReflector : IConfigReflector
+    internal class ConfigurationReflector : IConfigurationReflector
     {
         //internal static MemberInfo GetMemberInfo<TField>(Expression<Func<TField>> expression)
         //{

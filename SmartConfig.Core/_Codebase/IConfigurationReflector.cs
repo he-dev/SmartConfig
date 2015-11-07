@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartConfig
 {
-    internal interface IConfigReflector
+    internal interface IConfigurationReflector
     {
         IEnumerable<SettingInfo> GetSettingInfos(Type configType);
 

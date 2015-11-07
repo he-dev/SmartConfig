@@ -10,15 +10,15 @@ namespace SmartConfig
 {
     internal class SettingsInitializer
     {
-        private readonly IConfigReflector _configReflector;
+        private readonly IConfigurationReflector _configurationReflector;
 
         private readonly SettingsUpdater _settingsUpdater;
 
         private readonly IDataSourceCollection _dataSources;
 
-        public SettingsInitializer(IConfigReflector configReflector, SettingsUpdater settingsUpdater, IDataSourceCollection dataSources)
+        public SettingsInitializer(IConfigurationReflector configurationReflector, SettingsUpdater settingsUpdater, IDataSourceCollection dataSources)
         {
-            _configReflector = configReflector;
+            _configurationReflector = configurationReflector;
             _settingsUpdater = settingsUpdater;
             _dataSources = dataSources;
         }
@@ -31,7 +31,7 @@ namespace SmartConfig
                 return false;
             }
 
-            var settingInfos = _configReflector.GetSettingInfos(configType);
+            var settingInfos = _configurationReflector.GetSettingInfos(configType);
             foreach (var settingInfo in settingInfos)
             {
                 InitializeSetting(settingInfo);

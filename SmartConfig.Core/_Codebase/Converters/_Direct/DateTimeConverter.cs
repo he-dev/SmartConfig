@@ -18,16 +18,27 @@ namespace SmartConfig.Converters
         {
             ValidateType(type);
 
-            DateTime result;
+            DateTime? customResult = null;
             constraints.Check<DateTimeFormatAttribute>(format =>
             {
-                if (!format.TryParseExact(value, out result))
+                DateTime intermediateResult;
+                if (!format.TryParseExact(value, out intermediateResult))
                 {
-                    throw new ConstraintException(format, value);
+                    throw new DateTimeFormatViolationException
+                    {
+                        Value = value,
+                        Format = format.Format
+                    };
                 }
+                customResult = intermediateResult;
             });
 
-            result = DateTime.Parse(value, CultureInfo.InvariantCulture);
+            if (customResult.HasValue)
+            {
+                return customResult.Value;
+            }
+
+            var result = DateTime.Parse(value, CultureInfo.InvariantCulture);
             return result;
         }
 

@@ -47,7 +47,7 @@ namespace SmartConfig.Tests
 
             Assert.AreEqual(typeof(string), settingInfo.SettingType);
             Assert.AreEqual(typeof(string), settingInfo.ConverterType);
-            Assert.AreEqual("LocalConfig.StringField", settingInfo.SettingPath);
+            Assert.AreEqual("LocalConfig.StringSetting", settingInfo.SettingPath);
             Assert.IsTrue(settingInfo.SettingConstraints.Count() == 1);
             Assert.AreEqual("xyz", settingInfo.Value);
 

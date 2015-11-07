@@ -1,9 +1,9 @@
 ﻿namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    public static class RangeTestConfig
+    public static class CustomRangeSettings
     {
-        [Range(typeof(int), "1", "2")]
+        [Range(typeof(int), "3", "7")]
         public static int Int32Field { get; set; }
     }
 }

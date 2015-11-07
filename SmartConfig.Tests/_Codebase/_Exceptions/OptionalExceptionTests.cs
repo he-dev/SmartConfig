@@ -10,9 +10,9 @@ namespace SmartConfig.Tests
         [TestMethod()]
         public void ctor_OptionalException()
         {
-            var ex = ExceptionAssert.Throws<OptionalException>(() =>
+            var ex = ExceptionAssert.Throws<SettingNotOptionalException>(() =>
             {
-                throw new OptionalException(SettingInfo.From(() => ValueTypesTestConfig.BooleanField));
+                //throw new SettingNotOptionalException(SettingInfo.From(() => ValueTypesTestConfig.BooleanField));
 
             }, Assert.Fail);
             Assert.IsNotNull(ex);

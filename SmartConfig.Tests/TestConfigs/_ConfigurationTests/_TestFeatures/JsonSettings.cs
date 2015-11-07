@@ -4,9 +4,9 @@ using SmartConfig.Converters;
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
-    public static class JsonField
+    public static class JsonSettings
     {
         [ObjectConverter(typeof(JsonConverter))]
-        public static List<int> ListInt32Field { get; set; }
+        public static List<int> ListInt32Setting { get; set; }
     }
 }

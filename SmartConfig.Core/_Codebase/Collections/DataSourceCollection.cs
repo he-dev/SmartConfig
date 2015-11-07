@@ -7,8 +7,6 @@ using SmartUtilities;
 
 namespace SmartConfig.Collections
 {
-    
-
     /// <summary>
     /// Maps config types to their data sources.
     /// </summary>

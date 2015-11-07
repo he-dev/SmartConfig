@@ -13,25 +13,25 @@ namespace SmartConfig
 {
     internal class SettingsUpdater
     {
-        private readonly IConfigReflector _configReflector;
+        private readonly IConfigurationReflector _configurationReflector;
 
         private readonly IObjectConverterCollection _objectConverters;
 
         private readonly IDataSourceCollection _dataSources;
 
         public SettingsUpdater(
-            IConfigReflector configReflector,
+            IConfigurationReflector configurationReflector,
             IObjectConverterCollection objectConverters,
             IDataSourceCollection dataSources)
         {
-            _configReflector = configReflector;
+            _configurationReflector = configurationReflector;
             _objectConverters = objectConverters;
             _dataSources = dataSources;
-        }        
+        }
 
         public void UpdateSetting(Type configType, string settingPath, object value)
         {
-            var settingInfo = _configReflector.FindSettingInfo(configType, settingPath);
+            var settingInfo = _configurationReflector.FindSettingInfo(configType, settingPath);
             if (settingInfo == null)
             {
                 // todo: create a meaningfull exception
@@ -49,7 +49,7 @@ namespace SmartConfig
             var dataSource = _dataSources[settingInfo.ConfigType];
             try
             {
-                dataSource.Update(settingInfo.SettingPath, serializedValue);                
+                dataSource.Update(settingInfo.SettingPath, serializedValue);
             }
             catch (Exception ex)
             {

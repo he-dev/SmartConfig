@@ -15,7 +15,7 @@ namespace SmartConfig
     /// </summary>
     public static class Configuration
     {
-        private static readonly DataSourceCollection DataSources = new DataSourceCollection();
+        private static readonly DataSourceCollection DataSources;
 
         /// <summary>
         /// Gets the current converters and allows to add additional ones.
@@ -24,15 +24,18 @@ namespace SmartConfig
 
         static Configuration()
         {
+            DataSources = new DataSourceCollection();
+
             // initialize default converters
             Converters = new ObjectConverterCollection
             {
-                new ColorConverter(),
-                new DateTimeConverter(),
-                new EnumConverter(),
-                new JsonConverter(),
+                new NumericConverter(),
+                new BooleanConverter(),
                 new StringConverter(),
-                new ValueTypeConverter(),
+                new EnumConverter(),
+                new DateTimeConverter(),
+                new ColorConverter(),
+                new JsonConverter(),
                 new XmlConverter(),
             };
         }
@@ -48,21 +51,21 @@ namespace SmartConfig
 
             if (configType == null)
             {
-                throw new ArgumentNullException(nameof(configType), "You need to specify a config type.");
+                throw new ArgumentNullException(nameof(configType));
             }
             if (dataSource == null)
             {
-                throw new ArgumentNullException(nameof(dataSource), "You need to specify a data source.");
+                throw new ArgumentNullException(nameof(dataSource));
             }
 
             if (!configType.IsStatic())
             {
-                throw new InvalidOperationException("'configType' must be a static class.");
+                throw new ConfigTypeNotStaticException { ConfigTypeFullName = configType.FullName };
             }
 
             if (configType.GetCustomAttribute<SmartConfigAttribute>() == null)
             {
-                throw new InvalidOperationException("'configType' must be marked with the SmartConfigAttribute.");
+                throw new SmartConfigAttributeMissingException { ConfigTypeFullName = configType.FullName };
             }
 
             #endregion
@@ -73,12 +76,12 @@ namespace SmartConfig
 
             //if (dataSource.SettingsInitializationEnabled)
             //{
-            //    var settingsUpdater = new SettingsUpdater(new ConfigReflector(), Converters, DataSources);
-            //    var settingsInitializer = new SettingsInitializer(new ConfigReflector(), settingsUpdater, DataSources);
+            //    var settingsUpdater = new SettingsUpdater(new ConfigurationReflector(), Converters, DataSources);
+            //    var settingsInitializer = new SettingsInitializer(new ConfigurationReflector(), settingsUpdater, DataSources);
             //    settingsInitializer.InitializeSettings(configType);
             //}
 
-            var settingsLoader = new SettingsLoader(new ConfigReflector(), Converters, DataSources);
+            var settingsLoader = new SettingsLoader(new ConfigurationReflector(), Converters, DataSources);
             settingsLoader.LoadSettings(configType);
         }
 
@@ -98,7 +101,7 @@ namespace SmartConfig
             var settingInfo = SettingInfo.From(memberExpression);
             Debug.Assert(settingInfo != null);
 
-            var settingsUdater = new SettingsUpdater(new ConfigReflector(), Converters, DataSources);
+            var settingsUdater = new SettingsUpdater(new ConfigurationReflector(), Converters, DataSources);
             settingsUdater.UpdateSetting(settingInfo, value);
             settingInfo.Value = value;
         }

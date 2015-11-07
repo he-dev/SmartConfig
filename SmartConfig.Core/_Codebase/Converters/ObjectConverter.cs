@@ -29,12 +29,6 @@ namespace SmartConfig.Converters
 
         protected void ValidateType(Type type)
         {
-            // nullable types are currently not supported
-            //if (type.IsNullable())
-            //{
-            //    type = Nullable.GetUnderlyingType(type);
-            //}
-
             if (type.IsEnum)
             {
                 type = typeof(Enum);

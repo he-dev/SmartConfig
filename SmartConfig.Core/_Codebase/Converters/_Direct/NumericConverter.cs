@@ -5,20 +5,27 @@ using System.Globalization;
 namespace SmartConfig.Converters
 {
     /// <summary>
-    /// Converts value types from and to a string.
+    /// Converts numeric types from and to a string.
     /// </summary>
-    public class ValueTypeConverter : ObjectConverter
+    public class NumericConverter : ObjectConverter
     {
-        public ValueTypeConverter()
+        public NumericConverter()
             : base(new[]
             {
-                typeof(bool),
+                // integral types
+                typeof(sbyte),
+                typeof(byte),
                 typeof(char),
                 typeof(short),
+                typeof(ushort),
                 typeof(int),
+                typeof(uint),
                 typeof(long),
+                typeof(ulong),
+                // floating-point types
                 typeof(float),
                 typeof(double),
+                // decimal
                 typeof(decimal),
             })
         {
@@ -27,17 +34,6 @@ namespace SmartConfig.Converters
         public override object DeserializeObject(string value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
             ValidateType(type);
-
-            // nullable types are not supported
-            //if (type.IsNullable())
-            //{
-            //    if (string.IsNullOrEmpty(value))
-            //    {
-            //        // It is ok to return null for nullable types.
-            //        return null;
-            //    }
-            //    type = Nullable.GetUnderlyingType(type);
-            //}
 
             object result = null;
 
@@ -57,7 +53,11 @@ namespace SmartConfig.Converters
 
             constraints.Check<RangeAttribute>(range =>
             {
-                if (!range.IsValid((IComparable)result)) throw new ConstraintException(range, value);
+                if (!range.IsValid((IComparable)result)) throw new RangeViolationException
+                {
+                    Range = range.ToString(),
+                    Value =  value                
+                };
             });
 
             return result;

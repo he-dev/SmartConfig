@@ -44,6 +44,14 @@ namespace SmartConfig.Collections
         {
             foreach (var supportedType in objectConverter.SupportedTypes)
             {
+                if (_converters.ContainsKey(supportedType))
+                {
+                    throw new DuplicateTypeConverterException
+                    {
+                        ConverterFullName = objectConverter.GetType().FullName,
+                        TypeName = supportedType.Name
+                    };
+                }
                 this[supportedType] = objectConverter;
             }
         }

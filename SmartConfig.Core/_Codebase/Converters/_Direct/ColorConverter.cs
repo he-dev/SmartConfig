@@ -18,7 +18,7 @@ namespace SmartConfig.Converters
         public override object DeserializeObject(string value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
             ValidateType(type);
-            return (Color)Color32.Parse(value);
+            return (Color)(new Color32(value));
         }
 
         public override string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
