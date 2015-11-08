@@ -108,14 +108,14 @@
     <Compile Include="_Codebase\Collections\_Interfaces\IDataSourceCollection.cs" />
     <Compile Include="_Codebase\Collections\_Interfaces\IObjectConverterCollection.cs" />
     <Compile Include="_Codebase\CompositeKey.cs" />
-    <Compile Include="_Codebase\ConfigurationReflector.cs" />
+    <Compile Include="_Codebase\Reflection\ConfigurationInfo.cs" />
     <Compile Include="_Codebase\Converters\_Direct\NumericConverter.cs" />
     <Compile Include="_Codebase\Converters\_Direct\BooleanConverter.cs" />
     <Compile Include="_Codebase\Data\_AppConfigSectionHandlers\IAppConfigSectionHandler.cs" />
     <Compile Include="_Codebase\Data\_Sources\DbSource.cs" />
     <Compile Include="_Codebase\Data\IIndexer.cs" />
     <Compile Include="_Codebase\Data\SmartConfigContext.cs" />
-    <Compile Include="_Codebase\IConfigurationReflector.cs" />
+    <Compile Include="_Codebase\Logging\LogLevel.cs" />
     <Compile Include="_Codebase\SettingInfo.cs" />
     <Compile Include="_Codebase\CustomKey.cs" />
     <Compile Include="_Codebase\KeyNames.cs" />
@@ -130,9 +130,7 @@
     <Compile Include="_Codebase\Data\DataSource.cs" />
     <Compile Include="_Codebase\Data\_Sources\XmlSource.cs" />
     <Compile Include="_Codebase\Filters.cs" />
-    <Compile Include="_Codebase\Logger.cs" />
-    <Compile Include="_Codebase\SettingInfoFactory.cs" />
-    <Compile Include="_Codebase\SettingsInitializer.cs" />
+    <Compile Include="_Codebase\Logging\Logger.cs" />
     <Compile Include="_Codebase\SettingsLoader.cs" />
     <Compile Include="_Codebase\SettingsUpdater.cs" />
     <Compile Include="_Codebase\Wildcards.cs" />
@@ -142,6 +140,9 @@
     <Compile Include="_Codebase\_Attributes\_Constraints\RegularExpressionAttribute.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\RangeAttribute.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\ConstraintAttribute.cs" />
+    <Compile Include="_Codebase\_Exceptions\MemberNotFoundException.cs" />
+    <Compile Include="_Codebase\_Exceptions\MemberNotPropertyException.cs" />
+    <Compile Include="_Codebase\_Exceptions\ExpressionBodyNotMemberExpressionException.cs" />
     <Compile Include="_Codebase\_Exceptions\RegularExpressionViolationException.cs" />
     <Compile Include="_Codebase\_Exceptions\RangeViolationException.cs" />
     <Compile Include="_Codebase\_Exceptions\DateTimeFormatViolationException.cs" />

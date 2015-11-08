@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
-namespace SmartConfig
+namespace SmartConfig.Logging
 {
     public static class Logger
     {
@@ -9,7 +10,10 @@ namespace SmartConfig
         public static Action<string> Info { get; set; }
         public static Action<string> Warn { get; set; }
 
-        internal static void LogTrace(Func<string> message)
+        internal static void Log(LogLevel logLevel, Func<string> message, [CallerMemberName] string methodName = "")
+        { }
+
+        internal static void LogTrace(Func<string> message, [CallerMemberName] string methodName = "")
         {
             Trace?.Invoke(message());
         }

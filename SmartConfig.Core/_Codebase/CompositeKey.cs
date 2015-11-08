@@ -7,23 +7,25 @@ namespace SmartConfig
 {
     public class CompositeKey : IEnumerable<KeyValuePair<string, string>>
     {
-        private readonly IDictionary<string, string> Keys = new Dictionary<string, string>();
+        private readonly IDictionary<string, string> _keys = new Dictionary<string, string>();
 
-        public CompositeKey(string defaultKeyValue, IEnumerable<string> keyNames, IDictionary<string, CustomKey> customKeys)
+        internal CompositeKey(string defaultKeyValue, IEnumerable<string> keyNames, IDictionary<string, CustomKey> customKeys)
         {
-            Keys[KeyNames.DefaultKeyName] = defaultKeyValue;
+            // add default key first
+            _keys[KeyNames.DefaultKeyName] = defaultKeyValue;
 
+            // add other keys but the default one
             foreach (var keyName in keyNames.Where(k => k != KeyNames.DefaultKeyName))
             {
-                Keys[keyName] = customKeys[keyName].Value;
+                _keys[keyName] = customKeys[keyName].Value;
             }
         }
 
-        public string this[string keyName] => Keys[keyName];
+        public string this[string keyName] => _keys[keyName];
 
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
         {
-            return Keys.GetEnumerator();
+            return _keys.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

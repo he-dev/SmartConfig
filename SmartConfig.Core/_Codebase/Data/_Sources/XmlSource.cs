@@ -1,69 +1,54 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using SmartConfig.Logging;
 using SmartUtilities;
 
 namespace SmartConfig.Data
 {
     public class XmlSource<TSetting> : DataSource<TSetting> where TSetting : Setting, new()
     {
-        private const string DefaultRootElementName = "smartConfig";
-        private const string DefaultSettingElementName = "setting";
+        private const string RootElementName = "smartConfig";
+        private const string SettingElementName = "setting";
 
-        private string _rootElementName;
-        private string _settingElementName;
+        private XDocument _xConfig;
 
-        public string FileName { get; set; }
-
-        public string RootElementName
+        public XmlSource(string fileName, IEnumerable<CustomKey> customKeys = null) : base(customKeys)
         {
-            get { return _rootElementName ?? DefaultRootElementName; }
-            set { _rootElementName = value; }
-        }
+            if (string.IsNullOrEmpty(fileName)) { throw new ArgumentNullException(nameof(fileName)); }
 
-        public string SettingElementName
-        {
-            get { return _settingElementName ?? DefaultSettingElementName; }
-            set { _settingElementName = value; }
-        }
-
-        private string FullName
-        {
-            get
+            if (!Path.IsPathRooted(fileName))
             {
-                if (string.IsNullOrEmpty(FileName))
-                {
-                    return null;
-                }
-
-                if (Path.IsPathRooted(FileName))
-                {
-                    return FileName;
-                }
-
-                var currentLocation = Path.GetDirectoryName(Assembly.GetAssembly(typeof(XmlSource<TSetting>)).Location);
-                // ReSharper disable once AssignNullToNotNullAttribute
-                var fullName = Path.Combine(currentLocation, FileName);
-                return fullName;
+                fileName = Path.Combine(
+                    Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
+                    fileName);
             }
+
+            if (!File.Exists(fileName)) { throw new FileNotFoundException(null, fileName); }
+
+            FileName = fileName;
+            _xConfig = XDocument.Load(FileName);
+            if (_xConfig.Root == null || _xConfig.Root.Name != RootElementName) { throw new ArgumentException(null, nameof(fileName)); }
         }
+
+        public string FileName { get; }
 
         public override string Select(string defaultKeyValue)
         {
-            var xConfig = LoadXml();
-
             var compositeKey = CreateCompositeKey(defaultKeyValue);
 
             var attributeName = EncodeKeyName(KeyNames.DefaultKeyName);
             var attributeValue = compositeKey[KeyNames.DefaultKeyName];
             var defaultKeyXPath = $"//{RootElementName}/{SettingElementName}[@{attributeName}='{attributeValue}']";
 
-            var xSettings = xConfig.XPathSelectElements(defaultKeyXPath);
+            var xSettings = _xConfig.XPathSelectElements(defaultKeyXPath);
 
             // create TSetting from each item
             var elements = xSettings.Select(x =>
@@ -93,8 +78,6 @@ namespace SmartConfig.Data
 
         public override void Update(string defaultKeyValue, string value)
         {
-            var xConfig = LoadXml();
-
             var compositeKey = CreateCompositeKey(defaultKeyValue);
 
             // try get item from loaded config
@@ -109,7 +92,7 @@ namespace SmartConfig.Data
 
             var settingXPath = $"//{RootElementName}/{SettingElementName}[{attributeConditions}]";
 
-            var xSettings = xConfig.XPathSelectElements(settingXPath);
+            var xSettings = _xConfig.XPathSelectElements(settingXPath);
             var xSetting = xSettings.SingleOrDefault();
 
             // add new setting
@@ -119,7 +102,7 @@ namespace SmartConfig.Data
                     SettingElementName,
                     new XAttribute(EncodeKeyName(KeyNames.DefaultKeyName), defaultKeyValue),
                     value);
-                xConfig.Root.Add(xSetting);
+                _xConfig.Root.Add(xSetting);
             }
 
             // set custom keys
@@ -130,7 +113,7 @@ namespace SmartConfig.Data
 
             xSetting.Value = value;
 
-            xConfig.Save(FullName);
+            _xConfig.Save(FileName);
         }
 
         internal static string EncodeKeyName(string keyName)
@@ -138,26 +121,6 @@ namespace SmartConfig.Data
             // any uppercase character that is not followed by an uppercase character
             keyName = Regex.Replace(keyName, "([A-Z])(?![A-Z])", "-$1").ToLower();
             return keyName.TrimStart('-');
-        }
-
-        private XDocument LoadXml()
-        {
-            if (string.IsNullOrEmpty(FullName))
-            {
-                throw new InvalidOperationException("FileName must not be empty.");
-            }
-
-            if (!File.Exists(FullName))
-            {
-                Logger.LogWarn(() => $"Xml file not found. Creating a empty file. FileName = \"{FullName}\"");
-                var xDoc = new XDocument(new XElement(RootElementName));
-                return xDoc;
-            }
-            else
-            {
-                var xDoc = XDocument.Load(FullName);
-                return xDoc;
-            }
         }
     }
 }

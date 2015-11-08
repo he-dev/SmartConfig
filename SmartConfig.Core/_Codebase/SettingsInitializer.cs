@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SmartConfig.Collections;
 using SmartConfig.Data;
+using SmartConfig.Logging;
 
 namespace SmartConfig
 {

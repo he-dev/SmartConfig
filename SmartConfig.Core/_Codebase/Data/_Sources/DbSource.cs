@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace SmartConfig.Data
 {
@@ -10,6 +12,21 @@ namespace SmartConfig.Data
     /// </summary>
     public class DbSource<TSetting> : DataSource<TSetting> where TSetting : Setting, new()
     {
+        public DbSource(string connectionString, string settingTableName, IEnumerable<CustomKey> customKeys = null) : base(customKeys)
+        {
+            if (string.IsNullOrEmpty(connectionString)) { throw new ArgumentNullException(nameof(connectionString)); }
+            if (string.IsNullOrEmpty(settingTableName)) { throw new ArgumentNullException(nameof(settingTableName)); }
+
+            var isConnectionStringName = connectionString.StartsWith("name=", StringComparison.OrdinalIgnoreCase);
+            connectionString =
+                isConnectionStringName
+                ? ConfigurationManager.ConnectionStrings[Regex.Replace(connectionString, "^name=", string.Empty, RegexOptions.IgnoreCase)].ConnectionString
+                : connectionString;
+
+            if (string.IsNullOrEmpty(connectionString)) { throw new ArgumentNullException(nameof(connectionString)); }
+
+        }
+
         /// <summary>
         /// Gets or sets the connection string where the config table can be found.
         /// </summary>

@@ -13,48 +13,42 @@ namespace SmartConfig
 {
     internal class SettingsUpdater
     {
-        private readonly IConfigurationReflector _configurationReflector;
-
         private readonly IObjectConverterCollection _objectConverters;
 
         private readonly IDataSourceCollection _dataSources;
 
-        public SettingsUpdater(
-            IConfigurationReflector configurationReflector,
-            IObjectConverterCollection objectConverters,
-            IDataSourceCollection dataSources)
+        public SettingsUpdater(IObjectConverterCollection objectConverters, IDataSourceCollection dataSources)
         {
-            _configurationReflector = configurationReflector;
             _objectConverters = objectConverters;
             _dataSources = dataSources;
         }
 
         public void UpdateSetting(Type configType, string settingPath, object value)
         {
-            var settingInfo = _configurationReflector.FindSettingInfo(configType, settingPath);
-            if (settingInfo == null)
-            {
-                // todo: create a meaningfull exception
-                throw new Exception("Setting not found.");
-            }
+            //var settingInfo = _configurationReflector.FindSettingInfo(configType, settingPath);
+            //if (settingInfo == null)
+            //{
+            //    // todo: create a meaningfull exception
+            //    throw new Exception("Setting not found.");
+            //}
 
-            UpdateSetting(settingInfo, value);
+            //UpdateSetting(settingInfo, value);
         }
 
         public void UpdateSetting(SettingInfo settingInfo, object value)
         {
             Debug.Assert(settingInfo != null);
 
-            var serializedValue = SerializeValue(value, settingInfo);
-            var dataSource = _dataSources[settingInfo.ConfigType];
-            try
-            {
-                dataSource.Update(settingInfo.SettingPath, serializedValue);
-            }
-            catch (Exception ex)
-            {
-                throw new DataSourceException(dataSource, settingInfo, ex);
-            }
+            //var serializedValue = SerializeValue(value, settingInfo);
+            //var dataSource = _dataSources[settingInfo.ConfigType];
+            //try
+            //{
+            //    dataSource.Update(settingInfo.SettingPath, serializedValue);
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw new DataSourceException(dataSource, settingInfo, ex);
+            //}
         }
 
         private string SerializeValue(object value, SettingInfo settingInfo)

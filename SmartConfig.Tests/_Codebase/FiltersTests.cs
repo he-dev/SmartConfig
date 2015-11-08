@@ -8,84 +8,81 @@ using SmartConfig.Data;
 namespace SmartConfig.Tests
 {
     [TestClass]
-    public class FiltersTests
+    public class Filters_FilterByString_Method
     {
-        [TestClass]
-        public class FilterByString_TestFeatures
+        [TestMethod]
+        public void FilterByString_CanFindSingleValue()
         {
-            [TestMethod]
-            public void FilterByString_CanFindSingleValue()
+            var testSettings = new[]
             {
-                var testSettings = new[]
-                {
                     new TestSetting("a|1.0.0|name|value"),
                     new TestSetting("b|1.0.0|name|value"),
                     new TestSetting("d|1.0.0|name|value"),
                 };
 
-                var result = Filters.FilterByString(testSettings, new KeyValuePair<string, string>("Environment", "b"));
-                var setting = result.FirstOrDefault();
-                Assert.IsNotNull(setting);
-                Assert.AreEqual(testSettings[1], setting);
-            }
+            var result = Filters.FilterByString(testSettings, new KeyValuePair<string, string>("Environment", "b"));
+            var setting = result.FirstOrDefault();
+            Assert.IsNotNull(setting);
+            Assert.AreEqual(testSettings[1], setting);
+        }
 
-            [TestMethod]
-            public void FilterByString_CanFindDefualtValue()
+        [TestMethod]
+        public void FilterByString_CanFindDefualtValue()
+        {
+            var settings = new[]
             {
-                var settings = new[]
-                {
                     new TestSetting("a|1.0.0|name|value"),
                     new TestSetting("b|1.0.0|name|value"),
                     new TestSetting("*|1.0.0|name|value"),
                     new TestSetting("d|1.0.0|name|value"),
                 };
 
-                var result = Filters.FilterByString(settings, new KeyValuePair<string, string>("Environment", "c"));
-                var setting = result.FirstOrDefault();
-                Assert.IsNotNull(setting);
-                Assert.AreEqual(settings[2], setting);
-            }
+            var result = Filters.FilterByString(settings, new KeyValuePair<string, string>("Environment", "c"));
+            var setting = result.FirstOrDefault();
+            Assert.IsNotNull(setting);
+            Assert.AreEqual(settings[2], setting);
+        }
 
-            [TestMethod]
-            public void FilterByString_CanFindNothing()
+        [TestMethod]
+        public void FilterByString_CanFindNothing()
+        {
+            var settings = new[]
             {
-                var settings = new[]
-                {
                     new TestSetting("a|1.0.0|name|value"),
                     new TestSetting("b|1.0.0|name|value"),
                     new TestSetting("d|1.0.0|name|value"),
                 };
 
-                var result = Filters.FilterByString(settings, new KeyValuePair<string, string>("Environment", "c"));
-                var setting = result.FirstOrDefault();
-                Assert.IsNull(setting);
-            }
+            var result = Filters.FilterByString(settings, new KeyValuePair<string, string>("Environment", "c"));
+            var setting = result.FirstOrDefault();
+            Assert.IsNull(setting);
         }
+    }
 
-        [TestClass]
-        public class FilterByVersion_TestFeatures
+    [TestClass]
+    public class Filters_FilterByVersion_Method
+    {
+        [TestMethod]
+        public void FilterByVersion_CanFindExactVersion()
         {
-            [TestMethod]
-            public void FilterByVersion_CanFindExactVersion()
+            var settings = new[]
             {
-                var settings = new[]
-                {
                     new TestSetting("a|1.0.5|name|value"),
                     new TestSetting("a|*|name|value"),
                     new TestSetting("a|1.1.0|name|value"),
                     new TestSetting("a|2.0.5|name|value"),
                 };
 
-                var result = Filters.FilterByVersion(settings, new KeyValuePair<string, string>("Version", "1.1.0"));
-                var setting = result.FirstOrDefault();
-                Assert.AreEqual(settings[2], setting);
-            }
+            var result = Filters.FilterByVersion(settings, new KeyValuePair<string, string>("Version", "1.1.0"));
+            var setting = result.FirstOrDefault();
+            Assert.AreEqual(settings[2], setting);
+        }
 
-            [TestMethod]
-            public void FilterByVersion_CanFindPreviousVersion()
+        [TestMethod]
+        public void FilterByVersion_CanFindPreviousVersion()
+        {
+            var settings = new[]
             {
-                var settings = new[]
-                {
                     new TestSetting("a|1.0.4|name|value"),
                     new TestSetting("a|1.0.5|name|value"),
                     new TestSetting("a|*|name|value"),
@@ -93,43 +90,46 @@ namespace SmartConfig.Tests
                     new TestSetting("a|2.0.5|name|value"),
                 };
 
-                var result = Filters.FilterByVersion(settings, new KeyValuePair<string, string>("Version", "1.0.7"));
-                var setting = result.FirstOrDefault();
-                Assert.AreEqual(settings[1], setting);
-            }
+            var result = Filters.FilterByVersion(settings, new KeyValuePair<string, string>("Version", "1.0.7"));
+            var setting = result.FirstOrDefault();
+            Assert.AreEqual(settings[1], setting);
+        }
 
-            [TestMethod]
-            public void FilterByVersion_CanFindDefaultVersion()
+        [TestMethod]
+        public void FilterByVersion_CanFindDefaultVersion()
+        {
+            var settings = new[]
             {
-                var settings = new[]
-                {
                     new TestSetting("a|1.0.5|name|value"),
                     new TestSetting("a|*|name|value"),
                     new TestSetting("a|1.1.0|name|value"),
                     new TestSetting("a|2.0.5|name|value"),
                 };
 
-                var result = Filters.FilterByVersion(settings, new KeyValuePair<string, string>("Version", "1.0.3"));
-                var setting = result.FirstOrDefault();
-                Assert.AreEqual(settings[1], setting);
-            }
+            var result = Filters.FilterByVersion(settings, new KeyValuePair<string, string>("Version", "1.0.3"));
+            var setting = result.FirstOrDefault();
+            Assert.AreEqual(settings[1], setting);
+        }
 
-            [TestMethod]
-            public void FilterByVersion_CanFindNothing()
+        [TestMethod]
+        public void FilterByVersion_CanFindNothing()
+        {
+            var settings = new[]
             {
-                var settings = new[]
-                {
                     new TestSetting("a|1.0.5|name|value"),
                     new TestSetting("a|1.1.0|name|value"),
                     new TestSetting("a|2.0.5|name|value"),
                 };
 
-                var result = Filters.FilterByVersion(settings, new KeyValuePair<string, string>("Version", "1.0.2"));
-                var setting = result.FirstOrDefault();
-                Assert.IsNull(setting);
-            }
+            var result = Filters.FilterByVersion(settings, new KeyValuePair<string, string>("Version", "1.0.2"));
+            var setting = result.FirstOrDefault();
+            Assert.IsNull(setting);
         }
+    }
 
+    [TestClass]
+    public class Filters_Mixed
+    {
         [TestMethod]
         public void CanFilterByMultipleCriteria()
         {

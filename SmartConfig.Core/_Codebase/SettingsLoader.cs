@@ -7,23 +7,19 @@ using System.Text;
 using System.Threading.Tasks;
 using SmartConfig.Collections;
 using SmartConfig.Data;
+using SmartConfig.Logging;
+using SmartConfig.Reflection;
 
 namespace SmartConfig
 {
     internal class SettingsLoader
     {
-        private readonly IConfigurationReflector _configurationReflector;
-
         private readonly IObjectConverterCollection _converters;
 
         private readonly IDataSourceCollection _dataSources;
 
-        public SettingsLoader(
-            IConfigurationReflector configurationReflector,
-            IObjectConverterCollection converters,
-            IDataSourceCollection dataSources)
+        public SettingsLoader(IObjectConverterCollection converters, IDataSourceCollection dataSources)
         {
-            _configurationReflector = configurationReflector;
             _converters = converters;
             _dataSources = dataSources;
         }
@@ -31,18 +27,15 @@ namespace SmartConfig
         /// <summary>
         /// Loads settings for a a configuration from the specified data source.
         /// </summary>
-        /// <param name="configType">SettingType that is marked with the <c>SmartCofnigAttribute</c> and specifies the configuration.</param>
-        internal void LoadSettings(Type configType)
+        internal void LoadSettings(ConfigurationInfo configurationInfo)
         {
-            Debug.Assert(configType != null);
+            Debug.Assert(configurationInfo != null);
 
-            var dataSource = _dataSources[configType];
+            var dataSource = _dataSources[configurationInfo.ConfigType];
 
-            Logger.LogTrace(() => $"Loading \"{configType.Name}\" from \"{dataSource.GetType().Name}\"...");
+            Logger.LogTrace(() => $"Loading \"{configurationInfo.ConfigType.Name}\" from \"{dataSource.GetType().Name}\"...");
 
-            var settingInfos = _configurationReflector.GetSettingInfos(configType).ToList();
-
-            foreach (var settingInfo in settingInfos)
+            foreach (var settingInfo in configurationInfo.SettingInfos.Values)
             {
                 LoadSetting(settingInfo, dataSource);
             }
@@ -66,7 +59,7 @@ namespace SmartConfig
 
                     throw new SettingNotOptionalException
                     {
-                        ConfigTypeFullName = settingInfo.ConfigType.FullName,
+                        ConfigTypeFullName = settingInfo.Configuration.ConfigType.FullName,
                         SettingPath = settingInfo.SettingPath
                     };
                 }
@@ -80,7 +73,7 @@ namespace SmartConfig
                 throw new LoadSettingFailedException(ex)
                 {
                     DataSourceTypeName = dataSource.GetType().Name,
-                    ConfigTypeFullName = settingInfo.ConfigType.FullName,
+                    ConfigTypeFullName = settingInfo.Configuration.ConfigType.FullName,
                     SettingPath = settingInfo.SettingPath
                 };
             }

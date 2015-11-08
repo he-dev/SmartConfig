@@ -6,8 +6,10 @@ namespace SmartConfig
     /// <summary>
     /// Provides utility methods for creating config element names.
     /// </summary>
-    public class SettingPath : List<string>
+    public class SettingPath
     {
+        private readonly List<string> _path = new List<string>();
+
         //public static string From<T>(Expression<Func<T>> expression)
         //{
         //    var memberInfo = Utilities.GetMemberInfo(expression);
@@ -32,28 +34,32 @@ namespace SmartConfig
         //    return String.Empty;
         //}
 
+        public SettingPath() { }
+
         public SettingPath(IEnumerable<string> names)
         {
-            AddRange(names);
+            _path.AddRange(names);
         }
 
-        public SettingPath(params string[] names) : this((IEnumerable<string>)names)
-        {
-        }
+        public SettingPath(string name) : this(new[] { name }) { }
 
-        public static SettingPath From(IEnumerable<string> names, bool reversed)
-        {
-            if (reversed)
-            {
-                names = names.Reverse();
-            }
+        public SettingPath(SettingPath path) : this(path._path) { }
 
-            return new SettingPath(names);
-        }
+        public SettingPath(params string[] names) : this((IEnumerable<string>)names) { }
+
+        //public SettingPath(IEnumerable<string> names, bool reversed)
+        //{
+        //    if (reversed)
+        //    {
+        //        names = names.Reverse();
+        //    }
+
+        //    return new SettingPath(names);
+        //}
 
         public override string ToString()
         {
-            return string.Join(".", this.Where(name => !string.IsNullOrEmpty(name)));
+            return string.Join(".", _path);
         }
 
         public static implicit operator string (SettingPath settingPath)

@@ -9,20 +9,20 @@ using SmartConfig.Converters;
 
 namespace SmartConfig.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class SettingInfoTests
     {
         [SmartConfig(Name = "LocalConfig")]
         private static class LocalTestConfig
         {
             [DateTimeFormat("abc")]
-            public static string StringField { get; set; } = "xyz";
+            public static string StringField { get; } = "xyz";
 
             [ObjectConverter(typeof(JsonConverter))]
             public static List<int> ListField { get; set; }
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ctor_SettingInfo_Type_string_Type()
         {
             var settingInfo = new SettingInfo(typeof (LocalTestConfig), "__InternalField", typeof (string));

@@ -11,7 +11,32 @@ namespace SmartConfig.Data
     {
         private KeyNames _keyNames;
 
-        private IDictionary<string, CustomKey> _customKeys = new Dictionary<string, CustomKey>();
+        private IDictionary<string, CustomKey> _customKeys;
+
+        protected DataSource(IEnumerable<CustomKey> customKeys)
+        {
+            _customKeys = new Dictionary<string, CustomKey>();
+
+            var isDerived = typeof(TSetting) != typeof(Setting);
+            if (isDerived)
+            {
+                if (customKeys == null)
+                {
+                    throw new ArgumentNullException(nameof(customKeys));
+                }
+
+                var customKeyNames = _keyNames.Where(kn => kn != KeyNames.DefaultKeyName).ToList();
+                var allKeysConfigured = customKeys.All(ck => ck.Filter != null && customKeyNames.Contains(ck.Name));
+                if (!allKeysConfigured)
+                {
+                    // todo throw custom exception here
+                    throw new ArgumentException(null, nameof(customKeys));
+                }
+
+                _customKeys = customKeys.ToDictionary(ck => ck.Name);
+            }
+
+        }
 
         public KeyNames KeyNames => _keyNames ?? (_keyNames = KeyNames.From<TSetting>());
 
@@ -20,15 +45,7 @@ namespace SmartConfig.Data
             get { return KeyNames.Where(k => k != KeyNames.DefaultKeyName); }
         }
 
-        public CustomKey[] CustomKeys
-        {
-            get { return _customKeys.Values.ToArray(); }
-            set
-            {
-                if (value == null) throw new ArgumentNullException(nameof(CustomKeys));
-                _customKeys = value.ToDictionary(x => x.Name);
-            }
-        }
+        public CustomKey[] CustomKeys => _customKeys.Values.ToArray();
 
         public bool SettingsInitializationEnabled { get; set; }
 

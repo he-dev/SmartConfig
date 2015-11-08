@@ -14,7 +14,7 @@ namespace SmartConfig.Data
     {
         private IDictionary<Type, IAppConfigSectionHandler> _sectionHandlers;
 
-        public AppConfigSource()
+        public AppConfigSource() : base(null)
         {
             _sectionHandlers = new object[]
             {
@@ -23,7 +23,7 @@ namespace SmartConfig.Data
             }
             .Cast<IAppConfigSectionHandler>()
             .ToDictionary(x => x.SectionType, x => x);
-        }      
+        }
 
         /// <summary>
         /// Gets or sets section handlers.
