@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using SmartConfig.Data;
 
 namespace SmartConfig.Reflection
 {
@@ -29,12 +30,16 @@ namespace SmartConfig.Reflection
 
             ConfigType = configType;
             ConfigName = smartConfigAttribute.Name;
+            Properties = new ConfigurationProperties(configType);
             SettingInfos = GetSettingInfos(configType).ToDictionary(x => x.Property);
+
         }
 
         public Type ConfigType { get; }
 
         public string ConfigName { get; }
+
+        public ConfigurationProperties Properties { get; }
 
         public bool HasCustomName => !string.IsNullOrEmpty(ConfigName);
 
@@ -42,7 +47,7 @@ namespace SmartConfig.Reflection
 
         private IEnumerable<SettingInfo> GetSettingInfos(Type type, IEnumerable<string> path = null)
         {
-            path = path ?? (HasCustomName ? new string[] { ConfigName } : new string[] { });
+            path = path ?? (HasCustomName ? new[] { ConfigName } : new string[] { });
 
             var properties = type
                 .GetProperties(BindingFlags.Public | BindingFlags.Static)
@@ -50,13 +55,28 @@ namespace SmartConfig.Reflection
 
             foreach (var property in properties)
             {
-                yield return new SettingInfo(this, property, path.Concat(new string[] { property.Name }));
+                yield return new SettingInfo(this, property, path.Concat(new[] { property.Name }), Properties.CustomKeys);
             }
+
+            var canSelectType = new Func<Type, bool>(t =>
+            {
+                if (t.GetCustomAttribute<IgnoreAttribute>() != null)
+                {
+                    return false;
+                }
+
+                if (t.Name == "Properties" && t.DeclaringType == ConfigType)
+                {
+                    return false;
+                }
+
+                return true;
+            });
 
             var settingInfos = type
                 .GetNestedTypes(BindingFlags.Public | BindingFlags.Public)
-                .Where(t => t.GetCustomAttribute<IgnoreAttribute>() == null)
-                .SelectMany(nt => GetSettingInfos(nt, path.Concat(new string[] { nt.Name })));
+                .Where(canSelectType)
+                .SelectMany(nt => GetSettingInfos(nt, path.Concat(new[] { nt.Name })));
 
             foreach (var settingInfo in settingInfos)
             {

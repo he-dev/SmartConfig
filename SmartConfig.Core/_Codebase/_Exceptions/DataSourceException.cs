@@ -1,5 +1,6 @@
 ﻿using System;
 using SmartConfig.Data;
+using SmartConfig.Reflection;
 using SmartUtilities;
 
 namespace SmartConfig

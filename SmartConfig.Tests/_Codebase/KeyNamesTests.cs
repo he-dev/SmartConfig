@@ -5,11 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartConfig.Collections;
 using SmartConfig.Data;
 
 namespace SmartConfig.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class KeyNamesTests
     {
         // ReSharper disable once ClassNeverInstantiated.Local
@@ -22,10 +23,10 @@ namespace SmartConfig.Tests
             public string Version { get; set; }
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void From_LocalTestSetting()
         {
-            var keyNames = KeyNames.From<LocalTestSetting>();
+            var keyNames = SettingKeyNameReadOnlyCollection.Create<LocalTestSetting>();
 
             Assert.IsTrue(keyNames.Count == 4);
             Assert.IsTrue(keyNames.Contains("Environment"));

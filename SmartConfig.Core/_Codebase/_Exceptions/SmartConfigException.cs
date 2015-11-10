@@ -1,4 +1,5 @@
 ﻿using System;
+using SmartConfig.Reflection;
 
 namespace SmartConfig
 {

@@ -4,10 +4,10 @@ using SmartConfig.Data;
 
 namespace SmartConfig.Tests.Data
 {
-    [TestClass()]
+    [TestClass]
     public class AppSettingsSectionHandlerTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void Select_Key()
         {
             var appSettings = new AppSettingsSection();
@@ -20,7 +20,7 @@ namespace SmartConfig.Tests.Data
             Assert.IsNull(appSettingsHandler.Select(appSettings, "KEY2"));
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void Update_Name()
         {
             var section = new AppSettingsSection();

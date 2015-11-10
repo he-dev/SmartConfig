@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SmartConfig.Collections;
 
 namespace SmartConfig.Data
 {
@@ -6,7 +7,7 @@ namespace SmartConfig.Data
     /// Delegate for defining filtering methods.
     /// </summary>
     /// <param name="elements">Elements to be filtered.</param>
-    /// <param name="criteria">Filter criteria as key & value.</param>
+    /// <param name="criteria">FilterSettings criteria as key & value.</param>
     /// <returns>Filtered elements.</returns>
     public delegate IEnumerable<IIndexer> FilterByFunc(IEnumerable<IIndexer> elements, KeyValuePair<string, string> criteria);
 
@@ -15,22 +16,18 @@ namespace SmartConfig.Data
     /// </summary>
     public interface IDataSource
     {
-        KeyNames KeyNames { get; }
-
-        bool SettingsInitializationEnabled { get; }
-
         /// <summary>
         /// Selects data from the data source.
         /// </summary>
-        /// <param name="defaultKeyValue"></param>
+        /// <param name="keys"></param>
         /// <returns></returns>
-        string Select(string defaultKeyValue);
+        string Select(IReadOnlyCollection<SettingKey> keys);
 
         /// <summary>
         /// Updates data in the data source.
         /// </summary>
-        /// <param name="defaultKeyValue"></param>
+        /// <param name="keys"></param>
         /// <param name="value"></param>
-        void Update(string defaultKeyValue, string value);
+        void Update(IReadOnlyCollection<SettingKey> keys, string value);
     }
 }

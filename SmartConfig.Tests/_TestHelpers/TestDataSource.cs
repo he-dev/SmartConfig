@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SmartConfig.Data;
 
@@ -6,39 +7,35 @@ namespace SmartConfig.Tests
 {
     public class SimpleTestDataSource : DataSource<Setting>
     {
-        public SimpleTestDataSource() : base(null) { }
+        public Func<IEnumerable<SettingKey>, string> SelectFunc;
 
-        public Func<string, string> SelectFunc;
+        public Action<IEnumerable<SettingKey>, string> UpdateAction;
 
-        public Action<string, string> UpdateAction;
-
-        public override string Select(string defaultKeyValue)
+        public override string Select(IEnumerable<SettingKey> keys)
         {
-            return SelectFunc(defaultKeyValue);
+            return SelectFunc(keys);
         }
 
-        public override void Update(string defaultKeyValue, string value)
+        public override void Update(IEnumerable<SettingKey> keys, string value)
         {
-            UpdateAction(defaultKeyValue, value);
+            UpdateAction(keys, value);
         }
     }
 
     public class TestDataSource : DataSource<TestSetting>
     {
-        public TestDataSource() : base(Enumerable.Empty<CustomKey>()) { }
+        public Func<IEnumerable<SettingKey>, string> SelectFunc;
 
-        public Func<string, string> SelectFunc;
+        public Action<IEnumerable<SettingKey>, string> UpdateAction;
 
-        public Action<string, string> UpdateAction;
-
-        public override string Select(string defaultKeyValue)
+        public override string Select(IEnumerable<SettingKey> keys)
         {
-            return SelectFunc(defaultKeyValue);
+            return SelectFunc(keys);
         }
 
-        public override void Update(string defaultKeyValue, string value)
+        public override void Update(IEnumerable<SettingKey> keys, string value)
         {
-            UpdateAction(defaultKeyValue, value);
+            UpdateAction(keys, value);
         }
     }
 }

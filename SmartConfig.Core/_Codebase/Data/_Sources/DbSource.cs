@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace SmartConfig.Data
@@ -12,80 +13,67 @@ namespace SmartConfig.Data
     /// </summary>
     public class DbSource<TSetting> : DataSource<TSetting> where TSetting : Setting, new()
     {
-        public DbSource(string connectionString, string settingTableName, IEnumerable<CustomKey> customKeys = null) : base(customKeys)
+        private readonly string _connectionString;
+        private readonly string _settingsTableName;
+
+        public DbSource(string connectionString, string settingsTableName)
         {
             if (string.IsNullOrEmpty(connectionString)) { throw new ArgumentNullException(nameof(connectionString)); }
-            if (string.IsNullOrEmpty(settingTableName)) { throw new ArgumentNullException(nameof(settingTableName)); }
+            if (string.IsNullOrEmpty(settingsTableName)) { throw new ArgumentNullException(nameof(settingsTableName)); }
 
             var isConnectionStringName = connectionString.StartsWith("name=", StringComparison.OrdinalIgnoreCase);
-            connectionString =
+            _connectionString =
                 isConnectionStringName
                 ? ConfigurationManager.ConnectionStrings[Regex.Replace(connectionString, "^name=", string.Empty, RegexOptions.IgnoreCase)].ConnectionString
                 : connectionString;
 
-            if (string.IsNullOrEmpty(connectionString)) { throw new ArgumentNullException(nameof(connectionString)); }
+            if (string.IsNullOrEmpty(_connectionString)) { throw new ArgumentNullException(nameof(connectionString)); }
 
+            _settingsTableName = settingsTableName;
         }
 
-        /// <summary>
-        /// Gets or sets the connection string where the config table can be found.
-        /// </summary>
-        public string ConnectionString { get; set; }
-
-        /// <summary>
-        /// Gets or sets the config table name.
-        /// </summary>
-        public string SettingsTableName { get; set; }
-
-        public override string Select(string defaultKeyValue)
+        public override string Select(IReadOnlyCollection<SettingKey> keys)
         {
-            Debug.Assert(!string.IsNullOrEmpty(defaultKeyValue));
+            Debug.Assert(keys != null);
 
-            using (var context = CreateDbContext())
+            using (var context = new SmartConfigContext<TSetting>(_connectionString, _settingsTableName))
             {
-                var compositeKey = CreateCompositeKey(defaultKeyValue);
-                var name = compositeKey[KeyNames.DefaultKeyName];
-                var elements = context.Settings.Where(ce => ce.Name == name).ToList() as IEnumerable<TSetting>;
-                elements = ApplyFilters(elements, compositeKey);
+                var name = keys.First().Value;
+                var settings = context.Settings.Where(ce => ce.Name == name).ToList() as IEnumerable<TSetting>;
 
-                var element = elements.SingleOrDefault();
-                return element?.Value;
+                settings = ApplyFilters(settings, keys.Skip(1));
+
+                var setting = settings.SingleOrDefault();
+                return setting?.Value;
             };
         }
 
-        public override void Update(string defaultKeyValue, string value)
+        public override void Update(IReadOnlyCollection<SettingKey> keys, string value)
         {
-            Debug.Assert(!string.IsNullOrEmpty(defaultKeyValue));
+            Debug.Assert(keys != null && keys.Any());
 
-            using (var context = CreateDbContext())
+            using (var context = new SmartConfigContext<TSetting>(_connectionString, _settingsTableName))
             {
-                var compositeKey = CreateCompositeKey(defaultKeyValue);
-
-                // get key values
-                var keyValues = compositeKey.Select(x => x.Value).Cast<object>().ToArray();
-
-                // find entity to update
+                var keyValues = keys.Select(x => x.Value).Cast<object>().ToArray();
                 var entity = context.Settings.Find(keyValues);
 
-                // there is no such entity yet so create a new one
-                if (entity == null)
+                var entityExists = entity != null;
+                if (!entityExists)
                 {
-                    // create a new entity
                     entity = new TSetting()
                     {
-                        Name = compositeKey[KeyNames.DefaultKeyName],
+                        Name = keys.First().Value,
                         Value = value
                     };
 
                     // set customKeys
-                    foreach (var keyName in KeyNamesWithoutDefault)
+                    foreach (var key in keys.Skip(1))
                     {
-                        entity[keyName] = compositeKey[keyName];
+                        entity[key.Name] = key.Value;
                     }
 
                     context.Settings.Add(entity);
                 }
-                // there is already such entity so just update the value
                 else
                 {
                     entity.Value = value;
@@ -93,14 +81,6 @@ namespace SmartConfig.Data
 
                 context.SaveChanges();
             };
-        }
-
-        private SmartConfigContext<TSetting> CreateDbContext()
-        {
-            if (string.IsNullOrEmpty(ConnectionString)) throw new InvalidOperationException(nameof(ConnectionString) + " must not be empty.");
-            if (string.IsNullOrEmpty(SettingsTableName)) throw new InvalidOperationException(nameof(SettingsTableName) + " must not be empty.");
-
-            return SmartConfigContext<TSetting>.Create(ConnectionString, SettingsTableName, KeyNames);
         }
     }
 }

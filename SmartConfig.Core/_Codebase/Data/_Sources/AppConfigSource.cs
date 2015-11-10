@@ -14,7 +14,7 @@ namespace SmartConfig.Data
     {
         private IDictionary<Type, IAppConfigSectionHandler> _sectionHandlers;
 
-        public AppConfigSource() : base(null)
+        public AppConfigSource()
         {
             _sectionHandlers = new object[]
             {
@@ -41,72 +41,68 @@ namespace SmartConfig.Data
             }
         }
 
-        public override string Select(string defaultKeyValue)
+        public override string Select(IReadOnlyCollection<SettingKey> keys)
         {
-            if (string.IsNullOrEmpty(defaultKeyValue)) throw new ArgumentNullException(nameof(defaultKeyValue));
+            Debug.Assert(keys != null && keys.Any());
 
             var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var compositeKey = CreateCompositeKey(defaultKeyValue);
-            var configurationSection = GetConfigurationSection(exeConfig, compositeKey);
+            var configurationSection = GetConfigurationSection(exeConfig, keys.First());
             var sectionHandler = _sectionHandlers[configurationSection.GetType()];
-            var settingName = GetSettingName(compositeKey);
+            var settingName = GetSettingName(keys.First());
             var value = sectionHandler.Select(configurationSection, settingName);
             return value;
         }
 
-        public override void Update(string defaultKeyValue, string value)
+        public override void Update(IReadOnlyCollection<SettingKey> keys, string value)
         {
-            if (string.IsNullOrEmpty(defaultKeyValue)) throw new ArgumentNullException(nameof(defaultKeyValue));
+            Debug.Assert(keys != null && keys.Any());
 
             var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var compositeKey = CreateCompositeKey(defaultKeyValue);
-            var configurationSection = GetConfigurationSection(exeConfig, compositeKey);
+            var configurationSection = GetConfigurationSection(exeConfig, keys.First());
             var sectionHandler = _sectionHandlers[configurationSection.GetType()];
-            sectionHandler.Update(configurationSection, GetSettingName(compositeKey), value);
+            sectionHandler.Update(configurationSection, GetSettingName(keys.First()), value);
             exeConfig.Save(ConfigurationSaveMode.Minimal);
         }
 
-        private ConfigurationSection GetConfigurationSection(System.Configuration.Configuration configuration, CompositeKey compositeKey)
+        private ConfigurationSection GetConfigurationSection(System.Configuration.Configuration configuration, SettingKey nameKey)
         {
             Debug.Assert(configuration != null);
-            Debug.Assert(compositeKey != null);
+            Debug.Assert(nameKey != null);
 
-            var sectionName = GetSectionName(compositeKey);
+            var sectionName = GetSectionName(nameKey);
             var actualSectionName = configuration.Sections.Keys.Cast<string>().Single(x => x.Equals(sectionName, StringComparison.OrdinalIgnoreCase));
             var section = configuration.Sections[actualSectionName];
             return section;
         }
 
-        private string GetSectionName(CompositeKey compositeKey)
+        private string GetSectionName(SettingKey nameKey)
         {
-            Debug.Assert(compositeKey != null);
-
-            var defaultKeyValue = compositeKey[KeyNames.DefaultKeyName];
+            Debug.Assert(nameKey != null);
 
             var sectionNames = _sectionHandlers.Select(x => x.Value.SectionName);
             var sectionNamePattern = @"(?<SectionName>" + string.Join("|", sectionNames) + @")";
 
-            var sectionNameMatch = Regex.Match(defaultKeyValue, sectionNamePattern, RegexOptions.ExplicitCapture);
+            var sectionNameMatch = Regex.Match(nameKey.Value, sectionNamePattern, RegexOptions.ExplicitCapture);
             if (!sectionNameMatch.Groups["SectionName"].Success)
             {
-                throw new InvalidOperationException($"Section name not found in '{defaultKeyValue}'");
+                throw new InvalidOperationException($"Section name not found in '{nameKey.Value}'");
             }
 
             return sectionNameMatch.Groups["SectionName"].Value;
         }
 
-        private string GetSettingName(CompositeKey compositeKey)
+        private string GetSettingName(SettingKey nameKey)
         {
-            Debug.Assert(compositeKey != null);
+            Debug.Assert(nameKey != null);
 
             // (?<= AppSettings | ConnectionStrings)\.(?< Key >.+$)
 
-            var sectionName = GetSectionName(compositeKey);
+            var sectionName = GetSectionName(nameKey);
             var keyPattern = $"(?<={sectionName})\\.(?<Key>.+$)";
-            var keyMatch = Regex.Match(compositeKey[KeyNames.DefaultKeyName], keyPattern, RegexOptions.ExplicitCapture);
+            var keyMatch = Regex.Match(nameKey.Value, keyPattern, RegexOptions.ExplicitCapture);
             if (!keyMatch.Groups["Key"].Success)
             {
-                throw new InvalidOperationException($"Key not found in '{compositeKey[KeyNames.DefaultKeyName]}'");
+                throw new InvalidOperationException($"Key not found in '{nameKey.Value}'");
             }
 
             return keyMatch.Groups["Key"].Value;

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using SmartConfig.Collections;
 using SmartConfig.Data;
 using SmartConfig.Example.Data;
+using SmartConfig.Example.ExampleConfigs;
 using SmartConfig.Logging;
 
 namespace SmartConfig.Example
@@ -23,7 +25,7 @@ namespace SmartConfig.Example
 
         private static void AppConfigSourceExample()
         {
-            Configuration.LoadSettings(typeof(ExampleAppConfig), new AppConfigSource());
+            Configuration.LoadSettings(typeof(ExampleAppConfig));
 
             Console.WriteLine(ExampleAppConfig.AppSettings.Greeting);
             Console.WriteLine(ExampleAppConfig.AppSettings.Farewell);
@@ -41,24 +43,13 @@ namespace SmartConfig.Example
         }
         private static void BasicDbSourceExample()
         {
-            Configuration.LoadSettings(typeof(ExampleDbConfig1), new DbSource<Setting>(
-                ExampleAppConfig.ConnectionStrings.ExampleDb,
-                "ExampleConfigTable"));
-
+            Configuration.LoadSettings(typeof(ExampleDbConfig1));
             Console.WriteLine(ExampleDbConfig1.Welcome);
         }
 
         private static void CustomDbSourceExample()
         {
-            Configuration.LoadSettings(typeof(ExampleDbConfig2), new DbSource<CustomSetting>(
-                ExampleAppConfig.ConnectionStrings.ExampleDb,
-                "ExampleConfigTable",
-                new[]
-                {
-                    new CustomKey(KeyNames.EnvironmentKeyName, "ABC", Filters.FilterByString),
-                    new CustomKey(KeyNames.VersionKeyName, "2.0.0", Filters.FilterByVersion )
-                }));
-
+            Configuration.LoadSettings(typeof(ExampleDbConfig2));
             Console.WriteLine(ExampleDbConfig2.GoodBye);
         }
 
@@ -67,10 +58,10 @@ namespace SmartConfig.Example
             //Configuration.LoadSettings(typeof(ExampleXmlConfig), new XmlSource<CustomSetting>(
             //    @"Configs\XmlSource.xml",
             //    SettingsInitializationEnabled = false,
-            //    CustomKeys = new []
+            //    SettingKeys = new []
             //    {
-            //        new CustomKey(KeyNames.EnvironmentKeyName, "ABC", Filters.FilterByString),
-            //        new CustomKey(KeyNames.VersionKeyName, "1.0.0", Filters.FilterByVersion )
+            //        new SettingKey(SettingKeyNames.EnvironmentKeyName, "ABC", Filters.FilterByString),
+            //        new SettingKey(SettingKeyNames.VersionKeyName, "1.0.0", Filters.FilterByVersion )
             //    }
             //});
         }

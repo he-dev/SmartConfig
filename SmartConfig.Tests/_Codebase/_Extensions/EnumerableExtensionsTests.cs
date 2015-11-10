@@ -2,11 +2,11 @@
 
 namespace SmartConfig.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class EnumerableExtensionsTests
     {
-        [TestMethod()]
-        public void Check_True()
+        [TestMethod]
+        public void Check_CanFindContraint()
         {
             var constraints = new ConstraintAttribute[] { new DateTimeFormatAttribute("dd") };
 
@@ -16,19 +16,6 @@ namespace SmartConfig.Tests
                 result = true;
             });
             Assert.IsTrue(result);
-        }
-
-        [TestMethod()]
-        public void Check_False()
-        {
-            var constraints = new ConstraintAttribute[] { new DateTimeFormatAttribute("dd") };
-
-            var result = false;
-            constraints.Check<RegularExpressionAttribute>(dateTimeFormat =>
-            {
-                result = true;
-            });
-            Assert.IsFalse(result);
-        }
+        }        
     }
 }

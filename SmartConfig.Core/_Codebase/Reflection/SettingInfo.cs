@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
-using SmartConfig.Reflection;
-using SmartUtilities;
+using SmartConfig.Data;
 
-namespace SmartConfig
+namespace SmartConfig.Reflection
 {
     [DebuggerDisplay("ConfigType = {Configuration.ConfigType.Name} SettingPath = \"{SettingPath}\" IsInternal = \"{IsInternal}\"")]
     public class SettingInfo
     {
-        internal SettingInfo(ConfigurationInfo configuration, PropertyInfo property, IEnumerable<string> path)
+        internal SettingInfo(ConfigurationInfo configuration, PropertyInfo property, IEnumerable<string> path, IEnumerable<SettingKey> customKeys)
         {
             Debug.Assert(configuration != null);
             Debug.Assert(property != null);
@@ -21,7 +20,10 @@ namespace SmartConfig
             Property = property;
 
             SettingPath = new SettingPath(path);
-        }      
+
+            var keys = new[] { new SettingKey(Setting.DefaultKeyName, SettingPath) }.Concat(customKeys).ToList();
+            Keys = new ReadOnlyCollection<SettingKey>(keys);
+        }
 
         internal ConfigurationInfo Configuration { get; }
 
@@ -54,6 +56,8 @@ namespace SmartConfig
         }
 
         public SettingPath SettingPath { get; }
+
+        public IReadOnlyCollection<SettingKey> Keys { get; }
 
         public IEnumerable<ConstraintAttribute> SettingConstraints =>
             Property == null

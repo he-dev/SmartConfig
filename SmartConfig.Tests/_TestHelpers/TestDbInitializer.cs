@@ -2,7 +2,7 @@
 using System.Linq;
 using SmartConfig.Data;
 
-namespace SmartConfig.Tests.Data
+namespace SmartConfig.Tests
 {
     class TestDbInitializer : DropCreateDatabaseAlways<SmartConfigContext<TestSetting>>
     {

@@ -10,10 +10,10 @@ namespace SmartConfig
     {
         private readonly List<string> _path = new List<string>();
 
-        //public static string From<T>(Expression<Func<T>> expression)
+        //public static string Create<T>(Expression<Func<T>> expression)
         //{
         //    var memberInfo = Utilities.GetMemberInfo(expression);
-        //    var settingInfo = SettingInfo.From(expression);
+        //    var settingInfo = SettingInfo.Create(expression);
 
         //    // Replace config namespace and class name with application name.
         //    var elementName = Regex.Replace(memberInfo.ReflectedType.FullName, @"^" + settingInfo.ConfigType.FullName + @"\.?", string.Empty);

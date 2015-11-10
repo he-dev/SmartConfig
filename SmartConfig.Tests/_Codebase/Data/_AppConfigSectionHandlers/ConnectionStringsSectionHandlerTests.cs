@@ -4,10 +4,10 @@ using SmartConfig.Data;
 
 namespace SmartConfig.Tests.Data
 {
-    [TestClass()]
+    [TestClass]
     public class ConnectionStringsSectionHandlerTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void Select_Name()
         {
             var section = new ConnectionStringsSection();
@@ -21,7 +21,7 @@ namespace SmartConfig.Tests.Data
             Assert.IsNull(sectionHandler.Select(section, "KEY2"));
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void Update_Name()
         {
             var section = new ConnectionStringsSection();

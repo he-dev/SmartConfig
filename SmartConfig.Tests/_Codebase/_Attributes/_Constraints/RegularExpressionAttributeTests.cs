@@ -2,17 +2,17 @@
 
 namespace SmartConfig.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class RegularExpressionAttributeTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void ctor_RegularExpressionAttribute()
         {
             var attr1 = new RegularExpressionAttribute("\\d[A-Z]");
             Assert.AreEqual("\\d[A-Z]", attr1.ToString());
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void IsMatch()
         {
             var attr1 = new RegularExpressionAttribute("\\d[A-Z]");

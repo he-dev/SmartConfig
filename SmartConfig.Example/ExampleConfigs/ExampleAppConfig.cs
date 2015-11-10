@@ -1,4 +1,6 @@
-﻿namespace SmartConfig.Example.Data
+﻿using SmartConfig.Data;
+
+namespace SmartConfig.Example.ExampleConfigs
 {
     [SmartConfig]
     static class ExampleAppConfig
@@ -18,6 +20,21 @@
 
             [Optional]
             public static string TestDb { get; set; }
-        }        
+        }
+    }
+
+    [SmartConfig(Name = "abc")]
+    static class TestConfig
+    {
+        public static class Properties
+        {
+            public static IDataSource DataSource => new DbSource<Setting>("name=abc", "xyz");
+
+            public static class CustomKeys
+            {
+                public static string Environment { get; set; } = "ABC";
+                public static string Version { get; set; } = "1.0.0";
+            }
+        }
     }
 }

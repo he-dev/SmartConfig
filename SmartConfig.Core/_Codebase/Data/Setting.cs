@@ -12,8 +12,10 @@ namespace SmartConfig.Data
     /// </summary>
     public class Setting : IIndexer
     {
-        private const string getPrefix = "get_";
-        private const string setPrefix = "set_";
+        private const string GetPrefix = "get_";
+        private const string SetPrefix = "set_";
+
+        public const string DefaultKeyName = "Name";
 
         private readonly IDictionary<string, Delegate> _delegates;
 
@@ -34,8 +36,8 @@ namespace SmartConfig.Data
         /// <returns></returns>
         public string this[string propertyName]
         {
-            get { return ((GetStringMethod)_delegates[$"{getPrefix}{propertyName}"])(); }
-            set { ((SetStringMethod)_delegates[$"{setPrefix}{propertyName}"])(value); }
+            get { return ((GetStringMethod)_delegates[$"{GetPrefix}{propertyName}"])(); }
+            set { ((SetStringMethod)_delegates[$"{SetPrefix}{propertyName}"])(value); }
         }
 
         /// <summary>
@@ -61,8 +63,8 @@ namespace SmartConfig.Data
             {
                 var getStringMethod = (GetStringMethod)Delegate.CreateDelegate(typeof(GetStringMethod), this, property.GetGetMethod());
                 var setStringMethod = (SetStringMethod)Delegate.CreateDelegate(typeof(SetStringMethod), this, property.GetSetMethod());
-                _delegates.Add($"{getPrefix}{property.Name}", getStringMethod);
-                _delegates.Add($"{setPrefix}{property.Name}", setStringMethod);
+                _delegates.Add($"{GetPrefix}{property.Name}", getStringMethod);
+                _delegates.Add($"{SetPrefix}{property.Name}", setStringMethod);
             }
         }
     }

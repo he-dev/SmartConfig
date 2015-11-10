@@ -7,6 +7,7 @@ using System.Reflection;
 using SmartConfig.Collections;
 using SmartConfig.Converters;
 using SmartConfig.Data;
+using SmartConfig.IO;
 using SmartConfig.Reflection;
 using SmartUtilities;
 
@@ -17,8 +18,7 @@ namespace SmartConfig
     /// </summary>
     public static class Configuration
     {
-        private static readonly IDictionary<Type, ConfigurationInfo> Configurations;
-        private static readonly DataSourceCollection DataSources;
+        private static readonly IDictionary<Type, ConfigurationInfo> ConfigurationCache;
 
         /// <summary>
         /// Gets the current converters and allows to add additional ones.
@@ -27,8 +27,7 @@ namespace SmartConfig
 
         static Configuration()
         {
-            Configurations = new Dictionary<Type, ConfigurationInfo>();
-            DataSources = new DataSourceCollection();
+            ConfigurationCache = new Dictionary<Type, ConfigurationInfo>();
 
             // initialize default converters
             Converters = new ObjectConverterCollection
@@ -48,28 +47,15 @@ namespace SmartConfig
         /// Loads settings for a a configuration from the specified data source.
         /// </summary>
         /// <param name="configType">SettingType that is marked with the <c>SmartCofnigAttribute</c> and specifies the configuration.</param>
-        /// <param name="dataSource">Data source that provides data.</param>
-        public static void LoadSettings(Type configType, IDataSource dataSource)
+        public static void LoadSettings(Type configType)
         {
             if (configType == null) { throw new ArgumentNullException(nameof(configType)); }
-            if (dataSource == null) { throw new ArgumentNullException(nameof(dataSource)); }
 
-            //Logger.LogTrace(() => $"Loading \"{configType.Name}\" from \"{dataSource.GetType().Name}\"...");
-
-            DataSources[configType] = dataSource;
-
-            //if (dataSource.SettingsInitializationEnabled)
-            //{
-            //    var settingsUpdater = new SettingsUpdater(new ConfigurationReflector(), Converters, DataSources);
-            //    var settingsInitializer = new SettingsInitializer(new ConfigurationReflector(), settingsUpdater, DataSources);
-            //    settingsInitializer.InitializeSettings(configType);
-            //}
-
+            //Logger.LogTrace(() => $"Loading \"{configType.Name}\" from \"{dataSource.GetType().Name}\"...");        
             var configuration = new ConfigurationInfo(configType);
-            Configurations[configType] = configuration;
+            ConfigurationCache[configType] = configuration;
 
-            var settingsLoader = new SettingsLoader(Converters, DataSources);
-            settingsLoader.LoadSettings(configuration);
+            SettingLoader.LoadSettings(configuration, Converters);
         }
 
         /// <summary>
@@ -98,14 +84,13 @@ namespace SmartConfig
             }
 
             SettingInfo settingInfo = null;
-            var configuration = Configurations.Values.FirstOrDefault(x => x.SettingInfos.TryGetValue(property, out settingInfo));
+            var configuration = ConfigurationCache.Values.FirstOrDefault(x => x.SettingInfos.TryGetValue(property, out settingInfo));
             if (configuration == null)
             {
                 throw new MemberNotFoundException { MemberName = property.Name };
             }
 
-            var settingsUdater = new SettingsUpdater(Converters, DataSources);
-            settingsUdater.UpdateSetting(settingInfo, value);
+            SettingUpdater.UpdateSetting(settingInfo, value, Converters);
             settingInfo.Value = value;
         }
     }

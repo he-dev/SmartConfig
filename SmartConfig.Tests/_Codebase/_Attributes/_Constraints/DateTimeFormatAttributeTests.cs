@@ -3,11 +3,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace SmartConfig.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class DateTimeFormatAttributeTests
     {
-        [TestMethod()]
-        public void ctor_DateTimeFormatAttribute()
+        [TestMethod]
+        public void ctor_CanCreateDateTimeFormatAttribute()
         {
             const string format = "ddMMyyyy";
             var attr = new DateTimeFormatAttribute(format);
@@ -15,8 +15,8 @@ namespace SmartConfig.Tests
             Assert.AreEqual(format, attr.ToString());
         }
 
-        [TestMethod()]
-        public void TryParseExact_True()
+        [TestMethod]
+        public void TryParseExact_CanParseDateTime()
         {
             const string format = "ddMMyyyy";
             var attr = new DateTimeFormatAttribute(format);
@@ -24,8 +24,8 @@ namespace SmartConfig.Tests
             Assert.IsTrue(attr.TryParseExact("12092015", out result));
         }
 
-        [TestMethod()]
-        public void TryParseExact_False()
+        [TestMethod]
+        public void TryParseExact_FailsToParseInvalidDateTime()
         {
             const string format = "ddMMMyyyy";
             var attr = new DateTimeFormatAttribute(format);

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using SmartConfig.Collections;
+using SmartConfig.Filters;
 
 namespace SmartConfig.Data
 {
@@ -9,67 +12,57 @@ namespace SmartConfig.Data
     /// </summary>
     public abstract class DataSource<TSetting> : IDataSource where TSetting : Setting, new()
     {
-        private KeyNames _keyNames;
-
-        private IDictionary<string, CustomKey> _customKeys;
-
-        protected DataSource(IEnumerable<CustomKey> customKeys)
+        protected DataSource()
         {
-            _customKeys = new Dictionary<string, CustomKey>();
+            const BindingFlags customPropertiesBindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 
-            var isDerived = typeof(TSetting) != typeof(Setting);
-            if (isDerived)
-            {
-                if (customKeys == null)
+            CustomKeyFilters =
+                typeof(TSetting) == typeof(Setting)
+                ? new Dictionary<string, ISettingFilter>()
+                : typeof(TSetting).GetProperties(customPropertiesBindingFlags).ToDictionary(x => x.Name, x =>
                 {
-                    throw new ArgumentNullException(nameof(customKeys));
-                }
+                    var filterAttribute = x.GetCustomAttribute<FilterAttribute>();
+                    if (filterAttribute == null)
+                    {
+                        throw new ArgumentNullException();
+                    }
+                    var settingFilter = (ISettingFilter)Activator.CreateInstance(filterAttribute.FilterType);
+                    return settingFilter;
+                });
 
-                var customKeyNames = _keyNames.Where(kn => kn != KeyNames.DefaultKeyName).ToList();
-                var allKeysConfigured = customKeys.All(ck => ck.Filter != null && customKeyNames.Contains(ck.Name));
-                if (!allKeysConfigured)
-                {
-                    // todo throw custom exception here
-                    throw new ArgumentException(null, nameof(customKeys));
-                }
-
-                _customKeys = customKeys.ToDictionary(ck => ck.Name);
-            }
-
+            //var isDerived = typeof(TSetting) != typeof(Setting);
+            //if (isDerived)
+            //{
+            //    if (customKeys == null)
+            //    {
+            //        throw new ArgumentNullException(nameof(customKeys));
+            //    }
+            //    var customKeyNames = SettingKeyNames.Where(kn => kn != SettingKeyNames.DefaultKeyName).ToList();
+            //    var allKeysConfigured = customKeys.All(ck => ck.Filter != null && customKeyNames.Contains(ck.Name));
+            //    if (!allKeysConfigured)
+            //    {
+            //        throw new SettingCustomKeysMismatchException
+            //        {
+            //            CustomKeys = string.Join(" ", customKeys.Select(ck => $"{ck.Name} = \"{ck.Value}\""))
+            //        };
+            //    }
+            //    _customKeys = customKeys.ToDictionary(ck => ck.Name);
+            //}
         }
 
-        public KeyNames KeyNames => _keyNames ?? (_keyNames = KeyNames.From<TSetting>());
+        protected IDictionary<string, ISettingFilter> CustomKeyFilters { get; }
 
-        protected IEnumerable<string> KeyNamesWithoutDefault
-        {
-            get { return KeyNames.Where(k => k != KeyNames.DefaultKeyName); }
-        }
+        public abstract string Select(IReadOnlyCollection<SettingKey> keys);
 
-        public CustomKey[] CustomKeys => _customKeys.Values.ToArray();
-
-        public bool SettingsInitializationEnabled { get; set; }
-
-        public abstract string Select(string defaultKeyValue);
-
-        public abstract void Update(string defaultKeyValue, string value);
+        public abstract void Update(IReadOnlyCollection<SettingKey> keys, string value);
 
         /// <summary>
         /// Applies all of the specified filters.
         /// </summary>
-        /// <param name="elements"></param>
-        /// <param name="compositeKey"></param>
-        /// <returns></returns>
-        protected IEnumerable<TSetting> ApplyFilters(IEnumerable<TSetting> elements, CompositeKey compositeKey)
+        protected IEnumerable<TSetting> ApplyFilters(IEnumerable<TSetting> settings, IEnumerable<SettingKey> customKeys)
         {
-            elements = compositeKey
-                .Where(x => x.Key != KeyNames.DefaultKeyName)
-                .Aggregate(elements, (current, item) => _customKeys[item.Key].Filter(current, item).Cast<TSetting>());
-            return elements;
-        }
-
-        protected CompositeKey CreateCompositeKey(string defaultKeyValue)
-        {
-            return new CompositeKey(defaultKeyValue, KeyNames, _customKeys);
+            settings = customKeys.Aggregate(settings, (current, key) => CustomKeyFilters[key.Name].FilterSettings(current, key).Cast<TSetting>());
+            return settings;
         }
     }
 }

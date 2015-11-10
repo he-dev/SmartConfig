@@ -69,10 +69,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="_Codebase\Data\CustomSetting.cs" />
-    <Compile Include="_Codebase\Data\_Configs\ExampleXmlConfig.cs" />
-    <Compile Include="_Codebase\Data\_Configs\ExampleDbConfig2.cs" />
-    <Compile Include="_Codebase\Data\_Configs\ExampleDbConfig1.cs" />
-    <Compile Include="_Codebase\Data\_Configs\ExampleAppConfig.cs" />
+    <Compile Include="ExampleConfigs\ExampleXmlConfig.cs" />
+    <Compile Include="ExampleConfigs\ExampleDbConfig2.cs" />
+    <Compile Include="ExampleConfigs\ExampleDbConfig1.cs" />
+    <Compile Include="ExampleConfigs\ExampleAppConfig.cs" />
     <Compile Include="_Codebase\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -115,6 +115,9 @@
       <Project>{b499d748-d867-4939-929b-bae2bbae6336}</Project>
       <Name>SmartConfig</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="_Codebase\Data\_Configs\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

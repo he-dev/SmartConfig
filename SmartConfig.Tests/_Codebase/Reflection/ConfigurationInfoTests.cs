@@ -24,10 +24,7 @@ namespace SmartConfig.Tests.Reflection
         {
             ExceptionAssert.Throws<ArgumentNullException>(() =>
             {
-                Configuration.LoadSettings(null, new TestDataSource()
-                {
-                    SelectFunc = keys => null
-                });
+                Configuration.LoadSettings(null);
             }, ex =>
             {
                 Assert.AreEqual("configType", ex.ParamName);
@@ -40,10 +37,7 @@ namespace SmartConfig.Tests.Reflection
         {
             ExceptionAssert.Throws<SmartConfigAttributeMissingException>(() =>
             {
-                Configuration.LoadSettings(typeof(ConfigTypeMustBeMarkedWithSmartConfigAttribute), new TestDataSource()
-                {
-                    SelectFunc = keys => null
-                });
+                Configuration.LoadSettings(typeof(ConfigTypeMustBeMarkedWithSmartConfigAttribute));
             }, ex =>
             {
                 Assert.AreEqual(typeof(ConfigTypeMustBeMarkedWithSmartConfigAttribute).FullName, ex.ConfigTypeFullName);
@@ -56,10 +50,7 @@ namespace SmartConfig.Tests.Reflection
         {
             ExceptionAssert.Throws<ConfigTypeNotStaticException>(() =>
             {
-                Configuration.LoadSettings(typeof(ConfigTypeMustBeStatic), new TestDataSource()
-                {
-                    SelectFunc = keys => null
-                });
+                Configuration.LoadSettings(typeof(ConfigTypeMustBeStatic));
             }, ex =>
             {
                 Assert.AreEqual(typeof(ConfigTypeMustBeStatic).FullName, ex.ConfigTypeFullName);
@@ -75,5 +66,5 @@ namespace SmartConfig.Tests.Reflection
             Assert.IsNotNull(configInfo);
             Assert.AreEqual(2, configInfo.SettingInfos.Count);
         }
-    }    
+    }
 }

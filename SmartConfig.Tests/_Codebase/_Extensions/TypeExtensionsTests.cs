@@ -2,20 +2,20 @@
 
 namespace SmartConfig.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class TypeExtensionsTests
     {
         public static  class StaticTestClass { }
 
         public class NonStaticTestClass { }
 
-        [TestMethod()]
+        [TestMethod]
         public void IsStatic_True()
         {
             Assert.IsTrue(typeof (StaticTestClass).IsStatic());
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void IsStatic_False()
         {
             Assert.IsFalse(typeof(NonStaticTestClass).IsStatic());

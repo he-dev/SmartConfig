@@ -5,12 +5,12 @@ namespace SmartConfig.Tests.Data
 {
     [TestClass]
     public class AppConfigTests
-    {        
+    {
         [TestMethod]
         public void Select_AppSetting()
         {
             var appConfigSource = new AppConfigSource();
-            var value = appConfigSource.Select("AppSettings.TestSetting");
+            var value = appConfigSource.Select(new[] { new SettingKey(Setting.DefaultKeyName, "AppSettings.TestSetting") });
             Assert.AreEqual("TestValue", value);
         }
 
@@ -18,7 +18,7 @@ namespace SmartConfig.Tests.Data
         public void Select_ConnectionString()
         {
             var appConfigSource = new AppConfigSource();
-            var value = appConfigSource.Select("ConnectionStrings.TestSetting");
+            var value = appConfigSource.Select(new[] { new SettingKey(Setting.DefaultKeyName, "ConnectionStrings.TestSetting") });
             Assert.AreEqual("TestConnectionString", value);
         }
     }

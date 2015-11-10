@@ -1,9 +1,19 @@
 ﻿// ReSharper disable InconsistentNaming
+
+using System.Collections.Generic;
+using System.Globalization;
+using SmartConfig.Data;
+
 namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
     public static class NumericSettings
     {
+        public static class Properties
+        {
+            public static SimpleTestDataSource DataSource { get; set; } = new SimpleTestDataSource();
+        }
+
         public static sbyte sbyteSetting { get; set; }
         public static byte byteSetting { get; set; }
         public static char charSetting { get; set; }

@@ -1,52 +1,40 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using SmartConfig.Collections;
 using SmartConfig.Data;
 using SmartConfig.Logging;
 using SmartConfig.Reflection;
 
-namespace SmartConfig
+namespace SmartConfig.IO
 {
-    internal class SettingsLoader
+    internal class SettingLoader
     {
-        private readonly IObjectConverterCollection _converters;
-
-        private readonly IDataSourceCollection _dataSources;
-
-        public SettingsLoader(IObjectConverterCollection converters, IDataSourceCollection dataSources)
-        {
-            _converters = converters;
-            _dataSources = dataSources;
-        }
-
         /// <summary>
         /// Loads settings for a a configuration from the specified data source.
         /// </summary>
-        internal void LoadSettings(ConfigurationInfo configurationInfo)
+        internal static void LoadSettings(ConfigurationInfo configuration, IObjectConverterCollection converters)
         {
-            Debug.Assert(configurationInfo != null);
+            Debug.Assert(configuration != null);
+            Debug.Assert(converters != null);
 
-            var dataSource = _dataSources[configurationInfo.ConfigType];
+            //Logger.LogTrace(() => $"Loading \"{configurationInfo.ConfigType.Name}\" from \"{dataSource.GetType().Name}\"...");
 
-            Logger.LogTrace(() => $"Loading \"{configurationInfo.ConfigType.Name}\" from \"{dataSource.GetType().Name}\"...");
-
-            foreach (var settingInfo in configurationInfo.SettingInfos.Values)
+            foreach (var settingInfo in configuration.SettingInfos.Values)
             {
-                LoadSetting(settingInfo, dataSource);
+                LoadSetting(settingInfo, configuration.Properties.DataSource, converters);
             }
         }
 
         // loads a setting from a data source into the correspondig field in the config class
-        private void LoadSetting(SettingInfo settingInfo, IDataSource dataSource)
+        private static void LoadSetting(SettingInfo settingInfo, IDataSource dataSource, IObjectConverterCollection converters)
         {
+            Debug.Assert(settingInfo != null);
+            Debug.Assert(dataSource != null);
+            Debug.Assert(converters != null);
+
             try
             {
-                var value = dataSource.Select(settingInfo.SettingPath);
+                var value = dataSource.Select(settingInfo.Keys);
 
                 // don't let pass null values to the converter
                 if (string.IsNullOrEmpty(value))
@@ -64,7 +52,7 @@ namespace SmartConfig
                     };
                 }
 
-                var converter = _converters[settingInfo.ConverterType];
+                var converter = converters[settingInfo.ConverterType];
                 var obj = converter.DeserializeObject(value, settingInfo.SettingType, settingInfo.SettingConstraints);
                 settingInfo.Value = obj;
             }

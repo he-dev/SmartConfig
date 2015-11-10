@@ -80,8 +80,7 @@
     <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\NumericsConfig.cs" />
     <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\BooleanSettings.cs" />
     <Compile Include="TestConfigs\_ConfigurationTests\_LoadSettings_Prerequisites\ConfigTypeMustBeStatic.cs" />
-    <Compile Include="_Codebase\Collections\ObjectConverterDictionaryTests.cs" />
-    <Compile Include="_Codebase\CompositeKeyTests.cs" />
+    <Compile Include="_Codebase\Collections\ObjectConverterCollectionTests.cs" />
     <Compile Include="_Codebase\Converters\NumericConverterTests.cs" />
     <Compile Include="_Codebase\Converters\BooleanConverterTests.cs" />
     <Compile Include="_Codebase\Data\_AppConfigSectionHandlers\AppSettingsSectionHandlerTests.cs" />
@@ -93,15 +92,12 @@
     <Compile Include="_Codebase\Data\_Sources\XmlSourceTests.cs" />
     <Compile Include="_Codebase\Data\_Sources\DbSourceTests.cs" />
     <Compile Include="TestConfigs\SimpteTestConfig.cs" />
+    <Compile Include="_Codebase\Filters\MultipleFilterTests.cs" />
+    <Compile Include="_Codebase\Filters\VersionFilterTests.cs" />
     <Compile Include="_Codebase\KeyNamesTests.cs" />
     <Compile Include="_Codebase\Reflection\ConfigurationInfoTests.cs" />
-    <Compile Include="_Codebase\TestCategories.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\DateTimeFormatAttributeTests.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\RegularExpressionAttributeTests.cs" />
-    <Compile Include="_Codebase\_Exceptions\ConstraintExceptionTests.cs" />
-    <Compile Include="_Codebase\_Exceptions\ObjectConverterNotFoundExceptionTests.cs" />
-    <Compile Include="_Codebase\_Exceptions\OptionalExceptionTests.cs" />
-    <Compile Include="_Codebase\_Exceptions\UnsupportedTypeExceptionTests.cs" />
     <Compile Include="_Codebase\_Extensions\EnumerableExtensionsTests.cs" />
     <Compile Include="_Codebase\_Extensions\TypeExtensionsTests.cs" />
     <Compile Include="_TestHelpers\AssemblyInitializer.cs" />
@@ -115,7 +111,7 @@
     <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\_Contraints\CustomRangeSettings.cs" />
     <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\_Contraints\CustomDateTimeFormatSettings.cs" />
     <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\UnsupportedTypeSettings.cs" />
-    <Compile Include="_Codebase\FiltersTests.cs" />
+    <Compile Include="_Codebase\Filters\StringFilterTests.cs" />
     <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\OptionalSettings.cs" />
     <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\JsonSettings.cs" />
     <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\EnumSettings.cs" />
@@ -131,7 +127,6 @@
     <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\CustomConfigName.cs" />
     <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\ValueTypesTestConfig.cs" />
     <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\VersionTestConfig.cs" />
-    <Compile Include="_Codebase\Converters\ValueTypeConverterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
