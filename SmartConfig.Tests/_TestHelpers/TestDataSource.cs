@@ -11,12 +11,12 @@ namespace SmartConfig.Tests
 
         public Action<IEnumerable<SettingKey>, string> UpdateAction;
 
-        public override string Select(IEnumerable<SettingKey> keys)
+        public override string Select(IReadOnlyCollection<SettingKey> keys)
         {
             return SelectFunc(keys);
         }
 
-        public override void Update(IEnumerable<SettingKey> keys, string value)
+        public override void Update(IReadOnlyCollection<SettingKey> keys, string value)
         {
             UpdateAction(keys, value);
         }
@@ -28,12 +28,12 @@ namespace SmartConfig.Tests
 
         public Action<IEnumerable<SettingKey>, string> UpdateAction;
 
-        public override string Select(IEnumerable<SettingKey> keys)
+        public override string Select(IReadOnlyCollection<SettingKey> keys)
         {
             return SelectFunc(keys);
         }
 
-        public override void Update(IEnumerable<SettingKey> keys, string value)
+        public override void Update(IReadOnlyCollection<SettingKey> keys, string value)
         {
             UpdateAction(keys, value);
         }

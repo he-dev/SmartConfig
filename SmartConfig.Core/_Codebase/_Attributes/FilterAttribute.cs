@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartConfig.Filters;
 
 namespace SmartConfig
 {
@@ -11,8 +12,16 @@ namespace SmartConfig
     {
         public FilterAttribute(Type filterType)
         {
-            if (filterType == null) { throw new ArgumentNullException(nameof(filterType)); }
-            
+            if (filterType == null)
+            {
+                throw new ArgumentNullException(nameof(filterType));
+            }
+
+            if (!typeof(ISettingFilter).IsAssignableFrom(filterType))
+            {
+                throw new FilterTypeNotISettingFilterException { FilterTypeFullName = filterType.FullName };
+            }
+
             FilterType = filterType;
         }
 

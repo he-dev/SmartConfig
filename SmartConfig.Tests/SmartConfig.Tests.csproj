@@ -81,6 +81,9 @@
     <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\BooleanSettings.cs" />
     <Compile Include="TestConfigs\_ConfigurationTests\_LoadSettings_Prerequisites\ConfigTypeMustBeStatic.cs" />
     <Compile Include="_Codebase\Collections\ObjectConverterCollectionTests.cs" />
+    <Compile Include="_Codebase\Converters\StringConverterTests.cs" />
+    <Compile Include="_Codebase\Converters\EnumConverterTests.cs" />
+    <Compile Include="_Codebase\Converters\DateTimeConverterTests.cs" />
     <Compile Include="_Codebase\Converters\NumericConverterTests.cs" />
     <Compile Include="_Codebase\Converters\BooleanConverterTests.cs" />
     <Compile Include="_Codebase\Data\_AppConfigSectionHandlers\AppSettingsSectionHandlerTests.cs" />

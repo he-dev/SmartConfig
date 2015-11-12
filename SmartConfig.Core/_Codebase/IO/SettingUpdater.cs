@@ -27,7 +27,7 @@ namespace SmartConfig.IO
             //{
             //    var converter = converters[settingInfo.ConverterType];
             //    var serializedValue = converter.SerializeObject(value, settingInfo.SettingType, settingInfo.SettingConstraints);
-            //    var dataSource = settingInfo.Configuration.Properties.DataSource;
+            //    var dataSource = settingInfo.config.ConfigProperties.DataSource;
             //    dataSource.Update(settingInfo.SettingPath, serializedValue);
             //}
             //catch (Exception ex)

@@ -2,11 +2,12 @@
 
 namespace SmartConfig.Example.ExampleConfigs
 {
-    [SmartConfig(Name = "ExampleApp1")]
+    [SmartConfig]
     static class ExampleDbConfig1
     {
         public static class Properties
         {
+            public static string Name => "ExampleApp1";
             public static IDataSource DataSource => new DbSource<Setting>(ExampleAppConfig.ConnectionStrings.ExampleDb, "ExampleConfigTable");
 
             public static class CustomKeys

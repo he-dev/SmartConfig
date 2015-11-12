@@ -10,18 +10,18 @@ namespace SmartConfig.IO
     internal class SettingLoader
     {
         /// <summary>
-        /// Loads settings for a a configuration from the specified data source.
+        /// Loads settings for a a config from the specified data source.
         /// </summary>
-        internal static void LoadSettings(ConfigurationInfo configuration, IObjectConverterCollection converters)
+        internal static void LoadSettings(ConfigInfo config, IObjectConverterCollection converters)
         {
-            Debug.Assert(configuration != null);
+            Debug.Assert(config != null);
             Debug.Assert(converters != null);
 
             //Logger.LogTrace(() => $"Loading \"{configurationInfo.ConfigType.Name}\" from \"{dataSource.GetType().Name}\"...");
 
-            foreach (var settingInfo in configuration.SettingInfos.Values)
+            foreach (var settingInfo in config.SettingInfos.Values)
             {
-                LoadSetting(settingInfo, configuration.Properties.DataSource, converters);
+                LoadSetting(settingInfo, config.ConfigProperties.DataSource, converters);
             }
         }
 
@@ -47,7 +47,7 @@ namespace SmartConfig.IO
 
                     throw new SettingNotOptionalException
                     {
-                        ConfigTypeFullName = settingInfo.Configuration.ConfigType.FullName,
+                        ConfigTypeFullName = settingInfo.Config.ConfigType.FullName,
                         SettingPath = settingInfo.SettingPath
                     };
                 }
@@ -61,7 +61,7 @@ namespace SmartConfig.IO
                 throw new LoadSettingFailedException(ex)
                 {
                     DataSourceTypeName = dataSource.GetType().Name,
-                    ConfigTypeFullName = settingInfo.Configuration.ConfigType.FullName,
+                    ConfigTypeFullName = settingInfo.Config.ConfigType.FullName,
                     SettingPath = settingInfo.SettingPath
                 };
             }

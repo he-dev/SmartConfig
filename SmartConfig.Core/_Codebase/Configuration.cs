@@ -14,11 +14,11 @@ using SmartUtilities;
 namespace SmartConfig
 {
     /// <summary>
-    /// Represents a configuration a provides methods for loading and updating settings.
+    /// Represents a config a provides methods for loading and updating settings.
     /// </summary>
     public static class Configuration
     {
-        private static readonly IDictionary<Type, ConfigurationInfo> ConfigurationCache;
+        private static readonly IDictionary<Type, ConfigInfo> ConfigurationCache;
 
         /// <summary>
         /// Gets the current converters and allows to add additional ones.
@@ -27,7 +27,7 @@ namespace SmartConfig
 
         static Configuration()
         {
-            ConfigurationCache = new Dictionary<Type, ConfigurationInfo>();
+            ConfigurationCache = new Dictionary<Type, ConfigInfo>();
 
             // initialize default converters
             Converters = new ObjectConverterCollection
@@ -44,15 +44,15 @@ namespace SmartConfig
         }
 
         /// <summary>
-        /// Loads settings for a a configuration from the specified data source.
+        /// Loads settings for a a config from the specified data source.
         /// </summary>
-        /// <param name="configType">SettingType that is marked with the <c>SmartCofnigAttribute</c> and specifies the configuration.</param>
+        /// <param name="configType">SettingType that is marked with the <c>SmartCofnigAttribute</c> and specifies the config.</param>
         public static void LoadSettings(Type configType)
         {
             if (configType == null) { throw new ArgumentNullException(nameof(configType)); }
 
             //Logger.LogTrace(() => $"Loading \"{configType.Name}\" from \"{dataSource.GetType().Name}\"...");        
-            var configuration = new ConfigurationInfo(configType);
+            var configuration = new ConfigInfo(configType);
             ConfigurationCache[configType] = configuration;
 
             SettingLoader.LoadSettings(configuration, Converters);

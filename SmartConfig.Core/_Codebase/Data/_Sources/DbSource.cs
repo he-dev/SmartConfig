@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace SmartConfig.Data
@@ -45,7 +44,7 @@ namespace SmartConfig.Data
 
                 var setting = settings.SingleOrDefault();
                 return setting?.Value;
-            };
+            }
         }
 
         public override void Update(IReadOnlyCollection<SettingKey> keys, string value)
@@ -80,7 +79,7 @@ namespace SmartConfig.Data
                 }
 
                 context.SaveChanges();
-            };
+            }
         }
     }
 }

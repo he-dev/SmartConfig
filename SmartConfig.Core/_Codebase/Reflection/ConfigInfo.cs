@@ -8,9 +8,9 @@ using SmartConfig.Data;
 
 namespace SmartConfig.Reflection
 {
-    internal class ConfigurationInfo
+    internal class ConfigInfo
     {
-        public ConfigurationInfo(Type configType)
+        public ConfigInfo(Type configType)
         {
             if (configType == null)
             {
@@ -29,25 +29,22 @@ namespace SmartConfig.Reflection
             }
 
             ConfigType = configType;
-            ConfigName = smartConfigAttribute.Name;
-            Properties = new ConfigurationProperties(configType);
+            ConfigProperties = new ConfigProperties(configType);
             SettingInfos = GetSettingInfos(configType).ToDictionary(x => x.Property);
 
         }
 
         public Type ConfigType { get; }
 
-        public string ConfigName { get; }
+        public ConfigProperties ConfigProperties { get; }
 
-        public ConfigurationProperties Properties { get; }
-
-        public bool HasCustomName => !string.IsNullOrEmpty(ConfigName);
+        public bool HasCustomName => !string.IsNullOrEmpty(ConfigProperties.Name);
 
         public IDictionary<PropertyInfo, SettingInfo> SettingInfos { get; }
 
         private IEnumerable<SettingInfo> GetSettingInfos(Type type, IEnumerable<string> path = null)
         {
-            path = path ?? (HasCustomName ? new[] { ConfigName } : new string[] { });
+            path = path ?? (HasCustomName ? new[] { ConfigProperties.Name } : new string[] { });
 
             var properties = type
                 .GetProperties(BindingFlags.Public | BindingFlags.Static)
@@ -55,7 +52,7 @@ namespace SmartConfig.Reflection
 
             foreach (var property in properties)
             {
-                yield return new SettingInfo(this, property, path.Concat(new[] { property.Name }), Properties.CustomKeys);
+                yield return new SettingInfo(this, property, path.Concat(new[] { property.Name }), ConfigProperties.CustomKeys);
             }
 
             var canSelectType = new Func<Type, bool>(t =>

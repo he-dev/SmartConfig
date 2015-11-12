@@ -23,11 +23,13 @@ namespace SmartConfig.Example.ExampleConfigs
         }
     }
 
-    [SmartConfig(Name = "abc")]
+    [SmartConfig]
     static class TestConfig
     {
         public static class Properties
         {
+            public static string Name => "abc";
+
             public static IDataSource DataSource => new DbSource<Setting>("name=abc", "xyz");
 
             public static class CustomKeys

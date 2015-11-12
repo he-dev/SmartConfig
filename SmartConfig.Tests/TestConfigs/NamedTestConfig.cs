@@ -1,8 +1,13 @@
 ﻿namespace SmartConfig.Tests.TestConfigs
 {
-    [SmartConfig(Name = "UnitTest")]
+    [SmartConfig]
     public static class NamedTestConfig
     {
+        public static class Properties
+        {
+            public static string Name => "UnitTest";
+        }
+
         public static string Setting1 = "A";
 
         public static class Nested1

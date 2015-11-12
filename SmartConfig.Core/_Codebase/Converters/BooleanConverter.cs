@@ -15,40 +15,18 @@ namespace SmartConfig.Converters
         {
             ValidateType(type);
 
-            var parseMethod = type.GetMethod("Parse", new[] { typeof(string), typeof(IFormatProvider) });
-            if (parseMethod != null)
-            {
-                return parseMethod.Invoke(null, new object[] { value, CultureInfo.InvariantCulture });
-            }
-
-            parseMethod = type.GetMethod("Parse", new[] { typeof(string) });
-            if (parseMethod != null)
-            {
-                return parseMethod.Invoke(null, new object[] { value });
-            }
-
-            return null;
+            var parseMethod = type.GetMethod("Parse", new[] { typeof(string) });
+            var result = parseMethod.Invoke(null, new object[] { value });
+            return result;
         }
 
         public override string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
             ValidateType(type);
 
-            var toStringMethod = type.GetMethod("ToString", new[] { typeof(IFormatProvider) });
-            if (toStringMethod != null)
-            {
-                var result = toStringMethod.Invoke(value, new object[] { CultureInfo.InvariantCulture });
-                return (string)result;
-            }
-
-            toStringMethod = type.GetMethod("ToString", new Type[] { });
-            if (toStringMethod != null)
-            {
-                var result = toStringMethod.Invoke(value, null);
-                return (string)result;
-            }
-
-            throw new Exception("ToString method not found.");
+            var toStringMethod = type.GetMethod("ToString", new Type[] { });
+            var result = toStringMethod.Invoke(value, null);
+            return (string)result;
         }
     }
 }

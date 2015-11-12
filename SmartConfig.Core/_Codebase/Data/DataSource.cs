@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using SmartConfig.Collections;
 using SmartConfig.Filters;
 
 namespace SmartConfig.Data

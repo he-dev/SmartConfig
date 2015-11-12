@@ -8,7 +8,7 @@ using SmartConfig.Collections;
 namespace SmartConfig.Data
 {
     /// <summary>
-    /// Provides <c>DbContext</c> for retreiving configuration from a database.
+    /// Provides <c>DbContext</c> for retreiving config from a database.
     /// </summary>
     internal sealed class SmartConfigContext<TSetting> : DbContext where TSetting : Setting
     {

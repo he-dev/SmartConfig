@@ -8,7 +8,6 @@ using SmartConfig.Tests.TestConfigs;
 using SmartUtilities.UnitTesting;
 // ReSharper disable InconsistentNaming
 
-
 namespace SmartConfig.Tests.Data
 {
     [TestClass]

@@ -41,6 +41,8 @@ namespace SmartConfig.Data
             }
         }
 
+        public IEnumerable<string> SectionNames => _sectionHandlers.Values.Select(sh => sh.SectionName);
+
         public override string Select(IReadOnlyCollection<SettingKey> keys)
         {
             Debug.Assert(keys != null && keys.Any());
@@ -79,16 +81,20 @@ namespace SmartConfig.Data
         {
             Debug.Assert(nameKey != null);
 
-            var sectionNames = _sectionHandlers.Select(x => x.Value.SectionName);
-            var sectionNamePattern = @"(?<SectionName>" + string.Join("|", sectionNames) + @")";
+            //var sectionNames = _sectionHandlers.Select(x => x.Value.SectionName);
+            //var sectionNamePattern = @"(?<SectionName>" + string.Join("|", sectionNames) + @")";
 
-            var sectionNameMatch = Regex.Match(nameKey.Value, sectionNamePattern, RegexOptions.ExplicitCapture);
-            if (!sectionNameMatch.Groups["SectionName"].Success)
-            {
-                throw new InvalidOperationException($"Section name not found in '{nameKey.Value}'");
-            }
+            //var sectionNameMatch = Regex.Match(nameKey.Value, sectionNamePattern, RegexOptions.ExplicitCapture);
+            //if (!sectionNameMatch.Groups["SectionName"].Success)
+            //{
+            //throw new InvalidOperationException($"Section name not found in '{nameKey.Value}'");
+            //}
 
-            return sectionNameMatch.Groups["SectionName"].Value;
+            //return sectionNameMatch.Groups["SectionName"].Value;
+
+            var parts = nameKey.Value.Split('.');
+            var sectionName = parts.Take(2).First(p => SectionNames.Contains(p));
+            return sectionName;
         }
 
         private string GetSettingName(SettingKey nameKey)
@@ -97,15 +103,20 @@ namespace SmartConfig.Data
 
             // (?<= AppSettings | ConnectionStrings)\.(?< Key >.+$)
 
-            var sectionName = GetSectionName(nameKey);
-            var keyPattern = $"(?<={sectionName})\\.(?<Key>.+$)";
-            var keyMatch = Regex.Match(nameKey.Value, keyPattern, RegexOptions.ExplicitCapture);
-            if (!keyMatch.Groups["Key"].Success)
-            {
-                throw new InvalidOperationException($"Key not found in '{nameKey.Value}'");
-            }
+            //var sectionName = GetSectionName(nameKey);
+            //var keyPattern = $"(?<={sectionName})\\.(?<Key>.+$)";
+            //var keyMatch = Regex.Match(nameKey.Value, keyPattern, RegexOptions.ExplicitCapture);
+            //if (!keyMatch.Groups["Key"].Success)
+            //{
+            //    throw new InvalidOperationException($"Key not found in '{nameKey.Value}'");
+            //}
 
-            return keyMatch.Groups["Key"].Value;
+            //return keyMatch.Groups["Key"].Value;
+
+            var parts = nameKey.Value.Split('.');
+            var sectionNameIndex = parts.Select((p, i) => new { p, i }).First(x => SectionNames.Contains(x.p)).i;
+            var keyParts = parts.Where((p, i) => i != sectionNameIndex);
+            return string.Join(".", keyParts);
         }
     }
 }

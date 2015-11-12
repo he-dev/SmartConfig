@@ -1,12 +1,13 @@
 ﻿using SmartConfig.Data;
 
-namespace SmartConfig.Example.Data
+namespace SmartConfig.Example.ExampleConfigs
 {
-    [SmartConfig(Name = "ExampleApp2")]
+    [SmartConfig]
     static class ExampleDbConfig2
     {
         public static class Properties
         {
+            public static string Name => "ExampleApp2";
             public static IDataSource DataSource => new DbSource<Setting>("name=abc", "xyz");
 
             public static class CustomKeys

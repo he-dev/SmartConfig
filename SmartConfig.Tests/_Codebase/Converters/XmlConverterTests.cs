@@ -9,7 +9,7 @@ namespace SmartConfig.Tests.Converters
     public class XmlConverterTests
     {
         [TestMethod]
-        public void DeserializeObject_XDocument()
+        public void DeserializeObject_CanDeserializeXDocument()
         {
             const string xDocument = @"<?xml version=""1.0""?><testXml></testXml>";
 
@@ -18,7 +18,7 @@ namespace SmartConfig.Tests.Converters
         }
 
         [TestMethod]
-        public void DeserializeObject_XElement()
+        public void DeserializeObject_CanDeserializeXElement()
         {
             const string xElement = @"<testXml></testXml>";
 
@@ -27,8 +27,21 @@ namespace SmartConfig.Tests.Converters
         }
 
         [TestMethod]
-        public void TestSerializeObject()
+        public void SerializeObject_CanSerializeXDocument()
         {
+            const string xDocument = "<?xml version=\"1.0\" encoding=\"utf-8\"?><testXml>abc</testXml>";
+
+            var converter = new XmlConverter();
+            //Assert.AreEqual(xDocument, converter.SerializeObject(XDocument.Parse(xDocument), typeof(XDocument), Enumerable.Empty<ConstraintAttribute>()).ToString());
+        }
+
+        [TestMethod]
+        public void SerializeObject_CanSerializeXElement()
+        {
+            const string xElement = @"<testXml></testXml>";
+
+            var converter = new XmlConverter();
+            //Assert.AreEqual(xElement, converter.SerializeObject(XElement.Parse(xElement), typeof(XElement), Enumerable.Empty<ConstraintAttribute>()).ToString());
         }
     }
 }

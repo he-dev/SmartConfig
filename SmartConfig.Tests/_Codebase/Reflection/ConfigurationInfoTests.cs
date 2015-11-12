@@ -61,7 +61,7 @@ namespace SmartConfig.Tests.Reflection
         [TestMethod]
         public void ctor_CanExamineConfigType()
         {
-            var configInfo = new ConfigurationInfo(typeof(TestConfig1));
+            var configInfo = new ConfigInfo(typeof(TestConfig1));
 
             Assert.IsNotNull(configInfo);
             Assert.AreEqual(2, configInfo.SettingInfos.Count);

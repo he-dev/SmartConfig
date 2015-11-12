@@ -7,7 +7,7 @@ namespace SmartConfig.Tests.Data
     public class AppConfigTests
     {
         [TestMethod]
-        public void Select_AppSetting()
+        public void Select_CanSelectAppSetting()
         {
             var appConfigSource = new AppConfigSource();
             var value = appConfigSource.Select(new[] { new SettingKey(Setting.DefaultKeyName, "AppSettings.TestSetting") });
@@ -15,11 +15,27 @@ namespace SmartConfig.Tests.Data
         }
 
         [TestMethod]
-        public void Select_ConnectionString()
+        public void Select_CanSelectAppSettingWithCustomName()
+        {
+            var appConfigSource = new AppConfigSource();
+            var value = appConfigSource.Select(new[] { new SettingKey(Setting.DefaultKeyName, "myApp.AppSettings.TestSetting") });
+            Assert.AreEqual("MyAppTestValue", value);
+        }
+
+        [TestMethod]
+        public void Select_CanSelectConnectionString()
         {
             var appConfigSource = new AppConfigSource();
             var value = appConfigSource.Select(new[] { new SettingKey(Setting.DefaultKeyName, "ConnectionStrings.TestSetting") });
             Assert.AreEqual("TestConnectionString", value);
+        }
+
+        [TestMethod]
+        public void Select_CanSelectConnectionStringWithCusomName()
+        {
+            var appConfigSource = new AppConfigSource();
+            var value = appConfigSource.Select(new[] { new SettingKey(Setting.DefaultKeyName, "myApp.ConnectionStrings.TestSetting") });
+            Assert.AreEqual("MyAppTestConnectionString", value);
         }
     }
 }

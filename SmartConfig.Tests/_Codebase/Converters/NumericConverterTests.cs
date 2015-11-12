@@ -10,7 +10,7 @@ namespace SmartConfig.Tests.Converters
     public class NumericConverterTests
     {
         [TestMethod]
-        public void DeserializeObject()
+        public void DeserializeObject_CanDeserializeNumerics()
         {
             var numericConverter = new NumericConverter();
             var ci = CultureInfo.InvariantCulture;
@@ -29,7 +29,7 @@ namespace SmartConfig.Tests.Converters
         }
 
         [TestMethod]
-        public void SerializeObject()
+        public void SerializeObject_CanSerializeNumerics()
         {
             //var valueTypeConverter = new ValueTypeConverter();
             //Assert.AreEqual("123", valueTypeConverter.SerializeObject(123, typeof(int), Enumerable.Empty<ConstraintAttribute>()));

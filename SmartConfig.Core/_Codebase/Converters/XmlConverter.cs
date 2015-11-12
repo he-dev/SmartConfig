@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Xml.Linq;
 
 namespace SmartConfig.Converters
@@ -28,9 +30,17 @@ namespace SmartConfig.Converters
 
         public override string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
-            ValidateType(type);           
-            var result = value.ToString();
-            return result;
+            ValidateType(type);
+
+            using (var memoryStream = new MemoryStream())
+            using (var streamWriter = new StreamWriter(memoryStream, Encoding.UTF8))
+            {
+                var saveMethod = type.GetMethod("Save", new[] { typeof(StreamWriter), typeof(SaveOptions) });
+                saveMethod.Invoke(value, new object[] { streamWriter, SaveOptions.DisableFormatting });
+                var xml = Encoding.UTF8.GetString(memoryStream.ToArray());
+                return xml;
+            }
+
         }
     }
 }

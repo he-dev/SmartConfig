@@ -9,10 +9,7 @@ namespace SmartConfig.Converters
     /// </summary>
     public class DateTimeConverter : ObjectConverter
     {
-        public DateTimeConverter()
-            : base(new[] { typeof(DateTime) })
-        {
-        }
+        public DateTimeConverter() : base(new[] { typeof(DateTime) }) { }
 
         public override object DeserializeObject(string value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
@@ -60,7 +57,8 @@ namespace SmartConfig.Converters
 
             if (string.IsNullOrEmpty(result))
             {
-                result = ((DateTime)value).ToString(CultureInfo.InvariantCulture);
+                var toStringMethod = type.GetMethod("ToString", new[] { typeof(CultureInfo) });
+                result = (string)toStringMethod.Invoke(value, new object[] { CultureInfo.InvariantCulture });
             }
             return result;
         }
