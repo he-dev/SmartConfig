@@ -1,24 +1,23 @@
-# SmartConfig v3 
+# SmartConfig v4
+Becasue writing configurations should be easy.
 
-(wiki is being updated...)
-
-Configuration has never been easier!
+page is updated...
 
 This section briefly describes **`SmartConfig`**'s features.
 
-**`SmartConfig`** is a configuration framework that makes writing configurations easier then ever. Version 3 brings an improved and easier to use API.
+**`SmartConfig`** is a configuration framework that makes writing configurations easier then ever. Version 4 continues to make the API easier to use and at the same time more robust.
 
 ## Why another one?
-Because I did't find anything simplier and as powerful as **`SmartConfig`**. I find a configuration should be set up within a few minutes and be easily extended if needed. Unfortunatelly most of the time we spend hours writing them over and over again. With **`SmartConfig`** it's over.
+I find a configuration should be set up within a few minutes and be easily extended if needed. Unfortunatelly most of the time we spend hours writing them over and over again. With **`SmartConfig`** it's over.
 
 ## How does it work?
-With **`SmartConfig`** you write a `static class` with static fields that will hold the settings when they are loaded. Its structure is used to build setting names. There is no need to use any hardcoded strings or create enums etc to get any values. The idea of **`SmartConfig`** is to eliminate all magic strings.
+Briefly, with **`SmartConfig`** you write a `static class` with static properties that will hold the settings when they are loaded. Its structure is used to build setting names. There is no need to use any hardcoded strings or create enums etc to get any values. **`SmartConfig`** eliminates all magic strings.
 
 ## Where are all the settings stored?
-Currently **`SmartConfig`** can read & write the `App.config`'s `connectionStrings` and `appSettings` sections, databases (with `Entity Framework` and an own xml format that resembles a database. It is however possible to add your own data source.
+Currently **`SmartConfig`** can read & write the `App.config`'s `connectionStrings` and `appSettings` sections, databases (with `Entity Framework`) and its own xml format that resembles a database. It is however possible to add your own data source.
 
 ## Are there any other benefits?
-Yes there are :-) **`SmartConfig`** is strongly typed and can validate all values as well during loading as during updating. Thus you know always know if you read/write valid settings. It supports many popular types and provides an interface to add you own types if you need to. **`SmartConfig`** can filter your settings based on various additional criteria. To start with it provides two filters: by string and by version ([Semantic Version](http://semver.org)). You can add other criteria if you need to.
+Yes there are :-) **`SmartConfig`** is strongly typed and can validate all values as well during loading as during updating. Thus you know always know if you read/write valid settings. It supports many popular types and provides an interface to add your own types if you need to. **`SmartConfig`** can filter your settings based on various additional criteria. To start with it provides two filters: by string and by version ([Semantic Version](http://semver.org)). You can add other criteria if you need to.
 
 ## Is it stable yet?
 It looks like it is ;-)
@@ -32,7 +31,9 @@ Install-Package SmartConfig
 
 ## Features
 - Strongly typed values:
-  - Value types: `char`, `bool`, `short`, `int`, `long`, `single`, `float`, `decimal`, `enum`
+  - Numerics like `char`, `short`, `int`, `long`, `single`, `float`, `decimal` and others
+  - Booleans
+  - Enums
   - JSON (via `ObjectConverterAttribute`: `[ObjectConverter(typeof(JsonConverter)]`)
   - XML (`XDocument`,`XElement`)
   - Colors (`System.Drawing.Color` as Name (Red), HEX (#FF00AA), Decimal (122, 134,90)
@@ -56,11 +57,9 @@ There is one _hidden_ beta feature for generating setting name and default value
 
 ## Hallo SmartConfig! - Basic Example
 
-In this short tutorial we'll create a very simple configuration to show how **`SmartConfig`** works and how easy it is.
+This short tutorial shows how easy **`SmartConfig`** is.
 
-We use for our main configuration a database because nowadays it's actually a standard and all apps use some database to store data.
-
-To be able to use to the database, first we need a minimal `app.config` configuration. There two settings are required a connection string and the name of the table for our settings:
+Let's pretend all the settings are stored in a database. To be able to get them from there we need two things: a connection string and the name of the table. We store both settings in the `app.config` and we use **`SmartConfig`** for the first time to read them. Such a configuration could look like this:
 
 ### app.config
 ```xml
@@ -72,7 +71,7 @@ To be able to use to the database, first we need a minimal `app.config` configur
 </appSettings>
 ```
 
-We use **`SmartConfig`** to read both settings. Becasue it loads settings into a static class we create one and we add a special `SmartConfigAttribute` to it. Inside the config class we define two nested static classes that will represent the `connectionStrings` and the `appSettings` sections:
+We need something to load both values to so we create a static class that must be marked with the `SmartConfigAttribute` so that the loader recognizes it. Inside the config class we define two nested static classes that will represent the `connectionStrings` and the `appSettings` sections:
 
 ### ExampleAppConfig.cs
 ```cs
@@ -81,20 +80,16 @@ static class ExampleAppConfig
 {
     public static class ConnectionStrings
     {
-        public static string ExampleDb;
+        public static string ExampleDb { get; set}
     } 
     public static class AppSettings
     {   
-        public static string SettingsTableName;
+        public static string SettingsTableName { get; set}
     }
 }
 ```
 
-Now you might think why I should do this? It's pretty simple to read `app.config`'s settings.
-
-While reading those settings is indeed very simple the validation requires another few lines of code... that you write over and over agian in each and every application... or you don't... but then strange things occur and your application crashes at some random point. 
-
-**SmartConfig** minimizes this risk by loading and validating all settings at once. This way you can detect invalid settings before you start your application.
+That's all. **`SmartConfig`** will take care of checking if each setting is available in the `app.config` and will complain if it doesn't find one. Thus **SmartConfig** minimizes this risk by loading and validating all settings at once. This way you can detect invalid settings before you start your application.
 
 We didn't mark any fields as optional so both settings are required and cannot be null/empty.
 
@@ -102,10 +97,10 @@ Let's load them now:
 
 ## Program.cs
 ```cs
-SmartConfigManager.Load(typeof(ExampleAppConfig), new AppConfig());
+SmartConfigManager.Load(typeof(ExampleAppConfig));
 ```
 
-As you see the call is really simple. You just need to say which settings you want to load and what the data source is.
+As you see the call is really simple. You just need to say which settings you want to load. By default **`SmartConfig`** uses the `AppConfigSource` as a data source.
 
 We're halfway there. Now we want to load the actual settings from the database table that in its simplest form has just two columns:
 
@@ -126,8 +121,8 @@ static class ExampleDbConfig
 {
     public static string Welcome;
     
-    [ObjectConverter(typeof(JsonConverter)]
     [Optional]
+    [ObjectConverter(typeof(JsonConverter)]
     public static List<int> Primes { get; set; } = new List<int> { 3, 5, 7 };
     
     public static class MonitorSize
@@ -138,7 +133,7 @@ static class ExampleDbConfig
 }
 ```
 
-For two settings we must provide values, the primes are optional and have a default value already.
+The setting table must contain the `Welcome` and `MonitorSize` settings but the primes are marked as `Optional` and have a default value already. **`SmartConfig`** won't complain in this case.
 
 In the database we could have:
 
@@ -160,30 +155,48 @@ Name   | Value
 Primes | '[3, 5, 7, 11]'
 ```
 
-As you can see **SmartConfig** uses the static class and field names to generate keys for the settings and it skips the name of the root class. The root class name is not used because if you want to have multiple configurations you can give them different names by providing it via the `SmartConfigAttribute`:
+**SmartConfig** uses the sturcture of the config class and its properties to generate keys for the settings and it skips the name of the root class. The root class name is not used because if you want to have multiple configurations you can give them different names by providing additional properties via the `Properties` class:
 
 ```cs
-[SmartConfig(Name = "MyApp")]
+[SmartConfig]
 static class ExampleDbConfig
 {
-    ...
+    public static class Properties
+    {
+       public static string Name => "MyApp";
+    }
 }
 
 ```
 
 In this case **SmartConfig** would generate names like ``MyApp.Welcome`
 
-Now we can finally load the settings from the database:
+OK, time to load the settings from the database. There is however one thing that is missing. We need to specify a custom data source now. To do this we add a `Properties` class to the config class so the full config would look like this:
 
 ```cs
-SmartConfigManager.Load(typeof(ExampleDbConfig), new DbSource<BasicConfigElement>()
+[SmartConfig]
+static class ExampleDbConfig
 {
-    ConnectionString = ExampleAppConfig.ConnectionStrings.ExampleDb,
-    SettingsTableName = ExampleAppConfig.AppSettings.SettingsTableName"
-});
+    public static class Properties
+    {
+      public static IDataSouce DataSource => new DbSource<Setting>(
+       ExampleAppConfig.ConnectionStrings.ExampleDb,
+       ExampleAppConfig.AppSettings.SettingsTableName);
+    }
+    
+    [Optional]
+    [ObjectConverter(typeof(JsonConverter)]
+    public static List<int> Primes { get; set; } = new List<int> { 3, 5, 7 };
+    
+    public static class MonitorSize
+    {
+        public static int Width { get; set; }
+        public static int Height { get; set; }
+    }
+}
 ```
 
-The `DbSource` requires two parameters and we provide them from the `app.config` loaded previously.
+The `DbSource` requires three parameters: setting type, connection string and the name of the settings table. For the latter two we use the values we already loaded from the `app.config` loaded.
 
 And we're done!
 
