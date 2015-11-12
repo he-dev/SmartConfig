@@ -1,7 +1,7 @@
-# SmartConfig v4
-Becasue writing configurations should be easy.
+# SmartConfig v4 (comming soon...)
+Because writing configurations should be easy.
 
-page is updated...
+*Page is being updated*
 
 This section briefly describes **`SmartConfig`**'s features.
 
