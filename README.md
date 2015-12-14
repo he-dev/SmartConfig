@@ -1,6 +1,8 @@
 # SmartConfig v4
 Because writing configurations should be easy.
 
+---
+
 This section briefly describes **`SmartConfig`**'s features.
 
 **`SmartConfig`** is a configuration framework that makes writing configurations easier then ever. Version 4 continues to make the API easier to use and at the same time more robust.
