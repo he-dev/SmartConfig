@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 namespace SmartConfig.Data
 {
     /// <summary>
-    /// Implements the app.config as data source.
+    /// Implements the app.configuration as data source.
     /// </summary>
     public class AppConfigSource : DataSource<Setting>
     {
@@ -41,30 +41,7 @@ namespace SmartConfig.Data
             }
         }
 
-        public IEnumerable<string> SectionNames => _sectionHandlers.Values.Select(sh => sh.SectionName);
-
-        public override string Select(IReadOnlyCollection<SettingKey> keys)
-        {
-            Debug.Assert(keys != null && keys.Any());
-
-            var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var configurationSection = GetConfigurationSection(exeConfig, keys.First());
-            var sectionHandler = _sectionHandlers[configurationSection.GetType()];
-            var settingName = GetSettingName(keys.First());
-            var value = sectionHandler.Select(configurationSection, settingName);
-            return value;
-        }
-
-        public override void Update(IReadOnlyCollection<SettingKey> keys, string value)
-        {
-            Debug.Assert(keys != null && keys.Any());
-
-            var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var configurationSection = GetConfigurationSection(exeConfig, keys.First());
-            var sectionHandler = _sectionHandlers[configurationSection.GetType()];
-            sectionHandler.Update(configurationSection, GetSettingName(keys.First()), value);
-            exeConfig.Save(ConfigurationSaveMode.Minimal);
-        }
+        public IEnumerable<string> SectionNames => _sectionHandlers.Values.Select(sh => sh.SectionName);        
 
         private ConfigurationSection GetConfigurationSection(System.Configuration.Configuration configuration, SettingKey nameKey)
         {
@@ -117,6 +94,29 @@ namespace SmartConfig.Data
             var sectionNameIndex = parts.Select((p, i) => new { p, i }).First(x => SectionNames.Contains(x.p)).i;
             var keyParts = parts.Where((p, i) => i != sectionNameIndex);
             return string.Join(".", keyParts);
+        }
+
+        public override string Select(IReadOnlyCollection<SettingKey> keys)
+        {
+            Debug.Assert(keys != null && keys.Any());
+
+            var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            var configurationSection = GetConfigurationSection(exeConfig, keys.First());
+            var sectionHandler = _sectionHandlers[configurationSection.GetType()];
+            var settingName = GetSettingName(keys.First());
+            var value = sectionHandler.Select(configurationSection, settingName);
+            return value;
+        }
+
+        public override void Update(IReadOnlyCollection<SettingKey> keys, string value)
+        {
+            Debug.Assert(keys != null && keys.Any());
+
+            var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            var configurationSection = GetConfigurationSection(exeConfig, keys.First());
+            var sectionHandler = _sectionHandlers[configurationSection.GetType()];
+            sectionHandler.Update(configurationSection, GetSettingName(keys.First()), value);
+            exeConfig.Save(ConfigurationSaveMode.Minimal);
         }
     }
 }

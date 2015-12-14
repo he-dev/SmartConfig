@@ -14,45 +14,36 @@ using SmartUtilities;
 namespace SmartConfig
 {
     /// <summary>
-    /// Represents a config a provides methods for loading and updating settings.
+    /// Represents a configuration a provides methods for loading and updating settings.
     /// </summary>
     public static class Configuration
     {
-        private static readonly IDictionary<Type, ConfigInfo> ConfigurationCache;
+        private static readonly IDictionary<Type, ConfigurationInfo> ConfigurationCache = new Dictionary<Type, ConfigurationInfo>();
 
         /// <summary>
         /// Gets the current converters and allows to add additional ones.
         /// </summary>
-        public static ObjectConverterCollection Converters { get; }
-
-        static Configuration()
+        public static ObjectConverterCollection Converters { get; } = new ObjectConverterCollection
         {
-            ConfigurationCache = new Dictionary<Type, ConfigInfo>();
-
-            // initialize default converters
-            Converters = new ObjectConverterCollection
-            {
-                new NumericConverter(),
-                new BooleanConverter(),
-                new StringConverter(),
-                new EnumConverter(),
-                new DateTimeConverter(),
-                new ColorConverter(),
-                new JsonConverter(),
-                new XmlConverter(),
-            };
-        }
+            new NumericConverter(),
+            new BooleanConverter(),
+            new StringConverter(),
+            new EnumConverter(),
+            new DateTimeConverter(),
+            new ColorConverter(),
+            new JsonConverter(),
+            new XmlConverter(),
+        };
 
         /// <summary>
-        /// Loads settings for a a config from the specified data source.
+        /// Loads settings for a a configuration from the specified data source.
         /// </summary>
-        /// <param name="configType">SettingType that is marked with the <c>SmartCofnigAttribute</c> and specifies the config.</param>
+        /// <param name="configType">SettingType that is marked with the <c>SmartCofnigAttribute</c> and specifies the configuration.</param>
         public static void LoadSettings(Type configType)
         {
             if (configType == null) { throw new ArgumentNullException(nameof(configType)); }
 
-            //Logger.LogTrace(() => $"Loading \"{configType.Name}\" from \"{dataSource.GetType().Name}\"...");        
-            var configuration = new ConfigInfo(configType);
+            var configuration = new ConfigurationInfo(configType);
             ConfigurationCache[configType] = configuration;
 
             SettingLoader.LoadSettings(configuration, Converters);

@@ -48,12 +48,12 @@ namespace SmartConfig.Tests.Reflection
         [TestMethod]
         public void param_configType_MustBeStatic()
         {
-            ExceptionAssert.Throws<ConfigTypeNotStaticException>(() =>
+            ExceptionAssert.Throws<TypeNotStaticException>(() =>
             {
                 Configuration.LoadSettings(typeof(ConfigTypeMustBeStatic));
             }, ex =>
             {
-                Assert.AreEqual(typeof(ConfigTypeMustBeStatic).FullName, ex.ConfigTypeFullName);
+                Assert.AreEqual(typeof(ConfigTypeMustBeStatic).FullName, ex.TypeFullName);
             },
             Assert.Fail);
         }
@@ -61,7 +61,7 @@ namespace SmartConfig.Tests.Reflection
         [TestMethod]
         public void ctor_CanExamineConfigType()
         {
-            var configInfo = new ConfigInfo(typeof(TestConfig1));
+            var configInfo = new ConfigurationInfo(typeof(TestConfig1));
 
             Assert.IsNotNull(configInfo);
             Assert.AreEqual(2, configInfo.SettingInfos.Count);

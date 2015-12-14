@@ -15,10 +15,10 @@ using SmartUtilities.UnitTesting;
 namespace SmartConfig.Tests
 {
     [TestClass]
-    public class Configuration_LoadSettings_Method
+    public class ConfigurationTests
     {
         [TestMethod]
-        public void param_configType_MustNotBeNull()
+        public void LoadSettings_configType_MustNotBeNull()
         {
             ExceptionAssert.Throws<ArgumentNullException>(() =>
             {
@@ -31,7 +31,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void param_configType_MustHaveSmartConfigAttribute()
+        public void LoadSettings_configType_MustHaveSmartConfigAttribute()
         {
             ExceptionAssert.Throws<SmartConfigAttributeMissingException>(() =>
             {
@@ -44,20 +44,20 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void param_configType_MustBeStatic()
+        public void LoadSettings_configType_MustBeStatic()
         {
-            ExceptionAssert.Throws<ConfigTypeNotStaticException>(() =>
+            ExceptionAssert.Throws<TypeNotStaticException>(() =>
             {
                 Configuration.LoadSettings(typeof(ConfigTypeMustBeStatic));
             }, ex =>
             {
-                Assert.AreEqual(typeof(ConfigTypeMustBeStatic).FullName, ex.ConfigTypeFullName);
+                Assert.AreEqual(typeof(ConfigTypeMustBeStatic).FullName, ex.TypeFullName);
             },
             Assert.Fail);
         }
 
         [TestMethod]
-        public void CanLoadNumericSettings()
+        public void LoadSettings_CanLoadNumericSettings()
         {
             var ci = CultureInfo.InvariantCulture;
 
@@ -106,7 +106,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void CanLoadBooleanSettings()
+        public void LoadSettings_CanLoadBooleanSettings()
         {
             var testData = new Dictionary<string, string>()
             {
@@ -123,7 +123,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void CanLoadEnumSettings()
+        public void LoadSettings_CanLoadEnumSettings()
         {
             EnumSettings.Properties.DataSource.SelectFunc = keys => TestEnum.TestValue2.ToString();
             Configuration.LoadSettings(typeof(EnumSettings));
@@ -131,7 +131,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void CanLoadStringSettings()
+        public void LoadSettings_CanLoadStringSettings()
         {
             StringSettings.Properties.DataSource.SelectFunc = keys => "abcd";
             Configuration.LoadSettings(typeof(StringSettings));
@@ -139,7 +139,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void CanLoadDateTimeSettings()
+        public void LoadSettings_CanLoadDateTimeSettings()
         {
             var utcNow = DateTime.UtcNow;
             DateTimeSettings.Properties.DataSource.SelectFunc = keys => utcNow.ToString(CultureInfo.InvariantCulture);
@@ -148,7 +148,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void CanLoadColorSettings()
+        public void LoadSettings_CanLoadColorSettings()
         {
             var testData = new Dictionary<string, string>()
             {
@@ -165,7 +165,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void CanLoadXmlSettings()
+        public void LoadSettings_CanLoadXmlSettings()
         {
             var testData = new Dictionary<string, string>()
                 {
@@ -180,7 +180,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void CanLoadJsonSettings()
+        public void LoadSettings_CanLoadJsonSettings()
         {
             JsonSettings.Properties.DataSource.SelectFunc = keys => "[1, 2, 3]";
             Configuration.LoadSettings(typeof(JsonSettings));
@@ -188,7 +188,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void CanUseCustomConfigName()
+        public void LoadSettings_CanUseCustomConfigName()
         {
             CustomConfigName.Properties.DataSource.SelectFunc = key =>
             {
@@ -201,7 +201,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void CanLoadNestedSettings()
+        public void LoadSettings_CanLoadNestedSettings()
         {
             NestedSettings.Properties.DataSource.SelectFunc = key =>
             {
@@ -220,7 +220,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void CanLoadOptionalSettings()
+        public void LoadSettings_CanLoadOptionalSettings()
         {
             OptionalSettings.Properties.DataSource.SelectFunc = keys => null;
             Configuration.LoadSettings(typeof(OptionalSettings));
@@ -228,7 +228,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void CanValidateDateTimeFormat()
+        public void LoadSettings_CanValidateDateTimeFormat()
         {
             CustomDateTimeFormatSettings.Properties.DataSource.SelectFunc = keys => "14AUG15";
 
@@ -251,7 +251,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void CanValidateRange()
+        public void LoadSettings_CanValidateRange()
         {
             CustomRangeSettings.Properties.DataSource.SelectFunc = keys => "4";
 
@@ -274,7 +274,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void CanValidateRegularExpression()
+        public void LoadSettings_CanValidateRegularExpression()
         {
             CustomRegularExpressionSettings.Properties.DataSource.SelectFunc = keys => "21";
 
@@ -298,7 +298,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void FailsToLoadInvalidNumericSettings()
+        public void LoadSettings_ThrowsTargetInvocationException()
         {
             NumericSettings.Properties.DataSource.SelectFunc = key => "abc";
 
@@ -312,7 +312,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void FailsToLoadUnsupportedType()
+        public void LoadSettings_ThrowsObjectConverterNotFoundException()
         {
             UnsupportedTypeSettings.Properties.DataSource.SelectFunc = keys => "Lorem ipsum.";
             ExceptionAssert.Throws<LoadSettingFailedException>(() =>
@@ -327,7 +327,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void FailsToLoadNonOptioalSettings()
+        public void LoadSettings_ThrowsSettingNotOptionalException()
         {
             NonOptionalSettings.Properties.DataSource.SelectFunc = keys => null;
 
@@ -343,17 +343,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void CanLoadNumericsFromDatabase()
-        {
-
-        }
-    }
-
-    [TestClass]
-    public class Configuration_UpdateSetting_Method
-    {
-        [TestMethod]
-        public void param_expression_MustNotBeNull()
+        public void UpdateSetting_expression_MustNotBeNull()
         {
             ExceptionAssert.Throws<ArgumentNullException>(() =>
             {
@@ -366,7 +356,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void param_expression_MustBeMemberExpression()
+        public void UpdateSetting_expression_MustBeMemberExpression()
         {
             ExceptionAssert.Throws<ExpressionBodyNotMemberExpressionException>(() =>
             {
@@ -379,7 +369,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void param_expression_MemberMustBeLoaded()
+        public void UpdateSetting_expression_MemberMustBeLoaded()
         {
             ExceptionAssert.Throws<MemberNotFoundException>(() =>
             {
@@ -389,12 +379,6 @@ namespace SmartConfig.Tests
                 Assert.AreEqual("DeclaringType", ex.MemberName);
             },
             Assert.Fail);
-        }
-
-        [TestMethod]
-        public void CanUpdateNumericSettings()
-        {
-
         }
     }
 }

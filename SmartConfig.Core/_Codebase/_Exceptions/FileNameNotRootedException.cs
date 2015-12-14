@@ -7,8 +7,8 @@ using SmartUtilities;
 
 namespace SmartConfig
 {
-    public class ConfigTypeNotStaticException : SmartException
+    public class FileNameNotRootedException : SmartException
     {
-        public string ConfigTypeFullName { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string FileName { get { return GetValue<string>(); } internal set { SetValue(value); } }
     }
 }

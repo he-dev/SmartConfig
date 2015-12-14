@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Collections;
 using SmartConfig.Data;
@@ -10,25 +12,44 @@ namespace SmartConfig.Tests.Data
     [TestClass]
     public class XmlSourceTests
     {
-        #region select tests
+        private const string TestFileName = @"C:\Home\Projects\SmartConfig\SmartConfig.Tests\bin\Debug\TestFiles\XmlConfigs\TestXmlConfig.xml";
 
         [TestMethod]
-        public void Select_Setting1()
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ctor_fileName_MustNotBeNull()
         {
-            var keys = new[]
+            new XmlSource<Setting>(null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FileNameNotRootedException))]
+        public void ctor_fileName_MustBeRooted()
+        {
+            new XmlSource<Setting>(@"a\b\c.xml");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FileNotFoundException))]
+        public void ctor_fileName_MustExist()
+        {
+            new XmlSource<Setting>(@"C:\a\b\c.xml");
+        }
+
+        [TestMethod]
+        public void Select_CanSelectSettingByName()
+        {
+            var dataSource = new XmlSource<Setting>(TestFileName);
+            var value = dataSource.Select(new[]
             {
                 new SettingKey(Setting.DefaultKeyName, "Setting1"),
-            };
-
-            var dataSource = new XmlSource<Setting>(@"TestFiles\XmlConfigs\XmlConfig_SelectTests.xml");
-            var value = dataSource.Select(keys);
+            });
             Assert.AreEqual("Value1", value);
         }
 
         [TestMethod]
-        public void Select_Setting2_JKL()
+        public void Select_CanSelectSettingByNameByEnvironmentByVersion()
         {
-            var dataSource = new XmlSource<TestSetting>(@"TestFiles\XmlConfigs\XmlConfig_SelectTests.xml");
+            var dataSource = new XmlSource<TestSetting>(TestFileName);
 
             var keys = new[]
             {
@@ -42,61 +63,9 @@ namespace SmartConfig.Tests.Data
         }
 
         [TestMethod]
-        public void Select_Setting2_ABC()
+        public void Update_CanUpdateSettingByName()
         {
-            var dataSource = new XmlSource<TestSetting>(@"TestFiles\XmlConfigs\XmlConfig_SelectTests.xml");
-
-            var keys = new[]
-            {
-                new SettingKey(Setting.DefaultKeyName, "Setting2"),
-                new SettingKey("Environment", "JKL"),
-                new SettingKey("Version", "1.2.1"),
-            };
-
-            var value = dataSource.Select(keys);
-
-            Assert.AreEqual("Value2-ABC", value);
-        }
-
-        [TestMethod]
-        public void Select_Setting2_XYZ()
-        {
-            var dataSource = new XmlSource<TestSetting>(@"TestFiles\XmlConfigs\XmlConfig_SelectTests.xml");
-
-            var keys = new[]
-            {
-                new SettingKey(Setting.DefaultKeyName, "Setting2"),
-                new SettingKey("Environment", "XYZ"),
-                new SettingKey("Version", "1.2.1"),
-            };
-
-            var value = dataSource.Select(keys);
-            Assert.AreEqual("Value2-XYZ", value);
-        }
-
-        [TestMethod]
-        public void Select_Setting3()
-        {
-            var dataSource = new XmlSource<TestSetting>(@"TestFiles\XmlConfigs\XmlConfig_SelectTests.xml");
-
-            var keys = new[]
-            {
-                new SettingKey(Setting.DefaultKeyName, "Setting3"),
-                new SettingKey("Environment", "ABC"),
-                new SettingKey("Version", "1.2.1"),
-            };
-            var value = dataSource.Select(keys);
-            Assert.AreEqual("Value6", value);
-        }
-
-        #endregion
-
-        #region update tests
-
-        [TestMethod]
-        public void Update_Setting1()
-        {
-            var xmlSource = new XmlSource<Setting>(@"TestFiles\XmlConfigs\XmlConfig_UpdateTests.xml");
+            var xmlSource = new XmlSource<Setting>(TestFileName);
 
             var keys = new[]
             {
@@ -106,43 +75,30 @@ namespace SmartConfig.Tests.Data
             var oldValue = xmlSource.Select(keys);
             Assert.AreEqual("Value1", oldValue);
 
-            //xmlSource.Update("Setting1", "Value2");
-            //var newValue = xmlSource.Select("Setting1");
-            //Assert.AreEqual("Value2", newValue);
+            xmlSource.Update(keys, "Value2");
+            var newValue = xmlSource.Select(keys);
+            Assert.AreEqual("Value2", newValue);
         }
 
         [TestMethod]
-        public void Update_Setting2_new()
+        public void Update_CanAddNewSetting()
         {
             Logger.Warn = m => Debug.WriteLine(m);
 
-            var xmlSource = new XmlSource<Setting>(@"TestFiles\XmlConfigs\XmlConfig_UpdateTests.xml");
+            var xmlSource = new XmlSource<Setting>(TestFileName);
 
             var keys = new[]
             {
-                new SettingKey(Setting.DefaultKeyName, "Setting2"),
+                new SettingKey(Setting.DefaultKeyName, "NewSetting"),
             };
 
             var oldValue = xmlSource.Select(keys);
             Assert.AreEqual(null, oldValue);
 
-            //xmlSource.Update("Setting2", "Value2");
-            //var newValue = xmlSource.Select("Setting2");
-            //Assert.AreEqual("Value2", newValue);
+            xmlSource.Update(keys, "NewValue");
+            var newValue = xmlSource.Select(keys);
+            Assert.AreEqual("NewValue", newValue);
         }
-
-        #endregion
-
-        #region other tests
-
-        [TestMethod]
-        public void EncodeKeyName_CamelCase()
-        {
-            //Assert.AreEqual("camel-case", XmlSource<TestSetting>.EncodeKeyName("CamelCase"));
-        }
-
-     
-        #endregion
 
     }
 }

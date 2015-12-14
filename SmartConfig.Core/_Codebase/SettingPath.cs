@@ -4,7 +4,7 @@ using System.Linq;
 namespace SmartConfig
 {
     /// <summary>
-    /// Provides utility methods for creating config element names.
+    /// Provides utility methods for creating configuration element names.
     /// </summary>
     public class SettingPath
     {
@@ -15,8 +15,8 @@ namespace SmartConfig
         //    var memberInfo = Utilities.GetMemberInfo(expression);
         //    var settingInfo = SettingInfo.Create(expression);
 
-        //    // Replace config namespace and class name with application name.
-        //    var elementName = Regex.Replace(memberInfo.ReflectedType.FullName, @"^" + settingInfo.ConfigType.FullName + @"\.?", string.Empty);
+        //    // Replace configuration namespace and class name with application name.
+        //    var elementName = Regex.Replace(memberInfo.ReflectedType.FullName, @"^" + settingInfo.ConfigurationType.FullName + @"\.?", string.Empty);
 
         //    // Replace subclass separator "+" with a "."
         //    elementName = Regex.Replace(elementName, @"\+", ".");

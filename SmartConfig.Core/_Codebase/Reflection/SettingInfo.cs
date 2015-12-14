@@ -8,15 +8,15 @@ using SmartConfig.Data;
 
 namespace SmartConfig.Reflection
 {
-    [DebuggerDisplay("ConfigType = {Config.ConfigType.Name} SettingPath = \"{SettingPath}\" IsInternal = \"{IsInternal}\"")]
+    [DebuggerDisplay("ConfigurationType = {Configuration.ConfigurationType.Name} SettingPath = \"{SettingPath}\" IsInternal = \"{IsInternal}\"")]
     public class SettingInfo
     {
-        internal SettingInfo(ConfigInfo config, PropertyInfo property, IEnumerable<string> path, IEnumerable<SettingKey> customKeys)
+        internal SettingInfo(ConfigurationInfo configuration, PropertyInfo property, IEnumerable<string> path, IEnumerable<SettingKey> customKeys)
         {
-            Debug.Assert(config != null);
+            Debug.Assert(configuration != null);
             Debug.Assert(property != null);
 
-            Config = config;
+            Configuration = configuration;
             Property = property;
 
             SettingPath = new SettingPath(path);
@@ -25,7 +25,7 @@ namespace SmartConfig.Reflection
             Keys = new ReadOnlyCollection<SettingKey>(keys);
         }
 
-        internal ConfigInfo Config { get; }
+        internal ConfigurationInfo Configuration { get; }
 
         internal PropertyInfo Property { get; }
 

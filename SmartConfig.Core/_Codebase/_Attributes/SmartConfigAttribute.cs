@@ -12,7 +12,7 @@ namespace SmartConfig
         //private string _name;
 
         ///// <summary>
-        ///// Gets or sets a custom config name. The name must be a valid CLR identifier.
+        ///// Gets or sets a custom configuration name. The name must be a valid CLR identifier.
         ///// </summary>
         //public string Name
         //{
@@ -27,7 +27,7 @@ namespace SmartConfig
         //        // https://regex101.com/r/dW3gF3/1
         //        if (!Regex.IsMatch(value, @"^[A-Z_][A-Z0-9_]+", RegexOptions.IgnoreCase))
         //        {
-        //            throw new ArgumentOutOfRangeException("Name", "Config name must be a valid CLR identifier.");
+        //            throw new ArgumentOutOfRangeException("Name", "configuration name must be a valid CLR identifier.");
         //        }
 
         //        _name = value;

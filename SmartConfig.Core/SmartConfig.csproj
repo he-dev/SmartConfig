@@ -106,11 +106,11 @@
     <Compile Include="_Codebase\Collections\_Interfaces\ICollection.cs" />
     <Compile Include="_Codebase\Collections\_Interfaces\IDataSourceCollection.cs" />
     <Compile Include="_Codebase\Collections\_Interfaces\IObjectConverterCollection.cs" />
-    <Compile Include="_Codebase\Reflection\ConfigProperties.cs" />
+    <Compile Include="_Codebase\Reflection\ConfigurationProperties.cs" />
     <Compile Include="_Codebase\Filters\ISettingFilter.cs" />
     <Compile Include="_Codebase\Filters\StringFilter.cs" />
     <Compile Include="_Codebase\Filters\VersionFilter.cs" />
-    <Compile Include="_Codebase\Reflection\ConfigInfo.cs" />
+    <Compile Include="_Codebase\Reflection\ConfigurationInfo.cs" />
     <Compile Include="_Codebase\Converters\NumericConverter.cs" />
     <Compile Include="_Codebase\Converters\BooleanConverter.cs" />
     <Compile Include="_Codebase\Data\_AppConfigSectionHandlers\IAppConfigSectionHandler.cs" />
@@ -142,6 +142,8 @@
     <Compile Include="_Codebase\_Attributes\_Constraints\RegularExpressionAttribute.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\RangeAttribute.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\ConstraintAttribute.cs" />
+    <Compile Include="_Codebase\_Exceptions\FileNameNotRootedException.cs" />
+    <Compile Include="_Codebase\_Exceptions\SmartConfigRootElementNotFountException.cs" />
     <Compile Include="_Codebase\_Exceptions\InvalidMemberTypeException.cs" />
     <Compile Include="_Codebase\_Exceptions\FilterTypeNotISettingFilterException.cs" />
     <Compile Include="_Codebase\_Exceptions\SettingCustomKeysMismatchException.cs" />
@@ -152,7 +154,7 @@
     <Compile Include="_Codebase\_Exceptions\RangeViolationException.cs" />
     <Compile Include="_Codebase\_Exceptions\DateTimeFormatViolationException.cs" />
     <Compile Include="_Codebase\_Exceptions\SmartConfigAttributeMissingException.cs" />
-    <Compile Include="_Codebase\_Exceptions\ConfigTypeNotStaticException.cs" />
+    <Compile Include="_Codebase\_Exceptions\TypeNotStaticException.cs" />
     <Compile Include="_Codebase\_Exceptions\LoadSettingFailedException.cs" />
     <Compile Include="_Codebase\_Exceptions\ObjectConverterException.cs" />
     <Compile Include="_Codebase\_Exceptions\DataSourceNotFoundException.cs" />

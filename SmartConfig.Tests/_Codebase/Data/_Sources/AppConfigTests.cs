@@ -37,5 +37,15 @@ namespace SmartConfig.Tests.Data
             var value = appConfigSource.Select(new[] { new SettingKey(Setting.DefaultKeyName, "myApp.ConnectionStrings.TestSetting") });
             Assert.AreEqual("MyAppTestConnectionString", value);
         }
+
+        [TestMethod]
+        public void Update_CanUpdateSettingByName()
+        {
+            var appConfigSource = new AppConfigSource();
+            appConfigSource.Update(new[] { new SettingKey(Setting.DefaultKeyName, "myApp.AppSettings.TestSetting") }, "NewValue");
+
+            var value = appConfigSource.Select(new[] { new SettingKey(Setting.DefaultKeyName, "myApp.AppSettings.TestSetting") });
+            Assert.AreEqual("NewValue", value);
+        }
     }
 }

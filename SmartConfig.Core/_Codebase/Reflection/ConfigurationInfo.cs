@@ -8,43 +8,42 @@ using SmartConfig.Data;
 
 namespace SmartConfig.Reflection
 {
-    internal class ConfigInfo
+    internal class ConfigurationInfo
     {
-        public ConfigInfo(Type configType)
+        public ConfigurationInfo(Type configurationType)
         {
-            if (configType == null)
+            if (configurationType == null)
             {
-                throw new ArgumentNullException(nameof(configType));
+                throw new ArgumentNullException(nameof(configurationType));
             }
 
-            if (!configType.IsStatic())
-            {
-                throw new ConfigTypeNotStaticException { ConfigTypeFullName = configType.FullName };
-            }
-
-            var smartConfigAttribute = configType.GetCustomAttribute<SmartConfigAttribute>();
+            var smartConfigAttribute = configurationType.GetCustomAttribute<SmartConfigAttribute>();
             if (smartConfigAttribute == null)
             {
-                throw new SmartConfigAttributeMissingException { ConfigTypeFullName = configType.FullName };
+                throw new SmartConfigAttributeMissingException { ConfigTypeFullName = configurationType.FullName };
             }
 
-            ConfigType = configType;
-            ConfigProperties = new ConfigProperties(configType);
-            SettingInfos = GetSettingInfos(configType).ToDictionary(x => x.Property);
-
+            ConfigurationType = configurationType;
+            ConfigurationProperties = new ConfigurationProperties(configurationType);
+            SettingInfos = GetSettingInfos(configurationType).ToDictionary(x => x.Property);
         }
 
-        public Type ConfigType { get; }
+        public Type ConfigurationType { get; }
 
-        public ConfigProperties ConfigProperties { get; }
+        public ConfigurationProperties ConfigurationProperties { get; }
 
-        public bool HasCustomName => !string.IsNullOrEmpty(ConfigProperties.Name);
+        public bool HasCustomName => !string.IsNullOrEmpty(ConfigurationProperties.Name);
 
         public IDictionary<PropertyInfo, SettingInfo> SettingInfos { get; }
 
         private IEnumerable<SettingInfo> GetSettingInfos(Type type, IEnumerable<string> path = null)
         {
-            path = path ?? (HasCustomName ? new[] { ConfigProperties.Name } : new string[] { });
+            if (!type.IsStatic())
+            {
+                throw new TypeNotStaticException { TypeFullName = type.FullName };
+            }
+
+            path = path ?? (HasCustomName ? new[] { ConfigurationProperties.Name } : new string[] { });
 
             var properties = type
                 .GetProperties(BindingFlags.Public | BindingFlags.Static)
@@ -52,27 +51,21 @@ namespace SmartConfig.Reflection
 
             foreach (var property in properties)
             {
-                yield return new SettingInfo(this, property, path.Concat(new[] { property.Name }), ConfigProperties.CustomKeys);
+                var subPath = path.Concat(new[] { property.Name });
+                yield return new SettingInfo(this, property, subPath, ConfigurationProperties.CustomKeys);
             }
 
-            var canSelectType = new Func<Type, bool>(t =>
+            var typeConditions = new Func<Type, bool>[]
             {
-                if (t.GetCustomAttribute<IgnoreAttribute>() != null)
-                {
-                    return false;
-                }
+                t => t.GetCustomAttribute<IgnoreAttribute>() == null,
+                t => t.Name != "Properties",
+            };
 
-                if (t.Name == "Properties" && t.DeclaringType == ConfigType)
-                {
-                    return false;
-                }
-
-                return true;
-            });
+            var canGetType = new Func<Type, bool>(t => typeConditions.All(typeCondition => typeCondition(t)));
 
             var settingInfos = type
                 .GetNestedTypes(BindingFlags.Public | BindingFlags.Public)
-                .Where(canSelectType)
+                .Where(canGetType)
                 .SelectMany(nt => GetSettingInfos(nt, path.Concat(new[] { nt.Name })));
 
             foreach (var settingInfo in settingInfos)

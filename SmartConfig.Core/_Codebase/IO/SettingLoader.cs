@@ -10,22 +10,22 @@ namespace SmartConfig.IO
     internal class SettingLoader
     {
         /// <summary>
-        /// Loads settings for a a config from the specified data source.
+        /// Loads settings for a a configuration from the specified data source.
         /// </summary>
-        internal static void LoadSettings(ConfigInfo config, IObjectConverterCollection converters)
+        internal static void LoadSettings(ConfigurationInfo configuration, IObjectConverterCollection converters)
         {
-            Debug.Assert(config != null);
+            Debug.Assert(configuration != null);
             Debug.Assert(converters != null);
 
-            //Logger.LogTrace(() => $"Loading \"{configurationInfo.ConfigType.Name}\" from \"{dataSource.GetType().Name}\"...");
+            //Logger.LogTrace(() => $"Loading \"{configurationInfo.ConfigurationType.Name}\" from \"{dataSource.GetType().Name}\"...");
 
-            foreach (var settingInfo in config.SettingInfos.Values)
+            foreach (var settingInfo in configuration.SettingInfos.Values)
             {
-                LoadSetting(settingInfo, config.ConfigProperties.DataSource, converters);
+                LoadSetting(settingInfo, configuration.ConfigurationProperties.DataSource, converters);
             }
         }
 
-        // loads a setting from a data source into the correspondig field in the config class
+        // loads a setting from a data source into the correspondig field in the configuration class
         private static void LoadSetting(SettingInfo settingInfo, IDataSource dataSource, IObjectConverterCollection converters)
         {
             Debug.Assert(settingInfo != null);
@@ -47,7 +47,7 @@ namespace SmartConfig.IO
 
                     throw new SettingNotOptionalException
                     {
-                        ConfigTypeFullName = settingInfo.Config.ConfigType.FullName,
+                        ConfigTypeFullName = settingInfo.Configuration.ConfigurationType.FullName,
                         SettingPath = settingInfo.SettingPath
                     };
                 }
@@ -61,7 +61,7 @@ namespace SmartConfig.IO
                 throw new LoadSettingFailedException(ex)
                 {
                     DataSourceTypeName = dataSource.GetType().Name,
-                    ConfigTypeFullName = settingInfo.Config.ConfigType.FullName,
+                    ConfigTypeFullName = settingInfo.Configuration.ConfigurationType.FullName,
                     SettingPath = settingInfo.SettingPath
                 };
             }
