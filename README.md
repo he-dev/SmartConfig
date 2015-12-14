@@ -1,7 +1,5 @@
-# SmartConfig v4 (comming soon...)
+# SmartConfig v4
 Because writing configurations should be easy.
-
-*Page is being updated*
 
 This section briefly describes **`SmartConfig`**'s features.
 
@@ -97,7 +95,7 @@ Let's load them now:
 
 ## Program.cs
 ```cs
-SmartConfigManager.Load(typeof(ExampleAppConfig));
+Configuration.Load(typeof(ExampleAppConfig));
 ```
 
 As you see the call is really simple. You just need to say which settings you want to load. By default **`SmartConfig`** uses the `AppConfigSource` as a data source.
