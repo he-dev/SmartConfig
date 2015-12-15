@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using SmartConfig.Collections;
 using SmartConfig.Data;
@@ -16,11 +17,21 @@ namespace SmartConfig.Example
         {
             Logger.Info = m => Debug.WriteLine(m);
 
-            AppConfigSourceExample();
-            DbSourceExamples();
-            XmlSourceExample();
+            //AppConfigSourceExample();
+            //DbSourceExamples();
+            //XmlSourceExample();
+            RegistrySourceExample();
 
             Console.ReadKey();
+        }
+
+        private static void RegistrySourceExample()
+        {
+            Configuration.LoadSettings(typeof(ExampleRegistryConfig));
+
+            Configuration.UpdateSetting(() => ExampleRegistryConfig.REG_DWORD_TEST, 8);
+            Configuration.UpdateSetting(() => ExampleRegistryConfig.REG_SZ_TEST, "lorem");
+            Configuration.UpdateSetting(() => ExampleRegistryConfig.REG_SZ_TEST2, "ipsum");
         }
 
         private static void AppConfigSourceExample()
@@ -41,6 +52,7 @@ namespace SmartConfig.Example
             BasicDbSourceExample();
             CustomDbSourceExample();
         }
+
         private static void BasicDbSourceExample()
         {
             Configuration.LoadSettings(typeof(ExampleDbConfig1));

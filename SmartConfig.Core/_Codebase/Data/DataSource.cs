@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using SmartConfig.Collections;
 using SmartConfig.Filters;
 
 namespace SmartConfig.Data
@@ -51,9 +52,11 @@ namespace SmartConfig.Data
 
         protected IDictionary<string, ISettingFilter> CustomKeyFilters { get; }
 
-        public abstract string Select(IReadOnlyCollection<SettingKey> keys);
+        public abstract IReadOnlyCollection<Type> SupportedTypes { get; }
 
-        public abstract void Update(IReadOnlyCollection<SettingKey> keys, string value);
+        public abstract object Select(SettingKeyReadOnlyCollection keys);
+
+        public abstract void Update(SettingKeyReadOnlyCollection keys, object value);
 
         /// <summary>
         /// Applies all of the specified filters.

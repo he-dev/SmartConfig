@@ -68,6 +68,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExampleConfigs\ExampleRegistryConfig.cs" />
     <Compile Include="_Codebase\Data\CustomSetting.cs" />
     <Compile Include="ExampleConfigs\ExampleXmlConfig.cs" />
     <Compile Include="ExampleConfigs\ExampleDbConfig2.cs" />

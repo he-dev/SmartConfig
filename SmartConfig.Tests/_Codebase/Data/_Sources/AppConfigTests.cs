@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SmartConfig.Collections;
 using SmartConfig.Data;
 
 namespace SmartConfig.Tests.Data
@@ -10,7 +11,7 @@ namespace SmartConfig.Tests.Data
         public void Select_CanSelectAppSetting()
         {
             var appConfigSource = new AppConfigSource();
-            var value = appConfigSource.Select(new[] { new SettingKey(Setting.DefaultKeyName, "AppSettings.TestSetting") });
+            var value = appConfigSource.Select(new SettingKeyReadOnlyCollection(new SettingKey(Setting.DefaultKeyName, "AppSettings.TestSetting")));
             Assert.AreEqual("TestValue", value);
         }
 
@@ -18,7 +19,7 @@ namespace SmartConfig.Tests.Data
         public void Select_CanSelectAppSettingWithCustomName()
         {
             var appConfigSource = new AppConfigSource();
-            var value = appConfigSource.Select(new[] { new SettingKey(Setting.DefaultKeyName, "myApp.AppSettings.TestSetting") });
+            var value = appConfigSource.Select(new SettingKeyReadOnlyCollection(new SettingKey(Setting.DefaultKeyName, "myApp.AppSettings.TestSetting")));
             Assert.AreEqual("MyAppTestValue", value);
         }
 
@@ -26,7 +27,7 @@ namespace SmartConfig.Tests.Data
         public void Select_CanSelectConnectionString()
         {
             var appConfigSource = new AppConfigSource();
-            var value = appConfigSource.Select(new[] { new SettingKey(Setting.DefaultKeyName, "ConnectionStrings.TestSetting") });
+            var value = appConfigSource.Select(new SettingKeyReadOnlyCollection(new SettingKey(Setting.DefaultKeyName, "ConnectionStrings.TestSetting")));
             Assert.AreEqual("TestConnectionString", value);
         }
 
@@ -34,7 +35,7 @@ namespace SmartConfig.Tests.Data
         public void Select_CanSelectConnectionStringWithCusomName()
         {
             var appConfigSource = new AppConfigSource();
-            var value = appConfigSource.Select(new[] { new SettingKey(Setting.DefaultKeyName, "myApp.ConnectionStrings.TestSetting") });
+            var value = appConfigSource.Select(new SettingKeyReadOnlyCollection(new SettingKey(Setting.DefaultKeyName, "myApp.ConnectionStrings.TestSetting")));
             Assert.AreEqual("MyAppTestConnectionString", value);
         }
 
@@ -42,9 +43,9 @@ namespace SmartConfig.Tests.Data
         public void Update_CanUpdateSettingByName()
         {
             var appConfigSource = new AppConfigSource();
-            appConfigSource.Update(new[] { new SettingKey(Setting.DefaultKeyName, "myApp.AppSettings.TestSetting") }, "NewValue");
+            appConfigSource.Update(new SettingKeyReadOnlyCollection(new SettingKey(Setting.DefaultKeyName, "myApp.AppSettings.TestSetting")), "NewValue");
 
-            var value = appConfigSource.Select(new[] { new SettingKey(Setting.DefaultKeyName, "myApp.AppSettings.TestSetting") });
+            var value = appConfigSource.Select(new SettingKeyReadOnlyCollection(new SettingKey(Setting.DefaultKeyName, "myApp.AppSettings.TestSetting")));
             Assert.AreEqual("NewValue", value);
         }
     }

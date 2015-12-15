@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using SmartConfig.Collections;
 
 namespace SmartConfig.Data
 {
@@ -31,13 +33,15 @@ namespace SmartConfig.Data
             _settingsTableName = settingsTableName;
         }
 
-        public override string Select(IReadOnlyCollection<SettingKey> keys)
+        public override IReadOnlyCollection<Type> SupportedTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+
+        public override object Select(SettingKeyReadOnlyCollection keys)
         {
             Debug.Assert(keys != null);
 
             using (var context = new SmartConfigContext<TSetting>(_connectionString, _settingsTableName))
             {
-                var name = keys.First().Value;
+                var name = keys.DefaultKey.Value;
                 var settings = context.Settings.Where(ce => ce.Name == name).ToList() as IEnumerable<TSetting>;
 
                 settings = ApplyFilters(settings, keys.Skip(1));
@@ -47,7 +51,7 @@ namespace SmartConfig.Data
             }
         }
 
-        public override void Update(IReadOnlyCollection<SettingKey> keys, string value)
+        public override void Update(SettingKeyReadOnlyCollection keys, object value)
         {
             Debug.Assert(keys != null && keys.Any());
 
@@ -61,21 +65,21 @@ namespace SmartConfig.Data
                 {
                     entity = new TSetting()
                     {
-                        Name = keys.First().Value,
-                        Value = value
+                        Name = (SettingPath)keys.DefaultKey.Value,
+                        Value = value?.ToString()
                     };
 
                     // set customKeys
-                    foreach (var key in keys.Skip(1))
+                    foreach (var key in keys.CustomKeys)
                     {
-                        entity[key.Name] = key.Value;
+                        entity[key.Name] = key.Value.ToString();
                     }
 
                     context.Settings.Add(entity);
                 }
                 else
                 {
-                    entity.Value = value;
+                    entity.Value = value?.ToString();
                 }
 
                 context.SaveChanges();

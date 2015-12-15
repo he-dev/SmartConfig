@@ -39,10 +39,7 @@ namespace SmartConfig.Tests.Data
         public void Select_CanSelectSettingByName()
         {
             var dataSource = new XmlSource<Setting>(TestFileName);
-            var value = dataSource.Select(new[]
-            {
-                new SettingKey(Setting.DefaultKeyName, "Setting1"),
-            });
+            var value = dataSource.Select(new SettingKeyReadOnlyCollection(new SettingKey(Setting.DefaultKeyName, "Setting1")));
             Assert.AreEqual("Value1", value);
         }
 
@@ -51,12 +48,10 @@ namespace SmartConfig.Tests.Data
         {
             var dataSource = new XmlSource<TestSetting>(TestFileName);
 
-            var keys = new[]
-            {
+            var keys = new SettingKeyReadOnlyCollection(
                 new SettingKey(Setting.DefaultKeyName, "Setting2"),
                 new SettingKey("Environment", "JKL"),
-                new SettingKey("Version", "1.2.1"),
-            };
+                new SettingKey("Version", "1.2.1"));
 
             var value = dataSource.Select(keys);
             Assert.AreEqual("Value2-JKL", value);
@@ -67,10 +62,7 @@ namespace SmartConfig.Tests.Data
         {
             var xmlSource = new XmlSource<Setting>(TestFileName);
 
-            var keys = new[]
-            {
-                new SettingKey(Setting.DefaultKeyName, "Setting1"),
-            };
+            var keys = new SettingKeyReadOnlyCollection(new SettingKey(Setting.DefaultKeyName, "Setting1"));
 
             var oldValue = xmlSource.Select(keys);
             Assert.AreEqual("Value1", oldValue);
@@ -87,10 +79,7 @@ namespace SmartConfig.Tests.Data
 
             var xmlSource = new XmlSource<Setting>(TestFileName);
 
-            var keys = new[]
-            {
-                new SettingKey(Setting.DefaultKeyName, "NewSetting"),
-            };
+            var keys = new SettingKeyReadOnlyCollection(new SettingKey(Setting.DefaultKeyName, "NewSetting"));
 
             var oldValue = xmlSource.Select(keys);
             Assert.AreEqual(null, oldValue);

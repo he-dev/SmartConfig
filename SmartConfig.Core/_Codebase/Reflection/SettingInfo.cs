@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using SmartConfig.Collections;
 using SmartConfig.Data;
 
 namespace SmartConfig.Reflection
@@ -22,7 +23,7 @@ namespace SmartConfig.Reflection
             SettingPath = new SettingPath(path);
 
             var keys = new[] { new SettingKey(Setting.DefaultKeyName, SettingPath) }.Concat(customKeys).ToList();
-            Keys = new ReadOnlyCollection<SettingKey>(keys);
+            Keys = new SettingKeyReadOnlyCollection(keys);
         }
 
         internal ConfigurationInfo Configuration { get; }
@@ -57,7 +58,7 @@ namespace SmartConfig.Reflection
 
         public SettingPath SettingPath { get; }
 
-        public IReadOnlyCollection<SettingKey> Keys { get; }
+        public SettingKeyReadOnlyCollection Keys { get; }
 
         public IEnumerable<ConstraintAttribute> SettingConstraints =>
             Property == null

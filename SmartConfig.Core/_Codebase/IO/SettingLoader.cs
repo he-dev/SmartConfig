@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using SmartConfig.Collections;
 using SmartConfig.Data;
 using SmartConfig.Logging;
@@ -37,7 +38,7 @@ namespace SmartConfig.IO
                 var value = dataSource.Select(settingInfo.Keys);
 
                 // don't let pass null values to the converter
-                if (string.IsNullOrEmpty(value))
+                if (value == null)
                 {
                     // null is ok if the setting is optional
                     if (settingInfo.IsOptional)
@@ -52,8 +53,15 @@ namespace SmartConfig.IO
                     };
                 }
 
+                // sources may support objects that are stored directly and don't require deserialization
+                if (dataSource.SupportedTypes.Contains(settingInfo.SettingType) && value.GetType() == settingInfo.SettingType)
+                {
+                    settingInfo.Value = value;
+                    return;
+                }
+
                 var converter = converters[settingInfo.ConverterType];
-                var obj = converter.DeserializeObject(value, settingInfo.SettingType, settingInfo.SettingConstraints);
+                var obj = converter.DeserializeObject(value.ToString(), settingInfo.SettingType, settingInfo.SettingConstraints);
                 settingInfo.Value = obj;
             }
             catch (Exception ex)

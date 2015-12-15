@@ -77,7 +77,7 @@ namespace SmartConfig.Tests
                 { nameof(NumericSettings.decimalSetting), decimal.MaxValue.ToString(ci) },
             };
 
-            NumericSettings.Properties.DataSource.SelectFunc = key => testData[key.First().Value];
+            NumericSettings.Properties.DataSource.SelectFunc = key => testData[key.First().Value.ToString()];
 
             Configuration.LoadSettings(typeof(NumericSettings));
 
@@ -114,7 +114,7 @@ namespace SmartConfig.Tests
                 { nameof(BooleanSettings.trueSetting), true.ToString() },
             };
 
-            BooleanSettings.Properties.DataSource.SelectFunc = key => testData[key.First().Value];
+            BooleanSettings.Properties.DataSource.SelectFunc = key => testData[key.First().Value.ToString()];
 
             Configuration.LoadSettings(typeof(BooleanSettings));
 
@@ -157,7 +157,7 @@ namespace SmartConfig.Tests
                 { nameof(ColorSettings.HexColorSetting), Color.Beige.ToArgb().ToString("X") },
             };
 
-            ColorSettings.Properties.DataSource.SelectFunc = key => testData[key.First().Value];
+            ColorSettings.Properties.DataSource.SelectFunc = key => testData[key.First().Value.ToString()];
             Configuration.LoadSettings(typeof(ColorSettings));
             Assert.AreEqual(Color.Red.ToArgb(), ColorSettings.NameColorSetting.ToArgb());
             Assert.AreEqual(Color.Plum.ToArgb(), ColorSettings.DecColorSetting.ToArgb());
@@ -173,7 +173,7 @@ namespace SmartConfig.Tests
                     { "XElementSetting", @"<testXml></testXml>" },
                 };
 
-            XmlSettings.Properties.DataSource.SelectFunc = key => testData[key.First().Value];
+            XmlSettings.Properties.DataSource.SelectFunc = key => testData[key.First().Value.ToString()];
             Configuration.LoadSettings(typeof(XmlSettings));
             Assert.AreEqual(XDocument.Parse(testData["XDocumentSetting"]).ToString(), XmlSettings.XDocumentSetting.ToString());
             Assert.AreEqual(XDocument.Parse(testData["XElementSetting"]).ToString(), XmlSettings.XElementSetting.ToString());
@@ -205,7 +205,7 @@ namespace SmartConfig.Tests
         {
             NestedSettings.Properties.DataSource.SelectFunc = key =>
             {
-                switch (key.First().Value)
+                switch (key.First().Value.ToString())
                 {
                 case "SubConfig.SubSetting": return "abc";
                 case "SubConfig.SubSubConfig.SubSubSetting": return "xyz";

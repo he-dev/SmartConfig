@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using SmartConfig.Collections;
 using SmartConfig.Reflection;
 
@@ -21,19 +22,29 @@ namespace SmartConfig.IO
 
         public static void UpdateSetting(SettingInfo settingInfo, object value, IObjectConverterCollection converters)
         {
-            //Debug.Assert(settingInfo != null);
+            Debug.Assert(settingInfo != null);
 
-            //try
-            //{
-            //    var converter = converters[settingInfo.ConverterType];
-            //    var serializedValue = converter.SerializeObject(value, settingInfo.SettingType, settingInfo.SettingConstraints);
-            //    var dataSource = settingInfo.configuration.ConfigurationProperties.DataSource;
-            //    dataSource.Update(settingInfo.SettingPath, serializedValue);
-            //}
-            //catch (Exception ex)
-            //{
-            //    //throw new DataSourceException(dataSource, settingInfo, ex);
-            //}
-        }        
+            try
+            {
+                var dataSource = settingInfo.Configuration.ConfigurationProperties.DataSource;
+
+                if (!dataSource.SupportedTypes.Contains(value.GetType()))
+                {
+                    var converter = converters[settingInfo.ConverterType];
+                    value = converter.SerializeObject(value, settingInfo.SettingType, settingInfo.SettingConstraints);
+                }
+
+                dataSource.Update(settingInfo.Keys, value);
+            }
+            catch (Exception ex)
+            {
+                throw new UpdateSettingFailedException(ex)
+                {
+                    DataSourceTypeName = settingInfo.Configuration.ConfigurationProperties.DataSource.GetType().Name,
+                    ConfigTypeFullName = settingInfo.Configuration.ConfigurationType.FullName,
+                    SettingPath = settingInfo.SettingPath
+                };
+            }
+        }
     }
 }

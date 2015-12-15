@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using SmartConfig.Collections;
 
 namespace SmartConfig.Data
 {
@@ -41,81 +43,42 @@ namespace SmartConfig.Data
             }
         }
 
-        public IEnumerable<string> SectionNames => _sectionHandlers.Values.Select(sh => sh.SectionName);        
+        public IEnumerable<string> SectionNames => _sectionHandlers.Values.Select(sh => sh.SectionName);
 
-        private ConfigurationSection GetConfigurationSection(System.Configuration.Configuration configuration, SettingKey nameKey)
+        private ConfigurationSection GetConfigurationSection(System.Configuration.Configuration configuration, SettingKey defaultKey)
         {
             Debug.Assert(configuration != null);
-            Debug.Assert(nameKey != null);
+            Debug.Assert(defaultKey != null);
 
-            var sectionName = GetSectionName(nameKey);
+            var sectionName = new AppConfigPath((SettingPath)defaultKey.Value, SectionNames).SectionName;
             var actualSectionName = configuration.Sections.Keys.Cast<string>().Single(x => x.Equals(sectionName, StringComparison.OrdinalIgnoreCase));
             var section = configuration.Sections[actualSectionName];
             return section;
         }
 
-        private string GetSectionName(SettingKey nameKey)
-        {
-            Debug.Assert(nameKey != null);
+        public override IReadOnlyCollection<Type> SupportedTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
-            //var sectionNames = _sectionHandlers.Select(x => x.Value.SectionName);
-            //var sectionNamePattern = @"(?<SectionName>" + string.Join("|", sectionNames) + @")";
-
-            //var sectionNameMatch = Regex.Match(nameKey.Value, sectionNamePattern, RegexOptions.ExplicitCapture);
-            //if (!sectionNameMatch.Groups["SectionName"].Success)
-            //{
-            //throw new InvalidOperationException($"Section name not found in '{nameKey.Value}'");
-            //}
-
-            //return sectionNameMatch.Groups["SectionName"].Value;
-
-            var parts = nameKey.Value.Split('.');
-            var sectionName = parts.Take(2).First(p => SectionNames.Contains(p));
-            return sectionName;
-        }
-
-        private string GetSettingName(SettingKey nameKey)
-        {
-            Debug.Assert(nameKey != null);
-
-            // (?<= AppSettings | ConnectionStrings)\.(?< Key >.+$)
-
-            //var sectionName = GetSectionName(nameKey);
-            //var keyPattern = $"(?<={sectionName})\\.(?<Key>.+$)";
-            //var keyMatch = Regex.Match(nameKey.Value, keyPattern, RegexOptions.ExplicitCapture);
-            //if (!keyMatch.Groups["Key"].Success)
-            //{
-            //    throw new InvalidOperationException($"Key not found in '{nameKey.Value}'");
-            //}
-
-            //return keyMatch.Groups["Key"].Value;
-
-            var parts = nameKey.Value.Split('.');
-            var sectionNameIndex = parts.Select((p, i) => new { p, i }).First(x => SectionNames.Contains(x.p)).i;
-            var keyParts = parts.Where((p, i) => i != sectionNameIndex);
-            return string.Join(".", keyParts);
-        }
-
-        public override string Select(IReadOnlyCollection<SettingKey> keys)
+        public override object Select(SettingKeyReadOnlyCollection keys)
         {
             Debug.Assert(keys != null && keys.Any());
 
             var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var configurationSection = GetConfigurationSection(exeConfig, keys.First());
+            var configurationSection = GetConfigurationSection(exeConfig, keys.DefaultKey);
             var sectionHandler = _sectionHandlers[configurationSection.GetType()];
-            var settingName = GetSettingName(keys.First());
+            var settingName = new AppConfigPath((SettingPath)keys.DefaultKey.Value, SectionNames).ToString();
             var value = sectionHandler.Select(configurationSection, settingName);
             return value;
         }
 
-        public override void Update(IReadOnlyCollection<SettingKey> keys, string value)
+        public override void Update(SettingKeyReadOnlyCollection keys, object value)
         {
             Debug.Assert(keys != null && keys.Any());
 
             var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var configurationSection = GetConfigurationSection(exeConfig, keys.First());
+            var configurationSection = GetConfigurationSection(exeConfig, keys.DefaultKey);
             var sectionHandler = _sectionHandlers[configurationSection.GetType()];
-            sectionHandler.Update(configurationSection, GetSettingName(keys.First()), value);
+            var settingName = new AppConfigPath((SettingPath)keys.DefaultKey.Value, SectionNames).ToString();
+            sectionHandler.Update(configurationSection, settingName, value?.ToString());
             exeConfig.Save(ConfigurationSaveMode.Minimal);
         }
     }

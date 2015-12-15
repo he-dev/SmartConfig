@@ -9,7 +9,7 @@ namespace SmartConfig
     /// </summary>
     public class SettingKey
     {
-        public SettingKey(string name, string value)
+        public SettingKey(string name, object value)
         {
             if (string.IsNullOrEmpty(name)) { throw new ArgumentNullException(nameof(name)); }
             if (value == null) { throw new ArgumentNullException(nameof(value)); }
@@ -24,6 +24,6 @@ namespace SmartConfig
         /// Gets or sets the key value. This property is optional for the version set via the <c>SmartConfigAttribute</c>.
         /// It is set internaly.
         /// </summary>
-        public string Value { get; private set; }
+        public object Value { get; private set; }
     }
 }

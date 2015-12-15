@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using SmartConfig.Collections;
 using SmartConfig.Logging;
 using SmartUtilities;
 
@@ -49,10 +51,12 @@ namespace SmartConfig.Data
 
         private XElement Root => XConfig.Root;
 
-        public override string Select(IReadOnlyCollection<SettingKey> keys)
+        public override IReadOnlyCollection<Type> SupportedTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+
+        public override object Select(SettingKeyReadOnlyCollection keys)
         {
-            var attributeName = keys.First().Name;
-            var attributeValue = keys.First().Value;
+            var attributeName = keys.DefaultKey.Name;
+            var attributeValue = keys.DefaultKey.Value;
             var defaultKeyXPath = $"//{RootElementName}/{SettingElementName}[@{attributeName}='{attributeValue}']";
 
             var xSettings = XConfig.XPathSelectElements(defaultKeyXPath);
@@ -63,12 +67,12 @@ namespace SmartConfig.Data
                 // set default key and value
                 var element = new TSetting
                 {
-                    Name = x.Attribute(keys.First().Name).Value,
+                    Name = x.Attribute(keys.DefaultKey.Name).Value,
                     Value = x.Value
                 };
 
                 // set other keys
-                foreach (var key in keys.Skip(1))
+                foreach (var key in keys.CustomKeys)
                 {
                     var attr = x.Attribute(key.Name);
 
@@ -83,7 +87,7 @@ namespace SmartConfig.Data
             return result?.Value;
         }
 
-        public override void Update(IReadOnlyCollection<SettingKey> keys, string value)
+        public override void Update(SettingKeyReadOnlyCollection keys, object value)
         {
             var attributeConditions = string.Join(" and ", keys.Select(key => $"@{key.Name} = '{key.Value}'"));
             var settingXPath = $"//{RootElementName}/{SettingElementName}[{attributeConditions}]";
@@ -99,12 +103,12 @@ namespace SmartConfig.Data
             }
 
             // set custom keys
-            foreach (var key in keys.Skip(1))
+            foreach (var key in keys.CustomKeys)
             {
                 xSetting.Add(new XAttribute(key.Name, key.Value));
             }
 
-            xSetting.Value = value;
+            xSetting.Value = value?.ToString();
             XConfig.Save(FileName);
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SmartConfig.Collections;
 
 namespace SmartConfig.Data
@@ -16,18 +17,20 @@ namespace SmartConfig.Data
     /// </summary>
     public interface IDataSource
     {
+        IReadOnlyCollection<Type> SupportedTypes { get; }
+
         /// <summary>
         /// Selects data from the data source.
         /// </summary>
         /// <param name="keys"></param>
         /// <returns></returns>
-        string Select(IReadOnlyCollection<SettingKey> keys);
+        object Select(SettingKeyReadOnlyCollection keys);
 
         /// <summary>
         /// Updates data in the data source.
         /// </summary>
         /// <param name="keys"></param>
         /// <param name="value"></param>
-        void Update(IReadOnlyCollection<SettingKey> keys, string value);
+        void Update(SettingKeyReadOnlyCollection keys, object value);
     }
 }

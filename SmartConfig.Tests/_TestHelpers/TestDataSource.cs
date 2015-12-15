@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using SmartConfig.Collections;
 using SmartConfig.Data;
 
 namespace SmartConfig.Tests
@@ -9,14 +11,16 @@ namespace SmartConfig.Tests
     {
         public Func<IEnumerable<SettingKey>, string> SelectFunc;
 
-        public Action<IEnumerable<SettingKey>, string> UpdateAction;
+        public Action<IEnumerable<SettingKey>, object> UpdateAction;
 
-        public override string Select(IReadOnlyCollection<SettingKey> keys)
+        public override IReadOnlyCollection<Type> SupportedTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+
+        public override object Select(SettingKeyReadOnlyCollection keys)
         {
             return SelectFunc(keys);
         }
 
-        public override void Update(IReadOnlyCollection<SettingKey> keys, string value)
+        public override void Update(SettingKeyReadOnlyCollection keys, object value)
         {
             UpdateAction(keys, value);
         }
@@ -26,14 +30,16 @@ namespace SmartConfig.Tests
     {
         public Func<IEnumerable<SettingKey>, string> SelectFunc;
 
-        public Action<IEnumerable<SettingKey>, string> UpdateAction;
+        public Action<IEnumerable<SettingKey>, object> UpdateAction;
 
-        public override string Select(IReadOnlyCollection<SettingKey> keys)
+        public override IReadOnlyCollection<Type> SupportedTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+
+        public override object Select(SettingKeyReadOnlyCollection keys)
         {
             return SelectFunc(keys);
         }
 
-        public override void Update(IReadOnlyCollection<SettingKey> keys, string value)
+        public override void Update(SettingKeyReadOnlyCollection keys, object value)
         {
             UpdateAction(keys, value);
         }

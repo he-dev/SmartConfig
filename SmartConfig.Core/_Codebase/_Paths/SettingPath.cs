@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SmartConfig
@@ -8,7 +9,7 @@ namespace SmartConfig
     /// </summary>
     public class SettingPath
     {
-        private readonly List<string> _path = new List<string>();
+        private readonly List<string> _names = new List<string>();
 
         //public static string Create<T>(Expression<Func<T>> expression)
         //{
@@ -34,35 +35,31 @@ namespace SmartConfig
         //    return String.Empty;
         //}
 
-        public SettingPath() { }
+        //public SettingPath() { }
+
+        protected SettingPath() { }
 
         public SettingPath(IEnumerable<string> names)
         {
-            _path.AddRange(names);
+            _names.AddRange(names);
         }
 
         public SettingPath(string name) : this(new[] { name }) { }
 
-        public SettingPath(SettingPath path) : this(path._path) { }
+        public SettingPath(SettingPath path) : this(path._names) { }
 
         public SettingPath(params string[] names) : this((IEnumerable<string>)names) { }
 
-        //public SettingPath(IEnumerable<string> names, bool reversed)
-        //{
-        //    if (reversed)
-        //    {
-        //        names = names.Reverse();
-        //    }
+        public string Delimiter { get; set; } = ".";
 
-        //    return new SettingPath(names);
-        //}
+        public virtual IReadOnlyCollection<string> Names => _names.AsReadOnly();
 
         public override string ToString()
         {
-            return string.Join(".", _path);
-        }
+            return string.Join(Delimiter, _names);
+        }       
 
-        public static implicit operator string (SettingPath settingPath)
+        public static implicit operator string(SettingPath settingPath)
         {
             return settingPath.ToString();
         }

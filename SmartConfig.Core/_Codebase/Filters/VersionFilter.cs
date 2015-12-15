@@ -17,7 +17,7 @@ namespace SmartConfig.Filters
                 // get matching versions
                 .Where(setting =>
                     !setting[key.Name].Equals(Wildcards.Asterisk) &&
-                    SemanticVersion.Parse(setting[key.Name]) <= SemanticVersion.Parse(key.Value))
+                    SemanticVersion.Parse(setting[key.Name]) <= SemanticVersion.Parse(key.Value.ToString()))
                 // sort versions
                 .OrderByDescending(setting => SemanticVersion.Parse(setting[key.Name]))
                 // attach * at the end
