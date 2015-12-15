@@ -1,4 +1,4 @@
-# SmartConfig v4
+# SmartConfig v4.1
 Because writing configurations should be easy.
 
 ---
@@ -31,26 +31,33 @@ Install-Package SmartConfig
 
 ## Features
 - Strongly typed values:
-  - Numerics like `char`, `short`, `int`, `long`, `single`, `float`, `decimal` and others
-  - Booleans
-  - Enums
+  - Numerics
+    - Integral types: `sbyte`, `byte` `char`, `short`, `ushort`, `int`, `uint`, `long`, `ulong`
+    - Floating-point types: `float`, `double`
+    - Decimal: `decimal`
+  - Boolean
+  - Enum
   - JSON (via `ObjectConverterAttribute`: `[ObjectConverter(typeof(JsonConverter)]`)
   - XML (`XDocument`,`XElement`)
   - Colors (`System.Drawing.Color` as Name (Red), HEX (#FF00AA), Decimal (122, 134,90)
   - `DateTime`
   - `string`
 - Read/Write value validation:
-  - Strongly typed
   - `OptionalAttribute`
   - `RegularExpressionAttribute`
   - `DateTimeFormatAttribute`
   - `IgnoreAttribute`
+- Multiple data sources:
+  - `app.config` via `AppConfigSource`
+  - Database via `DbSource`
+  - `XML` via `XmlSource`
+  - Registry via `RegistrySource`
+  - `ini` via `IniSource` (comming soon)
 - Extendable:
   - If you need additional criteria for finding them you can add more columns like Environment or Version.
   - If you need a special data source there's an interfact to add it.
   - If you need a special data type for your settings there's an interface to add it.
 - Multiple configurations in a single storage.
-- Multiple data sources: app.config (read-only) (connectionsStrings & appSettings), SQL database (read-write)
 
 ## What else can it do?
 There is one _hidden_ beta feature for generating setting name and default values based on the current configuration. You can activate it by setting the `IDataSource.SettingsInitializationEnabled` property to `true`.
