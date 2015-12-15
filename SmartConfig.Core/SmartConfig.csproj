@@ -137,6 +137,7 @@
     <Compile Include="_Codebase\IO\SettingLoader.cs" />
     <Compile Include="_Codebase\IO\SettingUpdater.cs" />
     <Compile Include="_Codebase\SettingKey.cs" />
+    <Compile Include="_Codebase\_Attributes\SettingNameAttribute.cs" />
     <Compile Include="_Codebase\_Exceptions\UpdateSettingFailedException.cs" />
     <Compile Include="_Codebase\_Exceptions\UnsupportedRegistryTypeException.cs" />
     <Compile Include="_Codebase\_Paths\RegistryPath.cs" />

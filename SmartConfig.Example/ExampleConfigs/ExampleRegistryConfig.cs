@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using SmartConfig.Data;
+// ReSharper disable InconsistentNaming
 
 namespace SmartConfig.Example.ExampleConfigs
 {
@@ -19,5 +20,12 @@ namespace SmartConfig.Example.ExampleConfigs
 
         [Optional]
         public static string REG_SZ_TEST2 { get; set; }
+
+        [SettingName("New Key #1")]
+        public static class NewKey1
+        {
+            [SettingName("New Value #1")]
+            public static string NewValue1 { get; set; }
+        }
     }
 }

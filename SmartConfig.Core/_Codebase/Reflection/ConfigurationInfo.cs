@@ -51,7 +51,7 @@ namespace SmartConfig.Reflection
 
             foreach (var property in properties)
             {
-                var subPath = path.Concat(new[] { property.Name });
+                var subPath = path.Concat(new[] { GetMemberName(property) });
                 yield return new SettingInfo(this, property, subPath, ConfigurationProperties.CustomKeys);
             }
 
@@ -66,7 +66,7 @@ namespace SmartConfig.Reflection
             var settingInfos = type
                 .GetNestedTypes(BindingFlags.Public | BindingFlags.Public)
                 .Where(canGetType)
-                .SelectMany(nt => GetSettingInfos(nt, path.Concat(new[] { nt.Name })));
+                .SelectMany(nt => GetSettingInfos(nt, path.Concat(new[] { GetMemberName(nt) })));
 
             foreach (var settingInfo in settingInfos)
             {
@@ -94,5 +94,12 @@ namespace SmartConfig.Reflection
 
             throw new InvalidOperationException("SmartConfigAttribute not found for");
         }
+
+        private static string GetMemberName(MemberInfo member)
+        {
+            var settingName = member.GetCustomAttribute<SettingNameAttribute>();
+            return settingName != null ? settingName.SettingName : member.Name;
+        }
+
     }
 }
