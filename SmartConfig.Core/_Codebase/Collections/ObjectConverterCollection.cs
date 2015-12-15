@@ -28,7 +28,8 @@ namespace SmartConfig.Collections
                 ObjectConverter objectConverter;
                 if (!_converters.TryGetValue(converterType, out objectConverter))
                 {
-                    throw new ObjectConverterNotFoundException(converterType);
+                    return _converters[typeof(EmptyConverter)];
+                    //throw new ObjectConverterNotFoundException(converterType);
                 }
                 return objectConverter;
             }

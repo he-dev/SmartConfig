@@ -27,13 +27,8 @@ namespace SmartConfig.IO
             try
             {
                 var dataSource = settingInfo.Configuration.ConfigurationProperties.DataSource;
-
-                if (!dataSource.SupportedTypes.Contains(value.GetType()))
-                {
-                    var converter = converters[settingInfo.ConverterType];
-                    value = converter.SerializeObject(value, settingInfo.SettingType, settingInfo.SettingConstraints);
-                }
-
+                var converter = converters[settingInfo.ConverterType];
+                value = converter.SerializeObject(value, settingInfo.SettingType, settingInfo.SettingConstraints);
                 dataSource.Update(settingInfo.Keys, value);
             }
             catch (Exception ex)

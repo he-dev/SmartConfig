@@ -11,55 +11,47 @@ namespace SmartConfig.Converters
     {
         public DateTimeConverter() : base(new[] { typeof(DateTime) }) { }
 
-        public override object DeserializeObject(string value, Type type, IEnumerable<ConstraintAttribute> constraints)
+        public override object DeserializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
-            ValidateType(type);
+            if (value.GetType() == type) { return value; }
 
-            DateTime? customResult = null;
             constraints.Check<DateTimeFormatAttribute>(format =>
             {
                 DateTime intermediateResult;
-                if (!format.TryParseExact(value, out intermediateResult))
+                if (!format.TryParseExact((string)value, out intermediateResult))
                 {
                     throw new DateTimeFormatViolationException
                     {
-                        Value = value,
+                        Value = value.ToString(),
                         Format = format.Format
                     };
                 }
-                customResult = intermediateResult;
+                value = intermediateResult;
             });
 
-            if (customResult.HasValue)
+            if (value.GetType() == type)
             {
-                return customResult.Value;
+                return value;
             }
 
-            var result = DateTime.Parse(value, CultureInfo.InvariantCulture);
+            var result = DateTime.Parse((string)value, CultureInfo.InvariantCulture);
             return result;
         }
 
-        public override string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
+        public override object SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
-            ValidateType(type);
+            if (value.GetType() == type) { return value; }
 
-            // there's nothing to serialize
-            if (value == null)
-            {
-                return null;
-            }
-
-            var result = string.Empty;
+            object result = null;
             constraints.Check<DateTimeFormatAttribute>(format =>
             {
                 result = ((DateTime)value).ToString(format.Format);
             });
 
-            if (string.IsNullOrEmpty(result))
-            {
-                var toStringMethod = type.GetMethod("ToString", new[] { typeof(CultureInfo) });
-                result = (string)toStringMethod.Invoke(value, new object[] { CultureInfo.InvariantCulture });
-            }
+            if (result != null) { return result; }
+
+            var toStringMethod = type.GetMethod("ToString", new[] { typeof(CultureInfo) });
+            result = toStringMethod.Invoke(value, new object[] { CultureInfo.InvariantCulture });
             return result;
         }
     }

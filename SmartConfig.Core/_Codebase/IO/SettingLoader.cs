@@ -53,15 +53,15 @@ namespace SmartConfig.IO
                     };
                 }
 
-                // sources may support objects that are stored directly and don't require deserialization
-                if (dataSource.SupportedTypes.Contains(settingInfo.SettingType) && value.GetType() == settingInfo.SettingType)
-                {
-                    settingInfo.Value = value;
-                    return;
-                }
+                //// sources may support objects that are stored directly and don't require deserialization
+                //if (dataSource.SupportedTypes.Contains(settingInfo.SettingType) && value.GetType() == settingInfo.SettingType)
+                //{
+                //    settingInfo.Value = value;
+                //    return;
+                //}
 
                 var converter = converters[settingInfo.ConverterType];
-                var obj = converter.DeserializeObject(value.ToString(), settingInfo.SettingType, settingInfo.SettingConstraints);
+                var obj = converter.DeserializeObject(value, settingInfo.SettingType, settingInfo.SettingConstraints);
                 settingInfo.Value = obj;
             }
             catch (Exception ex)

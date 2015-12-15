@@ -48,7 +48,7 @@ namespace SmartConfig.Converters
         /// <param name="constraints"></param>
         /// <returns></returns>
         /// <remarks>It is not necessary to check for null value. <c>configuration</c> dosn't pass null values.</remarks>
-        public abstract object DeserializeObject(string value, Type type, IEnumerable<ConstraintAttribute> constraints);
+        public abstract object DeserializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints);
 
         /// <summary>
         /// Serializes an object.
@@ -58,7 +58,7 @@ namespace SmartConfig.Converters
         /// <param name="constraints"></param>
         /// <returns></returns>
         /// <remarks>It is not necessary to check for null value. <c>configuration</c> dosn't pass null values.</remarks>
-        public abstract string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints);
+        public abstract object SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints);
 
     }
 }

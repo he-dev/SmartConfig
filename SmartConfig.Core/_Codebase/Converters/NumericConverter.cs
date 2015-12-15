@@ -31,41 +31,49 @@ namespace SmartConfig.Converters
         {
         }
 
-        public override object DeserializeObject(string value, Type type, IEnumerable<ConstraintAttribute> constraints)
+        public override object DeserializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
-            ValidateType(type);
-
-            object result = null;
-
-            var parseMethod = type.GetMethod("Parse", new[] { typeof(string), typeof(IFormatProvider) });
-            if (parseMethod != null)
+            if (value is string)
             {
-                result = parseMethod.Invoke(null, new object[] { value, CultureInfo.InvariantCulture });
-            }
-            else
-            {
-                parseMethod = type.GetMethod("Parse", new[] { typeof(string) });
+                var parseMethod = type.GetMethod("Parse", new[] { typeof(string), typeof(IFormatProvider) });
                 if (parseMethod != null)
                 {
-                    result = parseMethod.Invoke(null, new object[] { value });
+                    value = parseMethod.Invoke(null, new[] { value, CultureInfo.InvariantCulture });
+                }
+                else
+                {
+                    parseMethod = type.GetMethod("Parse", new[] { typeof(string) });
+                    if (parseMethod != null)
+                    {
+                        value = parseMethod.Invoke(null, new[] { value });
+                    }
                 }
             }
 
             constraints.Check<RangeAttribute>(range =>
             {
-                if (!range.IsValid((IComparable)result)) throw new RangeViolationException
+                if (!range.IsValid((IComparable)value)) throw new RangeViolationException
                 {
                     Range = range.ToString(),
-                    Value =  value                
+                    Value = value.ToString()
                 };
             });
 
-            return result;
+            return value;
         }
 
-        public override string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
+        public override object SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
-            ValidateType(type);           
+            constraints.Check<RangeAttribute>(range =>
+            {
+                if (!range.IsValid((IComparable)value)) throw new RangeViolationException
+                {
+                    Range = range.ToString(),
+                    Value = value.ToString()
+                };
+            });
+
+            if (value.GetType() == type) { return value; }
 
             var toStringMethod = type.GetMethod("ToString", new[] { typeof(IFormatProvider) });
             if (toStringMethod != null)

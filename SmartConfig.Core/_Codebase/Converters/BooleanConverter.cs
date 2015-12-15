@@ -11,18 +11,18 @@ namespace SmartConfig.Converters
     {
         public BooleanConverter() : base(new[] { typeof(bool) }) { }
 
-        public override object DeserializeObject(string value, Type type, IEnumerable<ConstraintAttribute> constraints)
+        public override object DeserializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
-            ValidateType(type);
+            if (value.GetType() == type) { return value; }
 
             var parseMethod = type.GetMethod("Parse", new[] { typeof(string) });
-            var result = parseMethod.Invoke(null, new object[] { value });
+            var result = parseMethod.Invoke(null, new[] { value });
             return result;
         }
 
-        public override string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
+        public override object SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
-            ValidateType(type);
+            if (value.GetType() == type) { return value; }
 
             var toStringMethod = type.GetMethod("ToString", new Type[] { });
             var result = toStringMethod.Invoke(value, null);

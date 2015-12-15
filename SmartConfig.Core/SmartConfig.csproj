@@ -107,6 +107,7 @@
     <Compile Include="_Codebase\Collections\_Interfaces\ICollection.cs" />
     <Compile Include="_Codebase\Collections\_Interfaces\IDataSourceCollection.cs" />
     <Compile Include="_Codebase\Collections\_Interfaces\IObjectConverterCollection.cs" />
+    <Compile Include="_Codebase\Converters\EmptyConverter.cs" />
     <Compile Include="_Codebase\Data\_Sources\RegistrySource.cs" />
     <Compile Include="_Codebase\Reflection\ConfigurationProperties.cs" />
     <Compile Include="_Codebase\Filters\ISettingFilter.cs" />

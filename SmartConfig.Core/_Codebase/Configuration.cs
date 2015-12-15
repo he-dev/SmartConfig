@@ -33,6 +33,7 @@ namespace SmartConfig
             new ColorConverter(),
             new JsonConverter(),
             new XmlConverter(),
+            new EmptyConverter(),
         };
 
         /// <summary>

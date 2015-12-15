@@ -10,20 +10,19 @@ namespace SmartConfig.Converters
     /// </summary>
     public class ColorConverter : ObjectConverter
     {
-        public ColorConverter()
-            : base(new[] { typeof(Color) })
+        public ColorConverter() : base(new[] { typeof(Color) }) { }
+
+        public override object DeserializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
+            if (value.GetType() == type) { return value; }
+
+            return (Color)(new Color32((string)value));
         }
 
-        public override object DeserializeObject(string value, Type type, IEnumerable<ConstraintAttribute> constraints)
+        public override object SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
-            ValidateType(type);
-            return (Color)(new Color32(value));
-        }
+            if (value.GetType() == type) { return value; }
 
-        public override string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
-        {
-            ValidateType(type);
             return value.ToString();
         }
     }

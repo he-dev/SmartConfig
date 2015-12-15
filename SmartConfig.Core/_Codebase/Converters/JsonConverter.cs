@@ -9,21 +9,19 @@ namespace SmartConfig.Converters
     /// </summary>
     public class JsonConverter : ObjectConverter
     {
-        public override object DeserializeObject(string value, Type type, IEnumerable<ConstraintAttribute> constraints)
+        public override object DeserializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
-            var result =
-                !string.IsNullOrEmpty(value)
-                ? JsonConvert.DeserializeObject(value, type)
-                : null;
+            if (value.GetType() == type) { return value; }
+
+            var result = JsonConvert.DeserializeObject((string)value, type);
             return result;
         }
 
-        public override string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
+        public override object SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
-            var result =
-                value != null
-                ? JsonConvert.SerializeObject(value)
-                : null;
+            if (value.GetType() == type) { return value; }
+
+            var result = JsonConvert.SerializeObject(value);
             return result;
         }
     }

@@ -192,7 +192,7 @@ namespace SmartConfig.Tests
         {
             CustomConfigName.Properties.DataSource.SelectFunc = key =>
             {
-                Assert.AreEqual($"ABC.{nameof(CustomConfigName.StringSetting)}", key.First().Value);
+                Assert.AreEqual($"ABC.{nameof(CustomConfigName.StringSetting)}", key.First().Value.ToString());
                 return "xyz";
             };
 

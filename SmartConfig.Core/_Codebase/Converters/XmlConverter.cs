@@ -20,17 +20,18 @@ namespace SmartConfig.Converters
         {
         }
 
-        public override object DeserializeObject(string value, Type type, IEnumerable<ConstraintAttribute> constraints)
+        public override object DeserializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
-            ValidateType(type);
+            if (value.GetType() == type) { return value; }
+
             var parseMethod = type.GetMethod("Parse", new[] { typeof(string) });
             var result = parseMethod.Invoke(null, new object[] { value });
             return result;
         }
 
-        public override string SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
+        public override object SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
         {
-            ValidateType(type);
+            if (value.GetType() == type) { return value; }
 
             using (var memoryStream = new MemoryStream())
             using (var streamWriter = new StreamWriter(memoryStream, Encoding.UTF8))
