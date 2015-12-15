@@ -51,7 +51,7 @@ Install-Package SmartConfig
   - `app.config` via `AppConfigSource`
   - Database via `DbSource`
   - `XML` via `XmlSource`
-  - Registry via `RegistrySource`
+  - Registry via `RegistrySource` (supports: `REG_BINARY`, `REG_DWORD`, `REG_SZ`)
   - `ini` via `IniSource` (comming soon)
 - Extendable:
   - If you need additional criteria for finding them you can add more columns like Environment or Version.
