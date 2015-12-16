@@ -32,8 +32,8 @@ namespace SmartConfig.Tests.Converters
         public void SerializeObject_CanSerializeBoolean()
         {
             var converter = new BooleanConverter();
-            Assert.AreEqual("True", converter.SerializeObject(true, typeof(bool), Enumerable.Empty<ConstraintAttribute>()));
-            Assert.AreEqual("False", converter.SerializeObject(false, typeof(bool), Enumerable.Empty<ConstraintAttribute>()));
+            Assert.AreEqual(true, converter.SerializeObject(true, typeof(bool), Enumerable.Empty<Attribute>()));
+            Assert.AreEqual(false, converter.SerializeObject(false, typeof(bool), Enumerable.Empty<Attribute>()));
         }
 
         [TestMethod]

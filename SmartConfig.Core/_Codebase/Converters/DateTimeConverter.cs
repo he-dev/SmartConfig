@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace SmartConfig.Converters
 {
@@ -11,48 +12,43 @@ namespace SmartConfig.Converters
     {
         public DateTimeConverter() : base(new[] { typeof(DateTime) }) { }
 
-        public override object DeserializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
+        public override object DeserializeObject(object value, Type type, IEnumerable<Attribute> attributes)
         {
             if (value.GetType() == type) { return value; }
 
-            constraints.Check<DateTimeFormatAttribute>(format =>
+            var dateTimeFormatAttribute = attributes.OfType<DateTimeFormatAttribute>().SingleOrDefault();
+            if (dateTimeFormatAttribute != null)
             {
-                DateTime intermediateResult;
-                if (!format.TryParseExact((string)value, out intermediateResult))
+                DateTime dateTime;
+                if (!DateTime.TryParseExact((string)value, dateTimeFormatAttribute.Format, null, DateTimeStyles.None, out dateTime))
                 {
                     throw new DateTimeFormatViolationException
                     {
                         Value = value.ToString(),
-                        Format = format.Format
+                        Format = dateTimeFormatAttribute.Format
                     };
                 }
-                value = intermediateResult;
-            });
-
-            if (value.GetType() == type)
-            {
-                return value;
+                return dateTime;
             }
 
             var result = DateTime.Parse((string)value, CultureInfo.InvariantCulture);
             return result;
         }
 
-        public override object SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
+        public override object SerializeObject(object value, Type type, IEnumerable<Attribute> attributes)
         {
             if (value.GetType() == type) { return value; }
 
-            object result = null;
-            constraints.Check<DateTimeFormatAttribute>(format =>
+            var dateTimeFormatAttribute = attributes.OfType<DateTimeFormatAttribute>().SingleOrDefault();
+            if (dateTimeFormatAttribute != null)
             {
-                result = ((DateTime)value).ToString(format.Format);
-            });
+                value = ((DateTime)value).ToString(dateTimeFormatAttribute.Format);
+                return value;
+            }
 
-            if (result != null) { return result; }
-
-            var toStringMethod = type.GetMethod("ToString", new[] { typeof(CultureInfo) });
-            result = toStringMethod.Invoke(value, new object[] { CultureInfo.InvariantCulture });
-            return result;
+            var toStringMethod = typeof(DateTime).GetMethod("ToString", new[] { typeof(CultureInfo) });
+            value = toStringMethod.Invoke(value, new object[] { CultureInfo.InvariantCulture });
+            return value;
         }
     }
 }

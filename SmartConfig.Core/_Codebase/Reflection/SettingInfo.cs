@@ -47,12 +47,7 @@ namespace SmartConfig.Reflection
                 }
 
                 var objectConverterAttribute = Property.GetCustomAttribute<ObjectConverterAttribute>(false);
-                if (objectConverterAttribute != null)
-                {
-                    return objectConverterAttribute.Type;
-                }
-
-                return SettingType;
+                return objectConverterAttribute != null ? objectConverterAttribute.Type : SettingType;
             }
         }
 
@@ -60,10 +55,7 @@ namespace SmartConfig.Reflection
 
         public SettingKeyReadOnlyCollection Keys { get; }
 
-        public IEnumerable<ConstraintAttribute> SettingConstraints =>
-            Property == null
-            ? Enumerable.Empty<ConstraintAttribute>()
-            : Property.GetCustomAttributes<ConstraintAttribute>(false);
+        public IEnumerable<Attribute> SettingCustomAttributes => Property?.GetCustomAttributes(false).Cast<Attribute>() ?? Enumerable.Empty<Attribute>();
 
         public bool IsOptional => Property.GetCustomAttribute<OptionalAttribute>() != null;
 

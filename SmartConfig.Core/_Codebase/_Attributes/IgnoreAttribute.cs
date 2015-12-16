@@ -3,9 +3,9 @@
 namespace SmartConfig
 {
     /// <summary>
-    /// Fields or classes with this attribute are not loaded.
+    /// Informs the settings loader to ignore a class or property.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Field)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
     public class IgnoreAttribute : Attribute
     {
     }

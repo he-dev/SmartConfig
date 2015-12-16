@@ -31,7 +31,7 @@ namespace SmartConfig.Converters
         {
         }
 
-        public override object DeserializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
+        public override object DeserializeObject(object value, Type type, IEnumerable<Attribute> attributes)
         {
             if (value is string)
             {
@@ -50,28 +50,14 @@ namespace SmartConfig.Converters
                 }
             }
 
-            constraints.Check<RangeAttribute>(range =>
-            {
-                if (!range.IsValid((IComparable)value)) throw new RangeViolationException
-                {
-                    Range = range.ToString(),
-                    Value = value.ToString()
-                };
-            });
-
+            Validate(value, attributes);
+            
             return value;
         }
 
-        public override object SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
+        public override object SerializeObject(object value, Type type, IEnumerable<Attribute> attributes)
         {
-            constraints.Check<RangeAttribute>(range =>
-            {
-                if (!range.IsValid((IComparable)value)) throw new RangeViolationException
-                {
-                    Range = range.ToString(),
-                    Value = value.ToString()
-                };
-            });
+            Validate(value, attributes);            
 
             if (value.GetType() == type) { return value; }
 
@@ -81,14 +67,12 @@ namespace SmartConfig.Converters
                 var result = toStringMethod.Invoke(value, new object[] { CultureInfo.InvariantCulture });
                 return (string)result;
             }
-            else
+
+            toStringMethod = type.GetMethod("ToString", new Type[] { });
+            if (toStringMethod != null)
             {
-                toStringMethod = type.GetMethod("ToString", new Type[] { });
-                if (toStringMethod != null)
-                {
-                    var result = toStringMethod.Invoke(value, null);
-                    return (string)result;
-                }
+                var result = toStringMethod.Invoke(value, null);
+                return (string)result;
             }
 
             throw new Exception("ToString method not found.");

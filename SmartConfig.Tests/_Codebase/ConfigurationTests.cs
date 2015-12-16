@@ -234,7 +234,7 @@ namespace SmartConfig.Tests
 
             // value is in correct format
             Configuration.LoadSettings(typeof(CustomDateTimeFormatSettings));
-            Assert.AreEqual(new DateTime(2015, 8, 14).Date, CustomDateTimeFormatSettings.DateTimeField.Date);
+            Assert.AreEqual(new DateTime(2015, 8, 14).Date, CustomDateTimeFormatSettings.DateTimeSetting.Date);
 
             CustomDateTimeFormatSettings.Properties.DataSource.SelectFunc = keys => "14AUG2015";
             // value is not in correct format
@@ -312,7 +312,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void LoadSettings_ThrowsObjectConverterNotFoundException()
+        public void LoadSettings_ThrowsValueTypeMismatchException()
         {
             UnsupportedTypeSettings.Properties.DataSource.SelectFunc = keys => "Lorem ipsum.";
             ExceptionAssert.Throws<LoadSettingFailedException>(() =>
@@ -321,7 +321,7 @@ namespace SmartConfig.Tests
             },
             ex =>
             {
-                Assert.IsInstanceOfType(ex.InnerException, typeof(ObjectConverterNotFoundException));
+                Assert.IsInstanceOfType(ex.InnerException, typeof(ValueTypeMismatchException));
             },
             Assert.Fail);
         }

@@ -19,7 +19,7 @@ namespace SmartConfig.Tests.Converters
         public void SerializeObject_CanSerializeEnum()
         {
             var converter = new EnumConverter();
-            Assert.AreEqual("TestValue2", converter.SerializeObject(TestEnum.TestValue2, typeof(TestEnum), Enumerable.Empty<ConstraintAttribute>()));
+            Assert.AreEqual("TestValue2", converter.SerializeObject(TestEnum.TestValue2, typeof(string), Enumerable.Empty<ConstraintAttribute>()));
         }
     }
 }

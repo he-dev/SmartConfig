@@ -6,24 +6,26 @@ namespace SmartConfig.Tests
     public class RegularExpressionAttributeTests
     {
         [TestMethod]
+        [ExpectedException(typeof(PropertyNotSetException))]
         public void ctor_RegularExpressionAttribute()
         {
-            var attr1 = new RegularExpressionAttribute("\\d[A-Z]");
-            Assert.AreEqual("\\d[A-Z]", attr1.ToString());
+            var attr1 = new RegularExpressionAttribute();
+            attr1.Validate("abc");
         }
 
         [TestMethod]
-        public void IsMatch()
+        public void Validate_CanValidateString()
         {
-            var attr1 = new RegularExpressionAttribute("\\d[A-Z]");
-            Assert.IsFalse(attr1.IgnoreCase);
-            Assert.IsTrue(attr1.IsMatch("1B"));
-            Assert.IsFalse(attr1.IsMatch("1e"));
+            var attr1 = new RegularExpressionAttribute { Pattern = "\\d[A-Z]" };
+            attr1.Validate("1B");
+        }
 
-            var attr2 = new RegularExpressionAttribute("\\d[A-Z]", true);
-            Assert.IsTrue(attr2.IgnoreCase);
-            Assert.IsTrue(attr2.IsMatch("2c"));
-            Assert.IsFalse(attr2.IsMatch("23"));
+        [TestMethod]
+        [ExpectedException(typeof(RegularExpressionViolationException))]
+        public void Validate_ThrowsRegularExpressionViolationException()
+        {
+            var attr1 = new RegularExpressionAttribute { Pattern = "\\d[A-Z]" };
+            attr1.Validate("1e");
         }
     }
 }

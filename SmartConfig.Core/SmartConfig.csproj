@@ -105,7 +105,6 @@
     </Compile>
     <Compile Include="_Codebase\Collections\SettingKeyReadOnlyCollection.cs" />
     <Compile Include="_Codebase\Collections\_Interfaces\ICollection.cs" />
-    <Compile Include="_Codebase\Collections\_Interfaces\IDataSourceCollection.cs" />
     <Compile Include="_Codebase\Collections\_Interfaces\IObjectConverterCollection.cs" />
     <Compile Include="_Codebase\Converters\EmptyConverter.cs" />
     <Compile Include="_Codebase\Data\_Sources\RegistrySource.cs" />
@@ -138,6 +137,10 @@
     <Compile Include="_Codebase\IO\SettingUpdater.cs" />
     <Compile Include="_Codebase\SettingKey.cs" />
     <Compile Include="_Codebase\_Attributes\SettingNameAttribute.cs" />
+    <Compile Include="_Codebase\_Attributes\_ConverterParameters\DateTimeFormatAttribute.cs" />
+    <Compile Include="_Codebase\_Attributes\_ConverterParameters\ConverterParameterAttribute.cs" />
+    <Compile Include="_Codebase\_Exceptions\PropertyNotSetException.cs" />
+    <Compile Include="_Codebase\_Exceptions\ValueTypeMismatchException.cs" />
     <Compile Include="_Codebase\_Exceptions\UpdateSettingFailedException.cs" />
     <Compile Include="_Codebase\_Exceptions\UnsupportedRegistryTypeException.cs" />
     <Compile Include="_Codebase\_Paths\RegistryPath.cs" />
@@ -146,7 +149,6 @@
     <Compile Include="_Codebase\_Attributes\FilterAttribute.cs" />
     <Compile Include="_Codebase\_Attributes\IgnoreAttribute.cs" />
     <Compile Include="_Codebase\_Attributes\OptionalAttribute.cs" />
-    <Compile Include="_Codebase\_Attributes\_Constraints\DateTimeFormatAttribute.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\RegularExpressionAttribute.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\RangeAttribute.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\ConstraintAttribute.cs" />
@@ -164,20 +166,12 @@
     <Compile Include="_Codebase\_Exceptions\SmartConfigAttributeMissingException.cs" />
     <Compile Include="_Codebase\_Exceptions\TypeNotStaticException.cs" />
     <Compile Include="_Codebase\_Exceptions\LoadSettingFailedException.cs" />
-    <Compile Include="_Codebase\_Exceptions\ObjectConverterException.cs" />
-    <Compile Include="_Codebase\_Exceptions\DataSourceNotFoundException.cs" />
     <Compile Include="_Codebase\_Exceptions\SettingNotOptionalException.cs" />
-    <Compile Include="_Codebase\_Exceptions\DataSourceException.cs" />
-    <Compile Include="_Codebase\_Exceptions\SmartConfigException.cs" />
-    <Compile Include="_Codebase\_Exceptions\ConstraintException.cs" />
     <Compile Include="_Codebase\_Exceptions\DuplicateTypeConverterException.cs" />
-    <Compile Include="_Codebase\_Exceptions\UnsupportedTypeException.cs" />
-    <Compile Include="_Codebase\_Extensions\EnumerableExtensions.cs" />
     <Compile Include="_Codebase\_Extensions\TypeExtensions.cs" />
     <Compile Include="_Codebase\Converters\ColorConverter.cs" />
     <Compile Include="_Codebase\Converters\StringConverter.cs" />
     <Compile Include="_Codebase\Converters\XmlConverter.cs" />
-    <Compile Include="_Codebase\_Exceptions\ObjectConverterNotFoundException.cs" />
     <Compile Include="_Codebase\Converters\JsonConverter.cs" />
     <Compile Include="_Codebase\_Attributes\ObjectConverterAttribute.cs" />
     <Compile Include="_Codebase\Converters\ObjectConverter.cs" />

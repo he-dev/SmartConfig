@@ -99,9 +99,7 @@
     <Compile Include="_Codebase\Filters\VersionFilterTests.cs" />
     <Compile Include="_Codebase\KeyNamesTests.cs" />
     <Compile Include="_Codebase\Reflection\ConfigurationInfoTests.cs" />
-    <Compile Include="_Codebase\_Attributes\_Constraints\DateTimeFormatAttributeTests.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\RegularExpressionAttributeTests.cs" />
-    <Compile Include="_Codebase\_Extensions\EnumerableExtensionsTests.cs" />
     <Compile Include="_Codebase\_Extensions\TypeExtensionsTests.cs" />
     <Compile Include="_TestHelpers\AssemblyInitializer.cs" />
     <Compile Include="_TestHelpers\TestDbInitializer.cs" />

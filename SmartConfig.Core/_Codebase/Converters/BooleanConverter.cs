@@ -11,7 +11,7 @@ namespace SmartConfig.Converters
     {
         public BooleanConverter() : base(new[] { typeof(bool) }) { }
 
-        public override object DeserializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
+        public override object DeserializeObject(object value, Type type, IEnumerable<Attribute> attributes)
         {
             if (value.GetType() == type) { return value; }
 
@@ -20,11 +20,11 @@ namespace SmartConfig.Converters
             return result;
         }
 
-        public override object SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
+        public override object SerializeObject(object value, Type type, IEnumerable<Attribute> attributes)
         {
             if (value.GetType() == type) { return value; }
 
-            var toStringMethod = type.GetMethod("ToString", new Type[] { });
+            var toStringMethod = typeof(bool).GetMethod("ToString", new Type[] { });
             var result = toStringMethod.Invoke(value, null);
             return (string)result;
         }

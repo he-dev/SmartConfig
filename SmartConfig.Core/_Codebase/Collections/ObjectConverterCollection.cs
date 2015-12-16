@@ -17,7 +17,7 @@ namespace SmartConfig.Collections
         internal ObjectConverterCollection() { }
 
         /// <summary>
-        /// Gets an object converter for the specified type or null.
+        /// Gets an object converter for the specified type or an empty converter.
         /// </summary>
         /// <param name="converterType"></param>
         /// <returns></returns>
@@ -26,12 +26,10 @@ namespace SmartConfig.Collections
             get
             {
                 ObjectConverter objectConverter;
-                if (!_converters.TryGetValue(converterType, out objectConverter))
-                {
-                    return _converters[typeof(EmptyConverter)];
-                    //throw new ObjectConverterNotFoundException(converterType);
-                }
-                return objectConverter;
+                return
+                    _converters.TryGetValue(converterType, out objectConverter)
+                        ? objectConverter
+                        : _converters[typeof(EmptyConverter)];
             }
             private set { _converters[converterType] = value; }
         }

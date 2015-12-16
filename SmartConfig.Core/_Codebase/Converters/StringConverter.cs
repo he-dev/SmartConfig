@@ -11,42 +11,16 @@ namespace SmartConfig.Converters
     {
         public StringConverter() : base(new[] { typeof(string) }) { }
 
-        public override object DeserializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
+        public override object DeserializeObject(object value, Type type, IEnumerable<Attribute> attributes)
         {
-            ValidateType(type);
-
-            constraints.Check<RegularExpressionAttribute>(regex =>
-            {
-                if (!regex.IsMatch((string)value))
-                {
-                    throw new RegularExpressionViolationException
-                    {
-                        Pattern = regex.ToString(),
-                        Value = value.ToString()
-                    };
-                }
-            });
-
+            Validate(value, attributes);
             return value;
         }
 
-        public override object SerializeObject(object value, Type type, IEnumerable<ConstraintAttribute> constraints)
+        public override object SerializeObject(object value, Type type, IEnumerable<Attribute> attributes)
         {
-            ValidateType(type);
-
-            constraints.Check<RegularExpressionAttribute>(regex =>
-            {
-                if (!regex.IsMatch((string)value))
-                {
-                    throw new RegularExpressionViolationException
-                    {
-                        Pattern = regex.ToString(),
-                        Value = (string)value
-                    };
-                }
-            });
-
-            return (string)value;
+            Validate(value, attributes);
+            return value;
         }
     }
 }

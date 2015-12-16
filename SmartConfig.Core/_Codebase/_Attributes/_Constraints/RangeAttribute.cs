@@ -12,59 +12,69 @@ namespace SmartConfig
     public class RangeAttribute : ConstraintAttribute
     {
         /// <summary>
-        /// Creates a new instance of the <c>RangeAtrributes</c>.
+        /// Gets or sets the type of the range.
         /// </summary>
-        /// <param name="type">SettingType of the values.</param>
-        /// <param name="min">Minimum allowed value inclusive. If null there is no minimum.</param>
-        /// <param name="max">Maximum allowed value inclusive. If null there is no maximum.</param>
-        public RangeAttribute(Type type, string min, string max)
-        {
-            Type = type;
-            Min = min;
-            Max = max;
-        }
+        public Type Type { get; set; }
 
         /// <summary>
-        /// Gets the type of the range.
+        /// Gets or sets the minimum value of the range.
         /// </summary>
-        internal Type Type { get; private set; }
+        public string Min { get; set; }
 
         /// <summary>
-        /// Gets the minimum value of the range.
+        /// Gets or sets the maximum value of the range.
         /// </summary>
-        internal string Min { get; private set; }
-
-        /// <summary>
-        /// Gets the maximum value of the range.
-        /// </summary>
-        internal string Max { get; private set; }
-
-        public override string Properties => $"Type = \"{Type.Name}\" Min = \"{Min}\" Max = \"{Max}\"";
+        public string Max { get; set; }
 
         /// <summary>
         /// Validates the value's range.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public bool IsValid(IComparable value)
+        public override void Validate(object value)
         {
+            var comparable = value as IComparable;
+            if (comparable == null)
+            {
+                throw new ArgumentException(null, nameof(value));
+            }
+
+            if (Type == null)
+            {
+                throw new PropertyNotSetException { PropertyName = nameof(Type) };
+            }
+
+            if (string.IsNullOrEmpty(Min) && string.IsNullOrEmpty(Max))
+            {
+                throw new PropertyNotSetException { PropertyName = $"{nameof(Min)} and/or {nameof(Max)}" };
+            }
+
             var typeConverter = TypeDescriptor.GetConverter(Type);
 
             var isMin = true;
             if (!string.IsNullOrEmpty(Min))
             {
                 var min = (IComparable)typeConverter.ConvertFromString(Min);
-                isMin = value.CompareTo(min) >= 0;
+                isMin = comparable.CompareTo(min) >= 0;
             }
 
             var isMax = true;
             if (!string.IsNullOrEmpty(Max))
             {
                 var max = (IComparable)typeConverter.ConvertFromString(Max);
-                isMax = value.CompareTo(max) <= 0;
+                isMax = comparable.CompareTo(max) <= 0;
             }
 
-            return isMin && isMax;
+            if (!(isMin && isMax))
+            {
+                throw new RangeViolationException
+                {
+                    Value = value.ToString(),
+                    RangeTypeName = Type.Name,
+                    Min = Min,
+                    Max = Max
+                };
+            }
         }
     }
 }

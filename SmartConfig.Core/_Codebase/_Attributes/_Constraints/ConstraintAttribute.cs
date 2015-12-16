@@ -8,6 +8,6 @@ namespace SmartConfig
     [AttributeUsage(AttributeTargets.Property)]
     public abstract class ConstraintAttribute : Attribute
     {
-        public abstract string Properties { get; }
+        public abstract void Validate(object value);
     }
 }

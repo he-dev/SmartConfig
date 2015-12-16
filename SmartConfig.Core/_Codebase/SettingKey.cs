@@ -18,6 +18,15 @@ namespace SmartConfig
             Value = value;
         }
 
+        internal SettingKey(string name, params string[] path)
+        {
+            if (string.IsNullOrEmpty(name)) { throw new ArgumentNullException(nameof(name)); }
+            if (path == null) { throw new ArgumentNullException(nameof(path)); }
+
+            Name = name;
+            Value = new SettingPath(path);
+        }
+
         public string Name { get; private set; }
 
         /// <summary>

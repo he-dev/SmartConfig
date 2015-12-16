@@ -7,34 +7,28 @@ namespace SmartConfig
     /// <summary>
     /// Provides a regular expression validation.
     /// </summary>
-    [DebuggerDisplay("Pattern = \"{_pattern}\" IgnoreCase = \"{IgnoreCase}\"")]
+    [DebuggerDisplay("Pattern = \"{Pattern}\" RegexOptions = \"{RegexOptions}\"")]
     public class RegularExpressionAttribute : ConstraintAttribute
     {
-        private readonly string _pattern;
+        public string Pattern { get; set; }
 
-        public RegularExpressionAttribute(string pattern, bool ignoreCase = false)
+        public RegexOptions RegexOptions { get; set; } = RegexOptions.None;
+
+        public override void Validate(object value)
         {
-            _pattern = pattern;
-            IgnoreCase = ignoreCase;
+            if (string.IsNullOrEmpty(Pattern)) { throw new PropertyNotSetException { PropertyName = nameof(Pattern) }; }
+
+            var isValid = Regex.IsMatch((string)value, Pattern, RegexOptions);
+
+            if (!isValid)
+            {
+                throw new RegularExpressionViolationException
+                {
+                    Pattern = Pattern,
+                    RegexOptions = RegexOptions.ToString(),
+                    Value = value.ToString()
+                };
+            }
         }
-
-        public bool IgnoreCase { get; private set; }
-
-        public bool IsMatch(string value)
-        {
-            return Regex.IsMatch(value, _pattern, IgnoreCase ? RegexOptions.IgnoreCase : RegexOptions.None);
-        }
-
-        public override string Properties => $"Pattern = \"{_pattern}\" IgnoreCase = \"{IgnoreCase}\"";
-
-        public override string ToString()
-        {
-            return _pattern;
-        }
-
-        //public static implicit operator string(RegularExpressionAttribute pattern)
-        //{
-        //    return pattern._pattern;
-        //}
     }
 }

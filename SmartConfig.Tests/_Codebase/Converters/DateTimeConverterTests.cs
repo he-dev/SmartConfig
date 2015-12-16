@@ -21,7 +21,7 @@ namespace SmartConfig.Tests.Converters
         public void DeserializeObject_CanDeserializeDateTimeWithCustomFormat()
         {
             var converter = new DateTimeConverter();
-            Assert.AreEqual(new DateTime(2015, 12, 7, 19, 27, 33), converter.DeserializeObject("2015-12-07 19:27:33", typeof(DateTime), new[] { new DateTimeFormatAttribute("yyyy-MM-dd HH:mm:ss"), }));
+            Assert.AreEqual(new DateTime(2015, 12, 7, 19, 27, 33), converter.DeserializeObject("2015-12-07 19:27:33", typeof(DateTime), new[] { new DateTimeFormatAttribute { Format = "yyyy-MM-dd HH:mm:ss" } }));
         }
 
         [TestMethod]
@@ -38,7 +38,7 @@ namespace SmartConfig.Tests.Converters
         public void SerializeObject_CanSerializeDateTime()
         {
             var converter = new DateTimeConverter();
-            Assert.AreEqual("12/07/2015 19:27:33", converter.SerializeObject(new DateTime(2015, 12, 7, 19, 27, 33), typeof(DateTime), Enumerable.Empty<ConstraintAttribute>()));
+            Assert.AreEqual("12/07/2015 19:27:33", converter.SerializeObject(new DateTime(2015, 12, 7, 19, 27, 33), typeof(string), Enumerable.Empty<ConstraintAttribute>()));
         }
 
         [TestMethod]

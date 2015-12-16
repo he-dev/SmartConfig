@@ -9,7 +9,7 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void ctor_RangeAttributeTest()
         {
-            var attr = new RangeAttribute(typeof(int), "1", "3");
+            var attr = new RangeAttribute { Type = typeof(int), Min = "1", Max = "3" };
             Assert.AreEqual("1", attr.Min);
             Assert.AreEqual("3", attr.Max);
         }
@@ -17,13 +17,15 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void IsValid_DateTime()
         {
-            Assert.IsTrue(new RangeAttribute(typeof(DateTime), "2015-06-15", "2015-07-15").IsValid(new DateTime(2015, 7, 1)));
+            var attr = new RangeAttribute { Type = typeof(DateTime), Min = "2015-06-15", Max = "2015-07-15" };
+            attr.Validate(new DateTime(2015, 7, 1));
         }
 
         [TestMethod]
         public void IsValid_Int32()
         {
-            Assert.IsTrue(new RangeAttribute(typeof(int), "0", "2").IsValid(1));
+            var attr = new RangeAttribute { Type = typeof(int), Min = "0", Max = "2" };
+            attr.Validate(1);
         }
     }
 }

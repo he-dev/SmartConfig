@@ -11,5 +11,6 @@ namespace SmartConfig
     {
         public string Value { get { return GetValue<string>(); } internal set { SetValue(value); } }
         public string Pattern { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string RegexOptions { get { return GetValue<string>(); } internal set { SetValue(value); } }
     }
 }
