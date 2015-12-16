@@ -1,5 +1,5 @@
 # SmartConfig v4.1
-Because writing configurations should be easy.
+Because creating configurations should be easy!
 
 ---
 
