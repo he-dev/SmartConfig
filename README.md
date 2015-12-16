@@ -14,7 +14,7 @@ I find a configuration should be set up within a few minutes and be easily exten
 Briefly, with **`SmartConfig`** you write a `static class` with static properties that will hold the settings when they are loaded. Its structure is used to build setting names. There is no need to use any hardcoded strings or create enums etc to get any values. **`SmartConfig`** eliminates all magic strings.
 
 ## Where are all the settings stored?
-Currently **`SmartConfig`** can read & write the `App.config`'s `connectionStrings` and `appSettings` sections, databases (with `Entity Framework`) and its own xml format that resembles a database. It is however possible to add your own data source.
+Currently **`SmartConfig`** can read & write the `App.config`'s `connectionStrings` and `appSettings` sections, databases (with `Entity Framework`) and its own xml format that resembles a database and windows registry. It is however possible to add your own data source (more are comming).
 
 ## Are there any other benefits?
 Yes there are :-) **`SmartConfig`** is strongly typed and can validate all values as well during loading as during updating. Thus you know always know if you read/write valid settings. It supports many popular types and provides an interface to add your own types if you need to. **`SmartConfig`** can filter your settings based on various additional criteria. To start with it provides two filters: by string and by version ([Semantic Version](http://semver.org)). You can add other criteria if you need to.
@@ -59,12 +59,9 @@ Install-Package SmartConfig
   - If you need a special data type for your settings there's an interface to add it.
 - Multiple configurations in a single storage.
 
-## What else can it do?
-There is one _hidden_ beta feature for generating setting name and default values based on the current configuration. You can activate it by setting the `IDataSource.SettingsInitializationEnabled` property to `true`.
-
 ## Hallo SmartConfig! - Basic Example
 
-This short tutorial shows how easy **`SmartConfig`** is.
+This short tutorial shows how ot start using **`SmartConfig`**.
 
 Let's pretend all the settings are stored in a database. To be able to get them from there we need two things: a connection string and the name of the table. We store both settings in the `app.config` and we use **`SmartConfig`** for the first time to read them. Such a configuration could look like this:
 
