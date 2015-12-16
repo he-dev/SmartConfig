@@ -3,8 +3,6 @@ Because creating configurations should be easy!
 
 ---
 
-This section briefly describes **`SmartConfig`**'s features.
-
 **`SmartConfig`** is a configuration framework that makes writing configurations easier then ever. Version 4 continues to make the API easier to use and at the same time more robust.
 
 ## Why another one?
@@ -13,14 +11,14 @@ I find a configuration should be set up within a few minutes and be easily exten
 ## How does it work?
 Briefly, with **`SmartConfig`** you write a `static class` with static properties that will hold the settings when they are loaded. Its structure is used to build setting names. There is no need to use any hardcoded strings or create enums etc to get any values. **`SmartConfig`** eliminates all magic strings.
 
+## What dependencies does it have?
+**`SmartConfig`** requires Entity Framework and JSON.NET to be installed od the target machine and it works with .NET <= 4.5.
+
 ## Where are all the settings stored?
-Currently **`SmartConfig`** can read & write the `App.config`'s `connectionStrings` and `appSettings` sections, databases (with `Entity Framework`) and its own xml format that resembles a database and windows registry. It is however possible to add your own data source (more are comming).
+Whereever you want them to be. **`SmartConfig`** supports various data sources and allows you to create your own adapters. The latest version supports already the `App.config`'s `connectionStrings` and `appSettings` sections, databases (with `Entity Framework`) and its own xml format that resembles a database and windows registry.
 
 ## Are there any other benefits?
-Yes there are :-) **`SmartConfig`** is strongly typed and can validate all values as well during loading as during updating. Thus you know always know if you read/write valid settings. It supports many popular types and provides an interface to add your own types if you need to. **`SmartConfig`** can filter your settings based on various additional criteria. To start with it provides two filters: by string and by version ([Semantic Version](http://semver.org)). You can add other criteria if you need to.
-
-## Is it stable yet?
-It looks like it is ;-)
+**`SmartConfig`** is strongly typed and can validate your settings during loading as well as during updating. Thus you always know whether you start with valid values. It supports many popular types and provides an interface to add your own types if you need to. By default **`SmartConfig`** looks for your settings by name however you can specify additional criteria like environment or version ([Semantic Version](http://semver.org)). With **`SmartConfig`** you don't have to instantiate anything, you don't have any magic strings and you can find very quickly all places where a particular setting is used. All settings are loaded at once and cached in your config definition so there is no overhead accessing them later.
 
 ## Where can I get it?
 You can install the latest version via the [NuGet](https://www.nuget.org/packages/SmartConfig/) package manager: 
@@ -59,7 +57,7 @@ Install-Package SmartConfig
   - If you need a special data type for your settings there's an interface to add it.
 - Multiple configurations in a single storage.
 
-## Hallo SmartConfig! - Basic Example
+## Hallo SmartConfig! - Getting started
 
 This short tutorial shows how ot start using **`SmartConfig`**.
 
