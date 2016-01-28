@@ -17,10 +17,10 @@ namespace SmartConfig.Example
         {
             Logger.Info = m => Debug.WriteLine(m);
 
-            //AppConfigSourceExample();
+            AppConfigSourceExample();
             //DbSourceExamples();
             //XmlSourceExample();
-            RegistrySourceExample();
+            //RegistrySourceExample();
 
             Console.ReadKey();
         }

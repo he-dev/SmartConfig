@@ -35,7 +35,7 @@ namespace SmartConfig.Data
 
         public override IReadOnlyCollection<Type> SupportedTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
-        public override object Select(SettingKeyReadOnlyCollection keys)
+        public override object Select(SettingKeyCollection keys)
         {
             Debug.Assert(keys != null);
 
@@ -51,7 +51,7 @@ namespace SmartConfig.Data
             }
         }
 
-        public override void Update(SettingKeyReadOnlyCollection keys, object value)
+        public override void Update(SettingKeyCollection keys, object value)
         {
             Debug.Assert(keys != null && keys.Any());
 

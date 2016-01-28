@@ -64,7 +64,7 @@ namespace SmartConfig.Tests.Reflection
             var configInfo = new ConfigurationInfo(typeof(TestConfig1));
 
             Assert.IsNotNull(configInfo);
-            Assert.AreEqual(2, configInfo.SettingInfos.Count);
+            Assert.AreEqual(2, configInfo.SettingInfos.Count());
         }
     }
 }

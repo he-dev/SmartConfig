@@ -26,7 +26,7 @@ namespace SmartConfig.IO
 
             try
             {
-                var dataSource = settingInfo.Configuration.ConfigurationProperties.DataSource;
+                var dataSource = settingInfo.Configuration.ConfigurationPropertyGroup.DataSource;
                 var converter = converters[settingInfo.ConverterType];
                 value = converter.SerializeObject(value, settingInfo.SettingType, settingInfo.SettingCustomAttributes);
                 dataSource.Update(settingInfo.Keys, value);
@@ -35,7 +35,7 @@ namespace SmartConfig.IO
             {
                 throw new UpdateSettingFailedException(ex)
                 {
-                    DataSourceTypeName = settingInfo.Configuration.ConfigurationProperties.DataSource.GetType().Name,
+                    DataSourceTypeName = settingInfo.Configuration.ConfigurationPropertyGroup.DataSource.GetType().Name,
                     ConfigTypeFullName = settingInfo.Configuration.ConfigurationType.FullName,
                     SettingPath = settingInfo.SettingPath
                 };

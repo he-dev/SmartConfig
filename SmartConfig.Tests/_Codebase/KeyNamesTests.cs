@@ -26,7 +26,7 @@ namespace SmartConfig.Tests
         [TestMethod]
         public void From_LocalTestSetting()
         {
-            var keyNames = SettingKeyNameReadOnlyCollection.Create<LocalTestSetting>();
+            var keyNames = SettingKeyNameCollection.Create<LocalTestSetting>();
 
             Assert.IsTrue(keyNames.Count == 4);
             Assert.IsTrue(keyNames.Contains("Environment"));

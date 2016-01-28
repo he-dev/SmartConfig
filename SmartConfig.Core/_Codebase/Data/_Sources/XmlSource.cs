@@ -53,7 +53,7 @@ namespace SmartConfig.Data
 
         public override IReadOnlyCollection<Type> SupportedTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
-        public override object Select(SettingKeyReadOnlyCollection keys)
+        public override object Select(SettingKeyCollection keys)
         {
             var attributeName = keys.DefaultKey.Name;
             var attributeValue = keys.DefaultKey.Value;
@@ -87,7 +87,7 @@ namespace SmartConfig.Data
             return result?.Value;
         }
 
-        public override void Update(SettingKeyReadOnlyCollection keys, object value)
+        public override void Update(SettingKeyCollection keys, object value)
         {
             var attributeConditions = string.Join(" and ", keys.Select(key => $"@{key.Name} = '{key.Value}'"));
             var settingXPath = $"//{RootElementName}/{SettingElementName}[{attributeConditions}]";

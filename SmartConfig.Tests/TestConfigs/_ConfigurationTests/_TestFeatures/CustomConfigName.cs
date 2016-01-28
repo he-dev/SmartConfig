@@ -1,11 +1,11 @@
 ﻿namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
+    [SettingName("ABC")]
     public static class CustomConfigName
     {
         public static class Properties
         {
-            public static string Name => "ABC";
             public static SimpleTestDataSource DataSource { get; set; } = new SimpleTestDataSource();
         }
 

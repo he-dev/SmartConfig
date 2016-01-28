@@ -11,21 +11,26 @@ namespace SmartConfig
     {
         private readonly SettingPath _settingPath;
 
-        private readonly int _sectionNameIndex;
-
-        public AppConfigPath(SettingPath settingPath, IEnumerable<string> sectionNames)
+        public AppConfigPath(SettingPath settingPath)
         {
             _settingPath = settingPath;
-            _sectionNameIndex = _settingPath.Names.Select((n, i) => new { n, i }).First(x => sectionNames.Contains(x.n)).i;
         }
 
-        public override IReadOnlyCollection<string> Names => _settingPath.Names;
-
-        public string SectionName => _settingPath.Names.ElementAt(_sectionNameIndex);
+        public string SectionName =>
+            _settingPath.ContainsConfigName
+                ? _settingPath.Skip(1).First()
+                : _settingPath.First();
 
         public override string ToString()
         {
-            return string.Join(Delimiter, _settingPath.Names.Where((n, i) => i != _sectionNameIndex));
+            var path =
+                _settingPath.ContainsConfigName
+                    // skip section name at 1
+                    ? _settingPath.Where((n, i) => i != 1)
+                    // skipt section name at 0
+                    : _settingPath.Skip(1);
+
+            return string.Join(Delimiter, path);
         }
     }
 }

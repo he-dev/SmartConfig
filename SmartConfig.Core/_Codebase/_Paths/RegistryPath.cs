@@ -17,15 +17,13 @@ namespace SmartConfig
             _settingPath = settingPath;
         }
 
-        public override IReadOnlyCollection<string> Names => _settingPath.Names;
+        public string SubKeyName => string.Join(Delimiter, _settingPath.Take(_settingPath.Length - 1));
 
-        public string SubKeyName => string.Join(Delimiter, Names.Take(Names.Count - 1));
-
-        public string ValueName => Names.Last();
+        public string ValueName => _settingPath.Last();
 
         public override string ToString()
         {
-            return string.Join(Delimiter, _settingPath.Names);
+            return string.Join(Delimiter, (IEnumerable<string>)_settingPath);
         }
     }
 }

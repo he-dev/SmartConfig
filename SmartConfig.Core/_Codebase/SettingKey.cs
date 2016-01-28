@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using SmartConfig.Data;
 using SmartConfig.Filters;
 
@@ -7,6 +8,7 @@ namespace SmartConfig
     /// <summary>
     /// Represents information about a key.
     /// </summary>
+    [DebuggerDisplay("Name = {Name} Value = {Value}")]
     public class SettingKey
     {
         public SettingKey(string name, object value)
@@ -18,13 +20,13 @@ namespace SmartConfig
             Value = value;
         }
 
-        internal SettingKey(string name, params string[] path)
+        internal SettingKey(string name, SettingPath settingPath)
         {
             if (string.IsNullOrEmpty(name)) { throw new ArgumentNullException(nameof(name)); }
-            if (path == null) { throw new ArgumentNullException(nameof(path)); }
+            if (settingPath == null) { throw new ArgumentNullException(nameof(settingPath)); }
 
             Name = name;
-            Value = new SettingPath(path);
+            Value = settingPath;
         }
 
         public string Name { get; private set; }

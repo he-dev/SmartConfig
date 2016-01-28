@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using SmartConfig.Data;
+using SmartUtilities;
 
 namespace SmartConfig.Reflection
 {
@@ -24,82 +25,20 @@ namespace SmartConfig.Reflection
             }
 
             ConfigurationType = configurationType;
-            ConfigurationProperties = new ConfigurationProperties(configurationType);
-            SettingInfos = GetSettingInfos(configurationType).ToDictionary(x => x.Property);
+            ConfigurationPropertyGroup = new ConfigurationPropertyGroup(configurationType);
         }
 
         public Type ConfigurationType { get; }
 
-        public ConfigurationProperties ConfigurationProperties { get; }
+        public ConfigurationPropertyGroup ConfigurationPropertyGroup { get; }
 
-        public bool HasCustomName => !string.IsNullOrEmpty(ConfigurationProperties.Name);
+        public string ConfigurationName => ConfigurationType.GetCustomAttribute<SettingNameAttribute>()?.SettingName;
 
-        public IDictionary<PropertyInfo, SettingInfo> SettingInfos { get; }
+        public IEnumerable<SettingInfo> SettingInfos => ConfigurationType.GetSettingInfos(this);
 
-        private IEnumerable<SettingInfo> GetSettingInfos(Type type, IEnumerable<string> path = null)
-        {
-            if (!type.IsStatic())
-            {
-                throw new TypeNotStaticException { TypeFullName = type.FullName };
-            }
-
-            path = path ?? (HasCustomName ? new[] { ConfigurationProperties.Name } : new string[] { });
-
-            var properties = type
-                .GetProperties(BindingFlags.Public | BindingFlags.Static)
-                .Where(f => f.GetCustomAttribute<IgnoreAttribute>() == null);
-
-            foreach (var property in properties)
-            {
-                var subPath = path.Concat(new[] { GetMemberName(property) });
-                yield return new SettingInfo(this, property, subPath, ConfigurationProperties.CustomKeys);
-            }
-
-            var typeConditions = new Func<Type, bool>[]
-            {
-                t => t.GetCustomAttribute<IgnoreAttribute>() == null,
-                t => t.Name != "Properties",
-            };
-
-            var canGetType = new Func<Type, bool>(t => typeConditions.All(typeCondition => typeCondition(t)));
-
-            var settingInfos = type
-                .GetNestedTypes(BindingFlags.Public | BindingFlags.Public)
-                .Where(canGetType)
-                .SelectMany(nt => GetSettingInfos(nt, path.Concat(new[] { GetMemberName(nt) })));
-
-            foreach (var settingInfo in settingInfos)
-            {
-                yield return settingInfo;
-            }
-        }
-
-        public SettingInfo FindSettingInfo(Type configType, string settingPath)
-        {
-            return GetSettingInfos(configType).SingleOrDefault(si => si.SettingPath == settingPath);
-        }
-
-        public static IEnumerable<Type> GetDeclaringTypes(MemberInfo memberInfo)
-        {
-            var type = memberInfo.DeclaringType;
-            while (type != null)
-            {
-                yield return type;
-                if (type.GetCustomAttribute<SmartConfigAttribute>(false) != null)
-                {
-                    yield break;
-                }
-                type = type.DeclaringType;
-            }
-
-            throw new InvalidOperationException("SmartConfigAttribute not found for");
-        }
-
-        private static string GetMemberName(MemberInfo member)
-        {
-            var settingName = member.GetCustomAttribute<SettingNameAttribute>();
-            return settingName != null ? settingName.SettingName : member.Name;
-        }
-
+        //public SettingInfo FindSettingInfo(Type configType, string settingPath)
+        //{
+        //    return GetSettingInfos(configType).SingleOrDefault(si => si.SettingPath == settingPath);
+        //}
     }
 }

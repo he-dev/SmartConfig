@@ -20,9 +20,9 @@ namespace SmartConfig.IO
 
             //Logger.LogTrace(() => $"Loading \"{configurationInfo.ConfigurationType.Name}\" from \"{dataSource.GetType().Name}\"...");
 
-            foreach (var settingInfo in configuration.SettingInfos.Values)
+            foreach (var settingInfo in configuration.SettingInfos)
             {
-                LoadSetting(settingInfo, configuration.ConfigurationProperties.DataSource, converters);
+                LoadSetting(settingInfo, configuration.ConfigurationPropertyGroup.DataSource, converters);
             }
         }
 

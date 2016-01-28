@@ -71,9 +71,6 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="..\..\SmartUtilities\SmartUtilities\_Codebase\UnitTesting\ExceptionAssert.cs">
-      <Link>_SmartUtilities\UnitTesting\ExceptionAssert.cs</Link>
-    </Compile>
     <Compile Include="TestConfigs\SettingsInitializationTestConfig.cs" />
     <Compile Include="TestConfigs\NamedTestConfig.cs" />
     <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\NumericSettings.cs" />
@@ -88,7 +85,7 @@
     <Compile Include="_Codebase\Converters\BooleanConverterTests.cs" />
     <Compile Include="_Codebase\Data\_AppConfigSectionHandlers\AppSettingsSectionHandlerTests.cs" />
     <Compile Include="_Codebase\Data\_AppConfigSectionHandlers\ConnectionStringsSectionHandlerTests.cs" />
-    <Compile Include="_Codebase\Data\_Sources\AppConfigTests.cs" />
+    <Compile Include="_Codebase\Data\_Sources\AppConfigSourceTests.cs" />
     <Compile Include="_Codebase\Converters\ColorConverterTests.cs" />
     <Compile Include="_Codebase\Converters\XmlConverterTests.cs" />
     <Compile Include="_Codebase\Converters\JsonConverterTests.cs" />
@@ -100,7 +97,8 @@
     <Compile Include="_Codebase\KeyNamesTests.cs" />
     <Compile Include="_Codebase\Reflection\ConfigurationInfoTests.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\RegularExpressionAttributeTests.cs" />
-    <Compile Include="_Codebase\_Extensions\TypeExtensionsTests.cs" />
+    <Compile Include="_Codebase\_Extensions\ReflectionExtensionsTests.cs" />
+    <Compile Include="_Codebase\_Paths\AppConfigPathTests.cs" />
     <Compile Include="_TestHelpers\AssemblyInitializer.cs" />
     <Compile Include="_TestHelpers\TestDbInitializer.cs" />
     <Compile Include="_Codebase\ConfigurationTests.cs" />
@@ -134,6 +132,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SmartUtilities\SmartUtilities\SmartUtilities.csproj">
+      <Project>{aba07d6f-bb71-4aa6-aa20-7330e394d082}</Project>
+      <Name>SmartUtilities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SmartConfig.Core\SmartConfig.csproj">
       <Project>{b499d748-d867-4939-929b-bae2bbae6336}</Project>
       <Name>SmartConfig</Name>

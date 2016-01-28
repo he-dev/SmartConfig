@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Collections;
 using SmartConfig.Data;
@@ -50,17 +51,20 @@ namespace SmartConfig.Tests.Data
         public void Select_CanSelectSettingsByName()
         {
             var dataSource = new DbSource<Setting>(_connectionString, _testTableName);
-            Assert.AreEqual("123", dataSource.Select(new SettingKeyReadOnlyCollection(new SettingKey(Setting.DefaultKeyName, "Int32Setting"))));
+            Assert.AreEqual("123", dataSource.Select(new SettingKeyCollection(new SettingKey(Setting.DefaultKeyName, "Int32Setting"), Enumerable.Empty<SettingKey>())));
         }
 
         [TestMethod]
         public void Select_CanSelectSettingsByNameByEnvironmentByVersion()
         {
             var dataSource = new DbSource<TestSetting>(_connectionString, _testTableName);
-            var keys = new SettingKeyReadOnlyCollection(
+            var keys = new SettingKeyCollection(
                 new SettingKey(Setting.DefaultKeyName, "Int32Setting"),
-                new SettingKey("Environment", "ABC"),
-                new SettingKey("Version", "1.2.1"));
+                new [] 
+                {
+                    new SettingKey("Environment", "ABC"),
+                    new SettingKey("Version", "1.2.1")
+                });
             Assert.AreEqual("123", dataSource.Select(keys));
         }
 
@@ -69,7 +73,7 @@ namespace SmartConfig.Tests.Data
         {
             var dataSource = new DbSource<Setting>(_connectionString, _testTableName);
 
-            var keys = new SettingKeyReadOnlyCollection(new SettingKey(Setting.DefaultKeyName, "Int32Setting"));
+            var keys = new SettingKeyCollection(new SettingKey(Setting.DefaultKeyName, "Int32Setting"), Enumerable.Empty<SettingKey>());
 
             Assert.AreEqual("123", dataSource.Select(keys));
 

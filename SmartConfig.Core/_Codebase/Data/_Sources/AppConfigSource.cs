@@ -50,7 +50,7 @@ namespace SmartConfig.Data
             Debug.Assert(configuration != null);
             Debug.Assert(defaultKey != null);
 
-            var sectionName = new AppConfigPath((SettingPath)defaultKey.Value, SectionNames).SectionName;
+            var sectionName = new AppConfigPath((SettingPath)defaultKey.Value).SectionName;
             var actualSectionName = configuration.Sections.Keys.Cast<string>().Single(x => x.Equals(sectionName, StringComparison.OrdinalIgnoreCase));
             var section = configuration.Sections[actualSectionName];
             return section;
@@ -58,26 +58,26 @@ namespace SmartConfig.Data
 
         public override IReadOnlyCollection<Type> SupportedTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
-        public override object Select(SettingKeyReadOnlyCollection keys)
+        public override object Select(SettingKeyCollection keys)
         {
             Debug.Assert(keys != null && keys.Any());
 
             var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             var configurationSection = GetConfigurationSection(exeConfig, keys.DefaultKey);
             var sectionHandler = _sectionHandlers[configurationSection.GetType()];
-            var settingName = new AppConfigPath((SettingPath)keys.DefaultKey.Value, SectionNames).ToString();
+            var settingName = new AppConfigPath((SettingPath)keys.DefaultKey.Value).ToString();
             var value = sectionHandler.Select(configurationSection, settingName);
             return value;
         }
 
-        public override void Update(SettingKeyReadOnlyCollection keys, object value)
+        public override void Update(SettingKeyCollection keys, object value)
         {
             Debug.Assert(keys != null && keys.Any());
 
             var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             var configurationSection = GetConfigurationSection(exeConfig, keys.DefaultKey);
             var sectionHandler = _sectionHandlers[configurationSection.GetType()];
-            var settingName = new AppConfigPath((SettingPath)keys.DefaultKey.Value, SectionNames).ToString();
+            var settingName = new AppConfigPath((SettingPath)keys.DefaultKey.Value).ToString();
             sectionHandler.Update(configurationSection, settingName, value?.ToString());
             exeConfig.Save(ConfigurationSaveMode.Minimal);
         }

@@ -16,7 +16,7 @@ namespace SmartConfig
     /// <summary>
     /// Represents a configuration a provides methods for loading and updating settings.
     /// </summary>
-    public static class Configuration
+    public class Configuration
     {
         private static readonly IDictionary<Type, ConfigurationInfo> ConfigurationCache = new Dictionary<Type, ConfigurationInfo>();
 
@@ -75,9 +75,11 @@ namespace SmartConfig
                 throw new MemberNotPropertyException { MemberName = memberExpression.Member.Name };
             }
 
-            SettingInfo settingInfo = null;
-            var configuration = ConfigurationCache.Values.FirstOrDefault(x => x.SettingInfos.TryGetValue(property, out settingInfo));
-            if (configuration == null)
+            var settingInfo = 
+                ConfigurationCache.SelectMany(x => x.Value.SettingInfos)
+                .SingleOrDefault(si => si.Property == property);
+
+            if (settingInfo == null)
             {
                 throw new MemberNotFoundException { MemberName = property.Name };
             }

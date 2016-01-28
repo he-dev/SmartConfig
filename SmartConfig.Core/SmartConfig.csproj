@@ -66,12 +66,8 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath Condition="'$(TargetFrameworkVersion)' == 'v4.0'">..\packages\Newtonsoft.Json.7.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
-      <HintPath Condition="'$(TargetFrameworkVersion)' == 'v4.5'">..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <HintPath Condition="'$(TargetFrameworkVersion)' == 'v4.5.1'">..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <HintPath Condition="'$(TargetFrameworkVersion)' == 'v4.5.2'">..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <HintPath Condition="'$(TargetFrameworkVersion)' == 'v4.6'">..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -88,27 +84,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\SmartUtilities\SmartUtilities\_Codebase\Color32.cs">
-      <Link>_SmartUtilities\Color32.cs</Link>
-    </Compile>
-    <Compile Include="..\..\SmartUtilities\SmartUtilities\_Codebase\ColorParser.cs">
-      <Link>_SmartUtilities\ColorParser.cs</Link>
-    </Compile>
-    <Compile Include="..\..\SmartUtilities\SmartUtilities\_Codebase\SemanticVersion.cs">
-      <Link>_SmartUtilities\SemanticVersion.cs</Link>
-    </Compile>
-    <Compile Include="..\..\SmartUtilities\SmartUtilities\_Codebase\SmartException.cs">
-      <Link>_SmartUtilities\SmartException.cs</Link>
-    </Compile>
-    <Compile Include="..\..\SmartUtilities\SmartUtilities\_Codebase\_Extensions\EnumerableExtensions.cs">
-      <Link>_SmartUtilities\_Extensions\EnumerableExtensions.cs</Link>
-    </Compile>
-    <Compile Include="_Codebase\Collections\SettingKeyReadOnlyCollection.cs" />
+    <Compile Include="_Codebase\Collections\SettingKeyCollection.cs" />
     <Compile Include="_Codebase\Collections\_Interfaces\ICollection.cs" />
     <Compile Include="_Codebase\Collections\_Interfaces\IObjectConverterCollection.cs" />
     <Compile Include="_Codebase\Converters\EmptyConverter.cs" />
     <Compile Include="_Codebase\Data\_Sources\RegistrySource.cs" />
-    <Compile Include="_Codebase\Reflection\ConfigurationProperties.cs" />
+    <Compile Include="_Codebase\Reflection\ConfigurationPropertyGroup.cs" />
     <Compile Include="_Codebase\Filters\ISettingFilter.cs" />
     <Compile Include="_Codebase\Filters\StringFilter.cs" />
     <Compile Include="_Codebase\Filters\VersionFilter.cs" />
@@ -119,9 +100,8 @@
     <Compile Include="_Codebase\Data\_Sources\DbSource.cs" />
     <Compile Include="_Codebase\Data\IIndexer.cs" />
     <Compile Include="_Codebase\Data\SmartConfigContext.cs" />
-    <Compile Include="_Codebase\Logging\LogLevel.cs" />
     <Compile Include="_Codebase\Reflection\SettingInfo.cs" />
-    <Compile Include="_Codebase\Collections\SettingKeyNameReadOnlyCollection.cs" />
+    <Compile Include="_Codebase\Collections\SettingKeyNameCollection.cs" />
     <Compile Include="_Codebase\Converters\DateTimeConverter.cs" />
     <Compile Include="_Codebase\Converters\EnumConverter.cs" />
     <Compile Include="_Codebase\Data\_Sources\AppConfigSource.cs" />
@@ -132,7 +112,6 @@
     <Compile Include="_Codebase\Data\_AppConfigSectionHandlers\ConnectionStringsSectionHandler.cs" />
     <Compile Include="_Codebase\Data\DataSource.cs" />
     <Compile Include="_Codebase\Data\_Sources\XmlSource.cs" />
-    <Compile Include="_Codebase\Logging\Logger.cs" />
     <Compile Include="_Codebase\IO\SettingLoader.cs" />
     <Compile Include="_Codebase\IO\SettingUpdater.cs" />
     <Compile Include="_Codebase\SettingKey.cs" />
@@ -168,7 +147,7 @@
     <Compile Include="_Codebase\_Exceptions\LoadSettingFailedException.cs" />
     <Compile Include="_Codebase\_Exceptions\SettingNotOptionalException.cs" />
     <Compile Include="_Codebase\_Exceptions\DuplicateTypeConverterException.cs" />
-    <Compile Include="_Codebase\_Extensions\TypeExtensions.cs" />
+    <Compile Include="_Codebase\_Extensions\ReflectionExtensions.cs" />
     <Compile Include="_Codebase\Converters\ColorConverter.cs" />
     <Compile Include="_Codebase\Converters\StringConverter.cs" />
     <Compile Include="_Codebase\Converters\XmlConverter.cs" />
@@ -193,7 +172,13 @@
     <Content Include="SQL-Scripts\dbo.CustomSetting.sql" />
     <Content Include="LICENSE.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\SmartUtilities\SmartUtilities\SmartUtilities.csproj">
+      <Project>{aba07d6f-bb71-4aa6-aa20-7330e394d082}</Project>
+      <Name>SmartUtilities</Name>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -205,12 +205,19 @@ namespace SmartConfig.Tests
         {
             NestedSettings.Properties.DataSource.SelectFunc = key =>
             {
-                switch (key.First().Value.ToString())
+                var defaultKey = key.First();
+
+                if (defaultKey.Value.ToString() == "SubConfig.SubSetting")
                 {
-                case "SubConfig.SubSetting": return "abc";
-                case "SubConfig.SubSubConfig.SubSubSetting": return "xyz";
+                    return "abc";
                 }
-                Assert.Fail("Invalid setting path");
+
+                if (defaultKey.Value.ToString() == "SubConfig.SubSubConfig.SubSubSetting")
+                {
+                    return "xyz";
+                }
+
+                Assert.Fail($"Invalid setting path: {defaultKey.Value}");
                 return null;
             };
 

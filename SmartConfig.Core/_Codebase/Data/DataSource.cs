@@ -54,9 +54,9 @@ namespace SmartConfig.Data
 
         public abstract IReadOnlyCollection<Type> SupportedTypes { get; }
 
-        public abstract object Select(SettingKeyReadOnlyCollection keys);
+        public abstract object Select(SettingKeyCollection keys);
 
-        public abstract void Update(SettingKeyReadOnlyCollection keys, object value);
+        public abstract void Update(SettingKeyCollection keys, object value);
 
         /// <summary>
         /// Applies all of the specified filters.

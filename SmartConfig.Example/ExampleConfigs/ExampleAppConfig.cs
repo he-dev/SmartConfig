@@ -3,6 +3,7 @@
 namespace SmartConfig.Example.ExampleConfigs
 {
     [SmartConfig]
+    [SettingName("MyTestConfig")]
     static class ExampleAppConfig
     {
         public static class AppSettings
@@ -12,6 +13,11 @@ namespace SmartConfig.Example.ExampleConfigs
 
             [Optional]
             public static string Farewell { get; set; } = "Good bye!";
+
+            //public static class EvenDeeper
+            //{
+            //    public static string Deep { get; set; }
+            //}
         }
 
         public static class ConnectionStrings

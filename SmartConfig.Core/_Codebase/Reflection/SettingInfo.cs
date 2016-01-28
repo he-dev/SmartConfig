@@ -9,26 +9,21 @@ using SmartConfig.Data;
 
 namespace SmartConfig.Reflection
 {
+    /// <summary>
+    /// Represents a single setting info.
+    /// </summary>
     [DebuggerDisplay("ConfigurationType = {Configuration.ConfigurationType.Name} SettingPath = \"{SettingPath}\" IsInternal = \"{IsInternal}\"")]
-    public class SettingInfo
+    internal class SettingInfo
     {
-        internal SettingInfo(ConfigurationInfo configuration, PropertyInfo property, IEnumerable<string> path, IEnumerable<SettingKey> customKeys)
+        public SettingInfo(PropertyInfo propertyInfo, ConfigurationInfo configurationInfo)
         {
-            Debug.Assert(configuration != null);
-            Debug.Assert(property != null);
-
-            Configuration = configuration;
-            Property = property;
-
-            SettingPath = new SettingPath(path);
-
-            var keys = new[] { new SettingKey(Setting.DefaultKeyName, SettingPath) }.Concat(customKeys).ToList();
-            Keys = new SettingKeyReadOnlyCollection(keys);
+            Property = propertyInfo;
+            Configuration = configurationInfo;
         }
 
-        internal ConfigurationInfo Configuration { get; }
+        internal ConfigurationInfo Configuration { get; set; }
 
-        internal PropertyInfo Property { get; }
+        internal PropertyInfo Property { get; set; }
 
         public Type SettingType => Property.PropertyType;
 
@@ -51,9 +46,18 @@ namespace SmartConfig.Reflection
             }
         }
 
-        public SettingPath SettingPath { get; }
+        public SettingPath SettingPath
+        {
+            get
+            {
+                var path = Property.GetPath();
+                return new SettingPath(Configuration.ConfigurationName, path);
+            }
+        }
 
-        public SettingKeyReadOnlyCollection Keys { get; }
+        public SettingKeyCollection Keys => new SettingKeyCollection(
+            new SettingKey(Setting.DefaultKeyName, SettingPath),
+            Configuration.ConfigurationPropertyGroup.CustomKeys);
 
         public IEnumerable<Attribute> SettingCustomAttributes => Property?.GetCustomAttributes(false).Cast<Attribute>() ?? Enumerable.Empty<Attribute>();
 

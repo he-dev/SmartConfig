@@ -15,12 +15,12 @@ namespace SmartConfig.Tests
 
         public override IReadOnlyCollection<Type> SupportedTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
-        public override object Select(SettingKeyReadOnlyCollection keys)
+        public override object Select(SettingKeyCollection keys)
         {
             return SelectFunc(keys);
         }
 
-        public override void Update(SettingKeyReadOnlyCollection keys, object value)
+        public override void Update(SettingKeyCollection keys, object value)
         {
             UpdateAction(keys, value);
         }
@@ -34,12 +34,12 @@ namespace SmartConfig.Tests
 
         public override IReadOnlyCollection<Type> SupportedTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
-        public override object Select(SettingKeyReadOnlyCollection keys)
+        public override object Select(SettingKeyCollection keys)
         {
             return SelectFunc(keys);
         }
 
-        public override void Update(SettingKeyReadOnlyCollection keys, object value)
+        public override void Update(SettingKeyCollection keys, object value)
         {
             UpdateAction(keys, value);
         }

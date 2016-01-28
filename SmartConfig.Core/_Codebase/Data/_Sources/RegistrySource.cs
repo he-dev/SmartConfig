@@ -37,7 +37,7 @@ namespace SmartConfig.Data
             typeof(byte[]),
         });
 
-        public override object Select(SettingKeyReadOnlyCollection keys)
+        public override object Select(SettingKeyCollection keys)
         {
             var registryPath = new RegistryPath((SettingPath)keys.DefaultKey.Value);
 
@@ -49,7 +49,7 @@ namespace SmartConfig.Data
             }
         }
 
-        public override void Update(SettingKeyReadOnlyCollection keys, object value)
+        public override void Update(SettingKeyCollection keys, object value)
         {
             var registryPath = new RegistryPath((SettingPath)keys.DefaultKey.Value);
 

@@ -24,13 +24,13 @@ namespace SmartConfig.Data
         /// </summary>
         /// <param name="keys"></param>
         /// <returns></returns>
-        object Select(SettingKeyReadOnlyCollection keys);
+        object Select(SettingKeyCollection keys);
 
         /// <summary>
         /// Updates data in the data source.
         /// </summary>
         /// <param name="keys"></param>
         /// <param name="value"></param>
-        void Update(SettingKeyReadOnlyCollection keys, object value);
+        void Update(SettingKeyCollection keys, object value);
     }
 }

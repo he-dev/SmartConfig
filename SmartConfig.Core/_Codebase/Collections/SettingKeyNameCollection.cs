@@ -6,13 +6,13 @@ using SmartConfig.Data;
 
 namespace SmartConfig.Collections
 {
-    public class SettingKeyNameReadOnlyCollection : ReadOnlyCollection<string>
+    public class SettingKeyNameCollection : ReadOnlyCollection<string>
     {
-        private SettingKeyNameReadOnlyCollection(IList<string> list) : base(list) { }
+        private SettingKeyNameCollection(IList<string> list) : base(list) { }
 
         public IReadOnlyCollection<string> CustomKeyNames => new ReadOnlyCollection<string>(this.Where(x => x != Setting.DefaultKeyName).ToList());
 
-        internal static SettingKeyNameReadOnlyCollection Create<TSetting>() where TSetting : Setting
+        internal static SettingKeyNameCollection Create<TSetting>() where TSetting : Setting
         {
             var keyNames = new List<string> { Setting.DefaultKeyName };
 
@@ -21,7 +21,7 @@ namespace SmartConfig.Collections
             var isCustomType = settingType != typeof(Setting);
             if (!isCustomType)
             {
-                return new SettingKeyNameReadOnlyCollection(keyNames);
+                return new SettingKeyNameCollection(keyNames);
             }
 
             var customPropertyNames = settingType
@@ -30,7 +30,7 @@ namespace SmartConfig.Collections
                     .OrderBy(n => n);
             keyNames.AddRange(customPropertyNames);
 
-            return new SettingKeyNameReadOnlyCollection(keyNames);
+            return new SettingKeyNameCollection(keyNames);
         }
     }
 }

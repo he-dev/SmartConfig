@@ -35,7 +35,7 @@ namespace SmartConfig.Data
 
             // configure keys
             var columnOrder = 0;
-            var keyNames = SettingKeyNameReadOnlyCollection.Create<TSetting>();
+            var keyNames = SettingKeyNameCollection.Create<TSetting>();
             foreach (var keyName in keyNames)
             {
                 var columnOrderClosure = columnOrder++;

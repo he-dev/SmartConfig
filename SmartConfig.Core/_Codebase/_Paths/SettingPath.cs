@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace SmartConfig
@@ -7,57 +9,45 @@ namespace SmartConfig
     /// <summary>
     /// Provides utility methods for creating configuration element names.
     /// </summary>
-    public class SettingPath
+    [DebuggerDisplay("{this.ToString()}")]
+    public class SettingPath : IEnumerable<string>
     {
         private readonly List<string> _names = new List<string>();
 
-        //public static string Create<T>(Expression<Func<T>> expression)
-        //{
-        //    var memberInfo = Utilities.GetMemberInfo(expression);
-        //    var settingInfo = SettingInfo.Create(expression);
-
-        //    // Replace configuration namespace and class name with application name.
-        //    var elementName = Regex.Replace(memberInfo.ReflectedType.FullName, @"^" + settingInfo.ConfigurationType.FullName + @"\.?", string.Empty);
-
-        //    // Replace subclass separator "+" with a "."
-        //    elementName = Regex.Replace(elementName, @"\+", ".");
-
-        //    // Add member name.
-        //    //elementName = Combine(new[] { elementName, memberInfo.Name });
-
-        //    // Add application name if available.
-        //    //var configName = Combine(new[] { settingInfo.ConfigName, elementName });
-
-        //    // Remove invalid "." at the beginning. It's easier and cleaner to remove it here then to prevent it above.
-        //    //elementName = Regex.Replace(elementName, @"^\.", string.Empty);
-
-        //    //return configName;
-        //    return String.Empty;
-        //}
-
-        //public SettingPath() { }
-
         protected SettingPath() { }
 
-        public SettingPath(IEnumerable<string> names)
+        public SettingPath(string configName, IEnumerable<string> path)
         {
-            _names.AddRange(names);
+            if (!string.IsNullOrEmpty(configName))
+            {
+                ContainsConfigName = true;
+                _names.Add(configName);
+            }
+            _names.AddRange(path);
         }
 
-        public SettingPath(string name) : this(new[] { name }) { }
-
-        public SettingPath(SettingPath path) : this(path._names) { }
-
-        public SettingPath(params string[] names) : this((IEnumerable<string>)names) { }
+        // supports path creation for unit tests
+        internal SettingPath(string configName, params string[] path) : this(configName, (IEnumerable<string>)path) { }
 
         public string Delimiter { get; set; } = ".";
 
-        public virtual IReadOnlyCollection<string> Names => _names.AsReadOnly();
+        public bool ContainsConfigName { get; }
+
+        public int Length => _names.Count;
 
         public override string ToString()
         {
             return string.Join(Delimiter, _names);
-        }       
+        }
+
+        public IEnumerator<string> GetEnumerator()
+        {
+            return _names.GetEnumerator();
+        }
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
         public static implicit operator string(SettingPath settingPath)
         {
