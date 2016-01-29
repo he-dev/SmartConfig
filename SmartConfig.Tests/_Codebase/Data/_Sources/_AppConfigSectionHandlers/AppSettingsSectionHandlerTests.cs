@@ -13,7 +13,7 @@ namespace SmartConfig.Tests.Data
             var appSettings = new AppSettingsSection();
             appSettings.Settings.Add("Key1", "Value1");
 
-            var appSettingsHandler = new AppSettingsSectionHandler();
+            var appSettingsHandler = new AppSettingsSectionSource();
             Assert.AreEqual("Value1", appSettingsHandler.Select(appSettings, "Key1"));
             Assert.AreEqual("Value1", appSettingsHandler.Select(appSettings, "key1"));
             Assert.AreEqual("Value1", appSettingsHandler.Select(appSettings, "KEY1"));
@@ -26,7 +26,7 @@ namespace SmartConfig.Tests.Data
             var section = new AppSettingsSection();
             section.Settings.Add("Key1", "Value1");
 
-            var sectionHandler = new AppSettingsSectionHandler();
+            var sectionHandler = new AppSettingsSectionSource();
             sectionHandler.Update(section, "Key1", "Value1a");
             sectionHandler.Update(section, "Key2", "Value2");
 

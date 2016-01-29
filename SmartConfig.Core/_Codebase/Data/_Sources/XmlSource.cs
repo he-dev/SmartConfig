@@ -10,7 +10,6 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using SmartConfig.Collections;
-using SmartConfig.Logging;
 using SmartUtilities;
 
 namespace SmartConfig.Data

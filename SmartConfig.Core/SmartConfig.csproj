@@ -96,7 +96,7 @@
     <Compile Include="_Codebase\Reflection\ConfigurationInfo.cs" />
     <Compile Include="_Codebase\Converters\NumericConverter.cs" />
     <Compile Include="_Codebase\Converters\BooleanConverter.cs" />
-    <Compile Include="_Codebase\Data\_AppConfigSectionHandlers\IAppConfigSectionHandler.cs" />
+    <Compile Include="_Codebase\Data\_Sources\_AppConfigSectionSources\IAppConfigSectionSource.cs" />
     <Compile Include="_Codebase\Data\_Sources\DbSource.cs" />
     <Compile Include="_Codebase\Data\IIndexer.cs" />
     <Compile Include="_Codebase\Data\SmartConfigContext.cs" />
@@ -106,10 +106,10 @@
     <Compile Include="_Codebase\Converters\EnumConverter.cs" />
     <Compile Include="_Codebase\Data\_Sources\AppConfigSource.cs" />
     <Compile Include="_Codebase\Collections\ObjectConverterCollection.cs" />
-    <Compile Include="_Codebase\Data\_AppConfigSectionHandlers\AppConfigSectionHandler.cs" />
-    <Compile Include="_Codebase\Data\_AppConfigSectionHandlers\AppSettingsSectionHandler.cs" />
+    <Compile Include="_Codebase\Data\_Sources\_AppConfigSectionSources\AppConfigSectionSource.cs" />
+    <Compile Include="_Codebase\Data\_Sources\_AppConfigSectionSources\AppSettingsSectionSource.cs" />
     <Compile Include="_Codebase\Data\Setting.cs" />
-    <Compile Include="_Codebase\Data\_AppConfigSectionHandlers\ConnectionStringsSectionHandler.cs" />
+    <Compile Include="_Codebase\Data\_Sources\_AppConfigSectionSources\ConnectionStringsSectionSource.cs" />
     <Compile Include="_Codebase\Data\DataSource.cs" />
     <Compile Include="_Codebase\Data\_Sources\XmlSource.cs" />
     <Compile Include="_Codebase\IO\SettingLoader.cs" />

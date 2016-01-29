@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using SmartConfig.Collections;
+using SmartUtilities.Collections;
 
 namespace SmartConfig.Data
 {
@@ -14,59 +15,50 @@ namespace SmartConfig.Data
     /// </summary>
     public class AppConfigSource : DataSource<Setting>
     {
-        private IDictionary<Type, IAppConfigSectionHandler> _sectionHandlers;
+        private readonly System.Configuration.Configuration _exeConfiguration;
+
+        private readonly IDictionary<string, IAppConfigSectionSource> _appConfigSectionSources;
 
         public AppConfigSource()
         {
-            _sectionHandlers = new object[]
+            _exeConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+            _appConfigSectionSources = new object[]
             {
-                new AppSettingsSectionHandler(),
-                new ConnectionStringsSectionHandler(),
+                new AppSettingsSectionSource(_exeConfiguration.AppSettings),
+                new ConnectionStringsSectionSource(_exeConfiguration.ConnectionStrings),
             }
-            .Cast<IAppConfigSectionHandler>()
-            .ToDictionary(x => x.SectionType, x => x);
+            .Cast<IAppConfigSectionSource>()
+            .ToDictionary(x => x.SectionName, x => x, StringComparer.OrdinalIgnoreCase);
         }
-
-        /// <summary>
-        /// Gets or sets section handlers.
-        /// </summary>
-        public IEnumerable<IAppConfigSectionHandler> SectionHandlers
+       
+        private IAppConfigSectionSource GetAppConfigSectionSource(SettingKey defaultKey)
         {
-            get { return _sectionHandlers.Values.ToList(); }
-            set
-            {
-                if (value == null || !value.Any())
-                {
-                    throw new ArgumentNullException(nameof(SectionHandlers), "There must be at least one section handler.");
-                }
-                _sectionHandlers = value.ToDictionary(x => x.SectionType);
-            }
-        }
-
-        public IEnumerable<string> SectionNames => _sectionHandlers.Values.Select(sh => sh.SectionName);
-
-        private ConfigurationSection GetConfigurationSection(System.Configuration.Configuration configuration, SettingKey defaultKey)
-        {
-            Debug.Assert(configuration != null);
             Debug.Assert(defaultKey != null);
 
-            var sectionName = new AppConfigPath((SettingPath)defaultKey.Value).SectionName;
-            var actualSectionName = configuration.Sections.Keys.Cast<string>().Single(x => x.Equals(sectionName, StringComparison.OrdinalIgnoreCase));
-            var section = configuration.Sections[actualSectionName];
-            return section;
+            var sectionName = new AppConfigPath(defaultKey).SectionName;
+
+            IAppConfigSectionSource appConfigSectionSource;
+            if (!_appConfigSectionSources.TryGetValue(sectionName, out appConfigSectionSource))
+            {
+                // todo: throw section not found exception
+            }
+
+            return appConfigSectionSource;
         }
 
         public override IReadOnlyCollection<Type> SupportedTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
         public override object Select(SettingKeyCollection keys)
         {
-            Debug.Assert(keys != null && keys.Any());
+            if (keys == null) { throw new ArgumentNullException(nameof(keys)); }
+            if (!keys.Any()) { throw new InvalidOperationException("There must be at least one key defined."); }
 
-            var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var configurationSection = GetConfigurationSection(exeConfig, keys.DefaultKey);
-            var sectionHandler = _sectionHandlers[configurationSection.GetType()];
-            var settingName = new AppConfigPath((SettingPath)keys.DefaultKey.Value).ToString();
-            var value = sectionHandler.Select(configurationSection, settingName);
+            var appConfigSectionSource = GetAppConfigSectionSource(keys.DefaultKey);
+
+            var settingName = new AppConfigPath(keys.DefaultKey).ToString();
+            var value = appConfigSectionSource.Select(settingName);
+
             return value;
         }
 
@@ -74,12 +66,11 @@ namespace SmartConfig.Data
         {
             Debug.Assert(keys != null && keys.Any());
 
-            var exeConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var configurationSection = GetConfigurationSection(exeConfig, keys.DefaultKey);
-            var sectionHandler = _sectionHandlers[configurationSection.GetType()];
-            var settingName = new AppConfigPath((SettingPath)keys.DefaultKey.Value).ToString();
-            sectionHandler.Update(configurationSection, settingName, value?.ToString());
-            exeConfig.Save(ConfigurationSaveMode.Minimal);
+            var appConfigSectionSource = GetAppConfigSectionSource(keys.DefaultKey);
+            var settingName = new AppConfigPath(keys.DefaultKey).ToString();
+
+            appConfigSectionSource.Update(settingName, value?.ToString());
+            _exeConfiguration.Save(ConfigurationSaveMode.Minimal);
         }
     }
 }

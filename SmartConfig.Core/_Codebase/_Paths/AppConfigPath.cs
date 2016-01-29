@@ -13,8 +13,11 @@ namespace SmartConfig
 
         public AppConfigPath(SettingPath settingPath)
         {
+            if (settingPath == null) { throw new ArgumentNullException(nameof(settingPath)); }
             _settingPath = settingPath;
         }
+
+        public AppConfigPath(SettingKey settingKey) : this(settingKey.Value as SettingPath) { }
 
         public string SectionName =>
             _settingPath.ContainsConfigName

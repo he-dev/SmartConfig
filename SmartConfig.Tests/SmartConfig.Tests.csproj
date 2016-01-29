@@ -83,8 +83,6 @@
     <Compile Include="_Codebase\Converters\DateTimeConverterTests.cs" />
     <Compile Include="_Codebase\Converters\NumericConverterTests.cs" />
     <Compile Include="_Codebase\Converters\BooleanConverterTests.cs" />
-    <Compile Include="_Codebase\Data\_AppConfigSectionHandlers\AppSettingsSectionHandlerTests.cs" />
-    <Compile Include="_Codebase\Data\_AppConfigSectionHandlers\ConnectionStringsSectionHandlerTests.cs" />
     <Compile Include="_Codebase\Data\_Sources\AppConfigSourceTests.cs" />
     <Compile Include="_Codebase\Converters\ColorConverterTests.cs" />
     <Compile Include="_Codebase\Converters\XmlConverterTests.cs" />

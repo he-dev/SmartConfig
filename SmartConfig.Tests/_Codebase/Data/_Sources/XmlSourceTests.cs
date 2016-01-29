@@ -6,7 +6,6 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Collections;
 using SmartConfig.Data;
-using SmartConfig.Logging;
 
 namespace SmartConfig.Tests.Data
 {

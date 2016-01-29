@@ -14,7 +14,7 @@ namespace SmartConfig.Tests.Data
             section.ConnectionStrings.Add(new ConnectionStringSettings("Key1", "Value1"));
             //section.ConnectionStrings.Add(new ConnectionStringSettings("KEY1", "Value1"));
 
-            var sectionHandler = new ConnectionStringsSectionHandler();
+            var sectionHandler = new ConnectionStringsSectionSource();
             Assert.AreEqual("Value1", sectionHandler.Select(section, "Key1"));
             Assert.AreEqual("Value1", sectionHandler.Select(section, "key1"));
             Assert.AreEqual("Value1", sectionHandler.Select(section, "KEY1"));
@@ -27,7 +27,7 @@ namespace SmartConfig.Tests.Data
             var section = new ConnectionStringsSection();
             section.ConnectionStrings.Add(new ConnectionStringSettings("Key1", "Value1"));
 
-            var sectionHandler = new ConnectionStringsSectionHandler();
+            var sectionHandler = new ConnectionStringsSectionSource();
             sectionHandler.Update(section, "Key1", "Value1a");
             sectionHandler.Update(section, "Key2", "Value2");
 

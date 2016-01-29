@@ -8,14 +8,12 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Data
 {
-    public interface IAppConfigSectionHandler
+    public interface IAppConfigSectionSource
     {
-        Type SectionType { get; }
-
         string SectionName { get; }
 
-        string Select(ConfigurationSection section, string key);
+        string Select(string key);
 
-        void Update(ConfigurationSection section, string key, string value);
+        void Update(string key, string value);
     }
 }

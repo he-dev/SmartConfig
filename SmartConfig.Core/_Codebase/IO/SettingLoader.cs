@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using SmartConfig.Collections;
 using SmartConfig.Data;
-using SmartConfig.Logging;
 using SmartConfig.Reflection;
 
 namespace SmartConfig.IO

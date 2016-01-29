@@ -15,10 +15,10 @@ using SmartUtilities.UnitTesting;
 namespace SmartConfig.Tests
 {
     [TestClass]
-    public class ConfigurationTests
+    public class ConfigurationTests_LoadSettings
     {
         [TestMethod]
-        public void LoadSettings_configType_MustNotBeNull()
+        public void RequiresConfigType()
         {
             ExceptionAssert.Throws<ArgumentNullException>(() =>
             {
@@ -27,11 +27,11 @@ namespace SmartConfig.Tests
             {
                 Assert.AreEqual("configType", ex.ParamName);
             },
-            Assert.Fail);
+                Assert.Fail);
         }
 
         [TestMethod]
-        public void LoadSettings_configType_MustHaveSmartConfigAttribute()
+        public void RequiresConfigTypeHasSmartConfigAttribute()
         {
             ExceptionAssert.Throws<SmartConfigAttributeMissingException>(() =>
             {
@@ -40,11 +40,11 @@ namespace SmartConfig.Tests
             {
                 Assert.AreEqual(typeof(ConfigTypeMustBeMarkedWithSmartConfigAttribute).FullName, ex.ConfigTypeFullName);
             },
-            Assert.Fail);
+                Assert.Fail);
         }
 
         [TestMethod]
-        public void LoadSettings_configType_MustBeStatic()
+        public void RequiresConfigTypeIsStatic()
         {
             ExceptionAssert.Throws<TypeNotStaticException>(() =>
             {
@@ -53,28 +53,28 @@ namespace SmartConfig.Tests
             {
                 Assert.AreEqual(typeof(ConfigTypeMustBeStatic).FullName, ex.TypeFullName);
             },
-            Assert.Fail);
+                Assert.Fail);
         }
 
         [TestMethod]
-        public void LoadSettings_CanLoadNumericSettings()
+        public void LoadsNumerics()
         {
             var ci = CultureInfo.InvariantCulture;
 
             var testData = new Dictionary<string, string>()
             {
-                { nameof(NumericSettings.sbyteSetting), sbyte.MaxValue.ToString() },
-                { nameof(NumericSettings.byteSetting), byte.MaxValue.ToString() },
-                { nameof(NumericSettings.charSetting), char.MaxValue.ToString() },
-                { nameof(NumericSettings.shortSetting), short.MaxValue.ToString() },
-                { nameof(NumericSettings.ushortSetting), ushort.MaxValue.ToString() },
-                { nameof(NumericSettings.intSetting), int.MaxValue.ToString() },
-                { nameof(NumericSettings.uintSetting), uint.MaxValue.ToString() },
-                { nameof(NumericSettings.longSetting), long.MaxValue.ToString() },
-                { nameof(NumericSettings.ulongSetting), ulong.MaxValue.ToString() },
-                { nameof(NumericSettings.floatSetting), float.MaxValue.ToString("R", ci) },
-                { nameof(NumericSettings.doubleSetting), double.MaxValue.ToString("R", ci) },
-                { nameof(NumericSettings.decimalSetting), decimal.MaxValue.ToString(ci) },
+                {nameof(NumericSettings.sbyteSetting), sbyte.MaxValue.ToString()},
+                {nameof(NumericSettings.byteSetting), byte.MaxValue.ToString()},
+                {nameof(NumericSettings.charSetting), char.MaxValue.ToString()},
+                {nameof(NumericSettings.shortSetting), short.MaxValue.ToString()},
+                {nameof(NumericSettings.ushortSetting), ushort.MaxValue.ToString()},
+                {nameof(NumericSettings.intSetting), int.MaxValue.ToString()},
+                {nameof(NumericSettings.uintSetting), uint.MaxValue.ToString()},
+                {nameof(NumericSettings.longSetting), long.MaxValue.ToString()},
+                {nameof(NumericSettings.ulongSetting), ulong.MaxValue.ToString()},
+                {nameof(NumericSettings.floatSetting), float.MaxValue.ToString("R", ci)},
+                {nameof(NumericSettings.doubleSetting), double.MaxValue.ToString("R", ci)},
+                {nameof(NumericSettings.decimalSetting), decimal.MaxValue.ToString(ci)},
             };
 
             NumericSettings.Properties.DataSource.SelectFunc = key => testData[key.First().Value.ToString()];
@@ -106,12 +106,12 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void LoadSettings_CanLoadBooleanSettings()
+        public void LoadsBooleans()
         {
             var testData = new Dictionary<string, string>()
             {
-                { nameof(BooleanSettings.falseSetting), false.ToString() },
-                { nameof(BooleanSettings.trueSetting), true.ToString() },
+                {nameof(BooleanSettings.falseSetting), false.ToString()},
+                {nameof(BooleanSettings.trueSetting), true.ToString()},
             };
 
             BooleanSettings.Properties.DataSource.SelectFunc = key => testData[key.First().Value.ToString()];
@@ -123,7 +123,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void LoadSettings_CanLoadEnumSettings()
+        public void LoadsEnums()
         {
             EnumSettings.Properties.DataSource.SelectFunc = keys => TestEnum.TestValue2.ToString();
             Configuration.LoadSettings(typeof(EnumSettings));
@@ -131,7 +131,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void LoadSettings_CanLoadStringSettings()
+        public void LoadsStrings()
         {
             StringSettings.Properties.DataSource.SelectFunc = keys => "abcd";
             Configuration.LoadSettings(typeof(StringSettings));
@@ -139,22 +139,23 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void LoadSettings_CanLoadDateTimeSettings()
+        public void LoadsDateTimes()
         {
             var utcNow = DateTime.UtcNow;
             DateTimeSettings.Properties.DataSource.SelectFunc = keys => utcNow.ToString(CultureInfo.InvariantCulture);
             Configuration.LoadSettings(typeof(DateTimeSettings));
-            Assert.AreEqual(utcNow.ToString(CultureInfo.InvariantCulture), DateTimeSettings.DateTimeSetting.ToString(CultureInfo.InvariantCulture));
+            Assert.AreEqual(utcNow.ToString(CultureInfo.InvariantCulture),
+                DateTimeSettings.DateTimeSetting.ToString(CultureInfo.InvariantCulture));
         }
 
         [TestMethod]
-        public void LoadSettings_CanLoadColorSettings()
+        public void LoadsColors()
         {
             var testData = new Dictionary<string, string>()
             {
-                { nameof(ColorSettings.NameColorSetting), Color.Red.Name },
-                { nameof(ColorSettings.DecColorSetting), $"{Color.Plum.R},{Color.Plum.G},{Color.Plum.B}" },
-                { nameof(ColorSettings.HexColorSetting), Color.Beige.ToArgb().ToString("X") },
+                {nameof(ColorSettings.NameColorSetting), Color.Red.Name},
+                {nameof(ColorSettings.DecColorSetting), $"{Color.Plum.R},{Color.Plum.G},{Color.Plum.B}"},
+                {nameof(ColorSettings.HexColorSetting), Color.Beige.ToArgb().ToString("X")},
             };
 
             ColorSettings.Properties.DataSource.SelectFunc = key => testData[key.First().Value.ToString()];
@@ -165,22 +166,24 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void LoadSettings_CanLoadXmlSettings()
+        public void LoadsXml()
         {
             var testData = new Dictionary<string, string>()
-                {
-                    { "XDocumentSetting", @"<?xml version=""1.0""?><testXml></testXml>" },
-                    { "XElementSetting", @"<testXml></testXml>" },
-                };
+            {
+                {"XDocumentSetting", @"<?xml version=""1.0""?><testXml></testXml>"},
+                {"XElementSetting", @"<testXml></testXml>"},
+            };
 
             XmlSettings.Properties.DataSource.SelectFunc = key => testData[key.First().Value.ToString()];
             Configuration.LoadSettings(typeof(XmlSettings));
-            Assert.AreEqual(XDocument.Parse(testData["XDocumentSetting"]).ToString(), XmlSettings.XDocumentSetting.ToString());
-            Assert.AreEqual(XDocument.Parse(testData["XElementSetting"]).ToString(), XmlSettings.XElementSetting.ToString());
+            Assert.AreEqual(XDocument.Parse(testData["XDocumentSetting"]).ToString(),
+                XmlSettings.XDocumentSetting.ToString());
+            Assert.AreEqual(XDocument.Parse(testData["XElementSetting"]).ToString(),
+                XmlSettings.XElementSetting.ToString());
         }
 
         [TestMethod]
-        public void LoadSettings_CanLoadJsonSettings()
+        public void LoadsJson()
         {
             JsonSettings.Properties.DataSource.SelectFunc = keys => "[1, 2, 3]";
             Configuration.LoadSettings(typeof(JsonSettings));
@@ -188,7 +191,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void LoadSettings_CanUseCustomConfigName()
+        public void UsesConfigName()
         {
             CustomConfigName.Properties.DataSource.SelectFunc = key =>
             {
@@ -201,7 +204,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void LoadSettings_CanLoadNestedSettings()
+        public void LoadsNestedSettings()
         {
             NestedSettings.Properties.DataSource.SelectFunc = key =>
             {
@@ -227,7 +230,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void LoadSettings_CanLoadOptionalSettings()
+        public void LoadsOptionalSettings()
         {
             OptionalSettings.Properties.DataSource.SelectFunc = keys => null;
             Configuration.LoadSettings(typeof(OptionalSettings));
@@ -235,7 +238,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void LoadSettings_CanValidateDateTimeFormat()
+        public void ValidatesDateTimeFormat()
         {
             CustomDateTimeFormatSettings.Properties.DataSource.SelectFunc = keys => "14AUG15";
 
@@ -254,11 +257,11 @@ namespace SmartConfig.Tests
                 Assert.IsNotNull(ex.InnerException);
                 Assert.IsInstanceOfType(ex.InnerException, typeof(DateTimeFormatViolationException));
             },
-            Assert.Fail);
+                Assert.Fail);
         }
 
         [TestMethod]
-        public void LoadSettings_CanValidateRange()
+        public void ValidatesRange()
         {
             CustomRangeSettings.Properties.DataSource.SelectFunc = keys => "4";
 
@@ -277,11 +280,11 @@ namespace SmartConfig.Tests
                 Assert.IsNotNull(ex.InnerException);
                 Assert.IsInstanceOfType(ex.InnerException, typeof(RangeViolationException));
             },
-            Assert.Fail);
+                Assert.Fail);
         }
 
         [TestMethod]
-        public void LoadSettings_CanValidateRegularExpression()
+        public void ValidatesRegularExpression()
         {
             CustomRegularExpressionSettings.Properties.DataSource.SelectFunc = keys => "21";
 
@@ -301,11 +304,11 @@ namespace SmartConfig.Tests
                 Assert.IsNotNull(ex.InnerException);
                 Assert.IsInstanceOfType(ex.InnerException, typeof(RegularExpressionViolationException));
             },
-            Assert.Fail);
+                Assert.Fail);
         }
 
         [TestMethod]
-        public void LoadSettings_ThrowsTargetInvocationException()
+        public void ThrowsIfIncompatibleTypes()
         {
             NumericSettings.Properties.DataSource.SelectFunc = key => "abc";
 
@@ -319,22 +322,22 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void LoadSettings_ThrowsValueTypeMismatchException()
+        public void ThrowsIfUnsupportedTypes()
         {
             UnsupportedTypeSettings.Properties.DataSource.SelectFunc = keys => "Lorem ipsum.";
             ExceptionAssert.Throws<LoadSettingFailedException>(() =>
             {
                 Configuration.LoadSettings(typeof(UnsupportedTypeSettings));
             },
-            ex =>
-            {
-                Assert.IsInstanceOfType(ex.InnerException, typeof(ValueTypeMismatchException));
-            },
-            Assert.Fail);
+                ex =>
+                {
+                    Assert.IsInstanceOfType(ex.InnerException, typeof(ValueTypeMismatchException));
+                },
+                Assert.Fail);
         }
 
         [TestMethod]
-        public void LoadSettings_ThrowsSettingNotOptionalException()
+        public void ThrowsIfSettingNotOptional()
         {
             NonOptionalSettings.Properties.DataSource.SelectFunc = keys => null;
 
@@ -342,15 +345,20 @@ namespace SmartConfig.Tests
             {
                 Configuration.LoadSettings(typeof(NonOptionalSettings));
             },
-            ex =>
-            {
-                Assert.IsInstanceOfType(ex.InnerException, typeof(SettingNotOptionalException));
-            },
-            Assert.Fail);
+                ex =>
+                {
+                    Assert.IsInstanceOfType(ex.InnerException, typeof(SettingNotOptionalException));
+                },
+                Assert.Fail);
         }
+    }
+
+    [TestClass]
+    public class ConfigurationTests_UpdateSetting
+    {
 
         [TestMethod]
-        public void UpdateSetting_expression_MustNotBeNull()
+        public void RequiresExpression()
         {
             ExceptionAssert.Throws<ArgumentNullException>(() =>
             {
@@ -363,7 +371,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void UpdateSetting_expression_MustBeMemberExpression()
+        public void RequiresExpressionBeMemberExpression()
         {
             ExceptionAssert.Throws<ExpressionBodyNotMemberExpressionException>(() =>
             {
@@ -376,7 +384,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void UpdateSetting_expression_MemberMustBeLoaded()
+        public void RequiresMemberIsLoaded()
         {
             ExceptionAssert.Throws<MemberNotFoundException>(() =>
             {

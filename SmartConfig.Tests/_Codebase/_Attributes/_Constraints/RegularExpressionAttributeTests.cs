@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SmartUtilities.UnitTesting;
 
 namespace SmartConfig.Tests
 {
@@ -6,26 +7,31 @@ namespace SmartConfig.Tests
     public class RegularExpressionAttributeTests
     {
         [TestMethod]
-        [ExpectedException(typeof(PropertyNotSetException))]
-        public void ctor_RegularExpressionAttribute()
+        public void CreatesRegularExpressionAttribute()
         {
-            var attr1 = new RegularExpressionAttribute();
-            attr1.Validate("abc");
+            var attr1 = new RegularExpressionAttribute { Pattern = "\\d" };
+            Assert.AreEqual("\\d", attr1.Pattern);
         }
 
         [TestMethod]
-        public void Validate_CanValidateString()
+        public void ValidatesString()
         {
-            var attr1 = new RegularExpressionAttribute { Pattern = "\\d[A-Z]" };
-            attr1.Validate("1B");
+            ExceptionAssert.DoesNotThrow(() =>
+            {
+                var attr1 = new RegularExpressionAttribute { Pattern = "\\d[A-Z]" };
+                attr1.Validate("1B");
+                Assert.IsTrue(true);
+            }, Assert.Fail);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(RegularExpressionViolationException))]
-        public void Validate_ThrowsRegularExpressionViolationException()
+        public void ThrowsRegularExpressionViolationException()
         {
-            var attr1 = new RegularExpressionAttribute { Pattern = "\\d[A-Z]" };
-            attr1.Validate("1e");
+            ExceptionAssert.Throws<RegularExpressionViolationException>(() =>
+            {
+                var attr1 = new RegularExpressionAttribute { Pattern = "\\d[A-Z]" };
+                attr1.Validate("1e");
+            }, ex => { }, Assert.Fail);
         }
     }
 }

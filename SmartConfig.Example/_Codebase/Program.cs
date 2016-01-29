@@ -6,7 +6,6 @@ using SmartConfig.Collections;
 using SmartConfig.Data;
 using SmartConfig.Example.Data;
 using SmartConfig.Example.ExampleConfigs;
-using SmartConfig.Logging;
 
 namespace SmartConfig.Example
 {
@@ -15,7 +14,7 @@ namespace SmartConfig.Example
 
         static void Main(string[] args)
         {
-            Logger.Info = m => Debug.WriteLine(m);
+            //Logger.Info = m => Debug.WriteLine(m);
 
             AppConfigSourceExample();
             //DbSourceExamples();
