@@ -18,41 +18,31 @@ namespace SmartConfig.Data
 
             CustomKeyFilters =
                 typeof(TSetting) == typeof(Setting)
+                // create an empty dictionary if the TSetting is not derived from Setting
                 ? new Dictionary<string, ISettingFilter>()
+                // get custom properties from the derived TSetting type and create filters
                 : typeof(TSetting).GetProperties(customPropertiesBindingFlags).ToDictionary(x => x.Name, x =>
                 {
                     var filterAttribute = x.GetCustomAttribute<FilterAttribute>();
                     if (filterAttribute == null)
                     {
-                        throw new ArgumentNullException();
+                        throw new FilterAttributeMissingException
+                        {
+                            DeclaringTypeName = typeof(TSetting).FullName,
+                            PropertyName = x.Name,
+                        };
                     }
                     var settingFilter = (ISettingFilter)Activator.CreateInstance(filterAttribute.FilterType);
                     return settingFilter;
                 });
-
-            //var isDerived = typeof(TSetting) != typeof(Setting);
-            //if (isDerived)
-            //{
-            //    if (customKeys == null)
-            //    {
-            //        throw new ArgumentNullException(nameof(customKeys));
-            //    }
-            //    var customKeyNames = SettingKeyNames.Where(kn => kn != SettingKeyNames.DefaultKeyName).ToList();
-            //    var allKeysConfigured = customKeys.All(ck => ck.Filter != null && customKeyNames.Contains(ck.Name));
-            //    if (!allKeysConfigured)
-            //    {
-            //        throw new SettingCustomKeysMismatchException
-            //        {
-            //            CustomKeys = string.Join(" ", customKeys.Select(ck => $"{ck.Name} = \"{ck.Value}\""))
-            //        };
-            //    }
-            //    _customKeys = customKeys.ToDictionary(ck => ck.Name);
-            //}
         }
 
-        protected IDictionary<string, ISettingFilter> CustomKeyFilters { get; }
+        /// <summary>
+        /// Gets filters for custom keys.
+        /// </summary>
+        internal IDictionary<string, ISettingFilter> CustomKeyFilters { get; }
 
-        public abstract IReadOnlyCollection<Type> SupportedTypes { get; }
+        public abstract IReadOnlyCollection<Type> SupportedSettingValueTypes { get; }
 
         public abstract object Select(SettingKeyCollection keys);
 
@@ -63,7 +53,11 @@ namespace SmartConfig.Data
         /// </summary>
         protected IEnumerable<TSetting> ApplyFilters(IEnumerable<TSetting> settings, IEnumerable<SettingKey> customKeys)
         {
-            settings = customKeys.Aggregate(settings, (current, key) => CustomKeyFilters[key.Name].FilterSettings(current, key).Cast<TSetting>());
+            settings = 
+                customKeys.Aggregate(
+                    settings, 
+                    (current, key) => CustomKeyFilters[key.Name].FilterSettings(current, key).Cast<TSetting>()
+                );
             return settings;
         }
     }

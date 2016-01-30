@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Collections;
 using SmartConfig.Data;
+using SmartConfig.Filters;
 using SmartConfig.Tests.TestConfigs;
 using SmartUtilities.UnitTesting;
 // ReSharper disable InconsistentNaming
@@ -14,23 +15,23 @@ namespace SmartConfig.Tests.Data
     [TestClass]
     public class DbSourceTests
     {
-        private const string _testTableName = "TestSetting";
-        private const string _connectionStringName = "TestDb";
-        private readonly string _connectionString = ConfigurationManager.ConnectionStrings[_connectionStringName].ConnectionString;
+        protected const string _testTableName = "TestSetting";
+        protected const string _connectionStringName = "TestDb";
+        protected readonly string _connectionString = ConfigurationManager.ConnectionStrings[_connectionStringName].ConnectionString;
 
         [TestInitialize]
         public void TestInitialize()
         {
             AppDomain.CurrentDomain.SetData("DataDirectory", AppDomain.CurrentDomain.BaseDirectory);
             var connectionString = ConfigurationManager.ConnectionStrings[_connectionStringName].ConnectionString;
-            using (var context = new SmartConfigContext<TestSetting>(connectionString, _testTableName))
+            using (var context = new SmartConfigDbContext<TestSetting>(connectionString, _testTableName))
             {
                 context.Database.Initialize(true);
             }
         }
 
         [TestMethod]
-        public void ctor_connectionString_MustNotBeNull()
+        public void RequiresConnectionString()
         {
             ExceptionAssert.Throws<ArgumentNullException>(() =>
             {
@@ -39,7 +40,7 @@ namespace SmartConfig.Tests.Data
         }
 
         [TestMethod]
-        public void ctor_settingTableName_MustNotBeNull()
+        public void RequiresTableName()
         {
             ExceptionAssert.Throws<ArgumentNullException>(() =>
             {
@@ -48,32 +49,38 @@ namespace SmartConfig.Tests.Data
         }
 
         [TestMethod]
-        public void Select_CanSelectSettingsByName()
+        public void SelectsSettingByName()
         {
             var dataSource = new DbSource<Setting>(_connectionString, _testTableName);
-            Assert.AreEqual("123", dataSource.Select(new SettingKeyCollection(new SettingKey(Setting.DefaultKeyName, "Int32Setting"), Enumerable.Empty<SettingKey>())));
+            var value = dataSource.Select(
+                new SettingKeyCollection(
+                    new SettingKey(Setting.DefaultKeyName, new SettingPath(null, "Int32Setting")),
+                    Enumerable.Empty<SettingKey>()));
+            Assert.AreEqual("123", value);
         }
 
         [TestMethod]
-        public void Select_CanSelectSettingsByNameByEnvironmentByVersion()
+        public void SelectsSettingByNameByEnvironmentByVersion()
         {
             var dataSource = new DbSource<TestSetting>(_connectionString, _testTableName);
             var keys = new SettingKeyCollection(
-                new SettingKey(Setting.DefaultKeyName, "Int32Setting"),
-                new [] 
+                new SettingKey(Setting.DefaultKeyName, new SettingPath(null, "Int32Setting")),
+                new[]
                 {
-                    new SettingKey("Environment", "ABC"),
-                    new SettingKey("Version", "1.2.1")
+                    new SettingKey("Environment", "A"),
+                    new SettingKey("Version", "2.2.1")
                 });
             Assert.AreEqual("123", dataSource.Select(keys));
         }
 
         [TestMethod]
-        public void Update_CanUpdateSettingByName()
+        public void UpdatesSettingByName()
         {
             var dataSource = new DbSource<Setting>(_connectionString, _testTableName);
 
-            var keys = new SettingKeyCollection(new SettingKey(Setting.DefaultKeyName, "Int32Setting"), Enumerable.Empty<SettingKey>());
+            var keys = new SettingKeyCollection(
+                new SettingKey(Setting.DefaultKeyName, new SettingPath(null, "Int32Setting")), 
+                Enumerable.Empty<SettingKey>());
 
             Assert.AreEqual("123", dataSource.Select(keys));
 
@@ -82,6 +89,22 @@ namespace SmartConfig.Tests.Data
 
             dataSource.Update(keys, "789");
             Assert.AreEqual("789", dataSource.Select(keys));
+        }
+
+        // --- test full configs
+
+        [TestMethod]
+        public void LoadsSettingsFromDatabase()
+        {
+            Configuration.LoadSettings(typeof(DatabaseSettings1));
+
+            Assert.AreEqual("baz", DatabaseSettings1.StringSetting);
+            Assert.AreEqual("123", DatabaseSettings1.Int32Setting);
+
+            Configuration.LoadSettings(typeof(DatabaseSettings2));
+
+            Assert.AreEqual("qux", DatabaseSettings2.StringSetting);
+            Assert.AreEqual("890", DatabaseSettings2.Int32Setting);
         }
     }
 }

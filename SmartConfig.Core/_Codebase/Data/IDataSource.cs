@@ -17,7 +17,7 @@ namespace SmartConfig.Data
     /// </summary>
     public interface IDataSource
     {
-        IReadOnlyCollection<Type> SupportedTypes { get; }
+        IReadOnlyCollection<Type> SupportedSettingValueTypes { get; }
 
         /// <summary>
         /// Selects data from the data source.

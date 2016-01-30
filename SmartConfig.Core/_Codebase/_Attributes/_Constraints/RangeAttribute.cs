@@ -8,7 +8,7 @@ namespace SmartConfig
     /// <summary>
     /// Specifies the range for a field.
     /// </summary>
-    [DebuggerDisplay("Type = \"{Type.Name}\" Min = \"{Min}\" Max = \"{Max}\"")]
+    [DebuggerDisplay("DeclaringTypeName = \"{Type.Name}\" Min = \"{Min}\" Max = \"{Max}\"")]
     public class RangeAttribute : ConstraintAttribute
     {
         /// <summary>

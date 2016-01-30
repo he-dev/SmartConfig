@@ -47,8 +47,9 @@ namespace SmartConfig.IO
 
                     throw new SettingNotOptionalException
                     {
-                        ConfigTypeFullName = settingInfo.Configuration.ConfigurationType.FullName,
-                        SettingPath = settingInfo.SettingPath
+                        ConfigTypeName = settingInfo.Configuration.ConfigurationType.FullName,
+                        SettingPath = settingInfo.SettingPath,
+                        Hint = "Check other keys if you have any custom ones like environment or version."
                     };
                 }
             

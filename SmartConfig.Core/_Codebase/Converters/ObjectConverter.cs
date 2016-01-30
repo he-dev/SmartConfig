@@ -28,14 +28,14 @@ namespace SmartConfig.Converters
         /// </summary>
         public HashSet<Type> SupportedTypes { get; } = new HashSet<Type>();
 
-        //protected void ValidateType(Type type)
+        //protected void ValidateType(DeclaringTypeName type)
         //{
         //    if (type.IsEnum)
         //    {
         //        type = typeof(Enum);
         //    }
 
-        //    if (!SupportedTypes.Contains(type))
+        //    if (!SupportedSettingValueTypes.Contains(type))
         //    {
         //        throw new UnsupportedTypeException(GetType(), type);
         //    }

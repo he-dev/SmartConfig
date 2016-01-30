@@ -10,11 +10,11 @@ namespace SmartConfig.Data
     /// <summary>
     /// Provides <c>DbContext</c> for retreiving configuration from a database.
     /// </summary>
-    internal sealed class SmartConfigContext<TSetting> : DbContext where TSetting : Setting
+    internal sealed class SmartConfigDbContext<TSetting> : DbContext where TSetting : Setting
     {
         private readonly string _settingsTableName;
 
-        public SmartConfigContext(string connectionString, string settingsTableName) : base(connectionString)
+        public SmartConfigDbContext(string connectionString, string settingsTableName) : base(connectionString)
         {
             Debug.Assert(!string.IsNullOrEmpty(connectionString));
             Debug.Assert(!string.IsNullOrEmpty(settingsTableName));

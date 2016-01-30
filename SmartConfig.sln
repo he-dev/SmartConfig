@@ -9,10 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartConfig.Example", "Smar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartConfig", "SmartConfig.Core\SmartConfig.csproj", "{B499D748-D867-4939-929B-BAE2BBAE6336}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartUtilities", "..\SmartUtilities\SmartUtilities\SmartUtilities.csproj", "{ABA07D6F-BB71-4AA6-AA20-7330E394D082}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{577DAE00-3B82-4B24-A7F7-D94FF0787647}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,16 +25,8 @@ Global
 		{B499D748-D867-4939-929B-BAE2BBAE6336}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B499D748-D867-4939-929B-BAE2BBAE6336}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B499D748-D867-4939-929B-BAE2BBAE6336}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ABA07D6F-BB71-4AA6-AA20-7330E394D082}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ABA07D6F-BB71-4AA6-AA20-7330E394D082}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ABA07D6F-BB71-4AA6-AA20-7330E394D082}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ABA07D6F-BB71-4AA6-AA20-7330E394D082}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{B499D748-D867-4939-929B-BAE2BBAE6336} = {577DAE00-3B82-4B24-A7F7-D94FF0787647}
-		{ABA07D6F-BB71-4AA6-AA20-7330E394D082} = {577DAE00-3B82-4B24-A7F7-D94FF0787647}
 	EndGlobalSection
 EndGlobal

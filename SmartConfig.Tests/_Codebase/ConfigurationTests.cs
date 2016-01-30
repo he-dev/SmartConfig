@@ -57,7 +57,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void LoadsNumerics()
+        public void LoadsNumericSettings()
         {
             var ci = CultureInfo.InvariantCulture;
 
@@ -106,7 +106,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void LoadsBooleans()
+        public void LoadsBooleanSettings()
         {
             var testData = new Dictionary<string, string>()
             {
@@ -123,7 +123,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void LoadsEnums()
+        public void LoadsEnumSettings()
         {
             EnumSettings.Properties.DataSource.SelectFunc = keys => TestEnum.TestValue2.ToString();
             Configuration.LoadSettings(typeof(EnumSettings));
@@ -131,7 +131,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void LoadsStrings()
+        public void LoadsStringSettings()
         {
             StringSettings.Properties.DataSource.SelectFunc = keys => "abcd";
             Configuration.LoadSettings(typeof(StringSettings));
@@ -139,7 +139,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void LoadsDateTimes()
+        public void LoadsDateTimeSettings()
         {
             var utcNow = DateTime.UtcNow;
             DateTimeSettings.Properties.DataSource.SelectFunc = keys => utcNow.ToString(CultureInfo.InvariantCulture);
@@ -149,7 +149,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void LoadsColors()
+        public void LoadsColorSettings()
         {
             var testData = new Dictionary<string, string>()
             {
@@ -166,7 +166,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void LoadsXml()
+        public void LoadsXmlSettings()
         {
             var testData = new Dictionary<string, string>()
             {
@@ -183,7 +183,7 @@ namespace SmartConfig.Tests
         }
 
         [TestMethod]
-        public void LoadsJson()
+        public void LoadsJsonSettings()
         {
             JsonSettings.Properties.DataSource.SelectFunc = keys => "[1, 2, 3]";
             Configuration.LoadSettings(typeof(JsonSettings));
@@ -350,6 +350,20 @@ namespace SmartConfig.Tests
                     Assert.IsInstanceOfType(ex.InnerException, typeof(SettingNotOptionalException));
                 },
                 Assert.Fail);
+        }
+
+        
+
+        [TestMethod]
+        public void LoadsSettingsFromAppConfig()
+        {
+
+        }
+
+        [TestMethod]
+        public void LoadsSettingsFromRegistry()
+        {
+
         }
     }
 

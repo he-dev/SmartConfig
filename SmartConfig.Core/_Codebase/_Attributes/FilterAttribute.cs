@@ -19,7 +19,11 @@ namespace SmartConfig
 
             if (!typeof(ISettingFilter).IsAssignableFrom(filterType))
             {
-                throw new FilterTypeNotISettingFilterException { FilterTypeFullName = filterType.FullName };
+                throw new TypeDoesNotImplementInterfaceException
+                {
+                    InterfaceTypeName = typeof(ISettingFilter).FullName,
+                    InvalidTypeName = filterType.FullName
+                };
             }
 
             FilterType = filterType;

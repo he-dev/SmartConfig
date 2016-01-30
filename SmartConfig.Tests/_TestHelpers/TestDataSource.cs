@@ -13,7 +13,7 @@ namespace SmartConfig.Tests
 
         public Action<IEnumerable<SettingKey>, object> UpdateAction;
 
-        public override IReadOnlyCollection<Type> SupportedTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+        public override IReadOnlyCollection<Type> SupportedSettingValueTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
         public override object Select(SettingKeyCollection keys)
         {
@@ -32,7 +32,7 @@ namespace SmartConfig.Tests
 
         public Action<IEnumerable<SettingKey>, object> UpdateAction;
 
-        public override IReadOnlyCollection<Type> SupportedTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+        public override IReadOnlyCollection<Type> SupportedSettingValueTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
         public override object Select(SettingKeyCollection keys)
         {

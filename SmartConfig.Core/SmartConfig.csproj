@@ -70,6 +70,10 @@
       <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="SmartUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SmartUtilities.2.0.0\lib\net45\SmartUtilities.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -89,7 +93,9 @@
     <Compile Include="_Codebase\Collections\_Interfaces\IObjectConverterCollection.cs" />
     <Compile Include="_Codebase\Converters\EmptyConverter.cs" />
     <Compile Include="_Codebase\Data\_Sources\RegistrySource.cs" />
-    <Compile Include="_Codebase\Reflection\ConfigurationPropertyGroup.cs" />
+    <Compile Include="_Codebase\Exceptions.cs" />
+    <Compile Include="_Codebase\NameKey.cs" />
+    <Compile Include="_Codebase\Collections\ConfigurationPropertyGroup.cs" />
     <Compile Include="_Codebase\Filters\ISettingFilter.cs" />
     <Compile Include="_Codebase\Filters\StringFilter.cs" />
     <Compile Include="_Codebase\Filters\VersionFilter.cs" />
@@ -99,7 +105,7 @@
     <Compile Include="_Codebase\Data\_Sources\_AppConfigSectionSources\IAppConfigSectionSource.cs" />
     <Compile Include="_Codebase\Data\_Sources\DbSource.cs" />
     <Compile Include="_Codebase\Data\IIndexer.cs" />
-    <Compile Include="_Codebase\Data\SmartConfigContext.cs" />
+    <Compile Include="_Codebase\Data\SmartConfigDbContext.cs" />
     <Compile Include="_Codebase\Reflection\SettingInfo.cs" />
     <Compile Include="_Codebase\Collections\SettingKeyNameCollection.cs" />
     <Compile Include="_Codebase\Converters\DateTimeConverter.cs" />
@@ -116,12 +122,9 @@
     <Compile Include="_Codebase\IO\SettingUpdater.cs" />
     <Compile Include="_Codebase\SettingKey.cs" />
     <Compile Include="_Codebase\_Attributes\SettingNameAttribute.cs" />
+    <Compile Include="_Codebase\_Attributes\SmartConfigPropertiesAttribute.cs" />
     <Compile Include="_Codebase\_Attributes\_ConverterParameters\DateTimeFormatAttribute.cs" />
     <Compile Include="_Codebase\_Attributes\_ConverterParameters\ConverterParameterAttribute.cs" />
-    <Compile Include="_Codebase\_Exceptions\PropertyNotSetException.cs" />
-    <Compile Include="_Codebase\_Exceptions\ValueTypeMismatchException.cs" />
-    <Compile Include="_Codebase\_Exceptions\UpdateSettingFailedException.cs" />
-    <Compile Include="_Codebase\_Exceptions\UnsupportedRegistryTypeException.cs" />
     <Compile Include="_Codebase\_Paths\RegistryPath.cs" />
     <Compile Include="_Codebase\_Paths\AppConfigPath.cs" />
     <Compile Include="_Codebase\Wildcards.cs" />
@@ -131,22 +134,6 @@
     <Compile Include="_Codebase\_Attributes\_Constraints\RegularExpressionAttribute.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\RangeAttribute.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\ConstraintAttribute.cs" />
-    <Compile Include="_Codebase\_Exceptions\FileNameNotRootedException.cs" />
-    <Compile Include="_Codebase\_Exceptions\SmartConfigRootElementNotFountException.cs" />
-    <Compile Include="_Codebase\_Exceptions\InvalidMemberTypeException.cs" />
-    <Compile Include="_Codebase\_Exceptions\FilterTypeNotISettingFilterException.cs" />
-    <Compile Include="_Codebase\_Exceptions\SettingCustomKeysMismatchException.cs" />
-    <Compile Include="_Codebase\_Exceptions\MemberNotFoundException.cs" />
-    <Compile Include="_Codebase\_Exceptions\MemberNotPropertyException.cs" />
-    <Compile Include="_Codebase\_Exceptions\ExpressionBodyNotMemberExpressionException.cs" />
-    <Compile Include="_Codebase\_Exceptions\RegularExpressionViolationException.cs" />
-    <Compile Include="_Codebase\_Exceptions\RangeViolationException.cs" />
-    <Compile Include="_Codebase\_Exceptions\DateTimeFormatViolationException.cs" />
-    <Compile Include="_Codebase\_Exceptions\SmartConfigAttributeMissingException.cs" />
-    <Compile Include="_Codebase\_Exceptions\TypeNotStaticException.cs" />
-    <Compile Include="_Codebase\_Exceptions\LoadSettingFailedException.cs" />
-    <Compile Include="_Codebase\_Exceptions\SettingNotOptionalException.cs" />
-    <Compile Include="_Codebase\_Exceptions\DuplicateTypeConverterException.cs" />
     <Compile Include="_Codebase\_Extensions\ReflectionExtensions.cs" />
     <Compile Include="_Codebase\Converters\ColorConverter.cs" />
     <Compile Include="_Codebase\Converters\StringConverter.cs" />
@@ -171,13 +158,6 @@
     <Content Include="SQL-Scripts\dbo.BasicSetting.sql" />
     <Content Include="SQL-Scripts\dbo.CustomSetting.sql" />
     <Content Include="LICENSE.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\SmartUtilities\SmartUtilities\SmartUtilities.csproj">
-      <Project>{aba07d6f-bb71-4aa6-aa20-7330e394d082}</Project>
-      <Name>SmartUtilities</Name>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -18,7 +18,7 @@ namespace SmartConfig.Collections
             : base(new[] { defaultKey }.Concat(customKeys).ToList())
         { }
 
-        public SettingKey DefaultKey => this.First();
+        public NameKey NameKey => new NameKey(this.First());
 
         public IEnumerable<SettingKey> CustomKeys => this.Skip(1);
     }

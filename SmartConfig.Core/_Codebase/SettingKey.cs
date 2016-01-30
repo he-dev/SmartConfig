@@ -29,12 +29,12 @@ namespace SmartConfig
             Value = settingPath;
         }
 
-        public string Name { get; private set; }
+        public string Name { get; }
 
         /// <summary>
         /// Gets or sets the key value. This property is optional for the version set via the <c>SmartConfigAttribute</c>.
         /// It is set internaly.
         /// </summary>
-        public object Value { get; private set; }
+        public object Value { get; }
     }
 }

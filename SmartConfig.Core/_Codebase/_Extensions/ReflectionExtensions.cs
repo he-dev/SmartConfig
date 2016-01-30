@@ -9,7 +9,7 @@ namespace SmartConfig
     internal static class ReflectionExtensions
     {
         /// <summary>
-        /// Checks if the specified type is static.
+        /// Checks if the specified memberInfo is static.
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
@@ -92,70 +92,77 @@ namespace SmartConfig
             // or it's the properties class defined directly under the SmartConfig class
             return
                 type.GetCustomAttribute<IgnoreAttribute>() != null
-                || (type.Name == "Properties" && type.DeclaringType.GetCustomAttribute<SmartConfigAttribute>() != null);
+                || (type.GetCustomAttribute<SmartConfigPropertiesAttribute>() != null);
         }
+
+        public static bool HasAttribute<T>(this Type type) where T : Attribute
+        {
+            return type.GetCustomAttributes(typeof(T), false).Any();
+        }
+
+        //public static bool HasAttribute<T>(this MemberInfo memberInfo) where T : Attribute
+        //{
+        //    return memberInfo.GetCustomAttributes(typeof(T), false).Any();
+        //}
 
 #if NET40
 
-        public static IEnumerable<T> GetCustomAttributes<T>(this SettingType type, bool inherit = false) where T : Attribute
+        public static IEnumerable<T> GetCustomAttributes<T>(this SettingType memberInfo, bool inherit = false) where T : Attribute
         {
-            return type.GetCustomAttributes(typeof (T), inherit).Cast<T>();
+            return memberInfo.GetCustomAttributes(typeof (T), inherit).Cast<T>();
         }
 
 
-        public static TAttribute GetCustomAttribute<TAttribute>(this SettingType type, bool inherit = false) where TAttribute : Attribute
+        public static TAttribute GetCustomAttribute<TAttribute>(this SettingType memberInfo, bool inherit = false) where TAttribute : Attribute
         {
-            return type.GetCustomAttributes<TAttribute>(inherit).SingleOrDefault();
+            return memberInfo.GetCustomAttributes<TAttribute>(inherit).SingleOrDefault();
         }
 
 #endif
 
-        //public static bool IsNullable(this Type type)
+        //public static bool IsNullable(this Type memberInfo)
         //{
         //    var isNullable =
-        //        type.IsGenericType
-        //        && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+        //        memberInfo.IsGenericType
+        //        && memberInfo.GetGenericTypeDefinition() == typeof(Nullable<>);
         //    return isNullable;
         //}
 
-        //public static bool IsIEnumerable(this Type type)
+        //public static bool IsIEnumerable(this Type memberInfo)
         //{
         //    var isIEnumerable =
-        //        type != typeof(string)
-        //        && type.GetInterfaces()
-        //        .Any(t => t.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+        //        memberInfo != typeof(string)
+        //        && memberInfo.GetInterfaces()
+        //        .Any(t => t.IsGenericType && memberInfo.GetGenericTypeDefinition() == typeof(IEnumerable<>));
         //    return isIEnumerable;
         //}
 
-        //public static bool IsList(this Type type)
+        //public static bool IsList(this Type memberInfo)
         //{
         //    var isList =
-        //        type != typeof(string)
-        //        && type.IsGenericType
-        //        && type.GetGenericTypeDefinition() == typeof(List<>);
+        //        memberInfo != typeof(string)
+        //        && memberInfo.IsGenericType
+        //        && memberInfo.GetGenericTypeDefinition() == typeof(List<>);
         //    return isList;
         //}
 
-        //public static bool IsDictionary(this Type type)
+        //public static bool IsDictionary(this Type memberInfo)
         //{
         //    var isList =
-        //        type != typeof(string)
-        //        && type.IsGenericType
-        //        && type.GetGenericTypeDefinition() == typeof(Dictionary<,>);
+        //        memberInfo != typeof(string)
+        //        && memberInfo.IsGenericType
+        //        && memberInfo.GetGenericTypeDefinition() == typeof(Dictionary<,>);
         //    return isList;
         //}
 
-        //public static bool HasAttribute<T>(this Type type) where T : Attribute
-        //{
-        //    return type.GetCustomAttributes(typeof(T), false).Any();
-        //}
 
-        //        public static T GetCustomAttribute<T>(this SettingType type, bool inherit = false) where T : Attribute
+
+        //        public static T GetCustomAttribute<T>(this SettingType memberInfo, bool inherit = false) where T : Attribute
         //        {
         //#if NET40
-        //            return (T)type.GetCustomAttributes(typeof(T), inherit).SingleOrDefault();
+        //            return (T)memberInfo.GetCustomAttributes(typeof(T), inherit).SingleOrDefault();
         //#else
-        //            return type.GetCustomAttributes(inherit).OfType<T>().SingleOrDefault();
+        //            return memberInfo.GetCustomAttributes(inherit).OfType<T>().SingleOrDefault();
         //#endif
         //        }
     }

@@ -7,7 +7,7 @@ using SmartUtilities;
 namespace SmartConfig.Filters
 {
     /// <summary>
-    /// Implements popular filters.
+    /// Implements a string filter.
     /// </summary>
     public class StringFilter : ISettingFilter
     {

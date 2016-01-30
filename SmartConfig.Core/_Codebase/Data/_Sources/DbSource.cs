@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using SmartConfig.Collections;
+using SmartUtilities.Collections;
 
 namespace SmartConfig.Data
 {
@@ -22,31 +23,38 @@ namespace SmartConfig.Data
             if (string.IsNullOrEmpty(connectionString)) { throw new ArgumentNullException(nameof(connectionString)); }
             if (string.IsNullOrEmpty(settingsTableName)) { throw new ArgumentNullException(nameof(settingsTableName)); }
 
-            var isConnectionStringName = connectionString.StartsWith("name=", StringComparison.OrdinalIgnoreCase);
-            _connectionString =
-                isConnectionStringName
-                ? ConfigurationManager.ConnectionStrings[Regex.Replace(connectionString, "^name=", string.Empty, RegexOptions.IgnoreCase)].ConnectionString
-                : connectionString;
-
-            if (string.IsNullOrEmpty(_connectionString)) { throw new ArgumentNullException(nameof(connectionString)); }
-
+            _connectionString = connectionString;
             _settingsTableName = settingsTableName;
+
+            var connectionStringNameMatch = Regex.Match(_connectionString, "^name=(?<connectionStringName>.+)", RegexOptions.IgnoreCase);
+            if (connectionStringNameMatch.Success)
+            {
+                var connectionStringsRepository = new ConnectionStringsRepository();
+                _connectionString = connectionStringsRepository[connectionStringNameMatch.Groups["connectionStringName"].Value];
+            }
+
+            if (string.IsNullOrEmpty(_connectionString))
+            {
+                throw new ConnectionStringNotFoundException
+                {
+                    ConnectionStringName = connectionStringNameMatch.Groups["connectionStringName"].Value
+                };
+            }
         }
 
-        public override IReadOnlyCollection<Type> SupportedTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+        public override IReadOnlyCollection<Type> SupportedSettingValueTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
         public override object Select(SettingKeyCollection keys)
         {
             Debug.Assert(keys != null);
 
-            using (var context = new SmartConfigContext<TSetting>(_connectionString, _settingsTableName))
+            using (var context = new SmartConfigDbContext<TSetting>(_connectionString, _settingsTableName))
             {
-                var name = keys.DefaultKey.Value;
-                var settings = context.Settings.Where(ce => ce.Name == name).ToList() as IEnumerable<TSetting>;
+                var settings = context.Settings.Where(ce => ce.Name == keys.NameKey).ToList() as IEnumerable<TSetting>;
 
                 settings = ApplyFilters(settings, keys.Skip(1));
 
-                var setting = settings.SingleOrDefault();
+                var setting = settings.FirstOrDefault();
                 return setting?.Value;
             }
         }
@@ -55,21 +63,21 @@ namespace SmartConfig.Data
         {
             Debug.Assert(keys != null && keys.Any());
 
-            using (var context = new SmartConfigContext<TSetting>(_connectionString, _settingsTableName))
+            using (var context = new SmartConfigDbContext<TSetting>(_connectionString, _settingsTableName))
             {
-                var keyValues = keys.Select(x => x.Value).Cast<object>().ToArray();
+                var keyValues = keys.Select(x => (object)x.Value.ToString()).ToArray();
                 var entity = context.Settings.Find(keyValues);
 
                 var entityExists = entity != null;
                 if (!entityExists)
                 {
-                    entity = new TSetting()
+                    entity = new TSetting
                     {
-                        Name = (SettingPath)keys.DefaultKey.Value,
+                        Name = keys.NameKey.Value.ToString(),
                         Value = value?.ToString()
                     };
 
-                    // set customKeys
+                    // set custom keys
                     foreach (var key in keys.CustomKeys)
                     {
                         entity[key.Name] = key.Value.ToString();

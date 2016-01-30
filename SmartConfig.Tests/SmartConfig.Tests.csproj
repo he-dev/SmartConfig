@@ -47,6 +47,14 @@
     <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SmartUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SmartUtilities.2.0.0\lib\net45\SmartUtilities.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -73,6 +81,7 @@
   <ItemGroup>
     <Compile Include="TestConfigs\SettingsInitializationTestConfig.cs" />
     <Compile Include="TestConfigs\NamedTestConfig.cs" />
+    <Compile Include="TestConfigs\_ConfigurationTests\DatabaseSettings.cs" />
     <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\NumericSettings.cs" />
     <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\NumericsConfig.cs" />
     <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\BooleanSettings.cs" />
@@ -83,10 +92,13 @@
     <Compile Include="_Codebase\Converters\DateTimeConverterTests.cs" />
     <Compile Include="_Codebase\Converters\NumericConverterTests.cs" />
     <Compile Include="_Codebase\Converters\BooleanConverterTests.cs" />
+    <Compile Include="_Codebase\Data\DataSourceTests.cs" />
+    <Compile Include="_Codebase\Data\SettingTests.cs" />
     <Compile Include="_Codebase\Data\_Sources\AppConfigSourceTests.cs" />
     <Compile Include="_Codebase\Converters\ColorConverterTests.cs" />
     <Compile Include="_Codebase\Converters\XmlConverterTests.cs" />
     <Compile Include="_Codebase\Converters\JsonConverterTests.cs" />
+    <Compile Include="_Codebase\Data\_Sources\RegistrySourceTests.cs" />
     <Compile Include="_Codebase\Data\_Sources\XmlSourceTests.cs" />
     <Compile Include="_Codebase\Data\_Sources\DbSourceTests.cs" />
     <Compile Include="TestConfigs\SimpteTestConfig.cs" />
@@ -94,6 +106,8 @@
     <Compile Include="_Codebase\Filters\VersionFilterTests.cs" />
     <Compile Include="_Codebase\KeyNamesTests.cs" />
     <Compile Include="_Codebase\Reflection\ConfigurationInfoTests.cs" />
+    <Compile Include="_Codebase\Collections\ConfigurationPropertyGroupTests.cs" />
+    <Compile Include="_Codebase\_Attributes\FilterAttributeTests.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\RegularExpressionAttributeTests.cs" />
     <Compile Include="_Codebase\_Extensions\ReflectionExtensionsTests.cs" />
     <Compile Include="_Codebase\_Paths\AppConfigPathTests.cs" />
@@ -130,16 +144,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SmartUtilities\SmartUtilities\SmartUtilities.csproj">
-      <Project>{aba07d6f-bb71-4aa6-aa20-7330e394d082}</Project>
-      <Name>SmartUtilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SmartConfig.Core\SmartConfig.csproj">
-      <Project>{b499d748-d867-4939-929b-bae2bbae6336}</Project>
-      <Name>SmartConfig</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="TestFiles\XmlConfigs\TestXmlConfig.xml">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -151,7 +155,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SmartConfig.Core\SmartConfig.csproj">
+      <Project>{b499d748-d867-4939-929b-bae2bbae6336}</Project>
+      <Name>SmartConfig</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

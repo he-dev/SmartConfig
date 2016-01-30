@@ -4,25 +4,30 @@ using SmartConfig.Data;
 
 namespace SmartConfig.Tests
 {
-    class TestDbInitializer : DropCreateDatabaseAlways<SmartConfigContext<TestSetting>>
+    class TestDbInitializer : DropCreateDatabaseAlways<SmartConfigDbContext<TestSetting>>
     {
-        protected override void Seed(SmartConfigContext<TestSetting> context)
+        protected override void Seed(SmartConfigDbContext<TestSetting> dbContext)
         {
-            var testSettings = new[]
+            // let's create some test data
+            var testSettings = new []
             {
-                "ABC|1.0.0|StringSetting|abc",
-                "ABC|1.2.0|Int32Setting|123",
-                "ABC|2.1.1|StringSetting|jkl",
-                "JKL|3.2.4|StringSetting|xyz",
-            }
-            .Select(x => new TestSetting(x));
+                new TestSetting { Name = "StringSetting", Value = "foo", Environment = "A", Version = "1.0.0" },
+                new TestSetting { Name = "StringSetting", Value = "baz", Environment = "A", Version = "1.2.1" },
+                new TestSetting { Name = "Int32Setting", Value = "123", Environment = "A", Version = "2.1.1" },
+
+                new TestSetting { Name = "StringSetting", Value = "bar", Environment = "B", Version = "3.2.4" },
+
+                new TestSetting { Name = "app2.StringSetting", Value = "qux", Environment = "A", Version = "5.0.4" },
+                new TestSetting { Name = "app2.Int32Setting", Value = "890", Environment = "A", Version = "5.0.4" },
+            };
 
             foreach (var setting in testSettings)
             {
-                context.Settings.Add(setting);
+                dbContext.Settings.Add(setting);
             }
-            context.SaveChanges();
-            base.Seed(context);
+
+            dbContext.SaveChanges();
+            base.Seed(dbContext);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using SmartConfig.Collections;
 using SmartConfig.Data;
 using SmartUtilities;
 
@@ -36,7 +37,7 @@ namespace SmartConfig.Reflection
 
         public IEnumerable<SettingInfo> SettingInfos => ConfigurationType.GetSettingInfos(this);
 
-        //public SettingInfo FindSettingInfo(Type configType, string settingPath)
+        //public SettingInfo FindSettingInfo(DeclaringTypeName configType, string settingPath)
         //{
         //    return GetSettingInfos(configType).SingleOrDefault(si => si.SettingPath == settingPath);
         //}

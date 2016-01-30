@@ -8,7 +8,7 @@ namespace SmartConfig.IO
 {
     internal class SettingUpdater
     {
-        //public void UpdateSetting(Type configType, string settingPath, object value)
+        //public void UpdateSetting(DeclaringTypeName configType, string settingPath, object value)
         //{
         //    //var settingInfo = _configurationReflector.FindSettingInfo(configType, settingPath);
         //    //if (settingInfo == null)

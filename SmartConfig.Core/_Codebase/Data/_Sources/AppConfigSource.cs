@@ -32,11 +32,11 @@ namespace SmartConfig.Data
             .ToDictionary(x => x.SectionName, x => x, StringComparer.OrdinalIgnoreCase);
         }
        
-        private IAppConfigSectionSource GetAppConfigSectionSource(SettingKey defaultKey)
+        private IAppConfigSectionSource GetAppConfigSectionSource(NameKey nameKey)
         {
-            Debug.Assert(defaultKey != null);
+            Debug.Assert(nameKey != null);
 
-            var sectionName = new AppConfigPath(defaultKey).SectionName;
+            var sectionName = new AppConfigPath(nameKey.Value).SectionName;
 
             IAppConfigSectionSource appConfigSectionSource;
             if (!_appConfigSectionSources.TryGetValue(sectionName, out appConfigSectionSource))
@@ -47,16 +47,16 @@ namespace SmartConfig.Data
             return appConfigSectionSource;
         }
 
-        public override IReadOnlyCollection<Type> SupportedTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+        public override IReadOnlyCollection<Type> SupportedSettingValueTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
         public override object Select(SettingKeyCollection keys)
         {
             if (keys == null) { throw new ArgumentNullException(nameof(keys)); }
             if (!keys.Any()) { throw new InvalidOperationException("There must be at least one key defined."); }
 
-            var appConfigSectionSource = GetAppConfigSectionSource(keys.DefaultKey);
+            var appConfigSectionSource = GetAppConfigSectionSource(keys.NameKey);
 
-            var settingName = new AppConfigPath(keys.DefaultKey).ToString();
+            var settingName = new AppConfigPath(keys.NameKey.Value).ToString();
             var value = appConfigSectionSource.Select(settingName);
 
             return value;
@@ -66,8 +66,8 @@ namespace SmartConfig.Data
         {
             Debug.Assert(keys != null && keys.Any());
 
-            var appConfigSectionSource = GetAppConfigSectionSource(keys.DefaultKey);
-            var settingName = new AppConfigPath(keys.DefaultKey).ToString();
+            var appConfigSectionSource = GetAppConfigSectionSource(keys.NameKey);
+            var settingName = new AppConfigPath(keys.NameKey.Value).ToString();
 
             appConfigSectionSource.Update(settingName, value?.ToString());
             _exeConfiguration.Save(ConfigurationSaveMode.Minimal);

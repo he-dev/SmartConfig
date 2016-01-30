@@ -4,8 +4,8 @@ using System.Reflection;
 
 namespace SmartConfig.Data
 {
-    internal delegate string GetStringMethod();
-    internal delegate void SetStringMethod(string value);
+    internal delegate string StringPropertyGetter();
+    internal delegate void StringPropertySetter(string value);
 
     /// <summary>
     /// Basic setting class. Custom setting must be derived from this type.
@@ -15,17 +15,16 @@ namespace SmartConfig.Data
         private const string GetPrefix = "get_";
         private const string SetPrefix = "set_";
 
-        public const string DefaultKeyName = "Name";
+        public const string DefaultKeyName = nameof(Name);
 
-        private readonly IDictionary<string, Delegate> _delegates;
+        private readonly IDictionary<string, StringPropertyGetter> _getters = new Dictionary<string, StringPropertyGetter>();
+        private readonly IDictionary<string, StringPropertySetter> _setters = new Dictionary<string, StringPropertySetter>();
 
         /// <summary>
         /// Creates a new setting.
         /// </summary>
         public Setting()
         {
-            _delegates = new Dictionary<string, Delegate>();
-
             InitializeDelegates();
         }
 
@@ -36,8 +35,32 @@ namespace SmartConfig.Data
         /// <returns></returns>
         public string this[string propertyName]
         {
-            get { return ((GetStringMethod)_delegates[$"{GetPrefix}{propertyName}"])(); }
-            set { ((SetStringMethod)_delegates[$"{SetPrefix}{propertyName}"])(value); }
+            get
+            {
+                StringPropertyGetter stringPropertyGetter;
+                if (!_getters.TryGetValue($"{GetPrefix}{propertyName}", out stringPropertyGetter))
+                {
+                    throw new InvalidPropertyNameException
+                    {
+                        PropertyName = propertyName,
+                        TargetType = GetType().FullName
+                    };
+                }
+                return stringPropertyGetter();
+            }
+            set
+            {
+                StringPropertySetter stringPropertySetter;
+                if (!_setters.TryGetValue($"{GetPrefix}{propertyName}", out stringPropertySetter))
+                {
+                    throw new InvalidPropertyNameException
+                    {
+                        PropertyName = propertyName,
+                        TargetType = GetType().FullName
+                    };
+                }
+                _setters[$"{SetPrefix}{propertyName}"](value);
+            }
         }
 
         /// <summary>
@@ -61,10 +84,10 @@ namespace SmartConfig.Data
             var properties = GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public);
             foreach (var property in properties)
             {
-                var getStringMethod = (GetStringMethod)Delegate.CreateDelegate(typeof(GetStringMethod), this, property.GetGetMethod());
-                var setStringMethod = (SetStringMethod)Delegate.CreateDelegate(typeof(SetStringMethod), this, property.GetSetMethod());
-                _delegates.Add($"{GetPrefix}{property.Name}", getStringMethod);
-                _delegates.Add($"{SetPrefix}{property.Name}", setStringMethod);
+                var getStringMethod = (StringPropertyGetter)Delegate.CreateDelegate(typeof(StringPropertyGetter), this, property.GetGetMethod());
+                var setStringMethod = (StringPropertySetter)Delegate.CreateDelegate(typeof(StringPropertySetter), this, property.GetSetMethod());
+                _getters.Add($"{GetPrefix}{property.Name}", getStringMethod);
+                _setters.Add($"{SetPrefix}{property.Name}", setStringMethod);
             }
         }
     }

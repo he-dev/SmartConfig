@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using SmartConfig.Data;
 
-namespace SmartConfig.Reflection
+namespace SmartConfig.Collections
 {
     // Loads and validate configuration properties that can be customized by the user.
     internal class ConfigurationPropertyGroup
@@ -17,17 +17,18 @@ namespace SmartConfig.Reflection
             InitializeProperties(configType);
         }
 
-        //public string Name { get; private set; }
-
         public IDataSource DataSource { get; private set; } = new AppConfigSource();
 
-        public IReadOnlyCollection<SettingKey> CustomKeys { get; private set; } = new ReadOnlyCollection<SettingKey>(Enumerable.Empty<SettingKey>().ToList());
+        //public IReadOnlyCollection<SettingKey> CustomKeys { get; private set; } = 
+        //    new ReadOnlyCollection<SettingKey>(Enumerable.Empty<SettingKey>().ToList());
+
+        public IEnumerable<SettingKey> CustomKeys { get; private set; } = Enumerable.Empty<SettingKey>();
 
         private void InitializeProperties(Type configType)
         {
             const BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Static;
 
-            var propertyGroup = configType.GetNestedType("Properties", bindingFlags);
+            var propertyGroup = configType.GetNestedTypes(bindingFlags).FirstOrDefault(t => t.HasAttribute<SmartConfigPropertiesAttribute>());
             if (propertyGroup == null)
             {
                 return;
@@ -70,7 +71,10 @@ namespace SmartConfig.Reflection
         {
             const BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Static;
 
-            var dataSourceProperty = propertyGroup.GetProperty("DataSource", bindingFlags);
+            var dataSourceProperty = 
+                propertyGroup.GetProperties(bindingFlags)
+                .FirstOrDefault(p => typeof(IDataSource).IsAssignableFrom(p.PropertyType));
+
             if (dataSourceProperty == null)
             {
                 return;
@@ -79,7 +83,7 @@ namespace SmartConfig.Reflection
             DataSource = dataSourceProperty.GetValue(null) as IDataSource;
             if (DataSource == null)
             {
-                throw new ArgumentNullException($"{propertyGroup.DeclaringType.Name}.Properties.DataSource");
+                throw new ArgumentNullException(dataSourceProperty.Name, "Data source must not be null.");
             }
         }
 
@@ -87,20 +91,21 @@ namespace SmartConfig.Reflection
         {
             const BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Static;
 
-            var customKeysClass = propertyGroup.GetNestedType("CustomKeys", bindingFlags);
-            if (customKeysClass == null)
+            var customKeysProperty = 
+                propertyGroup.GetProperties(bindingFlags)
+                .FirstOrDefault(p => typeof(IEnumerable<SettingKey>).IsAssignableFrom(p.PropertyType));
+
+            if (customKeysProperty == null)
             {
                 return;
             }
 
-            var customKeyProperties = customKeysClass.GetProperties(bindingFlags);
-            if (customKeyProperties.Any(ckp => ckp.PropertyType != typeof(object)))
-            {
-                throw new ArgumentException(null, $"{propertyGroup.DeclaringType.Name}.Properties.CustomKeys");
-            }
+            CustomKeys = customKeysProperty.GetValue(null) as IEnumerable<SettingKey>;
 
-            var settingKeys = customKeyProperties.Select(x => new SettingKey(x.Name, (string)x.GetValue(null))).ToList();
-            CustomKeys = new ReadOnlyCollection<SettingKey>(settingKeys);
+            if (CustomKeys == null)
+            {
+                throw new ArgumentNullException(customKeysProperty.Name, "Custom keys property must not be null.");
+            }
         }
     }
 }

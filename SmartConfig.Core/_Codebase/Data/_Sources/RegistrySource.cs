@@ -22,15 +22,16 @@ namespace SmartConfig.Data
         };
 
 
-        public RegistrySource(RegistryKey baseRegistryKey, string baseSubKeyName = null)
+        public RegistrySource(RegistryKey baseRegistryKey, string subRegistryKey)
         {
             if (baseRegistryKey == null) { throw new ArgumentNullException(nameof(baseRegistryKey)); }
+            if (subRegistryKey == null) { throw new ArgumentNullException(nameof(subRegistryKey)); }
 
             _baseRegistryKey = baseRegistryKey;
-            _baseSubKeyName = string.IsNullOrEmpty(baseSubKeyName) ? string.Empty : baseSubKeyName;
+            _baseSubKeyName = subRegistryKey;
         }
 
-        public override IReadOnlyCollection<Type> SupportedTypes { get; } = new ReadOnlyCollection<Type>(new[]
+        public override IReadOnlyCollection<Type> SupportedSettingValueTypes { get; } = new ReadOnlyCollection<Type>(new[]
         {
             typeof(string),
             typeof(int),
@@ -39,7 +40,7 @@ namespace SmartConfig.Data
 
         public override object Select(SettingKeyCollection keys)
         {
-            var registryPath = new RegistryPath((SettingPath)keys.DefaultKey.Value);
+            var registryPath = new RegistryPath(keys.NameKey.Value);
 
             var subKeyName = Path.Combine(_baseSubKeyName, registryPath.SubKeyName);
             using (var subKey = _baseRegistryKey.OpenSubKey(subKeyName, false))
@@ -51,10 +52,14 @@ namespace SmartConfig.Data
 
         public override void Update(SettingKeyCollection keys, object value)
         {
-            var registryPath = new RegistryPath((SettingPath)keys.DefaultKey.Value);
+            var registryPath = new RegistryPath(keys.NameKey.Value);
 
             var subKeyName = Path.Combine(_baseSubKeyName, registryPath.SubKeyName);
-            using (var subKey = _baseRegistryKey.OpenSubKey(subKeyName, true) ?? _baseRegistryKey.CreateSubKey(subKeyName))
+
+            using (var subKey =
+                _baseRegistryKey.OpenSubKey(subKeyName, true)
+                ?? _baseRegistryKey.CreateSubKey(subKeyName)
+            )
             {
                 RegistryValueKind registryValueKind;
                 if (!_supportedRegistryValueKinds.TryGetValue(value.GetType(), out registryValueKind))
@@ -62,11 +67,11 @@ namespace SmartConfig.Data
                     throw new UnsupportedRegistryTypeException
                     {
                         ValueTypeName = value.GetType().Name,
-                        SettingName = keys.DefaultKey.Value.ToString()
+                        SettingName = keys.NameKey.Value.ToString()
                     };
                 }
                 subKey.SetValue(registryPath.ValueName, value, registryValueKind);
             }
-        }        
+        }
     }
 }

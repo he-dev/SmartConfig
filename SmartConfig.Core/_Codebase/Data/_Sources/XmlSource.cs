@@ -50,12 +50,12 @@ namespace SmartConfig.Data
 
         private XElement Root => XConfig.Root;
 
-        public override IReadOnlyCollection<Type> SupportedTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+        public override IReadOnlyCollection<Type> SupportedSettingValueTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
         public override object Select(SettingKeyCollection keys)
         {
-            var attributeName = keys.DefaultKey.Name;
-            var attributeValue = keys.DefaultKey.Value;
+            var attributeName = keys.NameKey.Name;
+            var attributeValue = keys.NameKey.Value;
             var defaultKeyXPath = $"//{RootElementName}/{SettingElementName}[@{attributeName}='{attributeValue}']";
 
             var xSettings = XConfig.XPathSelectElements(defaultKeyXPath);
@@ -66,7 +66,7 @@ namespace SmartConfig.Data
                 // set default key and value
                 var element = new TSetting
                 {
-                    Name = x.Attribute(keys.DefaultKey.Name).Value,
+                    Name = x.Attribute(keys.NameKey.Name).Value,
                     Value = x.Value
                 };
 
