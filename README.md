@@ -1,12 +1,21 @@
-# SmartConfig v4.1
+# SmartConfig v4.5
 Because creating configurations should be easy!
+
+---
+
+## What's new in this version?
+
+- Bug fixes
+- Easier **`SmartConfig`** properties (now recognized by type not names)
+- Type converter defaults to `JSON` if no match found (in work...)
+- Config name moved from properties to `SettingNameAttribute` to make it consistent for all names
 
 ---
 
 **`SmartConfig`** is a configuration framework that makes writing configurations easier then ever. Version 4 continues to make the API easier to use and at the same time more robust.
 
 ## Why another one?
-I find a configuration should be set up within a few minutes and be easily extended if needed. Unfortunatelly most of the time we spend hours writing them over and over again or use multiple systems for different sources. With **`SmartConfig`** it's over. With only one tool you are able to use multiple configuration sources like database, app.config, xml, registry (more are comming). Your configuration is type safe and doesn't contain any magic strings. You work with real classes and properties. Additionaly **`SmartConfig`** can take care of validating your settings if you tell it to do so. 
+Configuration should be set up within a few minutes and be easily extended if needed. Unfortunatelly most of the time we spend hours writing them over and over again or use multiple systems for different sources. With **`SmartConfig`** it's over. With only one tool you are able to use multiple configuration sources like database, app.config, xml, registry (more are comming). Your configuration is type safe and doesn't contain any magic strings. You work with real classes and properties. Additionaly **`SmartConfig`** can take care of validating your settings if you tell it to do so. 
 
 ## How does it work?
 Briefly, with **`SmartConfig`** you write a `static class` with static properties that will hold the settings when they are loaded. Its structure is used to build setting names. There is no need to use any hardcoded strings or create enums etc to get any values. **`SmartConfig`** eliminates all magic strings.
@@ -99,7 +108,7 @@ Let's load them now:
 
 ## Program.cs
 ```cs
-Configuration.Load(typeof(ExampleAppConfig));
+Configuration.LoadSettings(typeof(ExampleAppConfig));
 ```
 
 As you see the call is really simple. You just need to say which settings you want to load. By default **`SmartConfig`** uses the `AppConfigSource` as a data source.
@@ -121,7 +130,7 @@ In our table we can virtualy keep anything we want. Here we just have a welcome 
 [SmartConfig]
 static class ExampleDbConfig
 {
-    public static string Welcome;
+    public static string Welcome { get; set; }
     
     [Optional]
     [ObjectConverter(typeof(JsonConverter)]
@@ -161,12 +170,10 @@ Primes | '[3, 5, 7, 11]'
 
 ```cs
 [SmartConfig]
+[SettingName("MyApp")]
 static class ExampleDbConfig
 {
-    public static class Properties
-    {
-       public static string Name => "MyApp";
-    }
+    // ...
 }
 
 ```
@@ -179,11 +186,12 @@ OK, time to load the settings from the database. There is however one thing that
 [SmartConfig]
 static class ExampleDbConfig
 {
+    [SmartConfigProperties]
     public static class Properties
     {
       public static IDataSouce DataSource => new DbSource<Setting>(
-       ExampleAppConfig.ConnectionStrings.ExampleDb,
-       ExampleAppConfig.AppSettings.SettingsTableName);
+        ExampleAppConfig.ConnectionStrings.ExampleDb,
+        ExampleAppConfig.AppSettings.SettingsTableName);
     }
     
     [Optional]
