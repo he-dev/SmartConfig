@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartConfig.Tests", "SmartConfig.Tests\SmartConfig.Tests.csproj", "{31CF8B56-2577-4FC9-B711-14CFAA524A2A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartConfig.Example", "SmartConfig.Example\SmartConfig.Example.csproj", "{E368B12F-34B0-4F8A-B1B9-EB6DC0CFBD41}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartConfig.Examples", "SmartConfig.Example\SmartConfig.Examples.csproj", "{E368B12F-34B0-4F8A-B1B9-EB6DC0CFBD41}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartConfig", "SmartConfig.Core\SmartConfig.csproj", "{B499D748-D867-4939-929B-BAE2BBAE6336}"
 EndProject

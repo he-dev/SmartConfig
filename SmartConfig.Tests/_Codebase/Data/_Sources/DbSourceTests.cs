@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Collections;
 using SmartConfig.Data;
 using SmartConfig.Filters;
+using SmartConfig.Paths;
 using SmartConfig.Tests.TestConfigs;
 using SmartUtilities.UnitTesting;
 // ReSharper disable InconsistentNaming

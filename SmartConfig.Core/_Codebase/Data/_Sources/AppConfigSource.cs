@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using SmartConfig.Collections;
+using SmartConfig.Paths;
 using SmartUtilities.Collections;
 
 namespace SmartConfig.Data

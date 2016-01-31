@@ -12,10 +12,10 @@ using SmartConfig.Tests.TestConfigs;
 using SmartUtilities.UnitTesting;
 // ReSharper disable InconsistentNaming
 
-namespace SmartConfig.Tests
+namespace SmartConfig.Tests.ConfigurationTests
 {
     [TestClass]
-    public class ConfigurationTests_LoadSettings
+    public class LoadSettings
     {
         [TestMethod]
         public void RequiresConfigType()
@@ -368,9 +368,8 @@ namespace SmartConfig.Tests
     }
 
     [TestClass]
-    public class ConfigurationTests_UpdateSetting
+    public class UpdateSetting
     {
-
         [TestMethod]
         public void RequiresExpression()
         {

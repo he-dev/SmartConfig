@@ -1,12 +1,14 @@
 ﻿using Microsoft.Win32;
 using SmartConfig.Data;
+
 // ReSharper disable InconsistentNaming
 
-namespace SmartConfig.Example.ExampleConfigs
+namespace SmartConfig.Examples
 {
     [SmartConfig]
     internal static class ExampleRegistryConfig
     {
+        [SmartConfigProperties]
         public static class Properties
         {
             public static IDataSource DataSource { get; } = new RegistrySource<Setting>(Registry.CurrentUser, @"Software\SmartConfig");

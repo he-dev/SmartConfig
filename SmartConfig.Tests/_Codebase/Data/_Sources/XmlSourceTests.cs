@@ -6,53 +6,64 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Collections;
 using SmartConfig.Data;
+using SmartConfig.Paths;
 
-namespace SmartConfig.Tests.Data
+// ReSharper disable once CheckNamespace
+namespace SmartConfig.Tests.Data.XmlSourceTests
 {
-    [TestClass]
-    public class XmlSourceTests
+    //[TestClass]
+    public class XmlSourceTestsBase
     {
-        private const string TestFileName = @"C:\Home\Projects\SmartConfig\SmartConfig.Tests\bin\Debug\TestFiles\XmlConfigs\TestXmlConfig.xml";
+        protected const string TestFileName =
+              @"C:\Home\Projects\SmartConfig\SmartConfig.Tests\bin\Debug\TestFiles\XmlConfigs\TestXmlConfig.xml";
+    }
 
+    [TestClass]
+    public class ctor : XmlSourceTestsBase
+    {
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void ctor_fileName_MustNotBeNull()
+        public void RequiresFileName()
         {
             new XmlSource<Setting>(null);
         }
 
         [TestMethod]
         [ExpectedException(typeof(FileNameNotRootedException))]
-        public void ctor_fileName_MustBeRooted()
+        public void RequiresFileNameIsRooted()
         {
             new XmlSource<Setting>(@"a\b\c.xml");
         }
 
         [TestMethod]
         [ExpectedException(typeof(FileNotFoundException))]
-        public void ctor_fileName_MustExist()
+        public void RequiresFileNameExists()
         {
             new XmlSource<Setting>(@"C:\a\b\c.xml");
         }
+    }
 
+    [TestClass]
+    public class Select : XmlSourceTestsBase
+    {
         [TestMethod]
-        public void Select_CanSelectSettingByName()
+        public void SelectsSettingByName()
         {
             var dataSource = new XmlSource<Setting>(TestFileName);
             var value = dataSource.Select(new SettingKeyCollection(
-                new SettingKey(Setting.DefaultKeyName, new SettingPath(null, "Setting1")), 
+                new SettingKey(Setting.DefaultKeyName, new SettingPath(null, "Setting1")),
                 Enumerable.Empty<SettingKey>()));
             Assert.AreEqual("Value1", value);
         }
 
         [TestMethod]
-        public void Select_CanSelectSettingByNameByEnvironmentByVersion()
+        public void SelectsSettingByNameByEnvironmentByVersion()
         {
             var dataSource = new XmlSource<TestSetting>(TestFileName);
 
             var keys = new SettingKeyCollection(
-                new SettingKey(Setting.DefaultKeyName, "Setting2"),
-                new [] 
+                new SettingKey(Setting.DefaultKeyName, new SettingPath(null, "Setting2")),
+                new[]
                 {
                     new SettingKey("Environment", "JKL"),
                     new SettingKey("Version", "1.2.1")
@@ -62,12 +73,18 @@ namespace SmartConfig.Tests.Data
             Assert.AreEqual("Value2-JKL", value);
         }
 
+    }
+
+    [TestClass]
+    public class Update : XmlSourceTestsBase
+    {
+
         [TestMethod]
-        public void Update_CanUpdateSettingByName()
+        public void UpdatesSettingByName()
         {
             var xmlSource = new XmlSource<Setting>(TestFileName);
-
-            var keys = new SettingKeyCollection(new SettingKey(Setting.DefaultKeyName, "Setting1"), Enumerable.Empty<SettingKey>());
+            
+            var keys = new SettingKeyCollection(new SettingKey(Setting.DefaultKeyName, new SettingPath(null, "Setting1")), Enumerable.Empty<SettingKey>());
 
             var oldValue = xmlSource.Select(keys);
             Assert.AreEqual("Value1", oldValue);
@@ -78,13 +95,13 @@ namespace SmartConfig.Tests.Data
         }
 
         [TestMethod]
-        public void Update_CanAddNewSetting()
+        public void AddsNewSetting()
         {
             //Logger.Warn = m => Debug.WriteLine(m);
 
             var xmlSource = new XmlSource<Setting>(TestFileName);
 
-            var keys = new SettingKeyCollection(new SettingKey(Setting.DefaultKeyName, "NewSetting"), Enumerable.Empty<SettingKey>());
+            var keys = new SettingKeyCollection(new SettingKey(Setting.DefaultKeyName, new SettingPath(null, "NewSetting")), Enumerable.Empty<SettingKey>());
 
             var oldValue = xmlSource.Select(keys);
             Assert.AreEqual(null, oldValue);

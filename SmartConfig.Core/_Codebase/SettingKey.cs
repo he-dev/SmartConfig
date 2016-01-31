@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using SmartConfig.Data;
 using SmartConfig.Filters;
+using SmartConfig.Paths;
 
 namespace SmartConfig
 {

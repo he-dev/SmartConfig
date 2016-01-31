@@ -7,105 +7,102 @@ using SmartConfig.Data;
 
 namespace SmartConfig.Collections
 {
-    // Loads and validate configuration properties that can be customized by the user.
+    // Loads and validates configuration properties that can be customized by the user.
     internal class ConfigurationPropertyGroup
     {
+        private Type _propertyGroupType;
+
+        private readonly IDataSource _defaultDataSource = new AppConfigSource();
+        private readonly IEnumerable<SettingKey> _defaultCustomKeys = Enumerable.Empty<SettingKey>();
+
+        private Func<IDataSource> _dataSourceGetter;
+        private Func<IEnumerable<SettingKey>> _customKeysGetter;
+
         internal ConfigurationPropertyGroup(Type configType)
         {
             if (configType == null) { throw new ArgumentNullException(nameof(configType)); }
 
-            InitializeProperties(configType);
+            InitializePropertyGroupType(configType);
         }
 
-        public IDataSource DataSource { get; private set; } = new AppConfigSource();
-
-        //public IReadOnlyCollection<SettingKey> CustomKeys { get; private set; } = 
-        //    new ReadOnlyCollection<SettingKey>(Enumerable.Empty<SettingKey>().ToList());
-
-        public IEnumerable<SettingKey> CustomKeys { get; private set; } = Enumerable.Empty<SettingKey>();
-
-        private void InitializeProperties(Type configType)
+        public IDataSource DataSource
         {
-            const BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Static;
-
-            var propertyGroup = configType.GetNestedTypes(bindingFlags).FirstOrDefault(t => t.HasAttribute<SmartConfigPropertiesAttribute>());
-            if (propertyGroup == null)
+            get
             {
-                return;
-            }
+                // we use a getter delegate so that we can change the data source at runtime
+                if (_dataSourceGetter == null)
+                {
+                    var dataSourceProperty =
+                        _propertyGroupType?.GetProperties(BindingFlags.Public | BindingFlags.Static)
+                        .FirstOrDefault(p => typeof(IDataSource).IsAssignableFrom(p.PropertyType));
 
-            //InitializeNameProperty(propertyGroup);
-            InitializeDataSourceProperty(propertyGroup);
-            InitializeCustomKeysProperty(propertyGroup);
-        }
+                    // there is no custom data source
+                    if (dataSourceProperty == null)
+                    {
+                        // make the getter delegate return the default data source
+                        _dataSourceGetter = () => _defaultDataSource;
+                    }
+                    else
+                    {
+                        // create the getter delegate for the custom property
+                        _dataSourceGetter = (Func<IDataSource>)Delegate.CreateDelegate(
+                            typeof(Func<IDataSource>),
+                            null,
+                            dataSourceProperty.GetGetMethod());
+                    }
+                }
 
-        //private void InitializeNameProperty(Type propertyGroup)
-        //{
-        //    // try get Name property
-        //    var nameProperty = propertyGroup.GetProperty("Name");
-        //    if (nameProperty == null)
-        //    {
-        //        return;
-        //    }
+                // get the current data source
+                var dataSource = _dataSourceGetter();
 
-        //    if (nameProperty.PropertyType != typeof(string))
-        //    {
-        //        throw new InvalidMemberTypeException
-        //        {
-        //            MemberName = nameProperty.Name,
-        //            DeclaringTypeFullName = nameProperty.DeclaringType.FullName,
-        //            MemberTypeFullName = nameProperty.PropertyType.FullName,
-        //            ExpectedTypeFullName = typeof(string).FullName
-        //        };
-        //    }
-
-        //    Name = (string)nameProperty.GetValue(null);
-
-        //    if (string.IsNullOrEmpty(Name))
-        //    {
-        //        throw new ArgumentNullException(nameof(Name));
-        //    }
-        //}
-
-        private void InitializeDataSourceProperty(Type propertyGroup)
-        {
-            const BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Static;
-
-            var dataSourceProperty = 
-                propertyGroup.GetProperties(bindingFlags)
-                .FirstOrDefault(p => typeof(IDataSource).IsAssignableFrom(p.PropertyType));
-
-            if (dataSourceProperty == null)
-            {
-                return;
-            }
-
-            DataSource = dataSourceProperty.GetValue(null) as IDataSource;
-            if (DataSource == null)
-            {
-                throw new ArgumentNullException(dataSourceProperty.Name, "Data source must not be null.");
+                if (dataSource == null)
+                {
+                    throw new NullReferenceException($"Data source must not be null. Check the \"{_propertyGroupType.DeclaringType.Name}\" configuration.");
+                }
+                return dataSource;
             }
         }
 
-        private void InitializeCustomKeysProperty(Type propertyGroup)
+        public IEnumerable<SettingKey> CustomKeys
         {
-            const BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Static;
-
-            var customKeysProperty = 
-                propertyGroup.GetProperties(bindingFlags)
-                .FirstOrDefault(p => typeof(IEnumerable<SettingKey>).IsAssignableFrom(p.PropertyType));
-
-            if (customKeysProperty == null)
+            get
             {
-                return;
-            }
+                if (_customKeysGetter == null)
+                {
+                    var customKeysProperty =
+                        _propertyGroupType?.GetProperties(BindingFlags.Public | BindingFlags.Static)
+                        .FirstOrDefault(p => typeof(IEnumerable<SettingKey>).IsAssignableFrom(p.PropertyType));
 
-            CustomKeys = customKeysProperty.GetValue(null) as IEnumerable<SettingKey>;
+                    if (customKeysProperty == null)
+                    {
+                        _customKeysGetter = () => _defaultCustomKeys;
+                    }
+                    else
+                    {
+                        _customKeysGetter = (Func<IEnumerable<SettingKey>>)Delegate.CreateDelegate(
+                            typeof(Func<IEnumerable<SettingKey>>),
+                            null,
+                            customKeysProperty.GetGetMethod());
+                    }
+                }
 
-            if (CustomKeys == null)
-            {
-                throw new ArgumentNullException(customKeysProperty.Name, "Custom keys property must not be null.");
+
+                var customKeys = _customKeysGetter();
+
+                if (customKeys == null)
+                {
+                    throw new NullReferenceException($"Custom keys must not be null. Check the \"{_propertyGroupType.DeclaringType.Name}\" configuration.");
+                }
+
+                return customKeys;
             }
+        }
+
+        private void InitializePropertyGroupType(Type configType)
+        {
+            _propertyGroupType =
+                configType.GetNestedTypes(BindingFlags.Public | BindingFlags.Static)
+                .FirstOrDefault(t => t.HasAttribute<SmartConfigPropertiesAttribute>());
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using SmartConfig.Collections;
 using SmartConfig.Data;
+using SmartConfig.Paths;
 
 namespace SmartConfig.Reflection
 {

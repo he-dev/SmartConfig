@@ -12,8 +12,8 @@ namespace SmartConfig.Data
     /// </summary>
     public class Setting : IIndexer
     {
-        private const string GetPrefix = "get_";
-        private const string SetPrefix = "set_";
+        private const string GetterPrefix = "get_";
+        private const string SetterPrefix = "set_";
 
         public const string DefaultKeyName = nameof(Name);
 
@@ -38,7 +38,7 @@ namespace SmartConfig.Data
             get
             {
                 StringPropertyGetter stringPropertyGetter;
-                if (!_getters.TryGetValue($"{GetPrefix}{propertyName}", out stringPropertyGetter))
+                if (!_getters.TryGetValue($"{GetterPrefix}{propertyName}", out stringPropertyGetter))
                 {
                     throw new InvalidPropertyNameException
                     {
@@ -51,7 +51,7 @@ namespace SmartConfig.Data
             set
             {
                 StringPropertySetter stringPropertySetter;
-                if (!_setters.TryGetValue($"{GetPrefix}{propertyName}", out stringPropertySetter))
+                if (!_setters.TryGetValue($"{SetterPrefix}{propertyName}", out stringPropertySetter))
                 {
                     throw new InvalidPropertyNameException
                     {
@@ -59,7 +59,7 @@ namespace SmartConfig.Data
                         TargetType = GetType().FullName
                     };
                 }
-                _setters[$"{SetPrefix}{propertyName}"](value);
+                _setters[$"{SetterPrefix}{propertyName}"](value);
             }
         }
 
@@ -86,8 +86,8 @@ namespace SmartConfig.Data
             {
                 var getStringMethod = (StringPropertyGetter)Delegate.CreateDelegate(typeof(StringPropertyGetter), this, property.GetGetMethod());
                 var setStringMethod = (StringPropertySetter)Delegate.CreateDelegate(typeof(StringPropertySetter), this, property.GetSetMethod());
-                _getters.Add($"{GetPrefix}{property.Name}", getStringMethod);
-                _setters.Add($"{SetPrefix}{property.Name}", setStringMethod);
+                _getters.Add($"{GetterPrefix}{property.Name}", getStringMethod);
+                _setters.Add($"{SetterPrefix}{property.Name}", setStringMethod);
             }
         }
     }

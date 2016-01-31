@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
 using SmartConfig.Collections;
 using SmartConfig.Data;
+using SmartConfig.Paths;
 using SmartUtilities.UnitTesting;
 
 namespace SmartConfig.Tests.Data

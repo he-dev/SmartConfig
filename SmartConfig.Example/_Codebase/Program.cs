@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using SmartConfig.Collections;
-using SmartConfig.Data;
-using SmartConfig.Example.Data;
-using SmartConfig.Example.ExampleConfigs;
 
-namespace SmartConfig.Example
+namespace SmartConfig.Examples
 {
     static class Program
     {
@@ -54,14 +47,14 @@ namespace SmartConfig.Example
 
         private static void BasicDbSourceExample()
         {
-            Configuration.LoadSettings(typeof(ExampleDbConfig1));
-            Console.WriteLine(ExampleDbConfig1.Welcome);
+            Configuration.LoadSettings(typeof(ExampleDbConfig));
+            Console.WriteLine(ExampleDbConfig.Greeting);
         }
 
         private static void CustomDbSourceExample()
         {
-            Configuration.LoadSettings(typeof(ExampleDbConfig2));
-            Console.WriteLine(ExampleDbConfig2.GoodBye);
+            Configuration.LoadSettings(typeof(ExampleDbConfig));
+            Console.WriteLine(ExampleDbConfig.Greeting);
         }
 
         private static void XmlSourceExample()

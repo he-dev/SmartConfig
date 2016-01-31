@@ -110,7 +110,8 @@
     <Compile Include="_Codebase\_Attributes\FilterAttributeTests.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\RegularExpressionAttributeTests.cs" />
     <Compile Include="_Codebase\_Extensions\ReflectionExtensionsTests.cs" />
-    <Compile Include="_Codebase\_Paths\AppConfigPathTests.cs" />
+    <Compile Include="_Codebase\Paths\AppConfigPathTests.cs" />
+    <Compile Include="_Codebase\Paths\RegistryPathTests.cs" />
     <Compile Include="_TestHelpers\AssemblyInitializer.cs" />
     <Compile Include="_TestHelpers\TestDbInitializer.cs" />
     <Compile Include="_Codebase\ConfigurationTests.cs" />

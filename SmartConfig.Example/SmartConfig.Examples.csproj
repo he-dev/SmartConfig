@@ -7,11 +7,12 @@
     <ProjectGuid>{E368B12F-34B0-4F8A-B1B9-EB6DC0CFBD41}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SmartConfig.Example</RootNamespace>
-    <AssemblyName>SmartConfig.Example</AssemblyName>
+    <RootNamespace>SmartConfig.Examples</RootNamespace>
+    <AssemblyName>SmartConfig.Examples</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -24,7 +25,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -57,6 +57,18 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SmartConfig, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SmartConfig.4.5.0\lib\net45\SmartConfig.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SmartUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SmartUtilities.2.0.1\lib\net45\SmartUtilities.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -68,12 +80,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExampleConfigs\ExampleRegistryConfig.cs" />
+    <Compile Include="_Configurations\ExampleRegistryConfig.cs" />
     <Compile Include="_Codebase\Data\CustomSetting.cs" />
-    <Compile Include="ExampleConfigs\ExampleXmlConfig.cs" />
-    <Compile Include="ExampleConfigs\ExampleDbConfig2.cs" />
-    <Compile Include="ExampleConfigs\ExampleDbConfig1.cs" />
-    <Compile Include="ExampleConfigs\ExampleAppConfig.cs" />
+    <Compile Include="_Configurations\ExampleXmlConfig.cs" />
+    <Compile Include="_Configurations\ExampleDbConfig.cs" />
+    <Compile Include="_Configurations\ExampleAppConfig.cs" />
     <Compile Include="_Codebase\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -82,14 +93,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Configs\ExampleDb.mdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Configs\ExampleDb_log.ldf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <DependentUpon>ExampleDb.mdf</DependentUpon>
-    </Content>
-    <None Include="Configs\XmlConfig.xml">
+    <None Include="Resources\DataSources\XmlConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </None>
@@ -112,13 +116,16 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SmartConfig.Core\SmartConfig.csproj">
-      <Project>{b499d748-d867-4939-929b-bae2bbae6336}</Project>
-      <Name>SmartConfig</Name>
-    </ProjectReference>
+    <Folder Include="_Codebase\Data\_Configs\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="_Codebase\Data\_Configs\" />
+    <Content Include="Resources\DataSources\ExampleDb.mdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\DataSources\ExampleDb_log.ldf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DependentUpon>ExampleDb.mdf</DependentUpon>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
