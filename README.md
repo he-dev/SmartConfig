@@ -198,8 +198,8 @@ OK, time to load the settings from the database.
 
 And we're done! The last thing we have to do is to load the settings like we did for the `App.config`:
 
-Configuration.LoadSettings(typeof(ExampleDbConfig));
 
 ```cs
+Configuration.LoadSettings(typeof(ExampleDbConfig));
 Console.WriteLine(ExampleDbConfig.Greeting); // outputs: Hallo SmartConfig!
 ```
