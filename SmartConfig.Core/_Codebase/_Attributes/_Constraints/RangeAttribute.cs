@@ -11,20 +11,37 @@ namespace SmartConfig
     [DebuggerDisplay("DeclaringTypeName = \"{Type.Name}\" Min = \"{Min}\" Max = \"{Max}\"")]
     public class RangeAttribute : ConstraintAttribute
     {
+        public RangeAttribute(Type type, string min, string max)
+        {
+            if (type == null) { throw new ArgumentNullException(nameof(type)); }
+            if (string.IsNullOrEmpty(min) && string.IsNullOrEmpty(max))
+            {
+                throw new PropertyNotSetException
+                {
+                    PropertyName = $"{nameof(Min)} and/or {nameof(Max)}",
+                    Hint = $"At least one of the properties {nameof(Min)} or {nameof(Max)} must be set."
+                };
+            }
+
+            Type = type;
+            Min = min;
+            Max = max;
+        }
+
         /// <summary>
         /// Gets or sets the type of the range.
         /// </summary>
-        public Type Type { get; set; }
+        public Type Type { get; }
 
         /// <summary>
         /// Gets or sets the minimum value of the range.
         /// </summary>
-        public string Min { get; set; }
+        public string Min { get; }
 
         /// <summary>
         /// Gets or sets the maximum value of the range.
         /// </summary>
-        public string Max { get; set; }
+        public string Max { get; }
 
         /// <summary>
         /// Validates the value's range.
@@ -36,17 +53,7 @@ namespace SmartConfig
             var comparable = value as IComparable;
             if (comparable == null)
             {
-                throw new ArgumentException(null, nameof(value));
-            }
-
-            if (Type == null)
-            {
-                throw new PropertyNotSetException { PropertyName = nameof(Type) };
-            }
-
-            if (string.IsNullOrEmpty(Min) && string.IsNullOrEmpty(Max))
-            {
-                throw new PropertyNotSetException { PropertyName = $"{nameof(Min)} and/or {nameof(Max)}" };
+                throw new ArgumentException($"Value argument must be of type ${nameof(IComparable)}.", nameof(value));
             }
 
             var typeConverter = TypeDescriptor.GetConverter(Type);

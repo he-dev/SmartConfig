@@ -14,16 +14,42 @@ namespace SmartConfig.Converters
 
         public override object DeserializeObject(object value, Type type, IEnumerable<Attribute> attributes)
         {
-            if (value.GetType() == type) { return value; }
+            if (HasTargetType(value, type)) { return value; }
 
-            return (Color)(new Color32((string)value));
+            try
+            {
+                return (Color)(new Color32((string)value));
+            }
+            catch (InvalidColorException inner)
+            {
+                throw SmartException.Create<DeserializationException>(ex =>
+                {
+                    ex.FromType = value.GetType().Name;
+                    ex.ToType = type.Name;
+                    ex.Value = value;
+                }, inner);
+            }
         }
 
         public override object SerializeObject(object value, Type type, IEnumerable<Attribute> attributes)
         {
-            if (value.GetType() == type) { return value; }
+            if (HasTargetType(value, type)) { return value; }
 
-            return value.ToString();
+            CheckValueType(value);
+
+            try
+            {
+                return ((Color32)(Color)value).ToString();
+            }            
+            catch (InvalidColorException inner)
+            {
+                throw SmartException.Create<SerializationException>(ex =>
+                {
+                    ex.FromType = value.GetType().Name;
+                    ex.ToType = type.Name;
+                    ex.Value = value;
+                }, inner);
+            }
         }
     }
 }

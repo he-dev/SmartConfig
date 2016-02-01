@@ -11,6 +11,8 @@ namespace SmartConfig
     {
         public SettingNameAttribute(string settingName)
         {
+            if (string.IsNullOrEmpty(settingName)) { throw new ArgumentNullException(nameof(settingName)); }
+
             SettingName = settingName;
         }
 

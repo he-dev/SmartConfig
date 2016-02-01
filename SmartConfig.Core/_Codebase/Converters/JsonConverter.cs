@@ -11,7 +11,7 @@ namespace SmartConfig.Converters
     {
         public override object DeserializeObject(object value, Type type, IEnumerable<Attribute> attributes)
         {
-            if (value.GetType() == type) { return value; }
+            if (HasTargetType(value, type)) { return value; }
 
             var result = JsonConvert.DeserializeObject((string)value, type);
             return result;
@@ -19,7 +19,7 @@ namespace SmartConfig.Converters
 
         public override object SerializeObject(object value, Type type, IEnumerable<Attribute> attributes)
         {
-            if (value.GetType() == type) { return value; }
+            if (HasTargetType(value, type)) { return value; }
 
             var result = JsonConvert.SerializeObject(value);
             return result;

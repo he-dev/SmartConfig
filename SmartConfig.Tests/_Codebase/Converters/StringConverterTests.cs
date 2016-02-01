@@ -20,7 +20,7 @@ namespace SmartConfig.Tests.Converters
         public void DeserializeObject_CanValidateStringWithRegex()
         {
             var converter = new StringConverter();
-            Assert.AreEqual("21", converter.DeserializeObject("21", typeof(string), new[] { new RegularExpressionAttribute { Pattern = @"\d{2}" } }));
+            Assert.AreEqual("21", converter.DeserializeObject("21", typeof(string), new[] { new RegularExpressionAttribute(@"\d{2}") }));
         }
 
         [TestMethod]
@@ -29,7 +29,7 @@ namespace SmartConfig.Tests.Converters
             var converter = new StringConverter();
             ExceptionAssert.Throws<RegularExpressionViolationException>(() =>
             {
-                converter.DeserializeObject("7", typeof(string), new[] { new RegularExpressionAttribute { Pattern = @"\d{2}" } });
+                converter.DeserializeObject("7", typeof(string), new[] { new RegularExpressionAttribute(@"\d{2}") });
             }, ex => { }, Assert.Fail);
         }
 
@@ -46,7 +46,7 @@ namespace SmartConfig.Tests.Converters
             var converter = new StringConverter();
             ExceptionAssert.Throws<RegularExpressionViolationException>(() =>
             {
-                converter.SerializeObject("7", typeof(string), new[] { new RegularExpressionAttribute { Pattern = @"\d{2}" } });
+                converter.SerializeObject("7", typeof(string), new[] { new RegularExpressionAttribute(@"\d{2}") });
             }, ex => { }, Assert.Fail);
         }
 

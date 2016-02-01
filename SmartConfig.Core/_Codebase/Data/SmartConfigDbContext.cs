@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
 using SmartConfig.Collections;
+using SmartConfig.Reflection;
 
 namespace SmartConfig.Data
 {
@@ -35,7 +36,7 @@ namespace SmartConfig.Data
 
             // configure keys
             var columnOrder = 0;
-            var keyNames = SettingKeyNameCollection.Create<TSetting>();
+            var keyNames = Reflector.GetSettingKeyNames<TSetting>();
             foreach (var keyName in keyNames)
             {
                 var columnOrderClosure = columnOrder++;

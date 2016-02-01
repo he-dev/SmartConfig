@@ -10,12 +10,13 @@ namespace SmartConfig
     {
         public ObjectConverterAttribute(Type type)
         {
+            if (type == null) { throw new ArgumentNullException(nameof(type)); }
             Type = type;
         }
 
         /// <summary>
         /// Gets the object converter type.
         /// </summary>
-        public Type Type { get; private set; }
+        public Type Type { get; }
     }
 }

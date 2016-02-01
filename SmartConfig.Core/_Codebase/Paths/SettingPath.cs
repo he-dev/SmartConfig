@@ -36,8 +36,6 @@ namespace SmartConfig.Paths
 
         public string ConfigurationName => _names.FirstOrDefault();
 
-        //public IEnumerable<string> PathWithoutConfigurationName => _names.Skip(1);
-
         public override string ToString()
         {
             return string.Join(Delimiter, _names.Where(n => !string.IsNullOrEmpty(n)));
@@ -56,6 +54,19 @@ namespace SmartConfig.Paths
         public static implicit operator string(SettingPath settingPath)
         {
             return settingPath.ToString();
+        }
+
+        public static bool operator ==(SettingPath x, SettingPath y)
+        {
+            return
+                !ReferenceEquals(x, null) &&
+                !ReferenceEquals(y, null) &&
+                x._names.SequenceEqual(y._names);
+        }
+
+        public static bool operator !=(SettingPath x, SettingPath y)
+        {
+            return !(x == y);
         }
     }
 }

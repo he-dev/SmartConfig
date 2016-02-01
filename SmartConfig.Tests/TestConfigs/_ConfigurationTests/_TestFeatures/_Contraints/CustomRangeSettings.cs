@@ -12,7 +12,7 @@ namespace SmartConfig.Tests.TestConfigs
             public static SimpleTestDataSource DataSource { get; set; } = new SimpleTestDataSource();
         }
 
-        [Range(Type = typeof(int), Min = "3", Max = "7")]
+        [Range(typeof(int), "3", "7")]
         public static int Int32Field { get; set; }
     }
 }

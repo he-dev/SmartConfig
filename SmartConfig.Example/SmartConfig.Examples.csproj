@@ -66,7 +66,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="SmartUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SmartUtilities.2.0.1\lib\net45\SmartUtilities.dll</HintPath>
+      <HintPath>..\packages\SmartUtilities.2.1.1\lib\net45\SmartUtilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

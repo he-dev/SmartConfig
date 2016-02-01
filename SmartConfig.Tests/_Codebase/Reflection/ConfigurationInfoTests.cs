@@ -7,64 +7,70 @@ using SmartConfig.Reflection;
 using SmartConfig.Tests.TestConfigs;
 using SmartUtilities.UnitTesting;
 
-namespace SmartConfig.Tests.Reflection
+// ReSharper disable once CheckNamespace
+namespace SmartConfig.Tests.Reflection.ConfigurationInfoTests
 {
     [TestClass]
-    public class ConfigurationInfo_ctor
+    public class ctor
     {
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void RequriesConfigurationType()
+        {
+            Configuration.LoadSettings(null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(SmartConfigAttributeMissingException))]
+        public void RequiersConfigurationTypeHasSmartConfigAttribute()
+        {
+            Configuration.LoadSettings(typeof(Foo));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TypeNotStaticException))]
+        public void RequiresConfigurationTypeIsStatic()
+        {
+            Configuration.LoadSettings(typeof(Bar));
+        }
+
+        [TestMethod]
+        public void InitialzesConfigurationPropertyGroup()
+        {
+            var configurationInfo = new ConfigurationInfo(typeof(Baz));
+            Assert.IsNotNull(configurationInfo.ConfigurationPropertyGroup);
+        }
+
+        static class Foo { }
+
+        class Bar { }
+
         [SmartConfig]
-        private static class TestConfig1
+        static class Baz { }
+    }
+
+    [TestClass]
+    public class ConfigurationName
+    {
+        [TestMethod]
+        public void GetsNullIfNotSpecified()
         {
-            public static string StringSetting { get; set; }
-            public static int Int32Setting { get; set; }
+            Assert.IsNull(new ConfigurationInfo(typeof(Baz)).ConfigurationName);
         }
 
         [TestMethod]
-        public void param_configType_MustNotBeNull()
+        public void GetsStringIfSpecified()
         {
-            ExceptionAssert.Throws<ArgumentNullException>(() =>
-            {
-                Configuration.LoadSettings(null);
-            }, ex =>
-            {
-                Assert.AreEqual("configType", ex.ParamName);
-            },
-            Assert.Fail);
+            Assert.AreEqual(
+                "Bar",
+                new ConfigurationInfo(typeof(Foo)).ConfigurationName);
         }
 
-        [TestMethod]
-        public void param_configType_MustHaveSmartConfigAttribute()
-        {
-            ExceptionAssert.Throws<SmartConfigAttributeMissingException>(() =>
-            {
-                Configuration.LoadSettings(typeof(ConfigTypeMustBeMarkedWithSmartConfigAttribute));
-            }, ex =>
-            {
-                Assert.AreEqual(typeof(ConfigTypeMustBeMarkedWithSmartConfigAttribute).FullName, ex.ConfigTypeFullName);
-            },
-            Assert.Fail);
-        }
+        [SmartConfig]
+        static class Baz { }
 
-        [TestMethod]
-        public void param_configType_MustBeStatic()
-        {
-            ExceptionAssert.Throws<TypeNotStaticException>(() =>
-            {
-                Configuration.LoadSettings(typeof(ConfigTypeMustBeStatic));
-            }, ex =>
-            {
-                Assert.AreEqual(typeof(ConfigTypeMustBeStatic).FullName, ex.TypeFullName);
-            },
-            Assert.Fail);
-        }
-
-        [TestMethod]
-        public void ctor_CanExamineConfigType()
-        {
-            var configInfo = new ConfigurationInfo(typeof(TestConfig1));
-
-            Assert.IsNotNull(configInfo);
-            Assert.AreEqual(2, configInfo.SettingInfos.Count());
-        }
+        [SmartConfig]
+        [SettingName("Bar")]
+        static class Foo { }
     }
 }

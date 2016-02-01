@@ -9,7 +9,7 @@
             public static SimpleTestDataSource DataSource { get; set; } = new SimpleTestDataSource();
         }
 
-        [RegularExpression(Pattern = @"\d{2}")]
+        [RegularExpression(@"\d{2}")]
         public static string StringSetting { get; set; }
     }
 }

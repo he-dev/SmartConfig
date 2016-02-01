@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using SmartConfig.Reflection;
+using SmartConfig.Data;
 
-namespace SmartConfig
+namespace SmartConfig.Reflection
 {
-    internal static class ReflectionExtensions
+    internal static class Reflector
     {
         /// <summary>
         /// Checks if the specified memberInfo is static.
@@ -15,39 +15,63 @@ namespace SmartConfig
         /// <returns></returns>
         public static bool IsStatic(this Type type)
         {
+            if (type == null) { throw new ArgumentNullException(nameof(type)); }
+
             return type.IsAbstract && type.IsSealed;
         }
 
-        public static string GetMemberName(this MemberInfo member)
+        public static string GetSettingNameOrMemberName(this MemberInfo member)
         {
+            if (member == null) { throw new ArgumentNullException(nameof(member)); }
+
             var settingName = member.GetCustomAttribute<SettingNameAttribute>();
             return settingName != null ? settingName.SettingName : member.Name;
         }
 
         public static bool IsSmartConfigType(this Type type)
         {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
             var smartConfigAttribute = type.GetCustomAttribute<SmartConfigAttribute>();
             return smartConfigAttribute != null;
         }
 
-        public static IEnumerable<string> GetPath(this PropertyInfo propertyInfo)
+        public static IEnumerable<string> GetSettingPath(this PropertyInfo propertyInfo)
         {
-            var path = new List<string> { propertyInfo.GetMemberName() };
+            if (propertyInfo == null) throw new ArgumentNullException(nameof(propertyInfo));
+
+            var path = new List<string> { propertyInfo.GetSettingNameOrMemberName() };
 
             var type = propertyInfo.DeclaringType;
 
             while (type != null && !type.IsSmartConfigType())
             {
-                path.Add(type.GetMemberName());
+                path.Add(type.GetSettingNameOrMemberName());
 
                 type = type.DeclaringType;
+                if (type == null)
+                {
+                    throw new SmartConfigAttributeNotFoundException
+                    {
+                        PropertyTypeFullName = propertyInfo.PropertyType.FullName
+                    };
+                }
             }
 
-            return ((IEnumerable<string>)path).Reverse();
+            path.Reverse();
+            return path;
         }
 
-        public static IEnumerable<Type> GetTypes(this Type type, List<Type> result)
+        /// <summary>
+        /// Gets configurationInfo types without ignored types and SmartConfig properties type.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public static IEnumerable<Type> GetConfigurationTypes(this Type type, List<Type> result = null)
         {
+            if (type == null) { throw new ArgumentNullException(nameof(type)); }
+
             if (!type.IsStatic())
             {
                 throw new TypeNotStaticException { TypeFullName = type.FullName };
@@ -60,50 +84,63 @@ namespace SmartConfig
 
             foreach (var nestedType in nestedTypes)
             {
-                nestedType.GetTypes(result);
+                nestedType.GetConfigurationTypes(result);
             }
 
-            return result.Where(t => !t.IgnoreClass());
+            return result.Where(t =>
+                !t.HasAttribute<IgnoreAttribute>() &&
+                !t.HasAttribute<SmartConfigPropertiesAttribute>());
         }
 
-        public static IEnumerable<SettingInfo> GetSettingInfos(this Type type, ConfigurationInfo configuration)
+        /// <summary>
+        /// Gets SettingInfos without ignored properties.
+        /// </summary>
+        /// <param name="configurationInfo"></param>
+        /// <returns></returns>
+        public static IEnumerable<SettingInfo> GetSettingInfos(this ConfigurationInfo configurationInfo)
         {
-            var types = type.GetTypes(null);
+            if (configurationInfo == null) { throw new ArgumentNullException(nameof(configurationInfo)); }
 
-            var settingInfos = 
-                types.Select(t =>
-                    t.GetProperties(BindingFlags.Public | BindingFlags.Static)
-                    .Where(p => !p.IgnoreProperty())
-                    .Select(p => new SettingInfo(p, configuration))
-                )
-                .SelectMany(sis => sis);
+            var types = configurationInfo.ConfigurationType.GetConfigurationTypes();
+
+            var settingInfos = types
+                .Select(t => t.GetProperties(BindingFlags.Public | BindingFlags.Static))
+                .SelectMany(sis => sis)
+                .Where(p => !p.HasAttribute<IgnoreAttribute>())
+                .Select(p => new SettingInfo(p, configurationInfo));
 
             return settingInfos;
         }
 
-        public static bool IgnoreProperty(this PropertyInfo propertyInfo)
+        public static bool HasAttribute<T>(this MemberInfo memberInfo) where T : Attribute
         {
-            return propertyInfo.GetCustomAttribute<IgnoreAttribute>() != null;
+            if (memberInfo == null) { throw new ArgumentNullException(nameof(memberInfo)); }
+
+            return memberInfo.GetCustomAttributes(typeof(T), false).Any();
         }
 
-        public static bool IgnoreClass(this Type type)
+        public static IEnumerable<string> GetSettingKeyNames<TSetting>() where TSetting : Setting
         {
-            // ignore class either if it's marked to be ignored
-            // or it's the properties class defined directly under the SmartConfig class
-            return
-                type.GetCustomAttribute<IgnoreAttribute>() != null
-                || (type.GetCustomAttribute<SmartConfigPropertiesAttribute>() != null);
-        }
+            yield return nameof(Setting.Name);
 
-        public static bool HasAttribute<T>(this Type type) where T : Attribute
-        {
-            return type.GetCustomAttributes(typeof(T), false).Any();
-        }
+            var settingType = typeof(TSetting);
 
-        //public static bool HasAttribute<T>(this MemberInfo memberInfo) where T : Attribute
-        //{
-        //    return memberInfo.GetCustomAttributes(typeof(T), false).Any();
-        //}
+            var isCustomType = settingType != typeof(Setting);
+            if (!isCustomType)
+            {
+                yield break;
+            }
+
+            var customKeyNames = settingType
+                    .GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
+                    .Select(p => p.Name)
+                    .OrderBy(n => n);
+
+            foreach (var customKeyName in customKeyNames)
+            {
+                yield return customKeyName;
+            }
+        }
 
 #if NET40
 

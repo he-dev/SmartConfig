@@ -7,15 +7,15 @@ using SmartConfig.Data;
 
 namespace SmartConfig.Collections
 {
-    [DebuggerDisplay("DefaultKey = {DefaultKey}")]
+    [DebuggerDisplay("NameKey = {NameKey}")]
     public class SettingKeyCollection : ReadOnlyCollection<SettingKey>
     {
         internal SettingKeyCollection(IList<SettingKey> settingKeys)
             : base(settingKeys)
         { }
 
-        internal SettingKeyCollection(SettingKey defaultKey, IEnumerable<SettingKey> customKeys)
-            : base(new[] { defaultKey }.Concat(customKeys).ToList())
+        internal SettingKeyCollection(SettingKey nameKey, IEnumerable<SettingKey> customKeys)
+            : base(new[] { nameKey }.Concat(customKeys).ToList())
         { }
 
         public NameKey NameKey => new NameKey(this.First());

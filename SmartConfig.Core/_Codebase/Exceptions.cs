@@ -25,6 +25,11 @@ namespace SmartConfig
     {
         public string ValueTypeName { get { return GetValue<string>(); } internal set { SetValue(value); } }
         public string SettingName { get { return GetValue<string>(); } internal set { SetValue(value); } }
+    }
+
+    public class ConventerNotFoundException : SmartException
+    {
+        public string SettingTypeFullName { get { return GetValue<string>(); } internal set { SetValue(value); } }
 
     }
 
@@ -59,7 +64,12 @@ namespace SmartConfig
 
     public class SmartConfigAttributeMissingException : SmartException
     {
-        public string ConfigTypeFullName { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string ConfigurationTypeFullName { get { return GetValue<string>(); } internal set { SetValue(value); } }
+    }
+
+    public class SmartConfigAttributeNotFoundException : SmartException
+    {
+        public string PropertyTypeFullName { get { return GetValue<string>(); } internal set { SetValue(value); } }
     }
 
     public class PropertyNotSetException : SmartException
@@ -153,6 +163,27 @@ namespace SmartConfig
     public class ConnectionStringNotFoundException : SmartException
     {
         public string ConnectionStringName { get { return GetValue<string>(); } internal set { SetValue(value); } }
+    }
 
+    [Serializable]
+    public class DeserializationException : SmartException
+    {
+        public object Value { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string FromType { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string ToType { get { return GetValue<string>(); } internal set { SetValue(value); } }
+    }
+
+    [Serializable]
+    public class SerializationException : SmartException
+    {
+        public object Value { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string FromType { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string ToType { get { return GetValue<string>(); } internal set { SetValue(value); } }
+    }
+
+    public class UnsupportedTypeException : SmartException
+    {
+        public string ValueType { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string SupportedTypes { get { return GetValue<string>(); } internal set { SetValue(value); } }
     }
 }

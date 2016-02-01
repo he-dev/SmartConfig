@@ -11,7 +11,7 @@ namespace SmartConfig.Tests.TestConfigs
             public static SimpleTestDataSource DataSource { get; set; } = new SimpleTestDataSource();
         }
 
-        [DateTimeFormat(Format = "ddMMMyy")]
+        [DateTimeFormat("ddMMMyy")]
         public static DateTime DateTimeSetting { get; set; }
     }
 }

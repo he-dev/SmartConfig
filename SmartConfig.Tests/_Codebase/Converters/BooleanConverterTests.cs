@@ -5,13 +5,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Converters;
 using SmartUtilities.UnitTesting;
 
-namespace SmartConfig.Tests.Converters
+namespace SmartConfig.Tests.Converters.BooleanConverterTests
 {
     [TestClass]
-    public class BooleanConverterTests
+    public class DeserializeTests
     {
         [TestMethod]
-        public void DeserializeObject_CanDeserializeBoolean()
+        public void DeserializesBoolean()
         {
             var converter = new BooleanConverter();
             Assert.AreEqual(true, converter.DeserializeObject("true", typeof(bool), Enumerable.Empty<ConstraintAttribute>()));
@@ -19,17 +19,21 @@ namespace SmartConfig.Tests.Converters
         }
 
         [TestMethod]
-        public void DeserializeObject_ThrowsExceptionForInvalidNonBoolean()
+        public void ThrowsDeserializationException()
         {
             var converter = new BooleanConverter();
-            ExceptionAssert.Throws<TargetInvocationException>(() =>
+            ExceptionAssert.Throws<DeserializationException>(() =>
             {
                 converter.DeserializeObject("abc", typeof(bool), Enumerable.Empty<ConstraintAttribute>());
             }, ex => { }, Assert.Fail);
         }
+    }
 
+    [TestClass]
+    public class SerializeTests
+    {
         [TestMethod]
-        public void SerializeObject_CanSerializeBoolean()
+        public void SerializesBoolean()
         {
             var converter = new BooleanConverter();
             Assert.AreEqual(true, converter.SerializeObject(true, typeof(bool), Enumerable.Empty<Attribute>()));
@@ -37,13 +41,15 @@ namespace SmartConfig.Tests.Converters
         }
 
         [TestMethod]
-        public void SerializeObject_ThrowsExceptionForInvalidBoolean()
+        public void ThrowsSerializationException()
         {
-            var converter = new BooleanConverter();
-            ExceptionAssert.Throws<TargetException>(() =>
+            ExceptionAssert.Throws<SerializationException>(() =>
             {
+                var converter = new BooleanConverter();
                 converter.SerializeObject("abc", typeof(bool), Enumerable.Empty<ConstraintAttribute>());
-            }, ex => { }, Assert.Fail);
+            },
+            ex => { },
+            Assert.Fail);
         }
     }
 }

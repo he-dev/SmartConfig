@@ -19,10 +19,14 @@ namespace SmartConfig.Reflection
                 throw new ArgumentNullException(nameof(configurationType));
             }
 
-            var smartConfigAttribute = configurationType.GetCustomAttribute<SmartConfigAttribute>();
-            if (smartConfigAttribute == null)
+            if (!configurationType.IsStatic())
             {
-                throw new SmartConfigAttributeMissingException { ConfigTypeFullName = configurationType.FullName };
+                throw new TypeNotStaticException { TypeFullName = configurationType.FullName };
+            }
+
+            if (!configurationType.HasAttribute<SmartConfigAttribute>())
+            {
+                throw new SmartConfigAttributeMissingException { ConfigurationTypeFullName = configurationType.FullName };
             }
 
             ConfigurationType = configurationType;
@@ -35,7 +39,7 @@ namespace SmartConfig.Reflection
 
         public string ConfigurationName => ConfigurationType.GetCustomAttribute<SettingNameAttribute>()?.SettingName;
 
-        public IEnumerable<SettingInfo> SettingInfos => ConfigurationType.GetSettingInfos(this);
+        public IEnumerable<SettingInfo> SettingInfos => this.GetSettingInfos();
 
         //public SettingInfo FindSettingInfo(DeclaringTypeName configType, string settingPath)
         //{

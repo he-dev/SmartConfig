@@ -1,24 +1,18 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartUtilities.UnitTesting;
 
-namespace SmartConfig.Tests
+// ReSharper disable once CheckNamespace
+namespace SmartConfig.Tests.Attributes.Constraints.RegularExpressionAttributeTests
 {
     [TestClass]
-    public class RegularExpressionAttributeTests
+    public class ValidateTests
     {
-        [TestMethod]
-        public void CreatesRegularExpressionAttribute()
-        {
-            var attr1 = new RegularExpressionAttribute { Pattern = "\\d" };
-            Assert.AreEqual("\\d", attr1.Pattern);
-        }
-
         [TestMethod]
         public void ValidatesString()
         {
             ExceptionAssert.DoesNotThrow(() =>
             {
-                var attr1 = new RegularExpressionAttribute { Pattern = "\\d[A-Z]" };
+                var attr1 = new RegularExpressionAttribute("\\d[A-Z]");
                 attr1.Validate("1B");
                 Assert.IsTrue(true);
             }, Assert.Fail);
@@ -29,7 +23,7 @@ namespace SmartConfig.Tests
         {
             ExceptionAssert.Throws<RegularExpressionViolationException>(() =>
             {
-                var attr1 = new RegularExpressionAttribute { Pattern = "\\d[A-Z]" };
+                var attr1 = new RegularExpressionAttribute("\\d[A-Z]");
                 attr1.Validate("1e");
             }, ex => { }, Assert.Fail);
         }

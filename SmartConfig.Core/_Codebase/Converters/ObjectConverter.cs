@@ -41,6 +41,14 @@ namespace SmartConfig.Converters
         //    }
         //}
 
+        protected bool HasTargetType(object value, Type targeType)
+        {
+            if (value == null) { throw new ArgumentNullException(nameof(value)); }
+            if (targeType == null) { throw new ArgumentNullException(nameof(targeType)); }
+
+            return value.GetType() == targeType;
+        }
+
         /// <summary>
         /// Deserializes the value to the specified type.
         /// </summary>
@@ -66,6 +74,18 @@ namespace SmartConfig.Converters
             foreach (var constraint in attributes.OfType<ConstraintAttribute>())
             {
                 constraint.Validate(value);
+            }
+        }
+
+        protected void CheckValueType(object value)
+        {
+            if (!SupportedTypes.Contains(value.GetType()))
+            {
+                throw new UnsupportedTypeException
+                {
+                    ValueType = value.GetType().Name,
+                    SupportedTypes = string.Join(", ", SupportedTypes.Select(t => t.Name))
+                };
             }
         }
 

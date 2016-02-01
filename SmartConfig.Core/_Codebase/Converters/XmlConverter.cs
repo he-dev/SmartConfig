@@ -22,7 +22,7 @@ namespace SmartConfig.Converters
 
         public override object DeserializeObject(object value, Type type, IEnumerable<Attribute> attributes)
         {
-            if (value.GetType() == type) { return value; }
+            if (HasTargetType(value, type)) { return value; }
 
             var parseMethod = type.GetMethod("Parse", new[] { typeof(string) });
             var result = parseMethod.Invoke(null, new object[] { value });
@@ -31,7 +31,7 @@ namespace SmartConfig.Converters
 
         public override object SerializeObject(object value, Type type, IEnumerable<Attribute> attributes)
         {
-            if (value.GetType() == type) { return value; }
+            if (HasTargetType(value, type)) { return value; }
 
             using (var memoryStream = new MemoryStream())
             using (var streamWriter = new StreamWriter(memoryStream, Encoding.UTF8))

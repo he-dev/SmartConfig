@@ -11,7 +11,7 @@ namespace SmartConfig.Collections
     /// </summary>
     public sealed class ObjectConverterCollection : IObjectConverterCollection
     {
-        private readonly Dictionary<Type, ObjectConverter> _converters = new Dictionary<Type, ObjectConverter>();
+        private readonly Dictionary<Type, ObjectConverter> _typeConverters = new Dictionary<Type, ObjectConverter>();
 
         // don't let create this dictionary outside the assembly
         internal ObjectConverterCollection() { }
@@ -26,13 +26,19 @@ namespace SmartConfig.Collections
             get
             {
                 ObjectConverter objectConverter;
-                return
-                    _converters.TryGetValue(converterType, out objectConverter)
-                        ? objectConverter
-                        : _converters[typeof(EmptyConverter)];
+                if (!_typeConverters.TryGetValue(converterType, out objectConverter))
+                {
+                    throw new ConventerNotFoundException
+                    {
+                        SettingTypeFullName = converterType.FullName
+                    };
+                }
+                return objectConverter;
+                //: null;// _typeConverters[typeof(EmptyConverter)];
             }
-            private set { _converters[converterType] = value; }
         }
+
+        public int TypeCount => _typeConverters.Count;
 
         /// <summary>
         /// Adds an object converter to the dictionary.
@@ -43,21 +49,21 @@ namespace SmartConfig.Collections
         {
             foreach (var supportedType in objectConverter.SupportedTypes)
             {
-                if (_converters.ContainsKey(supportedType))
-                {
-                    throw new DuplicateTypeConverterException
-                    {
-                        ConverterFullName = objectConverter.GetType().FullName,
-                        TypeName = supportedType.Name
-                    };
-                }
-                this[supportedType] = objectConverter;
+                //if (_typeConverters.ContainsKey(supportedType))
+                //{
+                //    throw new DuplicateTypeConverterException
+                //    {
+                //        ConverterFullName = objectConverter.GetType().FullName,
+                //        TypeName = supportedType.Name
+                //    };
+                //}
+                _typeConverters[supportedType] = objectConverter;
             }
         }
 
         public IEnumerator<ObjectConverter> GetEnumerator()
         {
-            return _converters.Values.GetEnumerator();
+            return _typeConverters.Values.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

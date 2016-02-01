@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -13,7 +12,7 @@ namespace SmartConfig.Reflection
     /// <summary>
     /// Represents a single setting info.
     /// </summary>
-    [DebuggerDisplay("ConfigurationType = {Configuration.ConfigurationType.Name} SettingPath = \"{SettingPath}\" IsInternal = \"{IsInternal}\"")]
+    [DebuggerDisplay("ConfigurationType = {Configuration.ConfigurationType.Name} SettingPath = \"{SettingPath}\"")]
     internal class SettingInfo
     {
         public SettingInfo(PropertyInfo propertyInfo, ConfigurationInfo configurationInfo)
@@ -22,9 +21,9 @@ namespace SmartConfig.Reflection
             Configuration = configurationInfo;
         }
 
-        internal ConfigurationInfo Configuration { get; set; }
+        internal ConfigurationInfo Configuration { get; }
 
-        internal PropertyInfo Property { get; set; }
+        internal PropertyInfo Property { get; }
 
         public Type SettingType => Property.PropertyType;
 
@@ -32,11 +31,6 @@ namespace SmartConfig.Reflection
         {
             get
             {
-                if (IsInternal)
-                {
-                    return SettingType;
-                }
-
                 if (SettingType.BaseType == typeof(Enum))
                 {
                     return typeof(Enum);
@@ -51,7 +45,7 @@ namespace SmartConfig.Reflection
         {
             get
             {
-                var path = Property.GetPath();
+                var path = Property.GetSettingPath();
                 return new SettingPath(Configuration.ConfigurationName, path);
             }
         }
@@ -63,25 +57,12 @@ namespace SmartConfig.Reflection
         public IEnumerable<Attribute> SettingCustomAttributes => Property?.GetCustomAttributes(false).Cast<Attribute>() ?? Enumerable.Empty<Attribute>();
 
         public bool IsOptional => Property.GetCustomAttribute<OptionalAttribute>() != null;
-
-        //public bool IsNullable
-        //{
-        //    get
-        //    {
-        //        var isNullable =
-        //            (_property.FieldType.IsValueType && _property.FieldType.IsNullable())
-        //            || _property.GetCustomAttribute<OptionalAttribute>() != null;
-        //        return isNullable;
-        //    }
-        //}
-
+       
         public object Value
         {
             get { return Property.GetValue(null); }
             set { Property.SetValue(null, value); }
         }
-
-        internal bool IsInternal => Property == null;
 
         public override bool Equals(object obj)
         {

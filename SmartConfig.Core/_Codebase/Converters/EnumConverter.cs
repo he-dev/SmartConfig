@@ -15,7 +15,7 @@ namespace SmartConfig.Converters
 
         public override object DeserializeObject(object value, Type type, IEnumerable<Attribute> attributes)
         {
-            if (value.GetType() == type) { return value; }
+            if (HasTargetType(value, type)) { return value; }
 
             var result = Enum.Parse(type, (string)value);
             return result;
@@ -23,7 +23,7 @@ namespace SmartConfig.Converters
 
         public override object SerializeObject(object value, Type type, IEnumerable<Attribute> attributes)
         {
-            if (value.GetType() == type) { return value; }
+            if (HasTargetType(value, type)) { return value; }
 
             var result = value.ToString();
             return result;

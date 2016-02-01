@@ -52,7 +52,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="SmartUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SmartUtilities.2.0.0\lib\net45\SmartUtilities.dll</HintPath>
+      <HintPath>..\packages\SmartUtilities.2.1.1\lib\net45\SmartUtilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -87,6 +87,7 @@
     <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\BooleanSettings.cs" />
     <Compile Include="TestConfigs\_ConfigurationTests\_LoadSettings_Prerequisites\ConfigTypeMustBeStatic.cs" />
     <Compile Include="_Codebase\Collections\ObjectConverterCollectionTests.cs" />
+    <Compile Include="_Codebase\Collections\SettingKeyCollectionTests.cs" />
     <Compile Include="_Codebase\Converters\StringConverterTests.cs" />
     <Compile Include="_Codebase\Converters\EnumConverterTests.cs" />
     <Compile Include="_Codebase\Converters\DateTimeConverterTests.cs" />
@@ -104,12 +105,12 @@
     <Compile Include="TestConfigs\SimpteTestConfig.cs" />
     <Compile Include="_Codebase\Filters\MultipleFilterTests.cs" />
     <Compile Include="_Codebase\Filters\VersionFilterTests.cs" />
-    <Compile Include="_Codebase\KeyNamesTests.cs" />
     <Compile Include="_Codebase\Reflection\ConfigurationInfoTests.cs" />
     <Compile Include="_Codebase\Collections\ConfigurationPropertyGroupTests.cs" />
+    <Compile Include="_Codebase\Reflection\SettingInfoTests.cs" />
     <Compile Include="_Codebase\_Attributes\FilterAttributeTests.cs" />
     <Compile Include="_Codebase\_Attributes\_Constraints\RegularExpressionAttributeTests.cs" />
-    <Compile Include="_Codebase\_Extensions\ReflectionExtensionsTests.cs" />
+    <Compile Include="_Codebase\Reflection\ReflectorTests.cs" />
     <Compile Include="_Codebase\Paths\AppConfigPathTests.cs" />
     <Compile Include="_Codebase\Paths\RegistryPathTests.cs" />
     <Compile Include="_TestHelpers\AssemblyInitializer.cs" />
@@ -162,6 +163,7 @@
       <Name>SmartConfig</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

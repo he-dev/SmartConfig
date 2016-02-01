@@ -3,10 +3,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Filters;
 using SmartUtilities.UnitTesting;
 
-namespace SmartConfig.Tests
+// ReSharper disable once CheckNamespace
+namespace SmartConfig.Tests.Attributes.FilterAttributeTests
 {
     [TestClass]
-    public class FilterAttributeTests_ctor
+    public class ctor
     {
         [TestMethod]
         public void RequiresFilterType()

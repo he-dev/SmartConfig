@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using SmartConfig.Data;
+using SmartConfig.Reflection;
 
 namespace SmartConfig.Collections
 {

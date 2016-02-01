@@ -1,37 +1,42 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Collections;
 using SmartConfig.Converters;
 using SmartUtilities.UnitTesting;
 
-namespace SmartConfig.Tests.Collections
+// ReSharper disable once CheckNamespace
+namespace SmartConfig.Tests.Collections.ObjectConverterCollectionTests
 {
     [TestClass]
-    public class ObjectConverterCollectionTests
+    public class _CollectionInitializer
     {
         [TestMethod]
-        public void CollectionInitializer_CanAddConverters()
+        public void AddsConverters()
         {
             var converters = new ObjectConverterCollection
             {
-                new NumericConverter(),
-                new BooleanConverter()
+                new Foo()
             };
-            Assert.AreEqual(13, converters.Count());
+            Assert.AreEqual(2, converters.TypeCount);
+            Assert.IsInstanceOfType(converters[typeof (int)], typeof (Foo));
+            Assert.IsInstanceOfType(converters[typeof (float)], typeof (Foo));
         }
 
-        [TestMethod]
-        public void CollectionInitializer_FailsToAddDuplicateConverters()
+        class Foo : ObjectConverter
         {
-            ExceptionAssert.Throws<DuplicateTypeConverterException>(() =>
+            public Foo() : base(new[] { typeof(int), typeof(float) }) { }
+
+            public override object DeserializeObject(object value, Type type, IEnumerable<Attribute> attributes)
             {
-                var converters = new ObjectConverterCollection
-                {
-                    new NumericConverter(),
-                    new NumericConverter(),
-                };
-            }, ex => { }, Assert.Fail);
+                throw new NotImplementedException();
+            }
+
+            public override object SerializeObject(object value, Type type, IEnumerable<Attribute> attributes)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

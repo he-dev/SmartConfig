@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using SmartUtilities;
 
@@ -10,14 +11,20 @@ namespace SmartConfig
     [DebuggerDisplay("Pattern = \"{Pattern}\" RegexOptions = \"{RegexOptions}\"")]
     public class RegularExpressionAttribute : ConstraintAttribute
     {
-        public string Pattern { get; set; }
+        public RegularExpressionAttribute(string pattern, RegexOptions regexOptions = RegexOptions.None)
+        {
+            if (string.IsNullOrEmpty(pattern)) { throw new ArgumentNullException(nameof(pattern)); }
 
-        public RegexOptions RegexOptions { get; set; } = RegexOptions.None;
+            Pattern = pattern;
+            RegexOptions = regexOptions;
+        }
+
+        public string Pattern { get; }
+
+        public RegexOptions RegexOptions { get; }
 
         public override void Validate(object value)
         {
-            if (string.IsNullOrEmpty(Pattern)) { throw new PropertyNotSetException { PropertyName = nameof(Pattern) }; }
-
             var isValid = Regex.IsMatch((string)value, Pattern, RegexOptions);
 
             if (!isValid)

@@ -38,7 +38,7 @@ namespace SmartConfig.Tests.ConfigurationTests
                 Configuration.LoadSettings(typeof(ConfigTypeMustBeMarkedWithSmartConfigAttribute));
             }, ex =>
             {
-                Assert.AreEqual(typeof(ConfigTypeMustBeMarkedWithSmartConfigAttribute).FullName, ex.ConfigTypeFullName);
+                Assert.AreEqual(typeof(ConfigTypeMustBeMarkedWithSmartConfigAttribute).FullName, ex.ConfigurationTypeFullName);
             },
                 Assert.Fail);
         }
@@ -322,7 +322,7 @@ namespace SmartConfig.Tests.ConfigurationTests
         }
 
         [TestMethod]
-        public void ThrowsIfUnsupportedTypes()
+        public void ThrowsConverterNotFoundException()
         {
             UnsupportedTypeSettings.Properties.DataSource.SelectFunc = keys => "Lorem ipsum.";
             ExceptionAssert.Throws<LoadSettingFailedException>(() =>
@@ -331,7 +331,7 @@ namespace SmartConfig.Tests.ConfigurationTests
             },
                 ex =>
                 {
-                    Assert.IsInstanceOfType(ex.InnerException, typeof(ValueTypeMismatchException));
+                    Assert.IsInstanceOfType(ex.InnerException, typeof(ConventerNotFoundException));
                 },
                 Assert.Fail);
         }

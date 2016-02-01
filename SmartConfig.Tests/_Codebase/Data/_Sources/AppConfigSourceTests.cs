@@ -16,7 +16,7 @@ namespace SmartConfig.Tests.Data
             var appConfigSource = new AppConfigSource();
             var value = appConfigSource.Select(
                 new SettingKeyCollection(
-                    defaultKey: new SettingKey(Setting.DefaultKeyName, new SettingPath(null, "AppSettings", "AppConfigSourceTests", "Setting1")),
+                    nameKey: new SettingKey(Setting.DefaultKeyName, new SettingPath(null, "AppSettings", "AppConfigSourceTests", "Setting1")),
                     customKeys: Enumerable.Empty<SettingKey>()));
             Assert.AreEqual("foo", value);
         }
@@ -27,7 +27,7 @@ namespace SmartConfig.Tests.Data
             var appConfigSource = new AppConfigSource();
             var value = appConfigSource.Select(
                 new SettingKeyCollection(
-                    defaultKey: new SettingKey(Setting.DefaultKeyName, new SettingPath("baz", "AppSettings", "AppConfigSourceTests", "Setting2")),
+                    nameKey: new SettingKey(Setting.DefaultKeyName, new SettingPath("baz", "AppSettings", "AppConfigSourceTests", "Setting2")),
                     customKeys: Enumerable.Empty<SettingKey>()));
             Assert.AreEqual("bar", value);
         }

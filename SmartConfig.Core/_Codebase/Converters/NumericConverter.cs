@@ -33,6 +33,8 @@ namespace SmartConfig.Converters
 
         public override object DeserializeObject(object value, Type type, IEnumerable<Attribute> attributes)
         {
+            if (HasTargetType(value, type)) { return value; }
+
             if (value is string)
             {
                 var parseMethod = type.GetMethod("Parse", new[] { typeof(string), typeof(IFormatProvider) });
@@ -57,9 +59,9 @@ namespace SmartConfig.Converters
 
         public override object SerializeObject(object value, Type type, IEnumerable<Attribute> attributes)
         {
-            Validate(value, attributes);            
+            Validate(value, attributes);
 
-            if (value.GetType() == type) { return value; }
+            if (HasTargetType(value, type)) { return value; }
 
             var toStringMethod = type.GetMethod("ToString", new[] { typeof(IFormatProvider) });
             if (toStringMethod != null)
