@@ -16,19 +16,17 @@ namespace SmartConfig.Converters
         {
             if (HasTargetType(value, type)) { return value; }
 
-            try
+            int result;
+            if (!ColorParser.TryParse((string)value, out result))
             {
-                return (Color)(new Color32((string)value));
-            }
-            catch (InvalidColorException inner)
-            {
-                throw SmartException.Create<DeserializationException>(ex =>
+                throw new InvalidValueException
                 {
-                    ex.FromType = value.GetType().Name;
-                    ex.ToType = type.Name;
-                    ex.Value = value;
-                }, inner);
+                    Value = value.ToString(),
+                    ExpectedFormat = "Known color name (White), Hex (#FFFFFF), Decimal (255, 255, 255)"
+                };
             }
+
+            return (Color)(new Color32(result));
         }
 
         public override object SerializeObject(object value, Type type, IEnumerable<Attribute> attributes)
@@ -40,7 +38,7 @@ namespace SmartConfig.Converters
             try
             {
                 return ((Color32)(Color)value).ToString();
-            }            
+            }
             catch (InvalidColorException inner)
             {
                 throw SmartException.Create<SerializationException>(ex =>

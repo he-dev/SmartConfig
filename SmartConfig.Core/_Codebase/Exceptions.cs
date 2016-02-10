@@ -7,11 +7,11 @@ using SmartUtilities;
 
 namespace SmartConfig
 {
-    public class DateTimeFormatViolationException : SmartException
-    {
-        public string Value { get { return GetValue<string>(); } internal set { SetValue(value); } }
-        public string Format { get { return GetValue<string>(); } internal set { SetValue(value); } }
-    }
+    //public class DateTimeFormatViolationException : SmartException
+    //{
+    //    public string Value { get { return GetValue<string>(); } internal set { SetValue(value); } }
+    //    public string Format { get { return GetValue<string>(); } internal set { SetValue(value); } }
+    //}
 
     [Serializable]
     public class ValueTypeMismatchException : SmartException
@@ -184,6 +184,12 @@ namespace SmartConfig
     public class UnsupportedTypeException : SmartException
     {
         public string ValueType { get { return GetValue<string>(); } internal set { SetValue(value); } }
-        public string SupportedTypes { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string ExpectedType { get { return GetValue<string>(); } internal set { SetValue(value); } }
+    }
+
+    public class InvalidValueException : SmartException
+    {
+        public string Value { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string ExpectedFormat { get { return GetValue<string>(); } internal set { SetValue(value); } }
     }
 }

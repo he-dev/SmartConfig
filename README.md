@@ -5,21 +5,19 @@ Because creating configurations should be easy!
 
 ---
 
-## What's new in this version?
-
-- Bug fixes
-- Easier **`SmartConfig`** properties (now recognized by type not names)
-- Config name moved from properties to `SettingNameAttribute` to make it consistent for all names
-
----
-
 ## Why another one?
-Configuration should be set up within a few minutes and be easily extended if needed. Unfortunatelly most of the time we spend hours writing them over and over again or use multiple systems for different sources. With **`SmartConfig`** it's over. With only one tool you are able to use multiple configuration sources like database, app.config, xml, registry (more are comming). Your configuration is type safe and doesn't contain any magic strings. You work with real classes and properties. **`SmartConfig`** also can take care of validating your settings if you tell it to do so. 
+I guess you're asking why you should care about another configuration framework and I'll tell you why. Because you want to setup and use settings within few minutes instead of writing another class for reading or parsing them.
+
+With **`SmartConfig`** you can do it. It's all about simplicity and convinience. I dare to claim that it's the easiest configurtion framework out there. With only one tool you are able to use multiple configuration sources like database, app.config, xml, registry (more are comming). Your configuration is strongly typed and doesn't contain any magic strings. You work with real classes and properties. **`SmartConfig`** also can take care of validating your settings if you tell it to do so. 
+
+Keep reading and see for yourself.
 
 ## How does it work?
 Briefly, with **`SmartConfig`** you create a `static class` with static properties (and sub-classes) that will hold the settings when they are loaded. Its structure is used to build setting names. There is no need to use any hardcoded strings or create enums etc to get any values. **`SmartConfig`** eliminates all magic strings.
 
-**`SmartConfig`** is strongly typed and can validate your settings during loading as well as during updating. Thus you always know whether you start with valid values. It supports many popular types and provides an interface to add your own types if you need to. By default **`SmartConfig`** looks for your settings by name however criteria like environment or version ([Semantic Version](http://semver.org)) can be easily added. With **`SmartConfig`** you don't have to instantiate anything. All settings are loaded at once and cached in your config definition so there is no overhead accessing them later and you know wheter they are valid right away.
+**`SmartConfig`** is strongly typed and can validate your settings during loading as well as during updating. Thus you always know whether you start with valid values. If your configuration is invalid you'll know it right away because it reads all your settings at once.
+
+It supports many popular types and provides an interface to add your own types if you need to. By default **`SmartConfig`** looks for your settings by name however criteria like environment or version ([Semantic Version](http://semver.org)) can be easily added. With **`SmartConfig`** you don't have to instantiate anything. All settings are loaded at once and cached in your config definition so there is no overhead accessing them later.
 
 ## What dependencies does it have?
 **`SmartConfig`** requires `Entity Framework`, `JSON.NET` and `SmartUtilities`. The minimum required .NET version is 4.5.
@@ -66,13 +64,15 @@ Install-Package SmartConfig
 
 ## Hallo SmartConfig! - Getting started
 
-This short tutorial shows how to start using **`SmartConfig`**.
+Ok, let's get started!
+
+In this short tutorial I'll show you how to use **`SmartConfig`**. It's short because it's so simple to use.
 
 We will use two basic data sources namely the `App.config` for the connection string and the setting table name so that we can access our final setting storage which is a database.
 
 ### Using `AppConfigSource`
 
-In the `App.config` file we need to add two settings: a connection string named _ExampleDb_ and the table name with the key _SettingsTableName_ in the `appSettings` section:
+In the `App.config` we need to add two settings: a connection string named _ExampleDb_ and the table name with the key _SettingsTableName_ in the `appSettings` section:
 
 #### `app.config`
 ```xml
@@ -81,12 +81,13 @@ In the `App.config` file we need to add two settings: a connection string named 
 </connectionStrings>
 <appSettings>
     <add key="SettingsTableName" value="Setting" />
+    <add key="PrimeNumber" value="7" />
 </appSettings>
 ```
 
-Next we need to define a configuration that will allow us to access those settings.
+Next we need to define a configuration that will allow us to access those settings and provide their values.
 
-First we create a static class and mark it with the `SmartConfigAttribute` so that the setting loader can find it. Inside the config class we define two nested static classes that will represent the `connectionStrings` and the `appSettings` sections:
+First we create a static class and mark it with the `SmartConfigAttribute` so that the setting loader can find it. Inside the config class we define two nested static classes that will represent the `connectionStrings` and the `appSettings` sections. The names of those two nested classes are important for the framework so that it knows which sections to get the settings from.
 
 #### `ExampleAppConfig.cs`
 ```cs
@@ -100,6 +101,7 @@ static class ExampleAppConfig
     public static class AppSettings
     {   
         public static string SettingsTableName { get; set}
+        public static int PrimeNumber { get; set; }
     }
 }
 ```
@@ -108,14 +110,24 @@ That's all. **`SmartConfig`** will take care of checking if each setting is avai
 
 We didn't mark any fields as optional so both settings are required and cannot be null/empty.
 
-Let's load them now:
+I didn't mention the `PrimeNumber` setting but I've added it to show that the type of the setting can by actually any type. You are not forced to use string and parse anything. 
+
+OK, let's load them now:
 
 #### `Program.cs`
 ```cs
 Configuration.LoadSettings(typeof(ExampleAppConfig));
 ```
 
-As you see the call is really simple. You just need to say which settings you want to load. By default **`SmartConfig`** uses the `AppConfigSource` as a data source.
+That's it!
+
+You are ready to use the values now by simply going to the setting via the setting class you've just defined:
+
+```cs
+Console.WriteLine(ExampleAppConfig.PrimeNumber); // outputs: 7
+```
+
+As you see the call is really simple. You just need to say which settings you want to load. By default **`SmartConfig`** uses the `AppConfigSource` as a data source so we didn't specified any here explicitly.
 
 ### Using `DbSource`
 
@@ -192,14 +204,54 @@ static class ExampleDbConfig
 
 ```
 
-In this case **SmartConfig** would generate names like ``MyApp.Greeting`
+In this case **SmartConfig** would generate names like ``MyApp.Greeting`. You can use the `SettingNameAttribute` on any subclass or property to change its name.
 
-OK, time to load the settings from the database.
-
-And we're done! The last thing we have to do is to load the settings like we did for the `App.config`:
-
+It's time to load the settings from the database. This is as simple as loading the `App.config`:
 
 ```cs
 Configuration.LoadSettings(typeof(ExampleDbConfig));
+```
+
+And that's it!
+
+```cs
 Console.WriteLine(ExampleDbConfig.Greeting); // outputs: Hallo SmartConfig!
 ```
+
+### Additional criteria
+With **SmartConfig** you are not forced to use only the names. You can provide additional criteria for your settings like an environment, username or version. We'll take a look how to use the environment.
+
+In order to extend the setting the first thing you need to do is to create a new setting type derived from the `Setting` and add a new property `Environment`. The framework does not know by default how to treat this so you need to add the `FilterAttribute` and specify which filter it should use when getting settings. Here we're using the `StringFilter` one of the two filters **SmartConfig** provides for you. The other one is the `VersionFilter`. 
+
+The `StringFilter` is case insensitive and will check if the environment criteria is met. Additionaly a default environment can be provided by using the `*` asterisk.
+
+```cs
+class MySetting : Setting 
+{
+    [Filter(typeof(StringFilter))]
+    public string Environment { get; set;}
+}
+```
+
+Next, there is one more thing you need to add to the configuration properties namely the value for the environment property. You do this by adding the `CustomKeys` property and adding a `SettingKey` for each custom property:
+
+```cs
+[SmartConfig]
+static class DatabaseSettings1
+{
+    [SmartConfigProperties]
+    public static class Properties
+    {
+        public static IDataSource DataSource { get; } =
+            new DbSource<TestSetting>("name=TestDb", "TestSetting");
+
+        public static IEnumerable<SettingKey> CustomKeys { get; } = new[]
+        {
+            new SettingKey("Environment", "A"),
+            new SettingKey("Version", "2.2.1"),
+        };
+    }
+}
+```
+
+The custom properties will only work with data sources that support such extensions like a database or a xml (via additional attributes).

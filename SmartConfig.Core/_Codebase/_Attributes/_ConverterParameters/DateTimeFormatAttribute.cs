@@ -8,7 +8,7 @@ namespace SmartConfig
     /// <summary>
     /// Allows to define an exact date time format.
     /// </summary>
-    [DebuggerDisplay("Format = \"{Format}\"")]
+    [DebuggerDisplay("ExpectedFormat = \"{Format}\"")]
     public class DateTimeFormatAttribute : ConverterParameterAttribute
     {
         public DateTimeFormatAttribute(string format)

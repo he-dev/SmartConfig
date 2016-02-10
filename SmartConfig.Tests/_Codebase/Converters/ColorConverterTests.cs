@@ -35,8 +35,8 @@ namespace SmartConfig.Tests.Converters.ColorConverterTests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(DeserializationException))]
-        public void ThrowsDeserializationException()
+        [ExpectedException(typeof(InvalidValueException))]
+        public void ThrowsInvalidValueException()
         {
             var converter = new ColorConverter();
             converter.DeserializeObject("foo", typeof(Color32), Enumerable.Empty<Attribute>());

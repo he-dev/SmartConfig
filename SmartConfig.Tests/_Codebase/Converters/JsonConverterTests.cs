@@ -20,7 +20,7 @@ namespace SmartConfig.Tests.Converters
         public void SerializeObject_CanSerializeArrayInt32()
         {
             var converter = new JsonConverter();
-            Assert.AreEqual("[1,2,3]", converter.SerializeObject(new[] { 1, 2, 3 }, null, Enumerable.Empty<ConstraintAttribute>()));
+            Assert.AreEqual("[1,2,3]", converter.SerializeObject(new[] { 1, 2, 3 }, typeof(object), Enumerable.Empty<ConstraintAttribute>()));
         }
     }
 }

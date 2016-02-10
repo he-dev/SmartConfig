@@ -84,7 +84,7 @@ namespace SmartConfig.Converters
                 throw new UnsupportedTypeException
                 {
                     ValueType = value.GetType().Name,
-                    SupportedTypes = string.Join(", ", SupportedTypes.Select(t => t.Name))
+                    ExpectedType = string.Join(", ", SupportedTypes.Select(t => t.Name))
                 };
             }
         }

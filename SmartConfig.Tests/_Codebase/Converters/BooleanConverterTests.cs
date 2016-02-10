@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Converters;
 using SmartUtilities.UnitTesting;
 
+// ReSharper disable once CheckNamespace
 namespace SmartConfig.Tests.Converters.BooleanConverterTests
 {
     [TestClass]
@@ -19,10 +20,10 @@ namespace SmartConfig.Tests.Converters.BooleanConverterTests
         }
 
         [TestMethod]
-        public void ThrowsDeserializationException()
+        public void ThrowsInvalidValueException()
         {
             var converter = new BooleanConverter();
-            ExceptionAssert.Throws<DeserializationException>(() =>
+            ExceptionAssert.Throws<InvalidValueException>(() =>
             {
                 converter.DeserializeObject("abc", typeof(bool), Enumerable.Empty<ConstraintAttribute>());
             }, ex => { }, Assert.Fail);
@@ -41,9 +42,9 @@ namespace SmartConfig.Tests.Converters.BooleanConverterTests
         }
 
         [TestMethod]
-        public void ThrowsSerializationException()
+        public void ThrowsUnsupportedTypeException()
         {
-            ExceptionAssert.Throws<SerializationException>(() =>
+            ExceptionAssert.Throws<UnsupportedTypeException>(() =>
             {
                 var converter = new BooleanConverter();
                 converter.SerializeObject("abc", typeof(bool), Enumerable.Empty<ConstraintAttribute>());

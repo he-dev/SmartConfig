@@ -17,42 +17,27 @@ namespace SmartConfig.Converters
         {
             if (HasTargetType(value, type)) { return value; }
 
-            try
+            //CheckValueType(value);
+
+            bool result;
+            if (!bool.TryParse((string)value, out result))
             {
-                var parseMethod = type.GetMethod("Parse", new[] { typeof(string) });
-                var result = parseMethod.Invoke(null, new[] { value });
-                return result;
-            }
-            catch (TargetInvocationException inner)
-            {
-                throw SmartException.Create<DeserializationException>(ex =>
+                throw new InvalidValueException
                 {
-                    ex.FromType = value.GetType().Name;
-                    ex.ToType = type.Name;
-                    ex.Value = value;
-                }, inner);
+                    Value = value.ToString(),
+                    ExpectedFormat = string.Join(", ", bool.TrueString, bool.FalseString)
+                };
             }
+            return result;
         }
 
         public override object SerializeObject(object value, Type type, IEnumerable<Attribute> attributes)
         {
             if (HasTargetType(value, type)) { return value; }
 
-            try
-            {
-                var toStringMethod = typeof(bool).GetMethod("ToString", new Type[] { });
-                var result = toStringMethod.Invoke(value, null);
-                return (string)result;
-            }
-            catch (TargetException inner)
-            {
-                throw SmartException.Create<SerializationException>(ex =>
-                {
-                    ex.FromType = value.GetType().Name;
-                    ex.ToType = type.Name;
-                    ex.Value = value;
-                }, inner);
-            }
+            CheckValueType(value);
+
+            return ((bool)value).ToString();
         }
     }
 }

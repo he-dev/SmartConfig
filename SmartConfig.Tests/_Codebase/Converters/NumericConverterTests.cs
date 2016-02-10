@@ -4,17 +4,18 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Converters;
 
-namespace SmartConfig.Tests.Converters
+namespace SmartConfig.Tests.Converters.NumericConverterTests
 {
     [TestClass]
-    public class NumericConverterTests
+    public class DeserializeTests
     {
         [TestMethod]
-        public void DeserializeObject_CanDeserializeNumerics()
+        public void DeserializesNumerics()
         {
             var numericConverter = new NumericConverter();
             var ci = CultureInfo.InvariantCulture;
 
+            Assert.AreEqual(sbyte.MaxValue, numericConverter.DeserializeObject(sbyte.MaxValue.ToString(), typeof(sbyte), Enumerable.Empty<ConstraintAttribute>()));
             Assert.AreEqual(byte.MaxValue, numericConverter.DeserializeObject(byte.MaxValue.ToString(), typeof(byte), Enumerable.Empty<ConstraintAttribute>()));
             Assert.AreEqual(char.MaxValue, numericConverter.DeserializeObject(char.MaxValue.ToString(), typeof(char), Enumerable.Empty<ConstraintAttribute>()));
             Assert.AreEqual(short.MaxValue, numericConverter.DeserializeObject(short.MaxValue.ToString(), typeof(short), Enumerable.Empty<ConstraintAttribute>()));
@@ -27,7 +28,11 @@ namespace SmartConfig.Tests.Converters
             Assert.AreEqual(double.MaxValue, numericConverter.DeserializeObject(double.MaxValue.ToString("R", ci), typeof(double), Enumerable.Empty<ConstraintAttribute>()));
             Assert.AreEqual(decimal.MaxValue, numericConverter.DeserializeObject(decimal.MaxValue.ToString(ci), typeof(decimal), Enumerable.Empty<ConstraintAttribute>()));
         }
+    }
 
+    [TestClass]
+    public class SerializeTests
+    {
         [TestMethod]
         public void SerializeObject_CanSerializeNumerics()
         {

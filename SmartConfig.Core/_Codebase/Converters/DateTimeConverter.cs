@@ -5,33 +5,47 @@ using System.Linq;
 
 namespace SmartConfig.Converters
 {
-    /// <summary>
-    /// Converts <c>DateTime</c> from and to a string. Without this attribute the invariant culture is used.
-    /// </summary>
     public class DateTimeConverter : ObjectConverter
     {
+        private static readonly string[] DateTimeFormats = new string[]
+        {
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-M-d H:m:s",
+        };
+
+        internal static string DefaultDateTimeFormat => DateTimeFormats[0];
+
         public DateTimeConverter() : base(new[] { typeof(DateTime) }) { }
 
         public override object DeserializeObject(object value, Type type, IEnumerable<Attribute> attributes)
         {
             if (HasTargetType(value, type)) { return value; }
 
+            DateTime result;
+
             var dateTimeFormatAttribute = attributes.OfType<DateTimeFormatAttribute>().SingleOrDefault();
             if (dateTimeFormatAttribute != null)
             {
-                DateTime dateTime;
-                if (!DateTime.TryParseExact((string)value, dateTimeFormatAttribute.Format, null, DateTimeStyles.None, out dateTime))
+                if (!DateTime.TryParseExact((string)value, dateTimeFormatAttribute.Format, null, DateTimeStyles.None, out result))
                 {
-                    throw new DateTimeFormatViolationException
+                    throw new InvalidValueException
                     {
                         Value = value.ToString(),
-                        Format = dateTimeFormatAttribute.Format
+                        ExpectedFormat = dateTimeFormatAttribute.Format
                     };
                 }
-                return dateTime;
+                return result;
             }
 
-            var result = DateTime.Parse((string)value, CultureInfo.InvariantCulture);
+            if (!DateTime.TryParseExact((string)value, DateTimeFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+            {
+                throw new InvalidValueException
+                {
+                    Value = value.ToString(),
+                    ExpectedFormat = string.Join(", ", DateTimeFormats)
+                };
+            }
+
             return result;
         }
 
@@ -41,15 +55,16 @@ namespace SmartConfig.Converters
 
             CheckValueType(value);
 
+            var dateTime = ((DateTime)value);
+
             var dateTimeFormatAttribute = attributes.OfType<DateTimeFormatAttribute>().SingleOrDefault();
             if (dateTimeFormatAttribute != null)
             {
-                value = ((DateTime)value).ToString(dateTimeFormatAttribute.Format);
+                value = dateTime.ToString(dateTimeFormatAttribute.Format);
                 return value;
             }
 
-            var toStringMethod = typeof(DateTime).GetMethod("ToString", new[] { typeof(CultureInfo) });
-            value = toStringMethod.Invoke(value, new object[] { CultureInfo.InvariantCulture });
+            value = dateTime.ToString(DefaultDateTimeFormat);
             return value;
         }
     }

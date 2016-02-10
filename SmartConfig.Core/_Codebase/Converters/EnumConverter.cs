@@ -17,8 +17,19 @@ namespace SmartConfig.Converters
         {
             if (HasTargetType(value, type)) { return value; }
 
-            var result = Enum.Parse(type, (string)value);
-            return result;
+            try
+            {
+                return Enum.Parse(type, (string)value);
+
+            }
+            catch (Exception)
+            {
+                throw new InvalidValueException
+                {
+                    Value = value.ToString(),
+                    ExpectedFormat = "Enum"
+                };
+            }
         }
 
         public override object SerializeObject(object value, Type type, IEnumerable<Attribute> attributes)

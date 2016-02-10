@@ -9,6 +9,9 @@ namespace SmartConfig.Converters
     /// </summary>
     public class NumericConverter : ObjectConverter
     {
+
+        //private delegate bool TryParseFunc()
+
         public NumericConverter()
             : base(new[]
             {
@@ -35,7 +38,7 @@ namespace SmartConfig.Converters
         {
             if (HasTargetType(value, type)) { return value; }
 
-            if (value is string)
+            try
             {
                 var parseMethod = type.GetMethod("Parse", new[] { typeof(string), typeof(IFormatProvider) });
                 if (parseMethod != null)
@@ -44,6 +47,7 @@ namespace SmartConfig.Converters
                 }
                 else
                 {
+                    // char has only one parameter
                     parseMethod = type.GetMethod("Parse", new[] { typeof(string) });
                     if (parseMethod != null)
                     {
@@ -51,9 +55,17 @@ namespace SmartConfig.Converters
                     }
                 }
             }
+            catch (Exception)
+            {
+                throw new InvalidValueException
+                {
+                    Value = value.ToString(),
+                    ExpectedFormat = type.Name
+                };
+            }
 
             Validate(value, attributes);
-            
+
             return value;
         }
 
