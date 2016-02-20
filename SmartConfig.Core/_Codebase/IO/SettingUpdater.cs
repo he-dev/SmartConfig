@@ -2,42 +2,41 @@
 using System.Diagnostics;
 using System.Linq;
 using SmartConfig.Collections;
-using SmartConfig.Reflection;
 
 namespace SmartConfig.IO
 {
     internal class SettingUpdater
     {
-        //public void UpdateSetting(DeclaringTypeName configType, string settingPath, object value)
+        //public void UpdateSetting(DeclaringTypeName configType, string SettingPath, object value)
         //{
-        //    //var settingInfo = _configurationReflector.FindSettingInfo(configType, settingPath);
-        //    //if (settingInfo == null)
+        //    //var Setting = _configurationReflector.FindSettingInfo(configType, SettingPath);
+        //    //if (Setting == null)
         //    //{
         //    //    // todo: create a meaningfull exception
         //    //    throw new Exception("Setting not found.");
         //    //}
 
-        //    //UpdateSetting(settingInfo, value);
+        //    //UpdateSetting(Setting, value);
         //}
 
-        public static void UpdateSetting(SettingInfo settingInfo, object value, IObjectConverterCollection converters)
+        public static void UpdateSetting(Setting setting, object value, ObjectConverterCollection converters)
         {
-            Debug.Assert(settingInfo != null);
+            Debug.Assert(setting != null);
 
             try
             {
-                var dataSource = settingInfo.Configuration.ConfigurationPropertyGroup.DataSource;
-                var converter = converters[settingInfo.ConverterType];
-                value = converter.SerializeObject(value, settingInfo.SettingType, settingInfo.SettingCustomAttributes);
-                dataSource.Update(settingInfo.Keys, value);
+                var dataSource = setting.Configuration.DataStore;
+                var converter = converters[setting.ConverterType];
+                value = converter.SerializeObject(value, setting.Type, setting.Atributes);
+                dataSource.Update(setting.Keys, value);
             }
             catch (Exception ex)
             {
                 throw new UpdateSettingFailedException(ex)
                 {
-                    DataSourceTypeName = settingInfo.Configuration.ConfigurationPropertyGroup.DataSource.GetType().Name,
-                    ConfigTypeFullName = settingInfo.Configuration.ConfigurationType.FullName,
-                    SettingPath = settingInfo.SettingPath
+                    DataStore = setting.Configuration.DataStore.GetType().Name,
+                    Configuration = setting.Configuration.Type.Name,
+                    SettingPath = setting.Path
                 };
             }
         }

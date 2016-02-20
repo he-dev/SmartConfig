@@ -16,13 +16,13 @@ namespace SmartConfig.Tests.Filters
         {
             var settings = new[]
             {
-                new TestSetting("a|1.0.5|name|value"),
-                new TestSetting("a|*|name|value"),
-                new TestSetting("a|1.1.0|name|value"),
-                new TestSetting("a|2.0.5|name|value"),
+                new CustomTestSetting("a|1.0.5|name|value"),
+                new CustomTestSetting("a|*|name|value"),
+                new CustomTestSetting("a|1.1.0|name|value"),
+                new CustomTestSetting("a|2.0.5|name|value"),
             };
 
-            var result = new VersionFilter().FilterSettings(settings, new SettingKey("Version", "1.1.0"));
+            var result = new VersionKeyFilter().Apply(settings, new SettingKey("Version", "1.1.0"));
             var setting = result.FirstOrDefault();
             Assert.AreEqual(settings[2], setting);
         }
@@ -32,14 +32,14 @@ namespace SmartConfig.Tests.Filters
         {
             var settings = new[]
             {
-                new TestSetting("a|1.0.4|name|value"),
-                new TestSetting("a|1.0.5|name|value"),
-                new TestSetting("a|*|name|value"),
-                new TestSetting("a|1.1.0|name|value"),
-                new TestSetting("a|2.0.5|name|value"),
+                new CustomTestSetting("a|1.0.4|name|value"),
+                new CustomTestSetting("a|1.0.5|name|value"),
+                new CustomTestSetting("a|*|name|value"),
+                new CustomTestSetting("a|1.1.0|name|value"),
+                new CustomTestSetting("a|2.0.5|name|value"),
             };
 
-            var result = new VersionFilter().FilterSettings(settings, new SettingKey("Version", "1.0.7"));
+            var result = new VersionKeyFilter().Apply(settings, new SettingKey("Version", "1.0.7"));
             var setting = result.FirstOrDefault();
             Assert.AreEqual(settings[1], setting);
         }
@@ -49,13 +49,13 @@ namespace SmartConfig.Tests.Filters
         {
             var settings = new[]
             {
-                    new TestSetting("a|1.0.5|name|value"),
-                    new TestSetting("a|*|name|value"),
-                    new TestSetting("a|1.1.0|name|value"),
-                    new TestSetting("a|2.0.5|name|value"),
+                    new CustomTestSetting("a|1.0.5|name|value"),
+                    new CustomTestSetting("a|*|name|value"),
+                    new CustomTestSetting("a|1.1.0|name|value"),
+                    new CustomTestSetting("a|2.0.5|name|value"),
                 };
 
-            var result = new VersionFilter().FilterSettings(settings, new SettingKey("Version", "1.0.3"));
+            var result = new VersionKeyFilter().Apply(settings, new SettingKey("Version", "1.0.3"));
             var setting = result.FirstOrDefault();
             Assert.AreEqual(settings[1], setting);
         }
@@ -65,12 +65,12 @@ namespace SmartConfig.Tests.Filters
         {
             var settings = new[]
             {
-                new TestSetting("a|1.0.5|name|value"),
-                new TestSetting("a|1.1.0|name|value"),
-                new TestSetting("a|2.0.5|name|value"),
+                new CustomTestSetting("a|1.0.5|name|value"),
+                new CustomTestSetting("a|1.1.0|name|value"),
+                new CustomTestSetting("a|2.0.5|name|value"),
             };
 
-            var result = new VersionFilter().FilterSettings(settings, new SettingKey("Version", "1.0.2"));
+            var result = new VersionKeyFilter().Apply(settings, new SettingKey("Version", "1.0.2"));
             var setting = result.FirstOrDefault();
             Assert.IsNull(setting);
         }

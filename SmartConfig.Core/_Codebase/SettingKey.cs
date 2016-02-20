@@ -2,13 +2,9 @@
 using System.Diagnostics;
 using SmartConfig.Data;
 using SmartConfig.Filters;
-using SmartConfig.Paths;
 
 namespace SmartConfig
 {
-    /// <summary>
-    /// Represents information about a key.
-    /// </summary>
     [DebuggerDisplay("Name = {Name} Value = {Value}")]
     public class SettingKey
     {        
@@ -23,10 +19,6 @@ namespace SmartConfig
 
         public string Name { get; }
 
-        /// <summary>
-        /// Gets or sets the key value. This property is optional for the version set via the <c>SmartConfigAttribute</c>.
-        /// It is set internaly.
-        /// </summary>
         public object Value { get; }
 
         public static bool operator ==(SettingKey x, SettingKey y)

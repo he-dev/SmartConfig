@@ -1,4 +1,5 @@
 ﻿using System;
+using SmartConfig.Converters;
 
 namespace SmartConfig
 {
@@ -8,10 +9,20 @@ namespace SmartConfig
     [AttributeUsage(AttributeTargets.Property)]
     public class ObjectConverterAttribute : Attribute
     {
-        public ObjectConverterAttribute(Type type)
+        public ObjectConverterAttribute(Type converterType)
         {
-            if (type == null) { throw new ArgumentNullException(nameof(type)); }
-            Type = type;
+            if (converterType == null) { throw new ArgumentNullException(nameof(converterType)); }
+
+            if (!typeof(ObjectConverter).IsAssignableFrom(converterType))
+            {
+                throw new TypeDoesNotImplementInterfaceException
+                {
+                    ExpectedType = typeof(ObjectConverter).FullName,
+                    ActualType = converterType.FullName
+                };
+            }
+
+            Type = converterType;
         }
 
         /// <summary>

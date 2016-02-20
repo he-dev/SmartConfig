@@ -16,11 +16,7 @@ namespace SmartConfig
             if (type == null) { throw new ArgumentNullException(nameof(type)); }
             if (string.IsNullOrEmpty(min) && string.IsNullOrEmpty(max))
             {
-                throw new PropertyNotSetException
-                {
-                    PropertyName = $"{nameof(Min)} and/or {nameof(Max)}",
-                    Hint = $"At least one of the properties {nameof(Min)} or {nameof(Max)} must be set."
-                };
+                throw new ArgumentException($"At least one of the properties {nameof(Min)} or {nameof(Max)} must be set.");
             }
 
             Type = type;
@@ -77,7 +73,7 @@ namespace SmartConfig
                 throw new RangeViolationException
                 {
                     Value = value.ToString(),
-                    RangeTypeName = Type.Name,
+                    RangeType = Type.Name,
                     Min = Min,
                     Max = Max
                 };

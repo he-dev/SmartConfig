@@ -14,8 +14,8 @@ namespace SmartConfig.Collections
             : base(settingKeys)
         { }
 
-        internal SettingKeyCollection(SettingKey nameKey, IEnumerable<SettingKey> customKeys)
-            : base(new[] { nameKey }.Concat(customKeys).ToList())
+        internal SettingKeyCollection(SettingKey nameKey, IEnumerable<SettingKey> otherKeys)
+            : base(new[] { nameKey }.Concat(otherKeys).ToList())
         { }
 
         public NameKey NameKey => new NameKey(this.First());

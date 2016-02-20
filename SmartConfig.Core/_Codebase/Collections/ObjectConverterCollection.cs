@@ -9,9 +9,9 @@ namespace SmartConfig.Collections
     /// <summary>
     /// Maps types to their supporting converters.
     /// </summary>
-    public sealed class ObjectConverterCollection : IObjectConverterCollection
+    public sealed class ObjectConverterCollection : IEnumerable<ObjectConverter>
     {
-        private readonly Dictionary<Type, ObjectConverter> _typeConverters = new Dictionary<Type, ObjectConverter>();
+        private readonly Dictionary<Type, ObjectConverter> _converters = new Dictionary<Type, ObjectConverter>();
 
         // don't let create this dictionary outside the assembly
         internal ObjectConverterCollection() { }
@@ -26,19 +26,18 @@ namespace SmartConfig.Collections
             get
             {
                 ObjectConverter objectConverter;
-                if (!_typeConverters.TryGetValue(converterType, out objectConverter))
+                if (!_converters.TryGetValue(converterType, out objectConverter))
                 {
                     throw new ConventerNotFoundException
                     {
-                        SettingTypeFullName = converterType.FullName
+                        MissingConverterType = converterType.FullName
                     };
                 }
                 return objectConverter;
-                //: null;// _typeConverters[typeof(EmptyConverter)];
             }
         }
 
-        public int TypeCount => _typeConverters.Count;
+        public int TypeCount => _converters.Count;
 
         /// <summary>
         /// Adds an object converter to the dictionary.
@@ -57,13 +56,13 @@ namespace SmartConfig.Collections
                 //        TypeName = supportedType.Name
                 //    };
                 //}
-                _typeConverters[supportedType] = objectConverter;
+                _converters[supportedType] = objectConverter;
             }
         }
 
         public IEnumerator<ObjectConverter> GetEnumerator()
         {
-            return _typeConverters.Values.GetEnumerator();
+            return _converters.Values.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

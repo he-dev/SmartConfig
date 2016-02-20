@@ -13,23 +13,16 @@ namespace SmartConfig
     //    public string Format { get { return GetValue<string>(); } internal set { SetValue(value); } }
     //}
 
-    [Serializable]
-    public class ValueTypeMismatchException : SmartException
-    {
-        public string ValueTypeName { get { return GetValue<string>(); } internal set { SetValue(value); } }
-        public string TargetTypeName { get { return GetValue<string>(); } internal set { SetValue(value); } }
-
-    }
-
-    public class UnsupportedRegistryTypeException : SmartException
-    {
-        public string ValueTypeName { get { return GetValue<string>(); } internal set { SetValue(value); } }
-        public string SettingName { get { return GetValue<string>(); } internal set { SetValue(value); } }
-    }
+    //[Serializable]
+    //public class ValueTypeMismatchException : SmartException
+    //{
+    //    public string ValueTypeName { get { return GetValue<string>(); } internal set { SetValue(value); } }
+    //    public string TargetTypeName { get { return GetValue<string>(); } internal set { SetValue(value); } }
+    //}
 
     public class ConventerNotFoundException : SmartException
     {
-        public string SettingTypeFullName { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string MissingConverterType { get { return GetValue<string>(); } internal set { SetValue(value); } }
 
     }
 
@@ -37,20 +30,20 @@ namespace SmartConfig
     {
         public UpdateSettingFailedException(Exception innerException) : base(innerException) { }
 
-        public string DataSourceTypeName { get { return GetValue<string>(); } internal set { SetValue(value); } }
-        public string ConfigTypeFullName { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string DataStore { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string Configuration { get { return GetValue<string>(); } internal set { SetValue(value); } }
         public string SettingPath { get { return GetValue<string>(); } internal set { SetValue(value); } }
     }
 
     public class TypeDoesNotImplementInterfaceException : SmartException
     {
-        public string InterfaceTypeName { get { return GetValue<string>(); } internal set { SetValue(value); } }
-        public string InvalidTypeName { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string ExpectedType { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string ActualType { get { return GetValue<string>(); } internal set { SetValue(value); } }
     }
 
     public class TypeNotStaticException : SmartException
     {
-        public string TypeFullName { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string Type { get { return GetValue<string>(); } internal set { SetValue(value); } }
     }
 
     /// <summary>
@@ -58,37 +51,34 @@ namespace SmartConfig
     /// </summary>
     public class SettingNotOptionalException : SmartException
     {
-        public string ConfigTypeName { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string ConfigurationType { get { return GetValue<string>(); } internal set { SetValue(value); } }
         public string SettingPath { get { return GetValue<string>(); } internal set { SetValue(value); } }
     }
 
     public class SmartConfigAttributeMissingException : SmartException
     {
-        public string ConfigurationTypeFullName { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string ConfigurationType { get { return GetValue<string>(); } internal set { SetValue(value); } }
     }
 
     public class SmartConfigAttributeNotFoundException : SmartException
     {
-        public string PropertyTypeFullName { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string AffectedProperty { get { return GetValue<string>(); } internal set { SetValue(value); } }
     }
 
-    public class PropertyNotSetException : SmartException
-    {
-        public string PropertyName { get { return GetValue<string>(); } internal set { SetValue(value); } }
-    }
+    //public class PropertyNotSetException : SmartException
+    //{
+    //    public string PropertyName { get { return GetValue<string>(); } internal set { SetValue(value); } }
+    //}
 
     public class RangeViolationException : SmartException
     {
         public string Value { get { return GetValue<string>(); } internal set { SetValue(value); } }
-        public string RangeTypeName { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string RangeType { get { return GetValue<string>(); } internal set { SetValue(value); } }
         public string Min { get { return GetValue<string>(); } internal set { SetValue(value); } }
         public string Max { get { return GetValue<string>(); } internal set { SetValue(value); } }
     }
 
-    public class SmartConfigRootElementNotFountException : SmartException
-    {
-        public string FileName { get { return GetValue<string>(); } internal set { SetValue(value); } }
-    }
+    
 
     public class RegularExpressionViolationException : SmartException
     {
@@ -116,8 +106,8 @@ namespace SmartConfig
     {
         public LoadSettingFailedException(Exception innerException) : base(innerException) { }
 
-        public string DataSourceTypeName { get { return GetValue<string>(); } internal set { SetValue(value); } }
-        public string ConfigTypeFullName { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string DataSourceType { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string ConfigurationType { get { return GetValue<string>(); } internal set { SetValue(value); } }
         public string SettingPath { get { return GetValue<string>(); } internal set { SetValue(value); } }
     }
 
@@ -135,10 +125,7 @@ namespace SmartConfig
         public string ExpectedTypeFullName { get { return GetValue<string>(); } internal set { SetValue(value); } }
     }
 
-    public class FileNameNotRootedException : SmartException
-    {
-        public string FileName { get { return GetValue<string>(); } internal set { SetValue(value); } }
-    }
+    
 
     public class FilterAttributeMissingException : SmartException
     {
@@ -159,11 +146,7 @@ namespace SmartConfig
 
     }
 
-    [Serializable]
-    public class ConnectionStringNotFoundException : SmartException
-    {
-        public string ConnectionStringName { get { return GetValue<string>(); } internal set { SetValue(value); } }
-    }
+    
 
     [Serializable]
     public class DeserializationException : SmartException

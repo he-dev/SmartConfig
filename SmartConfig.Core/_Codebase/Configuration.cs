@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
@@ -8,8 +9,6 @@ using SmartConfig.Collections;
 using SmartConfig.Converters;
 using SmartConfig.Data;
 using SmartConfig.IO;
-using SmartConfig.Reflection;
-using SmartUtilities;
 
 namespace SmartConfig
 {
@@ -18,7 +17,7 @@ namespace SmartConfig
     /// </summary>
     public class Configuration
     {
-        private static readonly IDictionary<Type, ConfigurationInfo> ConfigurationCache = new Dictionary<Type, ConfigurationInfo>();
+        private static readonly IDictionary<Type, Configuration> ConfigurationCache = new Dictionary<Type, Configuration>();
 
         /// <summary>
         /// Gets the current converters and allows to add additional ones.
@@ -33,23 +32,74 @@ namespace SmartConfig
             new ColorConverter(),
             new JsonConverter(),
             new XmlConverter(),
-            //new EmptyConverter(),
         };
 
-        /// <summary>
-        /// Loads settings for a a configuration from the specified data source.
-        /// </summary>
-        /// <param name="configType">SettingType that is marked with the <c>SmartCofnigAttribute</c> and specifies the configuration.</param>
-        public static void LoadSettings(Type configType)
+        internal Configuration(Type configurationType)
         {
-            if (configType == null) { throw new ArgumentNullException(nameof(configType)); }
-
-            var configuration = new ConfigurationInfo(configType);
-            ConfigurationCache[configType] = configuration;
-
-            SettingLoader.LoadSettings(configuration, Converters);
+            Type = configurationType;
+            Name = Type.GetCustomAttribute<SettingNameAttribute>()?.SettingName;
+            Settings = new ReadOnlyCollection<Setting>(this.GetSettings().ToList());
         }
 
+        internal Type Type { get; }
+
+        internal string Name { get; }
+
+        internal IReadOnlyCollection<Setting> Settings { get; }
+
+        internal IDataStore DataStore { get; set; }
+
+        internal List<SettingKey> AdditionalKeys { get; set; } = new List<SettingKey>();
+
+        public static event EventHandler<ConfigurationReloadFailedEventArgs> ConfigurationReloadFailed = delegate { };
+
+        public static ConfigurationBuilder Use(Type configurationType)
+        {
+            return new ConfigurationBuilder(configurationType);
+        }
+
+        internal static void Load(Configuration configuration)
+        {
+            SettingLoader.LoadSettings(configuration, Converters);
+            ConfigurationCache[configuration.Type] = configuration;
+        }
+
+        public static void Reload(Type configurationType)
+        {
+            var configuration = (Configuration)null;
+            if (!ConfigurationCache.TryGetValue(configurationType, out configuration))
+            {
+                throw new InvalidOperationException("Configuraiton not loaded.");
+            }
+
+            try
+            {
+                SettingLoader.LoadSettings(configuration, Converters);
+            }
+            catch (Exception ex)
+            {
+                ConfigurationReloadFailed(null, new ConfigurationReloadFailedEventArgs
+                {
+                    Exception = ex
+                });
+            }
+        }
+
+        public static void Save(Type configurationType)
+        {
+            var configuration = (Configuration)null;
+            if (!ConfigurationCache.TryGetValue(configurationType, out configuration))
+            {
+                throw new InvalidOperationException("Configuraiton not loaded.");
+            }
+
+            foreach (var setting in configuration.Settings)
+            {
+                SettingUpdater.UpdateSetting(setting, setting.Value, Converters);
+            }
+        }
+
+       
         /// <summary>
         /// Updates a setting.
         /// </summary>
@@ -75,8 +125,8 @@ namespace SmartConfig
                 throw new MemberNotPropertyException { MemberName = memberExpression.Member.Name };
             }
 
-            var settingInfo = 
-                ConfigurationCache.SelectMany(x => x.Value.SettingInfos)
+            var settingInfo =
+                ConfigurationCache.SelectMany(x => x.Value.Settings)
                 .SingleOrDefault(si => si.Property == property);
 
             if (settingInfo == null)

@@ -42,7 +42,7 @@ namespace SmartConfig.Tests.Data
                 Assert.Fail);
         }
 
-        public class TestSetting : Setting
+        public class TestSetting : BasicSetting
         {
             public string Foo { get; set; }
         }

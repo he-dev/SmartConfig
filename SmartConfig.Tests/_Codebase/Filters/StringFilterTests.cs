@@ -16,12 +16,12 @@ namespace SmartConfig.Tests.Filters
         {
             var testSettings = new[]
             {
-                new TestSetting("a|1.0.0|name|value"),
-                new TestSetting("b|1.0.0|name|value"),
-                new TestSetting("d|1.0.0|name|value"),
+                new CustomTestSetting("a|1.0.0|name|value"),
+                new CustomTestSetting("b|1.0.0|name|value"),
+                new CustomTestSetting("d|1.0.0|name|value"),
             };
 
-            var result = new StringFilter().FilterSettings(testSettings, new SettingKey("Environment", "b"));
+            var result = new StringKeyFilter().Apply(testSettings, new SettingKey("Environment", "b"));
             var setting = result.FirstOrDefault();
             Assert.IsNotNull(setting);
             Assert.AreEqual(testSettings[1], setting);
@@ -32,13 +32,13 @@ namespace SmartConfig.Tests.Filters
         {
             var settings = new[]
             {
-                new TestSetting("a|1.0.0|name|value"),
-                new TestSetting("b|1.0.0|name|value"),
-                new TestSetting("*|1.0.0|name|value"),
-                new TestSetting("d|1.0.0|name|value"),
+                new CustomTestSetting("a|1.0.0|name|value"),
+                new CustomTestSetting("b|1.0.0|name|value"),
+                new CustomTestSetting("*|1.0.0|name|value"),
+                new CustomTestSetting("d|1.0.0|name|value"),
             };
 
-            var result = new StringFilter().FilterSettings(settings, new SettingKey("Environment", "c"));
+            var result = new StringKeyFilter().Apply(settings, new SettingKey("Environment", "c"));
             var setting = result.FirstOrDefault();
             Assert.IsNotNull(setting);
             Assert.AreEqual(settings[2], setting);
@@ -49,12 +49,12 @@ namespace SmartConfig.Tests.Filters
         {
             var settings = new[]
             {
-                new TestSetting("a|1.0.0|name|value"),
-                new TestSetting("b|1.0.0|name|value"),
-                new TestSetting("d|1.0.0|name|value"),
+                new CustomTestSetting("a|1.0.0|name|value"),
+                new CustomTestSetting("b|1.0.0|name|value"),
+                new CustomTestSetting("d|1.0.0|name|value"),
             };
 
-            var result = new StringFilter().FilterSettings(settings, new SettingKey("Environment", "c"));
+            var result = new StringKeyFilter().Apply(settings, new SettingKey("Environment", "c"));
             var setting = result.FirstOrDefault();
             Assert.IsNull(setting);
         }

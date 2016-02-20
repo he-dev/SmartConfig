@@ -33,10 +33,10 @@ namespace SmartConfig.Tests.Data
 
             var settingFilter = dataSource.CustomKeyFilters.First();
             Assert.AreEqual("Foo", settingFilter.Key);
-            Assert.IsInstanceOfType(settingFilter.Value, typeof(StringFilter));
+            Assert.IsInstanceOfType(settingFilter.Value, typeof(StringKeyFilter));
         }
 
-        public class TestDataSource<TSetting> : DataSource<TSetting> where TSetting : Setting, new()
+        public class TestDataSource<TSetting> : DataStore<TSetting> where TSetting : BasicSetting, new()
         {
             public override IReadOnlyCollection<Type> SupportedSettingValueTypes { get; }
 
@@ -51,14 +51,14 @@ namespace SmartConfig.Tests.Data
             }
         }
 
-        public class TestSettingWithoutFilter : Setting
+        public class TestSettingWithoutFilter : BasicSetting
         {
             public string Foo { get; set; }
         }
 
-        public class TestSettingWithFilter : Setting
+        public class TestSettingWithFilter : BasicSetting
         {
-            [Filter(typeof(StringFilter))]
+            [KeyFilter(typeof(StringKeyFilter))]
             public string Foo { get; set; }
         }
     }

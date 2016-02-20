@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SmartConfig.Paths;
 
 namespace SmartConfig
 {
@@ -14,15 +13,15 @@ namespace SmartConfig
 
         public NameKey(SettingKey settingKey)
         {
+            if (settingKey == null) { throw new ArgumentNullException(nameof(settingKey)); }
             if (!(settingKey.Value is SettingPath))
             {
-                throw new InvalidOperationException(
-                    $"{nameof(settingKey)}.{nameof(SettingKey.Value)} must be of type {nameof(SettingPath)}.");
+                throw new InvalidOperationException($"{nameof(settingKey)}.{nameof(SettingKey.Value)} must be of type {nameof(SettingPath)}.");
             }
             _settingKey = settingKey;
         }
 
-        public string Name => nameof(Data.Setting.Name);
+        public string Name => nameof(Data.BasicSetting.Name);
 
         public SettingPath Value => (SettingPath)_settingKey.Value;
 

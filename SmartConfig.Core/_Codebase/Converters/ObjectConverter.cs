@@ -53,7 +53,7 @@ namespace SmartConfig.Converters
         /// Deserializes the value to the specified type.
         /// </summary>
         /// <param name="value">Value to be deserialized.</param>
-        /// <param name="type">SettingType of the value.</param>
+        /// <param name="type">Type of the value.</param>
         /// <param name="attributes"></param>
         /// <returns></returns>
         /// <remarks>It is not necessary to check for null value. <c>configuration</c> dosn't pass null values.</remarks>

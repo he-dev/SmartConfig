@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("FlatConfig")]
+[assembly: AssemblyTitle("SmartConfig")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("FlatConfig")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyProduct("SmartConfig")]
+[assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -36,3 +36,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 [assembly: InternalsVisibleTo("SmartConfig.Tests")]
+[assembly: InternalsVisibleTo("SmartConfig.DataStores.AppConfig.Tests")]
+[assembly: InternalsVisibleTo("SmartConfig.DataStores.IniFile.Tests")]
+[assembly: InternalsVisibleTo("SmartConfig.DataStores.Registry.Tests")]
+[assembly: InternalsVisibleTo("SmartConfig.DataStores.SqlServer.Tests")]
+[assembly: InternalsVisibleTo("SmartConfig.DataStores.XmlFile.Tests")]
