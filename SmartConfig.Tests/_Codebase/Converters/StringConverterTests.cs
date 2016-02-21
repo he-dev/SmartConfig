@@ -1,10 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Converters;
 using SmartUtilities.UnitTesting;
 
-namespace SmartConfig.Tests.Converters
+namespace SmartConfig.Core.Tests.Converters
 {
     [TestClass]
     public class StringConverterTests

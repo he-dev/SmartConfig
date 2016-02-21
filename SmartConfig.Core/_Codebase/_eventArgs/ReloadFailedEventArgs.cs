@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartConfig
 {
-    public class ConfigurationReloadFailedEventArgs : EventArgs
+    public class ReloadFailedEventArgs : EventArgs
     {
         public Exception Exception { get; internal set; }
     }

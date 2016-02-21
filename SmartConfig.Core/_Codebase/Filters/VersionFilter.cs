@@ -9,9 +9,9 @@ namespace SmartConfig.Filters
     /// <summary>
     /// Implements popular filters.
     /// </summary>
-    public class VersionKeyFilter : IKeyFilter
+    public class VersionFilter : ISettingFilter
     {
-        public IEnumerable<IIndexable> Apply(IEnumerable<IIndexable> settings, SettingKey key)
+        public IEnumerable<IIndexable> Apply(IEnumerable<IIndexable> settings, SimpleSettingKey key)
         {
             var filtered = settings
                 // get matching versions

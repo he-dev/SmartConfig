@@ -7,8 +7,8 @@ using SmartConfig.Data;
 
 namespace SmartConfig.Filters
 {
-    public interface IKeyFilter
+    public interface ISettingFilter
     {
-        IEnumerable<IIndexable> Apply(IEnumerable<IIndexable> settings, SettingKey key);
+        IEnumerable<IIndexable> Apply(IEnumerable<IIndexable> settings, SimpleSettingKey key);
     }
 }

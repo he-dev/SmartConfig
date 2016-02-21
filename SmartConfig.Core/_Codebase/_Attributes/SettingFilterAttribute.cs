@@ -8,20 +8,20 @@ using SmartConfig.Filters;
 namespace SmartConfig
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class KeyFilterAttribute : Attribute
+    public class SettingFilterAttribute : Attribute
     {
-        public KeyFilterAttribute(Type filterType)
+        public SettingFilterAttribute(Type filterType)
         {
             if (filterType == null)
             {
                 throw new ArgumentNullException(nameof(filterType));
             }
 
-            if (!typeof(IKeyFilter).IsAssignableFrom(filterType))
+            if (!typeof(ISettingFilter).IsAssignableFrom(filterType))
             {
                 throw new TypeDoesNotImplementInterfaceException
                 {
-                    ExpectedType = typeof(IKeyFilter).FullName,
+                    ExpectedType = typeof(ISettingFilter).FullName,
                     ActualType = filterType.FullName
                 };
             }

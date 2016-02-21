@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SmartConfig.Converters;
 
-namespace SmartConfig.Tests.TestConfigs
+namespace SmartConfig.Core.Tests.TestConfigs
 {
     [SmartConfig]
     public static class JsonSettings

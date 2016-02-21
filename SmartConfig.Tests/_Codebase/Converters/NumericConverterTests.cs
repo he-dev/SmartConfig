@@ -1,10 +1,9 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Converters;
 
-namespace SmartConfig.Tests.Converters.NumericConverterTests
+namespace SmartConfig.Core.Tests.Converters.NumericConverterTests
 {
     [TestClass]
     public class DeserializeTests

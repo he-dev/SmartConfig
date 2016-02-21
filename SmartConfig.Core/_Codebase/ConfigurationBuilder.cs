@@ -34,7 +34,7 @@ namespace SmartConfig
 
         public ConfigurationBuilder HasAdditionalKey(string name, string value)
         {
-            Configuration.AdditionalKeys.Add(new SettingKey(name, value));
+            Configuration.CustomKeys.Add(new SimpleSettingKey(name, value));
             return this;
         }
 

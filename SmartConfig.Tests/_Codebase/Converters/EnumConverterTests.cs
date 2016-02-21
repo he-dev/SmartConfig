@@ -1,9 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Converters;
 
-namespace SmartConfig.Tests.Converters.EnumConverterTests
+namespace SmartConfig.Core.Tests.Converters
 {
     [TestClass]
     public class DeserializeTests

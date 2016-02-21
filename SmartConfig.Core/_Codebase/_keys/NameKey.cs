@@ -9,26 +9,26 @@ namespace SmartConfig
 {
     public class NameKey
     {
-        private readonly SettingKey _settingKey;
+        private readonly SimpleSettingKey _simpleKey;
 
-        public NameKey(SettingKey settingKey)
+        public NameKey(SimpleSettingKey simpleKey)
         {
-            if (settingKey == null) { throw new ArgumentNullException(nameof(settingKey)); }
-            if (!(settingKey.Value is SettingPath))
+            if (simpleKey == null) { throw new ArgumentNullException(nameof(simpleKey)); }
+            if (!(simpleKey.Value is SettingPath))
             {
-                throw new InvalidOperationException($"{nameof(settingKey)}.{nameof(SettingKey.Value)} must be of type {nameof(SettingPath)}.");
+                throw new InvalidOperationException($"{nameof(simpleKey)}.{nameof(SimpleSettingKey.Value)} must be of type {nameof(SettingPath)}.");
             }
-            _settingKey = settingKey;
+            _simpleKey = simpleKey;
         }
 
         public string Name => nameof(Data.BasicSetting.Name);
 
-        public SettingPath Value => (SettingPath)_settingKey.Value;
+        public SettingPath Value => (SettingPath)_simpleKey.Value;
 
         public static implicit operator string(NameKey nameKey)
         {
-            Debug.Assert(nameKey._settingKey.Value is SettingPath, "NameKey.Value must be of type SettingPath.");
-            return nameKey._settingKey.Value.ToString();
+            Debug.Assert(nameKey._simpleKey.Value is SettingPath, "NameKey.Value must be of type SettingPath.");
+            return nameKey._simpleKey.Value.ToString();
         }
 
         public static bool operator ==(NameKey x, NameKey y)

@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-
-namespace SmartConfig.Tests.TestConfigs
+﻿namespace SmartConfig.Core.Tests.TestConfigs
 {
     [SmartConfig]
     public static class CustomRangeSettings

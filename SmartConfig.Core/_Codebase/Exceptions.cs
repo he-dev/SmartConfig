@@ -106,8 +106,8 @@ namespace SmartConfig
     {
         public LoadSettingFailedException(Exception innerException) : base(innerException) { }
 
-        public string DataSourceType { get { return GetValue<string>(); } internal set { SetValue(value); } }
-        public string ConfigurationType { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string DataStore { get { return GetValue<string>(); } internal set { SetValue(value); } }
+        public string Configuration { get { return GetValue<string>(); } internal set { SetValue(value); } }
         public string SettingPath { get { return GetValue<string>(); } internal set { SetValue(value); } }
     }
 

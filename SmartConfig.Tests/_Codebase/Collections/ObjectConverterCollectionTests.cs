@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Collections;
 using SmartConfig.Converters;
-using SmartUtilities.UnitTesting;
 
 // ReSharper disable once CheckNamespace
 namespace SmartConfig.Tests.Collections.ObjectConverterCollectionTests

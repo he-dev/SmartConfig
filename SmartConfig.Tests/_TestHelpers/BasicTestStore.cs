@@ -1,26 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using SmartConfig.Collections;
 using SmartConfig.Data;
 
-namespace SmartConfig.Tests
+namespace SmartConfig.Core.Tests
 {
     public class BasicTestStore : DataStore<BasicSetting>
     {
-        public Func<IEnumerable<SettingKey>, string> SelectFunc;
+        public Func<IEnumerable<SimpleSettingKey>, string> SelectFunc;
 
-        public Action<IEnumerable<SettingKey>, object> UpdateAction;
+        public Action<IEnumerable<SimpleSettingKey>, object> UpdateAction;
 
-        public override IReadOnlyCollection<Type> SupportedSettingValueTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+        public override IReadOnlyCollection<Type> SupportedSettingDataTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
-        public override object Select(SettingKeyCollection keys)
+        public override object Select(CompoundSettingKey keys)
         {
             return SelectFunc(keys);
         }
 
-        public override void Update(SettingKeyCollection keys, object value)
+        public override void Update(CompoundSettingKey keys, object value)
         {
             UpdateAction(keys, value);
         }

@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace SmartConfig.Tests.TestConfigs
+namespace SmartConfig.Core.Tests.TestConfigs
 {
     [SmartConfig]
     public static class ColorSettings

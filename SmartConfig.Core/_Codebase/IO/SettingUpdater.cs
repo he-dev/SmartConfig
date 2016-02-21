@@ -28,7 +28,7 @@ namespace SmartConfig.IO
                 var dataSource = setting.Configuration.DataStore;
                 var converter = converters[setting.ConverterType];
                 value = converter.SerializeObject(value, setting.Type, setting.Atributes);
-                dataSource.Update(setting.Keys, value);
+                dataSource.Update(setting.Key, value);
             }
             catch (Exception ex)
             {

@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartUtilities;
 using ColorConverter = SmartConfig.Converters.ColorConverter;
 
-namespace SmartConfig.Tests.Converters.ColorConverterTests
+namespace SmartConfig.Core.Tests.Converters.ColorConverterTests
 {
     [TestClass]
     public class DeserializeTests

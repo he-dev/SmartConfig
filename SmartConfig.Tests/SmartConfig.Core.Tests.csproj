@@ -6,8 +6,8 @@
     <ProjectGuid>{31CF8B56-2577-4FC9-B711-14CFAA524A2A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SmartConfig.Tests</RootNamespace>
-    <AssemblyName>SmartConfig.Tests</AssemblyName>
+    <RootNamespace>SmartConfig.Core.Tests</RootNamespace>
+    <AssemblyName>SmartConfig.Core.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -83,6 +83,7 @@
     <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\NumericsConfig.cs" />
     <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\BooleanSettings.cs" />
     <Compile Include="_codebase\Collections\ObjectConverterCollectionTests.cs" />
+    <Compile Include="_codebase\Collections\SettingKeyNameCollectionTests.cs" />
     <Compile Include="_codebase\Collections\SettingKeyCollectionTests.cs" />
     <Compile Include="_codebase\ConfigurationBuilderTests.cs" />
     <Compile Include="_codebase\Converters\StringConverterTests.cs" />
@@ -90,7 +91,7 @@
     <Compile Include="_codebase\Converters\DateTimeConverterTests.cs" />
     <Compile Include="_codebase\Converters\NumericConverterTests.cs" />
     <Compile Include="_codebase\Converters\BooleanConverterTests.cs" />
-    <Compile Include="_codebase\Data\DataSourceTests.cs" />
+    <Compile Include="_codebase\Data\DataStoreTests.cs" />
     <Compile Include="_codebase\Data\SettingTests.cs" />
     <Compile Include="_codebase\Converters\ColorConverterTests.cs" />
     <Compile Include="_codebase\Converters\XmlConverterTests.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="_codebase\Filters\MultipleFilterTests.cs" />
     <Compile Include="_codebase\Filters\VersionFilterTests.cs" />
     <Compile Include="_codebase\NameKeyTests.cs" />
+    <Compile Include="_codebase\Collections\SettingCollectionTests.cs" />
     <Compile Include="_codebase\SettingInfoTests.cs" />
     <Compile Include="_codebase\_attributes\KeyFilterAttributeTests.cs" />
     <Compile Include="_codebase\_attributes\ObjectConverterAttributeTests.cs" />

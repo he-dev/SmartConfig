@@ -6,9 +6,9 @@ using SmartConfig.Filters;
 namespace SmartConfig
 {
     [DebuggerDisplay("Name = {Name} Value = {Value}")]
-    public class SettingKey
+    public class SimpleSettingKey
     {        
-        public SettingKey(string name, object value)
+        public SimpleSettingKey(string name, object value)
         {
             if (string.IsNullOrEmpty(name)) { throw new ArgumentNullException(nameof(name)); }
             if (value == null) { throw new ArgumentNullException(nameof(value)); }
@@ -21,7 +21,7 @@ namespace SmartConfig
 
         public object Value { get; }
 
-        public static bool operator ==(SettingKey x, SettingKey y)
+        public static bool operator ==(SimpleSettingKey x, SimpleSettingKey y)
         {
             return
                 !ReferenceEquals(x, null) &&
@@ -30,12 +30,12 @@ namespace SmartConfig
                 x.Value == y.Value;
         }
 
-        public static bool operator !=(SettingKey x, SettingKey y)
+        public static bool operator !=(SimpleSettingKey x, SimpleSettingKey y)
         {
             return !(x == y);
         }
 
-        protected bool Equals(SettingKey other)
+        protected bool Equals(SimpleSettingKey other)
         {
             return string.Equals(Name, other.Name) && Equals(Value, other.Value);
         }
@@ -45,7 +45,7 @@ namespace SmartConfig
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((SettingKey)obj);
+            return Equals((SimpleSettingKey)obj);
         }
 
         public override int GetHashCode()

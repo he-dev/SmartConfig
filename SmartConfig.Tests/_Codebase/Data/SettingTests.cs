@@ -1,9 +1,8 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Data;
 using SmartUtilities.UnitTesting;
 
-namespace SmartConfig.Tests.Data
+namespace SmartConfig.Core.Tests.Data
 {
     [TestClass]
     public class SettingTests_indexer

@@ -14,7 +14,7 @@ namespace SmartConfig.Tests.Attributes.KeyFilterAttributeTests
         {
             ExceptionAssert.Throws<ArgumentNullException>(() =>
             {
-                new KeyFilterAttribute(null);
+                new SettingFilterAttribute(null);
             }, null, Assert.Fail);
         }
 
@@ -23,10 +23,10 @@ namespace SmartConfig.Tests.Attributes.KeyFilterAttributeTests
         {
             ExceptionAssert.Throws<TypeDoesNotImplementInterfaceException>(() =>
             {
-                new KeyFilterAttribute(typeof(string));
+                new SettingFilterAttribute(typeof(string));
             }, ex =>
             {
-                Assert.AreEqual(typeof(IKeyFilter).FullName, ex.ExpectedType);
+                Assert.AreEqual(typeof(ISettingFilter).FullName, ex.ExpectedType);
                 Assert.AreEqual(typeof(string).FullName, ex.ActualType);
             }, Assert.Fail);
         }
@@ -34,7 +34,7 @@ namespace SmartConfig.Tests.Attributes.KeyFilterAttributeTests
         [TestMethod]
         public void CreatesKeyFilterAttribute()
         {
-            new KeyFilterAttribute(typeof(StringKeyFilter));
+            new SettingFilterAttribute(typeof(StringFilter));
             Assert.IsTrue(true);
         }
     }

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Converters;
 
-namespace SmartConfig.Tests.Converters
+namespace SmartConfig.Core.Tests.Converters
 {
     [TestClass]
     public class JsonConverterTests

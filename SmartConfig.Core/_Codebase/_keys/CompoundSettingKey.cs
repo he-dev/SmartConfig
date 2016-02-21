@@ -5,21 +5,21 @@ using System.Linq;
 using System.Reflection;
 using SmartConfig.Data;
 
-namespace SmartConfig.Collections
+namespace SmartConfig
 {
     [DebuggerDisplay("NameKey = {NameKey}")]
-    public class SettingKeyCollection : ReadOnlyCollection<SettingKey>
+    public class CompoundSettingKey : ReadOnlyCollection<SimpleSettingKey>
     {
-        internal SettingKeyCollection(IList<SettingKey> settingKeys)
-            : base(settingKeys)
+        internal CompoundSettingKey(IList<SimpleSettingKey> simpleKeys)
+            : base(simpleKeys)
         { }
 
-        internal SettingKeyCollection(SettingKey nameKey, IEnumerable<SettingKey> otherKeys)
+        internal CompoundSettingKey(SimpleSettingKey nameKey, IEnumerable<SimpleSettingKey> otherKeys)
             : base(new[] { nameKey }.Concat(otherKeys).ToList())
         { }
 
         public NameKey NameKey => new NameKey(this.First());
 
-        public IEnumerable<SettingKey> CustomKeys => this.Skip(1);
+        public IEnumerable<SimpleSettingKey> CustomKeys => this.Skip(1);
     }
 }

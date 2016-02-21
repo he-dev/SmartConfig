@@ -1,10 +1,6 @@
 ﻿// ReSharper disable InconsistentNaming
 
-using System.Collections.Generic;
-using System.Globalization;
-using SmartConfig.Data;
-
-namespace SmartConfig.Tests.TestConfigs
+namespace SmartConfig.Core.Tests.TestConfigs
 {
     [SmartConfig]
     public static class NumericSettings

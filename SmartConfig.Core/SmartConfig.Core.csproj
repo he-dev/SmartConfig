@@ -88,19 +88,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="_codebase\Collections\SettingKeyCollection.cs" />
+    <Compile Include="_codebase\Collections\SettingFilterDictionary.cs" />
+    <Compile Include="_codebase\Collections\SettingCollection.cs" />
+    <Compile Include="_codebase\_keys\CompoundSettingKey.cs" />
     <Compile Include="_codebase\Collections\SettingKeyNameCollection.cs" />
     <Compile Include="_codebase\Exceptions.cs" />
     <Compile Include="_codebase\_attributes\DynamicSettingAttribute.cs" />
-    <Compile Include="_codebase\_eventArgs\ConfigurationReloadFailedEventArgs.cs" />
-    <Compile Include="_codebase\Filters\IKeyFilter.cs" />
-    <Compile Include="_codebase\Filters\StringKeyFilter.cs" />
-    <Compile Include="_codebase\Filters\VersionKeyFilter.cs" />
+    <Compile Include="_codebase\_eventArgs\ReloadFailedEventArgs.cs" />
+    <Compile Include="_codebase\Filters\ISettingFilter.cs" />
+    <Compile Include="_codebase\Filters\StringFilter.cs" />
+    <Compile Include="_codebase\Filters\VersionFilter.cs" />
     <Compile Include="_codebase\Converters\NumericConverter.cs" />
     <Compile Include="_codebase\Converters\BooleanConverter.cs" />
     <Compile Include="_codebase\Data\IIndexable.cs" />
     <Compile Include="_codebase\ConfigurationBuilder.cs" />
-    <Compile Include="_codebase\NameKey.cs" />
+    <Compile Include="_codebase\_keys\NameKey.cs" />
     <Compile Include="_codebase\Setting.cs" />
     <Compile Include="_codebase\Converters\DateTimeConverter.cs" />
     <Compile Include="_codebase\Converters\EnumConverter.cs" />
@@ -109,12 +111,12 @@
     <Compile Include="_codebase\Data\DataStore.cs" />
     <Compile Include="_codebase\IO\SettingLoader.cs" />
     <Compile Include="_codebase\IO\SettingUpdater.cs" />
-    <Compile Include="_codebase\SettingKey.cs" />
+    <Compile Include="_codebase\_keys\SimpleSettingKey.cs" />
     <Compile Include="_codebase\_attributes\SettingNameAttribute.cs" />
     <Compile Include="_codebase\_attributes\_converterParameters\DateTimeFormatAttribute.cs" />
     <Compile Include="_codebase\_attributes\_converterParameters\ConverterParameterAttribute.cs" />
     <Compile Include="_codebase\Wildcards.cs" />
-    <Compile Include="_codebase\_attributes\KeyFilterAttribute.cs" />
+    <Compile Include="_codebase\_attributes\SettingFilterAttribute.cs" />
     <Compile Include="_codebase\_attributes\IgnoreAttribute.cs" />
     <Compile Include="_codebase\_attributes\OptionalAttribute.cs" />
     <Compile Include="_codebase\_attributes\_constraints\RegularExpressionAttribute.cs" />

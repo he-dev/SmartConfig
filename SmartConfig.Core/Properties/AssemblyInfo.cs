@@ -35,7 +35,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
-[assembly: InternalsVisibleTo("SmartConfig.Tests")]
+[assembly: InternalsVisibleTo("SmartConfig.Core.Tests")]
 [assembly: InternalsVisibleTo("SmartConfig.DataStores.AppConfig.Tests")]
 [assembly: InternalsVisibleTo("SmartConfig.DataStores.IniFile.Tests")]
 [assembly: InternalsVisibleTo("SmartConfig.DataStores.Registry.Tests")]

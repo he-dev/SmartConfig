@@ -1,4 +1,4 @@
-﻿namespace SmartConfig.Tests
+﻿namespace SmartConfig.Core.Tests
 {
     public enum TestEnum
     {

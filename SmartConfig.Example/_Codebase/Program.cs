@@ -64,8 +64,8 @@ namespace SmartConfig.Examples
             //    SettingsInitializationEnabled = false,
             //    SettingKeys = new []
             //    {
-            //        new SettingKey(SettingKeyNames.EnvironmentKeyName, "ABC", Filters.FilterByString),
-            //        new SettingKey(SettingKeyNames.VersionKeyName, "1.0.0", Filters.FilterByVersion )
+            //        new SimpleSettingKey(SettingKeyNames.EnvironmentKeyName, "ABC", Filters.FilterByString),
+            //        new SimpleKey(SettingKeyNames.VersionKeyName, "1.0.0", Filters.FilterByVersion )
             //    }
             //});
         }

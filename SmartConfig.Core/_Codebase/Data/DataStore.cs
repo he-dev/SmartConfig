@@ -14,53 +14,35 @@ namespace SmartConfig.Data
     {
         protected DataStore()
         {
-            const BindingFlags customPropertiesBindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
-
-            CustomKeyFilters =
-                typeof(TSetting) == typeof(BasicSetting)
-                // create an empty dictionary if the TSetting is not derived from Setting
-                ? new Dictionary<string, IKeyFilter>()
-                // get custom properties from the derived TSetting type and create filters
-                : typeof(TSetting).GetProperties(customPropertiesBindingFlags).ToDictionary(x => x.Name, x =>
-                {
-                    var filterAttribute = x.GetCustomAttribute<KeyFilterAttribute>();
-                    if (filterAttribute == null)
-                    {
-                        throw new FilterAttributeMissingException
-                        {
-                            DeclaringTypeName = typeof(TSetting).FullName,
-                            PropertyName = x.Name,
-                        };
-                    }
-                    var settingFilter = (IKeyFilter)Activator.CreateInstance(filterAttribute.FilterType);
-                    return settingFilter;
-                });
+            SettingFilters = SettingFilterDictionary.Create<TSetting>();
         }
 
         /// <summary>
         /// Gets filters for custom keys.
         /// </summary>
-        internal IDictionary<string, IKeyFilter> CustomKeyFilters { get; }
+        internal SettingFilterDictionary SettingFilters { get; }
 
-        public abstract IReadOnlyCollection<Type> SupportedSettingValueTypes { get; }
+        public abstract IReadOnlyCollection<Type> SupportedSettingDataTypes { get; }
 
-        public bool NotifyChanged { get; set; }
+        public bool ChangedNotificationSupported { get; protected set; } = false;
+
+        public virtual bool ChangedNotificationEnabled { get; set; } = false;
 
         public event EventHandler<DataStoreChangedEventArgs> Changed = delegate { };
 
-        public abstract object Select(SettingKeyCollection keys);
+        public abstract object Select(CompoundSettingKey keys);
 
-        public abstract void Update(SettingKeyCollection keys, object value);
+        public abstract void Update(CompoundSettingKey keys, object value);
 
         /// <summary>
         /// Applies all of the specified filters.
         /// </summary>
-        protected IEnumerable<TSetting> ApplyFilters(IEnumerable<TSetting> settings, IEnumerable<SettingKey> customKeys)
+        protected IEnumerable<TSetting> ApplyFilters(IEnumerable<TSetting> settings, IEnumerable<SimpleSettingKey> customKeys)
         {
             settings =
                 customKeys.Aggregate(
                     settings,
-                    (current, key) => CustomKeyFilters[key.Name].Apply(current, key).Cast<TSetting>()
+                    (current, key) => SettingFilters[key.Name].Apply(current, key).Cast<TSetting>()
                 );
             return settings;
         }

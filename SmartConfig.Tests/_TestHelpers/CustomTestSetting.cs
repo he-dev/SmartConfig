@@ -1,7 +1,7 @@
 ﻿using SmartConfig.Data;
 using SmartConfig.Filters;
 
-namespace SmartConfig.Tests
+namespace SmartConfig.Core.Tests
 {
     public class CustomTestSetting : BasicSetting
     {
@@ -16,10 +16,10 @@ namespace SmartConfig.Tests
             Value = columns[3];
         }
 
-        [KeyFilter(typeof(StringKeyFilter))]
+        [SettingFilter(typeof(StringFilter))]
         public string Environment { get; set; }
 
-        [KeyFilter(typeof(VersionKeyFilter))]
+        [SettingFilter(typeof(VersionFilter))]
         public string Version { get; set; }
     }
 }

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SmartConfig.Collections;
 
 // ReSharper disable once CheckNamespace
 namespace SmartConfig.Tests.Collections.SettingKeyCollectionTests
@@ -12,10 +10,10 @@ namespace SmartConfig.Tests.Collections.SettingKeyCollectionTests
         [TestMethod]
         public void GetsNameKey()
         {
-            var settingKeyCollection = new SettingKeyCollection(
-                new SettingKey("foo", new SettingPath(null, "bar")),
-                Enumerable.Empty<SettingKey>());
-            var expectedNameKey = new NameKey(new SettingKey("foo", new SettingPath(null, "bar")));
+            var settingKeyCollection = new CompoundSettingKey(
+                new SimpleSettingKey("foo", new SettingPath(null, "bar")),
+                Enumerable.Empty<SimpleSettingKey>());
+            var expectedNameKey = new NameKey(new SimpleSettingKey("foo", new SettingPath(null, "bar")));
 
             Assert.IsTrue(settingKeyCollection.NameKey == expectedNameKey);
         }
@@ -27,18 +25,18 @@ namespace SmartConfig.Tests.Collections.SettingKeyCollectionTests
         [TestMethod]
         public void GetsCustomKeys()
         {
-            var settingKeyCollection = new SettingKeyCollection(
-                new SettingKey("foo", new SettingPath(null, "bar")),
+            var settingKeyCollection = new CompoundSettingKey(
+                new SimpleSettingKey("foo", new SettingPath(null, "bar")),
                 new[]
                 {
-                    new SettingKey("baz", "qux"),
-                    new SettingKey("buq", "bax")
+                    new SimpleSettingKey("baz", "qux"),
+                    new SimpleSettingKey("buq", "bax")
                 });
 
             var expectedCustomKeys = new[]
             {
-                new SettingKey("baz", "qux"),
-                new SettingKey("buq", "bax")
+                new SimpleSettingKey("baz", "qux"),
+                new SimpleSettingKey("buq", "bax")
             };
 
             CollectionAssert.AreEqual(expectedCustomKeys, settingKeyCollection.CustomKeys.ToList());

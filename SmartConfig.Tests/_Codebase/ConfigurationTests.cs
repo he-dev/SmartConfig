@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Converters;
-using SmartConfig.Data;
-using SmartConfig.Tests.TestConfigs;
+using SmartConfig.Core.Tests;
+using SmartConfig.Core.Tests.TestConfigs;
 using SmartUtilities.UnitTesting;
+
 // ReSharper disable InconsistentNaming
 
 // ReSharper disable once CheckNamespace

@@ -17,9 +17,11 @@ namespace SmartConfig.Data
     /// </summary>
     public interface IDataStore
     {
-        IReadOnlyCollection<Type> SupportedSettingValueTypes { get; }
+        IReadOnlyCollection<Type> SupportedSettingDataTypes { get; }
 
-        bool NotifyChanged { get; set; }
+        bool ChangedNotificationSupported { get; }
+
+        bool ChangedNotificationEnabled { get; set; }
 
         event EventHandler<DataStoreChangedEventArgs> Changed;
 
@@ -28,15 +30,13 @@ namespace SmartConfig.Data
         /// </summary>
         /// <param name="keys"></param>
         /// <returns></returns>
-        object Select(SettingKeyCollection keys);
-
-        //IEnumerable<> 
+        object Select(CompoundSettingKey keys);
 
         /// <summary>
         /// Updates data in the data source.
         /// </summary>
         /// <param name="keys"></param>
         /// <param name="value"></param>
-        void Update(SettingKeyCollection keys, object value);
+        void Update(CompoundSettingKey keys, object value);
     }
 }

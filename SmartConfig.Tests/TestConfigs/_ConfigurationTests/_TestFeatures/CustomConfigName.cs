@@ -1,4 +1,4 @@
-﻿namespace SmartConfig.Tests.TestConfigs
+﻿namespace SmartConfig.Core.Tests.TestConfigs
 {
     [SmartConfig]
     [SettingName("ABC")]

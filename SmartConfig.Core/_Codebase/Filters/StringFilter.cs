@@ -9,9 +9,9 @@ namespace SmartConfig.Filters
     /// <summary>
     /// Implements a string filter.
     /// </summary>
-    public class StringKeyFilter : IKeyFilter
+    public class StringFilter : ISettingFilter
     {
-        public IEnumerable<IIndexable> Apply(IEnumerable<IIndexable> settings, SettingKey key)
+        public IEnumerable<IIndexable> Apply(IEnumerable<IIndexable> settings, SimpleSettingKey key)
         {
             var result = settings
                     .Where(setting => setting[key.Name].Equals(key.Value.ToString(), StringComparison.OrdinalIgnoreCase))

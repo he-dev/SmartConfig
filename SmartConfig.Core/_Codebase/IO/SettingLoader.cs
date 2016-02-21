@@ -9,24 +9,20 @@ namespace SmartConfig.IO
 {
     internal class SettingLoader
     {
-        /// <summary>
-        /// Loads settings for a a configuration from the specified data source.
-        /// </summary>
         internal static void LoadSettings(Configuration configuration, ObjectConverterCollection converters)
         {
             Debug.Assert(configuration != null);
             Debug.Assert(converters != null);
 
+            // try to load all settings first
             var settingValues = new Dictionary<string, object>();
-
             foreach (var setting in configuration.Settings)
             {
-                var value = LoadSetting(setting, configuration.DataStore, converters);
+                var value = LoadSetting(setting, converters);
                 settingValues[setting.Path] = value;
             }
 
-            // todo, according to invalid setting handling either skip invalid settings or abort loading
-
+            // now update the model but skip optional null settings
             foreach (var setting in configuration.Settings.Where(setting => !setting.IsOptional || settingValues[setting.Path] != null))
             {
                 setting.Value = settingValues[setting.Path];
@@ -34,25 +30,25 @@ namespace SmartConfig.IO
         }
 
         // loads a setting from a data source into the correspondig field in the configuration class
-        private static object LoadSetting(Setting setting, IDataStore dataSource, ObjectConverterCollection converters)
+        private static object LoadSetting(Setting setting, ObjectConverterCollection converters)
         {
             Debug.Assert(setting != null);
-            Debug.Assert(dataSource != null);
             Debug.Assert(converters != null);
 
             try
             {
-                var data = dataSource.Select(setting.Keys);
+                var data = setting.Configuration.DataStore.Select(setting.Key);
 
                 // don't let pass null data to the converter
                 if (data == null)
                 {
-                    // null is ok if the setting is optional
+                    // return null if the setting is optional
                     if (setting.IsOptional)
                     {
                         return null;
                     }
 
+                    // otherwise null is not allowed
                     throw new SettingNotOptionalException
                     {
                         ConfigurationType = setting.Configuration.Type.Name,
@@ -69,8 +65,8 @@ namespace SmartConfig.IO
             {
                 throw new LoadSettingFailedException(ex)
                 {
-                    DataSourceType = dataSource.GetType().Name,
-                    ConfigurationType = setting.Configuration.Type.FullName,
+                    DataStore = setting.Configuration.DataStore.GetType().Name,
+                    Configuration = setting.Configuration.Type.FullName,
                     SettingPath = setting.Path
                 };
             }

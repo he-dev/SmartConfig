@@ -3,7 +3,7 @@ using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Converters;
 
-namespace SmartConfig.Tests.Converters
+namespace SmartConfig.Core.Tests.Converters
 {
     [TestClass]
     public class XmlConverterTests

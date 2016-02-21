@@ -62,53 +62,53 @@ namespace SmartConfig
             return path;
         }
 
-        /// <summary>
-        /// Gets configuration types without ignored types and SmartConfig properties type.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        public static IEnumerable<Type> GetConfigurationTypes(this Type type, List<Type> result = null)
-        {
-            if (type == null) { throw new ArgumentNullException(nameof(type)); }
+        ///// <summary>
+        ///// Gets configuration types without ignored types and SmartConfig properties type.
+        ///// </summary>
+        ///// <param name="type"></param>
+        ///// <param name="result"></param>
+        ///// <returns></returns>
+        //public static IEnumerable<Type> GetConfigurationTypes(this Type type, List<Type> result = null)
+        //{
+        //    if (type == null) { throw new ArgumentNullException(nameof(type)); }
 
-            if (!type.IsStatic())
-            {
-                throw new TypeNotStaticException { Type = type.FullName };
-            }
+        //    if (!type.IsStatic())
+        //    {
+        //        throw new TypeNotStaticException { Type = type.FullName };
+        //    }
 
-            result = result ?? new List<Type> { type };
+        //    result = result ?? new List<Type> { type };
 
-            var nestedTypes = type.GetNestedTypes(BindingFlags.Public | BindingFlags.Public);
-            result.AddRange(nestedTypes);
+        //    var nestedTypes = type.GetNestedTypes(BindingFlags.Public | BindingFlags.Public);
+        //    result.AddRange(nestedTypes);
 
-            foreach (var nestedType in nestedTypes)
-            {
-                nestedType.GetConfigurationTypes(result);
-            }
+        //    foreach (var nestedType in nestedTypes)
+        //    {
+        //        nestedType.GetConfigurationTypes(result);
+        //    }
 
-            return result.Where(t => !t.HasAttribute<IgnoreAttribute>());
-        }
+        //    return result.Where(t => !t.HasAttribute<IgnoreAttribute>());
+        //}
 
-        /// <summary>
-        /// Gets Settings without ignored properties.
-        /// </summary>
-        /// <param name="configuration"></param>
-        /// <returns></returns>
-        public static IEnumerable<Setting> GetSettings(this Configuration configuration)
-        {
-            if (configuration == null) { throw new ArgumentNullException(nameof(configuration)); }
+        ///// <summary>
+        ///// Gets Settings without ignored properties.
+        ///// </summary>
+        ///// <param name="configuration"></param>
+        ///// <returns></returns>
+        //public static IEnumerable<Setting> GetSettings(this Configuration configuration)
+        //{
+        //    if (configuration == null) { throw new ArgumentNullException(nameof(configuration)); }
 
-            var types = configuration.Type.GetConfigurationTypes();
+        //    var types = configuration.Type.GetConfigurationTypes();
 
-            var settingInfos = types
-                .Select(t => t.GetProperties(BindingFlags.Public | BindingFlags.Static))
-                .SelectMany(sis => sis)
-                .Where(p => !p.HasAttribute<IgnoreAttribute>())
-                .Select(p => new Setting(p, configuration));
+        //    var settingInfos = types
+        //        .Select(t => t.GetProperties(BindingFlags.Public | BindingFlags.Static))
+        //        .SelectMany(sis => sis)
+        //        .Where(p => !p.HasAttribute<IgnoreAttribute>())
+        //        .Select(p => new Setting(p, configuration));
 
-            return settingInfos;
-        }        
+        //    return settingInfos;
+        //}        
 
         public static bool HasAttribute<T>(this MemberInfo memberInfo) where T : Attribute
         {

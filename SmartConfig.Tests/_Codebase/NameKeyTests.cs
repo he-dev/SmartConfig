@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace SmartConfig.Tests.NameKeyTests
+namespace SmartConfig.Core.Tests
 {
     [TestClass]
     public class ctor
@@ -17,14 +17,14 @@ namespace SmartConfig.Tests.NameKeyTests
         [ExpectedException(typeof(InvalidOperationException))]
         public void RequiresSettingKeyValueIsSettingPath()
         {
-            new NameKey(new SettingKey("foo", "bar"));
+            new NameKey(new SimpleSettingKey("foo", "bar"));
         }
 
         [TestMethod]
         public void CreatesNameKey()
         {
             var nameKey = new NameKey(
-                new SettingKey("foo", 
+                new SimpleSettingKey("foo", 
                 new SettingPath("bar", "baz", "qux")));
 
             // Assert.AreEqual("bar.baz.qux", nameKey.ToString());
@@ -39,7 +39,7 @@ namespace SmartConfig.Tests.NameKeyTests
         public void ConvertsNameKeyToString()
         {
             var nameKey = new NameKey(
-                new SettingKey("foo",
+                new SimpleSettingKey("foo",
                 new SettingPath("bar", "baz", "qux")));
 
             Assert.AreEqual("bar.baz.qux", (string)nameKey);

@@ -11,7 +11,7 @@ namespace SmartConfig
     /// <summary>
     /// Represents a single setting info.
     /// </summary>
-    [DebuggerDisplay("ConfigurationType = {Configuration.Type.Name} SettingPath = \"{Path}\"")]
+    [DebuggerDisplay("Configuration = {Configuration.Type.Name} SettingPath = \"{Path}\"")]
     internal class Setting
     {
         public Setting(PropertyInfo propertyInfo, Configuration configuration)
@@ -45,9 +45,9 @@ namespace SmartConfig
 
         public SettingPath Path { get; }
 
-        public SettingKeyCollection Keys => new SettingKeyCollection(
-            new SettingKey(BasicSetting.DefaultKeyName, Path),
-            Configuration.AdditionalKeys);
+        public CompoundSettingKey Key => new CompoundSettingKey(
+            new SimpleSettingKey(BasicSetting.DefaultKeyName, Path),
+            Configuration.CustomKeys);
 
         public IEnumerable<Attribute> Atributes => Property?.GetCustomAttributes(false).Cast<Attribute>() ?? Enumerable.Empty<Attribute>();
 

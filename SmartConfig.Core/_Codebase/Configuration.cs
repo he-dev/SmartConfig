@@ -17,7 +17,7 @@ namespace SmartConfig
     /// </summary>
     public class Configuration
     {
-        private static readonly IDictionary<Type, Configuration> ConfigurationCache = new Dictionary<Type, Configuration>();
+        private static readonly IDictionary<Type, Configuration> Cache = new Dictionary<Type, Configuration>();
 
         /// <summary>
         /// Gets the current converters and allows to add additional ones.
@@ -38,7 +38,7 @@ namespace SmartConfig
         {
             Type = configurationType;
             Name = Type.GetCustomAttribute<SettingNameAttribute>()?.SettingName;
-            Settings = new ReadOnlyCollection<Setting>(this.GetSettings().ToList());
+            Settings = SettingCollection.Create(this);
         }
 
         internal Type Type { get; }
@@ -49,9 +49,9 @@ namespace SmartConfig
 
         internal IDataStore DataStore { get; set; }
 
-        internal List<SettingKey> AdditionalKeys { get; set; } = new List<SettingKey>();
+        internal List<SimpleSettingKey> CustomKeys { get; set; } = new List<SimpleSettingKey>();
 
-        public static event EventHandler<ConfigurationReloadFailedEventArgs> ConfigurationReloadFailed = delegate { };
+        public static event EventHandler<ReloadFailedEventArgs> ReloadFailed = delegate { };
 
         public static ConfigurationBuilder Use(Type configurationType)
         {
@@ -61,13 +61,13 @@ namespace SmartConfig
         internal static void Load(Configuration configuration)
         {
             SettingLoader.LoadSettings(configuration, Converters);
-            ConfigurationCache[configuration.Type] = configuration;
+            Cache[configuration.Type] = configuration;
         }
 
         public static void Reload(Type configurationType)
         {
             var configuration = (Configuration)null;
-            if (!ConfigurationCache.TryGetValue(configurationType, out configuration))
+            if (!Cache.TryGetValue(configurationType, out configuration))
             {
                 throw new InvalidOperationException("Configuraiton not loaded.");
             }
@@ -78,7 +78,7 @@ namespace SmartConfig
             }
             catch (Exception ex)
             {
-                ConfigurationReloadFailed(null, new ConfigurationReloadFailedEventArgs
+                ReloadFailed(null, new ReloadFailedEventArgs
                 {
                     Exception = ex
                 });
@@ -88,7 +88,7 @@ namespace SmartConfig
         public static void Save(Type configurationType)
         {
             var configuration = (Configuration)null;
-            if (!ConfigurationCache.TryGetValue(configurationType, out configuration))
+            if (!Cache.TryGetValue(configurationType, out configuration))
             {
                 throw new InvalidOperationException("Configuraiton not loaded.");
             }
@@ -126,7 +126,7 @@ namespace SmartConfig
             }
 
             var settingInfo =
-                ConfigurationCache.SelectMany(x => x.Value.Settings)
+                Cache.SelectMany(x => x.Value.Settings)
                 .SingleOrDefault(si => si.Property == property);
 
             if (settingInfo == null)

@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Converters;
-using SmartConfig.Filters;
 using SmartUtilities.UnitTesting;
 
-namespace SmartConfig.Tests.ObjectConverterAttributeTests
+namespace SmartConfig.Core.Tests.ObjectConverterAttributeTests
 {
     [TestClass]
     public class ctor

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SmartConfig.Converters;
-using SmartConfig.Tests.TestConfigs;
 using SmartUtilities.UnitTesting;
 
 // ReSharper disable once CheckNamespace

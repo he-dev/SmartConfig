@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SmartConfig.Core.Tests;
 using SmartConfig.Data;
 
 // ReSharper disable once CheckNamespace
@@ -164,102 +165,102 @@ namespace SmartConfig.Tests.Reflection.ReflectorTests
         }
     }
 
-    [TestClass]
-    public class GetConfigurationTypes
-    {
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void RequiresType()
-        {
-            var types = ((Type)null).GetConfigurationTypes();
-        }
+    //[TestClass]
+    //public class GetConfigurationTypes
+    //{
+    //    [TestMethod]
+    //    [ExpectedException(typeof(ArgumentNullException))]
+    //    public void RequiresType()
+    //    {
+    //        var types = ((Type)null).GetConfigurationTypes();
+    //    }
 
-        [TestMethod]
-        [ExpectedException(typeof(TypeNotStaticException))]
-        public void RequiresTypeIsStatic()
-        {
-            var types = typeof(Bar).GetConfigurationTypes();
-        }
+    //    [TestMethod]
+    //    [ExpectedException(typeof(TypeNotStaticException))]
+    //    public void RequiresTypeIsStatic()
+    //    {
+    //        var types = typeof(Bar).GetConfigurationTypes();
+    //    }
 
-        [TestMethod]
-        public void GetsOnlyRelevantTypes()
-        {
-            var types = typeof(Foo).GetConfigurationTypes().ToList();
-            Assert.AreEqual(6, types.Count);
+    //    [TestMethod]
+    //    public void GetsOnlyRelevantTypes()
+    //    {
+    //        var types = typeof(Foo).GetConfigurationTypes().ToList();
+    //        Assert.AreEqual(6, types.Count);
 
-            // make sure the types that shouldn't be there aren't there
-            //Assert.IsNull(types.SingleOrDefault(t => t == typeof(Foo.Bar)));
-            Assert.IsNull(types.SingleOrDefault(t => t == typeof(Foo.SubFoo2.Baz)));
-        }
+    //        // make sure the types that shouldn't be there aren't there
+    //        //Assert.IsNull(types.SingleOrDefault(t => t == typeof(Foo.Bar)));
+    //        Assert.IsNull(types.SingleOrDefault(t => t == typeof(Foo.SubFoo2.Baz)));
+    //    }
 
-        [SmartConfig]
-        static class Foo
-        {
-            //[SmartConfigProperties]
-            //public static class Bar { }
+    //    [SmartConfig]
+    //    static class Foo
+    //    {
+    //        //[SmartConfigProperties]
+    //        //public static class Bar { }
 
-            public static class SubFoo1 { }
+    //        public static class SubFoo1 { }
 
-            public static class SubFoo2
-            {
-                public static class SubSubFoo1
-                {
-                    public static class SubSubSubFoo1 { }
-                }
+    //        public static class SubFoo2
+    //        {
+    //            public static class SubSubFoo1
+    //            {
+    //                public static class SubSubSubFoo1 { }
+    //            }
 
-                public static class SubSubFoo2 { }
+    //            public static class SubSubFoo2 { }
 
-                [Ignore]
-                public static class Baz { }
-            }
-        }
+    //            [Ignore]
+    //            public static class Baz { }
+    //        }
+    //    }
 
-        [SmartConfig]
-        private static class Bar
-        {
-            public static class SubBar1
-            {
-            }
+    //    [SmartConfig]
+    //    private static class Bar
+    //    {
+    //        public static class SubBar1
+    //        {
+    //        }
 
-            public class SubBar2
-            {
-            }
-        }
-    }
+    //        public class SubBar2
+    //        {
+    //        }
+    //    }
+    //}
 
-    [TestClass]
-    public class GetSettingInfos
-    {
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void RequiresConfigurationInfo()
-        {
-            ((Configuration)null).GetSettings();
-        }
+    //[TestClass]
+    //public class GetSettingInfos
+    //{
+    //    [TestMethod]
+    //    [ExpectedException(typeof(ArgumentNullException))]
+    //    public void RequiresConfigurationInfo()
+    //    {
+    //        ((Configuration)null).GetSettings();
+    //    }
 
-        [TestMethod]
-        public void GetsRelevantSettingInfos()
-        {
-            var configurationInfo = new Configuration(typeof(Foo));
-            var settingInfos = configurationInfo.GetSettings().ToList();
-            Assert.AreEqual(3, settingInfos.Count);
-        }
+    //    [TestMethod]
+    //    public void GetsRelevantSettingInfos()
+    //    {
+    //        var configurationInfo = new Configuration(typeof(Foo));
+    //        var settingInfos = configurationInfo.GetSettings().ToList();
+    //        Assert.AreEqual(3, settingInfos.Count);
+    //    }
 
-        [SmartConfig]
-        static class Foo
-        {
-            static public string Bar1 { get; set; }
-            static public string Bar2 { get; set; }
+    //    [SmartConfig]
+    //    static class Foo
+    //    {
+    //        static public string Bar1 { get; set; }
+    //        static public string Bar2 { get; set; }
 
-            public static class SubFoo
-            {
-                static public string Baz1 { get; set; }
+    //        public static class SubFoo
+    //        {
+    //            static public string Baz1 { get; set; }
 
-                [Ignore]
-                static public string Baz2 { get; set; }
-            }
-        }
-    }
+    //            [Ignore]
+    //            static public string Baz2 { get; set; }
+    //        }
+    //    }
+    //}
 
     [TestClass]
     public class GetSettingKeyNames
