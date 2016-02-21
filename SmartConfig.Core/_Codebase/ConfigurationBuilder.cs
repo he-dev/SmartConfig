@@ -38,7 +38,7 @@ namespace SmartConfig
             return this;
         }
 
-        public void LoadFrom(IDataStore dataStore)
+        public void From(IDataStore dataStore)
         {
             if (dataStore == null)
             {

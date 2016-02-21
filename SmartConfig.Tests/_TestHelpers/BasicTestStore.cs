@@ -7,9 +7,9 @@ namespace SmartConfig.Core.Tests
 {
     public class BasicTestStore : DataStore<BasicSetting>
     {
-        public Func<IEnumerable<SimpleSettingKey>, string> SelectFunc;
+        public Func<CompoundSettingKey, string> SelectFunc;
 
-        public Action<IEnumerable<SimpleSettingKey>, object> UpdateAction;
+        public Action<CompoundSettingKey, object> UpdateAction;
 
         public override IReadOnlyCollection<Type> SupportedSettingDataTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 

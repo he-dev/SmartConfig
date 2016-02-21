@@ -44,9 +44,6 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -79,9 +76,6 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\NumericSettings.cs" />
-    <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\NumericsConfig.cs" />
-    <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\BooleanSettings.cs" />
     <Compile Include="_codebase\Collections\ObjectConverterCollectionTests.cs" />
     <Compile Include="_codebase\Collections\SettingKeyNameCollectionTests.cs" />
     <Compile Include="_codebase\Collections\SettingKeyCollectionTests.cs" />
@@ -107,27 +101,12 @@
     <Compile Include="_codebase\ReflectorTests.cs" />
     <Compile Include="_codebase\ConfigurationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\ColorSettings.cs" />
-    <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\XmlSettings.cs" />
-    <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\DateTimeSettings.cs" />
-    <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\_Contraints\CustomRegularExpressionSettings.cs" />
-    <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\_Contraints\CustomRangeSettings.cs" />
-    <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\_Contraints\CustomDateTimeFormatSettings.cs" />
-    <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\UnsupportedTypeSettings.cs" />
     <Compile Include="_codebase\Filters\StringFilterTests.cs" />
-    <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\OptionalSettings.cs" />
-    <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\JsonSettings.cs" />
-    <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\EnumSettings.cs" />
-    <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\StringSettings.cs" />
-    <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\NonOptionalSettings.cs" />
     <Compile Include="_testHelpers\CustomTestSetting.cs" />
     <Compile Include="_testHelpers\BasicTestStore.cs" />
+    <Compile Include="_testHelpers\TestModels.cs" />
     <Compile Include="_testHelpers\TestEnum.cs" />
     <Compile Include="_codebase\_attributes\_constraints\RangeAttributeTests.cs" />
-    <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\NestedSettings.cs" />
-    <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\CustomConfigName.cs" />
-    <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\ValueTypesTestConfig.cs" />
-    <Compile Include="TestConfigs\_ConfigurationTests\_TestFeatures\VersionTestConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

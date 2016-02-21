@@ -69,7 +69,7 @@ namespace SmartConfig.Core.Tests.Data.DataStoreTests
         [TestMethod]
         public void ReceivesCompundKeyWithoutModelName()
         {
-            Configuration.Use(typeof(Foo)).LoadFrom(new TestDataStore<BasicSetting>
+            Configuration.Load(typeof(Foo)).From(new TestDataStore<BasicSetting>
             {
                 SelectFunc = key =>
                 {
@@ -85,7 +85,7 @@ namespace SmartConfig.Core.Tests.Data.DataStoreTests
         [TestMethod]
         public void ReceivesCompundKeyWithModelName()
         {
-            Configuration.Use(typeof(Foo2)).LoadFrom(new TestDataStore<BasicSetting>
+            Configuration.Load(typeof(Foo2)).From(new TestDataStore<BasicSetting>
             {
                 SelectFunc = key =>
                 {
@@ -101,7 +101,7 @@ namespace SmartConfig.Core.Tests.Data.DataStoreTests
         [TestMethod]
         public void ReceivesCompundKeyWithFilters()
         {
-            Configuration.Use(typeof(Foo)).HasAdditionalKey("Qux", "bax").LoadFrom(new TestDataStore<CustomTestSetting>
+            Configuration.Load(typeof(Foo)).HasAdditionalKey("Qux", "bax").From(new TestDataStore<CustomTestSetting>
             {
                 SelectFunc = key =>
                 {

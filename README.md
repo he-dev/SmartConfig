@@ -1,4 +1,4 @@
-# SmartConfig v4.5
+# SmartConfig v5.0
 Because creating configurations should be easy!
 
 **`SmartConfig`** is a configuration framework that makes writing configurations easier then ever. 

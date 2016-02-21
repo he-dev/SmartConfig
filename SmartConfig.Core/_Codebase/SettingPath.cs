@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 
@@ -10,49 +11,30 @@ namespace SmartConfig
     /// Provides utility methods for creating configuration element names.
     /// </summary>
     [DebuggerDisplay("{ToString()}")]
-    public class SettingPath : IEnumerable<string>
+    public class SettingPath : ReadOnlyCollection<string>
     {
-        internal const int ConfigurationNameIndex = 0;
+        protected SettingPath(IList<string> list) : base(list) { }
 
-        private readonly List<string> _path = new List<string>();
-
-        protected SettingPath() { }
-
-        public SettingPath(string configName, IEnumerable<string> path)
+        public SettingPath(string configName, IEnumerable<string> path) : this(new[] { configName }.Concat(path).ToList())
         {
             if (path == null) { throw new ArgumentNullException(nameof(path)); }
             if (!path.Any()) { throw new ArgumentException("Identifiers must not be empty."); }
-
-            _path.Add(configName);
-            _path.AddRange(path);
         }
 
-        // supports path creation for unit tests
-        internal SettingPath(string configName, params string[] path) : this(configName, (IEnumerable<string>)path) { }
+        // provides easy path creation for unit tests
+        internal SettingPath(string configName, params string[] path) : this(new[] { configName }.Concat(path).ToList()) { }
 
         public string Delimiter { get; set; } = ".";
 
-        public int Length => _path.Count;
+        public bool ContainsConfigurationName => !string.IsNullOrEmpty(this.FirstOrDefault());
 
-        public bool ContainsConfigurationName => !string.IsNullOrEmpty(_path.FirstOrDefault());
+        public string ConfigurationName => this.FirstOrDefault();
 
-        public string ConfigurationName => _path.FirstOrDefault();
-
-        public IEnumerable<string> WithoutConfigurationName => _path.Skip(1);
+        public IEnumerable<string> WithoutConfigurationName => this.Skip(1);
 
         public override string ToString()
         {
-            return string.Join(Delimiter, _path.Where(n => !string.IsNullOrEmpty(n)));
-        }
-
-        public IEnumerator<string> GetEnumerator()
-        {
-            return _path.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
+            return string.Join(Delimiter, this.Where(n => !string.IsNullOrEmpty(n)));
         }
 
         public static implicit operator string(SettingPath settingPath)
@@ -65,12 +47,30 @@ namespace SmartConfig
             return
                 !ReferenceEquals(x, null) &&
                 !ReferenceEquals(y, null) &&
-                x._path.SequenceEqual(y._path);
+                x.SequenceEqual(y);
         }
 
         public static bool operator !=(SettingPath x, SettingPath y)
         {
             return !(x == y);
+        }
+
+        protected bool Equals(SettingPath other)
+        {
+            return this == other;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((SettingPath)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return ToString().GetHashCode();
         }
     }
 }

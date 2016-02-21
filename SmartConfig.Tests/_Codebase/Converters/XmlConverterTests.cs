@@ -3,45 +3,74 @@ using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Converters;
 
-namespace SmartConfig.Core.Tests.Converters
+namespace SmartConfig.Core.Tests.Converters.XmlConverterTests
 {
     [TestClass]
-    public class XmlConverterTests
+    public class DeserializeTests
     {
         [TestMethod]
-        public void DeserializeObject_CanDeserializeXDocument()
+        public void DeserializesXDocument()
         {
             const string xDocument = @"<?xml version=""1.0""?><testXml></testXml>";
 
             var converter = new XmlConverter();
-            Assert.AreEqual(XDocument.Parse(xDocument).ToString(), converter.DeserializeObject(xDocument, typeof(XDocument), Enumerable.Empty<ConstraintAttribute>()).ToString());
+            Assert.AreEqual(
+                XDocument.Parse(xDocument).ToString(),
+                converter.DeserializeObject(
+                    xDocument,
+                    typeof(XDocument),
+                    Enumerable.Empty<ConstraintAttribute>()
+                ).ToString());
         }
 
         [TestMethod]
-        public void DeserializeObject_CanDeserializeXElement()
+        public void DeserializesXElement()
         {
             const string xElement = @"<testXml></testXml>";
 
             var converter = new XmlConverter();
-            Assert.AreEqual(XElement.Parse(xElement).ToString(), converter.DeserializeObject(xElement, typeof(XElement), Enumerable.Empty<ConstraintAttribute>()).ToString());
+            Assert.AreEqual(
+                XElement.Parse(xElement).ToString(),
+                converter.DeserializeObject(
+                    xElement, 
+                    typeof(XElement), 
+                    Enumerable.Empty<ConstraintAttribute>()
+                ).ToString());
+        }
+
+    }
+
+    [TestClass]
+    public class SerializeTests
+    {
+        [TestMethod]
+        public void SerializesXDocumentl()
+        {
+            var xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?><foo>bar</foo>";
+
+            var converter = new XmlConverter();
+            Assert.AreEqual(
+                xml, 
+                converter.SerializeObject(
+                    XDocument.Parse(xml), 
+                    typeof(string), 
+                    Enumerable.Empty<ConstraintAttribute>()
+                ).ToString());
         }
 
         [TestMethod]
-        public void SerializeObject_CanSerializeXDocument()
+        public void SerializesXElement()
         {
-            const string xDocument = "<?xml version=\"1.0\" encoding=\"utf-8\"?><testXml>abc</testXml>";
+            var xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?><foo>bar</foo>";
 
             var converter = new XmlConverter();
-            //Assert.AreEqual(xDocument, converter.SerializeObject(XDocument.Parse(xDocument), typeof(XDocument), Enumerable.Empty<ConstraintAttribute>()).ToString());
-        }
-
-        [TestMethod]
-        public void SerializeObject_CanSerializeXElement()
-        {
-            const string xElement = @"<testXml></testXml>";
-
-            var converter = new XmlConverter();
-            //Assert.AreEqual(xElement, converter.SerializeObject(XElement.Parse(xElement), typeof(XElement), Enumerable.Empty<ConstraintAttribute>()).ToString());
+            Assert.AreEqual(
+                xml, 
+                converter.SerializeObject(
+                    XElement.Parse(xml), 
+                    typeof(string), 
+                    Enumerable.Empty<ConstraintAttribute>()
+                ).ToString());
         }
     }
 }

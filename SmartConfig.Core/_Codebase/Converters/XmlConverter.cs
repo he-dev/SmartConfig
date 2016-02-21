@@ -34,9 +34,9 @@ namespace SmartConfig.Converters
             if (HasTargetType(value, type)) { return value; }
 
             using (var memoryStream = new MemoryStream())
-            using (var streamWriter = new StreamWriter(memoryStream, Encoding.UTF8))
+            using (var streamWriter = new StreamWriter(memoryStream))//, Encoding.UTF8)) // no bom
             {
-                var saveMethod = type.GetMethod("Save", new[] { typeof(StreamWriter), typeof(SaveOptions) });
+                var saveMethod = value.GetType().GetMethod("Save", new[] { typeof(StreamWriter), typeof(SaveOptions) });
                 saveMethod.Invoke(value, new object[] { streamWriter, SaveOptions.DisableFormatting });
                 var xml = Encoding.UTF8.GetString(memoryStream.ToArray());
                 return xml;

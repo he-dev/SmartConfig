@@ -53,7 +53,7 @@ namespace SmartConfig
 
         public static event EventHandler<ReloadFailedEventArgs> ReloadFailed = delegate { };
 
-        public static ConfigurationBuilder Use(Type configurationType)
+        public static ConfigurationBuilder Load(Type configurationType)
         {
             return new ConfigurationBuilder(configurationType);
         }
@@ -100,42 +100,42 @@ namespace SmartConfig
         }
 
        
-        /// <summary>
-        /// Updates a setting.
-        /// </summary>
-        /// <typeparam name="T">The type of the setting property.</typeparam>
-        /// <param name="expression">Member expression of the setting to be updated.</param>
-        /// <param name="value">Value to be set.</param>
-        public static void UpdateSetting<T>(Expression<Func<T>> expression, T value)
-        {
-            if (expression == null)
-            {
-                throw new ArgumentNullException(nameof(expression));
-            }
+    //    /// <summary>
+    //    /// Updates a setting.
+    //    /// </summary>
+    //    /// <typeparam name="T">The type of the setting property.</typeparam>
+    //    /// <param name="expression">Member expression of the setting to be updated.</param>
+    //    /// <param name="value">Value to be set.</param>
+    //    public static void UpdateSetting<T>(Expression<Func<T>> expression, T value)
+    //    {
+    //        if (expression == null)
+    //        {
+    //            throw new ArgumentNullException(nameof(expression));
+    //        }
 
-            var memberExpression = expression.Body as MemberExpression;
-            if (memberExpression == null)
-            {
-                throw new ExpressionBodyNotMemberExpressionException { MemberFullName = expression.Body.Type.FullName };
-            }
+    //        var memberExpression = expression.Body as MemberExpression;
+    //        if (memberExpression == null)
+    //        {
+    //            throw new ExpressionBodyNotMemberExpressionException { MemberFullName = expression.Body.Type.FullName };
+    //        }
 
-            var property = memberExpression.Member as PropertyInfo;
-            if (property == null)
-            {
-                throw new MemberNotPropertyException { MemberName = memberExpression.Member.Name };
-            }
+    //        var property = memberExpression.Member as PropertyInfo;
+    //        if (property == null)
+    //        {
+    //            throw new MemberNotPropertyException { MemberName = memberExpression.Member.Name };
+    //        }
 
-            var settingInfo =
-                Cache.SelectMany(x => x.Value.Settings)
-                .SingleOrDefault(si => si.Property == property);
+    //        var settingInfo =
+    //            Cache.SelectMany(x => x.Value.Settings)
+    //            .SingleOrDefault(si => si.Property == property);
 
-            if (settingInfo == null)
-            {
-                throw new MemberNotFoundException { MemberName = property.Name };
-            }
+    //        if (settingInfo == null)
+    //        {
+    //            throw new MemberNotFoundException { MemberName = property.Name };
+    //        }
 
-            SettingUpdater.UpdateSetting(settingInfo, value, Converters);
-            settingInfo.Value = value;
-        }
+    //        SettingUpdater.UpdateSetting(settingInfo, value, Converters);
+    //        settingInfo.Value = value;
+    //    }
     }
 }
