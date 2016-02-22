@@ -32,7 +32,7 @@ namespace SmartConfig
 
         internal Configuration Configuration { get; }
 
-        public ConfigurationBuilder HasAdditionalKey(string name, string value)
+        public ConfigurationBuilder WithCustomKey(string name, string value)
         {
             Configuration.CustomKeys.Add(new SimpleSettingKey(name, value));
             return this;

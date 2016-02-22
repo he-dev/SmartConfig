@@ -101,7 +101,7 @@ namespace SmartConfig.Core.Tests.Data.DataStoreTests
         [TestMethod]
         public void ReceivesCompundKeyWithFilters()
         {
-            Configuration.Load(typeof(Foo)).HasAdditionalKey("Qux", "bax").From(new TestDataStore<CustomTestSetting>
+            Configuration.Load(typeof(Foo)).WithCustomKey("Qux", "bax").From(new TestDataStore<CustomTestSetting>
             {
                 SelectFunc = key =>
                 {

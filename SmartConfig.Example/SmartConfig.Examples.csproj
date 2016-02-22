@@ -61,8 +61,24 @@
       <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SmartConfig, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SmartConfig.4.5.0\lib\net45\SmartConfig.dll</HintPath>
+    <Reference Include="SmartConfig.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SmartConfig.5.0.1\lib\net45\SmartConfig.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SmartConfig.DataStores.AppConfig, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SmartConfig.5.0.1\lib\net45\SmartConfig.DataStores.AppConfig.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SmartConfig.DataStores.Registry, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SmartConfig.5.0.1\lib\net45\SmartConfig.DataStores.Registry.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SmartConfig.DataStores.SqlServer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SmartConfig.5.0.1\lib\net45\SmartConfig.DataStores.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SmartConfig.DataStores.XmlFile, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SmartConfig.5.0.1\lib\net45\SmartConfig.DataStores.XmlFile.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SmartUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -80,19 +96,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="_Configurations\ExampleRegistryConfig.cs" />
-    <Compile Include="_Codebase\Data\CustomSetting.cs" />
-    <Compile Include="_Configurations\ExampleXmlConfig.cs" />
-    <Compile Include="_Configurations\ExampleDbConfig.cs" />
-    <Compile Include="_Configurations\ExampleAppConfig.cs" />
-    <Compile Include="_Codebase\Program.cs" />
+    <Compile Include="_codebase\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Resources\DataSources\XmlConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
@@ -115,9 +126,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="_Codebase\Data\_Configs\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Resources\DataSources\ExampleDb.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

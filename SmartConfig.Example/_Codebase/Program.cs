@@ -1,73 +1,111 @@
 ﻿using System;
+using Microsoft.Win32;
+using SmartConfig.Data;
+using SmartConfig.DataStores.AppConfig;
+using SmartConfig.DataStores.Registry;
+using SmartConfig.DataStores.SqlServer;
+using SmartConfig.DataStores.XmlFile;
 
 namespace SmartConfig.Examples
 {
     static class Program
     {
-
         static void Main(string[] args)
         {
-            //Logger.Info = m => Debug.WriteLine(m);
-
-            AppConfigSourceExample();
-            //DbSourceExamples();
-            //XmlSourceExample();
-            //RegistrySourceExample();
-
-            Console.ReadKey();
         }
 
-        private static void RegistrySourceExample()
+        private static void AppConfigExample()
         {
-            Configuration.LoadSettings(typeof(ExampleRegistryConfig));
-
-            Configuration.UpdateSetting(() => ExampleRegistryConfig.REG_DWORD_TEST, 8);
-            Configuration.UpdateSetting(() => ExampleRegistryConfig.REG_SZ_TEST, "lorem");
-            Configuration.UpdateSetting(() => ExampleRegistryConfig.REG_SZ_TEST2, "ipsum");
+            Configuration
+                .Load(typeof(ExampleAppConfig))
+                .From(new AppConfigStore());
         }
 
-        private static void AppConfigSourceExample()
+        private static void RegistryExample()
         {
-            Configuration.LoadSettings(typeof(ExampleAppConfig));
-
-            Console.WriteLine(ExampleAppConfig.AppSettings.Greeting);
-            Console.WriteLine(ExampleAppConfig.AppSettings.Farewell);
-
-            Configuration.UpdateSetting(() => ExampleAppConfig.AppSettings.Farewell, "Bye!");
-            Console.WriteLine(ExampleAppConfig.AppSettings.Farewell);
+            Configuration
+                .Load(typeof(ExampleRegistryConfig))
+                .From(new RegistryStore(Registry.CurrentUser, @"Software\SmartConfig"));
         }
 
-        private static void DbSourceExamples()
+        private static void SqlServerExample()
         {
-            AppDomain.CurrentDomain.SetData("DataDirectory", AppDomain.CurrentDomain.BaseDirectory);
-
-            BasicDbSourceExample();
-            CustomDbSourceExample();
+            Configuration
+                .Load(typeof(ExampleSqlServerConfig))
+                .WithCustomKey("Environment", "Examples")
+                .From(new SqlServerStore<CustomSetting>("name=ConnString", "Setting"));
         }
 
-        private static void BasicDbSourceExample()
+
+        private static void XmlFileExample()
         {
-            Configuration.LoadSettings(typeof(ExampleDbConfig));
-            Console.WriteLine(ExampleDbConfig.Greeting);
+            Configuration
+                .Load(typeof(ExampleXmlFleConfig))
+                .From(new XmlFileStore<BasicSetting>("config.xml"));
+        }
+    }
+
+    public class CustomSetting : BasicSetting
+    {
+        public string Environment { get; set; }
+    }
+
+    [SmartConfig]
+    [SettingName("Examples")]
+    static class ExampleAppConfig
+    {
+        public static class AppSettings
+        {
+            public static string Environment { get; set; }
+
+            public static string Greeting { get; set; } = "Hallo SmartConfig!";
+
+            [Optional]
+            public static string Farewell { get; set; } = "Good bye!";
         }
 
-        private static void CustomDbSourceExample()
+        public static class ConnectionStrings
         {
-            Configuration.LoadSettings(typeof(ExampleDbConfig));
-            Console.WriteLine(ExampleDbConfig.Greeting);
-        }
+            public static string ExampleDb { get; set; }
 
-        private static void XmlSourceExample()
-        {
-            //Configuration.LoadSettings(typeof(ExampleXmlConfig), new XmlSource<CustomSetting>(
-            //    @"Configs\XmlSource.xml",
-            //    SettingsInitializationEnabled = false,
-            //    SettingKeys = new []
-            //    {
-            //        new SimpleSettingKey(SettingKeyNames.EnvironmentKeyName, "ABC", Filters.FilterByString),
-            //        new SimpleKey(SettingKeyNames.VersionKeyName, "1.0.0", Filters.FilterByVersion )
-            //    }
-            //});
+            [Optional]
+            public static string MissingExampleDb { get; set; }
         }
+    }
+
+    [SmartConfig]
+    [SettingName("Examples")]
+    static class ExampleSqlServerConfig
+    {
+        [Optional]
+        public static string Greeting { get; set; } = "Hello SmartConfig!";
+    }
+
+    [SmartConfig]
+    internal static class ExampleRegistryConfig
+    {
+        public static byte[] REG_BINARY_TEST { get; set; }
+
+        public static int REG_DWORD_TEST { get; set; }
+
+        public static string REG_SZ_TEST { get; set; }
+
+        [Optional]
+        public static string REG_SZ_TEST2 { get; set; }
+
+        [SettingName("New Key #1")]
+        public static class NewKey1
+        {
+            [SettingName("New Value #1")]
+            public static string NewValue1 { get; set; }
+        }
+    }
+
+    [SmartConfig]
+    [SettingName("Examples")]
+    static class ExampleXmlFleConfig
+    {
+        [Optional]
+        public static string Greeting { get; set; } = "Hello SmartConfig!";
     }
 }

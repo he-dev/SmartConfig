@@ -19,11 +19,11 @@ namespace SmartConfig.Data
     {
         IReadOnlyCollection<Type> SupportedSettingDataTypes { get; }
 
-        bool ChangedNotificationSupported { get; }
+        //bool ChangedNotificationSupported { get; }
 
-        bool ChangedNotificationEnabled { get; set; }
+        //bool ChangedNotificationEnabled { get; set; }
 
-        event EventHandler<DataStoreChangedEventArgs> Changed;
+        //event EventHandler<DataStoreChangedEventArgs> Changed;
 
         /// <summary>
         /// Selects data from the data source.

@@ -9,6 +9,8 @@ namespace SmartConfig
 {
     public class NameKey
     {
+        
+
         private readonly SimpleSettingKey _simpleKey;
 
         public NameKey(SimpleSettingKey simpleKey)
@@ -43,6 +45,24 @@ namespace SmartConfig
         public static bool operator !=(NameKey x, NameKey y)
         {
             return !(x == y);
+        }
+
+        protected bool Equals(NameKey other)
+        {
+            return Equals(_simpleKey, other._simpleKey);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((NameKey)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return _simpleKey?.GetHashCode() ?? 0;
         }
     }
 }

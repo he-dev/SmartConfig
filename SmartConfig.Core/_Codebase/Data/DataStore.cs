@@ -24,11 +24,11 @@ namespace SmartConfig.Data
 
         public abstract IReadOnlyCollection<Type> SupportedSettingDataTypes { get; }
 
-        public bool ChangedNotificationSupported { get; protected set; } = false;
+        //public bool ChangedNotificationSupported { get; protected set; } = false;
 
-        public virtual bool ChangedNotificationEnabled { get; set; } = false;
+        //public virtual bool ChangedNotificationEnabled { get; set; } = false;
 
-        public event EventHandler<DataStoreChangedEventArgs> Changed = delegate { };
+        //public event EventHandler<DataStoreChangedEventArgs> Changed = delegate { };
 
         public abstract object Select(CompoundSettingKey keys);
 

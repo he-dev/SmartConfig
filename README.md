@@ -50,17 +50,23 @@ Install-Package SmartConfig
   - `RegularExpressionAttribute`
   - `DateTimeFormatAttribute`
   - `IgnoreAttribute`
-- Multiple data sources:
-  - `app.config` via `AppConfigSource`
-  - Database via `DbSource`
-  - `XML` via `XmlSource`
-  - Registry via `RegistrySource` (supports: `REG_BINARY`, `REG_DWORD`, `REG_SZ`)
-  - `ini` via `IniSource` (comming soon)
+- Multiple data stores:
+  - `AppConfigStore` for `app.config` 
+  - `SqlServerStore` for database
+  - `XmlFileStore` for own `XML` format 
+  - `RegistryStore` for Windows Registry (supports: `REG_BINARY`, `REG_DWORD`, `REG_SZ`)
+  - `IniFileStore` for `ini` files (requires `Martini` package)
 - Extendable:
   - You can specify additional criteria for finding settings.
   - You can write you own data source.
   - You can add you own data types..
 - Multiple configurations in a single storage.
+
+## Changes in v5.0
+
+- Changed the API to be more fluent
+- Removed properties from the model
+- Introduced data store modules as separate packages
 
 ## Hallo SmartConfig! - Getting started
 
@@ -70,7 +76,7 @@ In this short tutorial I'll show you how to use **`SmartConfig`**. It's short be
 
 We will use two basic data sources namely the `App.config` for the connection string and the setting table name so that we can access our final setting storage which is a database.
 
-### Using `AppConfigSource`
+### Using `AppConfigStore`
 
 In the `App.config` we need to add two settings: a connection string named _ExampleDb_ and the table name with the key _SettingsTableName_ in the `appSettings` section:
 
@@ -116,7 +122,9 @@ OK, let's load them now:
 
 #### `Program.cs`
 ```cs
-Configuration.LoadSettings(typeof(ExampleAppConfig));
+Configuration
+    .Load(typeof(ExampleAppConfig))
+    .From(new AppConfigStore());
 ```
 
 That's it!
@@ -129,7 +137,7 @@ Console.WriteLine(ExampleAppConfig.PrimeNumber); // outputs: 7
 
 As you see the call is really simple. You just need to say which settings you want to load. By default **`SmartConfig`** uses the `AppConfigSource` as a data source so we didn't specified any here explicitly.
 
-### Using `DbSource`
+### Using `SqlServerStore`
 
 We're halfway there. Now we want to load the actual settings from the database table that in its simplest form has just two columns:
 
@@ -148,14 +156,6 @@ In our table we can virtualy keep anything we want. Here we just have a welcome 
 [SmartConfig]
 static class ExampleDbConfig
 {
-    [SmartConfigProperties]
-    public static class Properties
-    {
-        public static IDataSouce DataSource { get; } = new DbSource(
-            ExampleAppConfig.connectionString,
-            ExampleAppConfig.SettingsTableName);
-    }
-    
     public static string Greeting { get; set; }
     
     [Optional]
@@ -209,7 +209,11 @@ In this case **SmartConfig** would generate names like ``MyApp.Greeting`. You ca
 It's time to load the settings from the database. This is as simple as loading the `App.config`:
 
 ```cs
-Configuration.LoadSettings(typeof(ExampleDbConfig));
+Configuration
+    .Load(typeof(ExampleDbConfig))
+    .From(new SqlServerStore(
+        ExampleAppConfig.connectionString,
+        ExampleAppConfig.SettingsTableName));
 ```
 
 And that's it!
@@ -228,7 +232,7 @@ The `StringFilter` is case insensitive and will check if the environment criteri
 ```cs
 class MySetting : Setting 
 {
-    [Filter(typeof(StringFilter))]
+    [SettingFilter(typeof(StringFilter))]
     public string Environment { get; set;}
 }
 ```
@@ -236,22 +240,13 @@ class MySetting : Setting
 Next, there is one more thing you need to add to the configuration properties namely the value for the environment property. You do this by adding the `CustomKeys` property and adding a `SettingKey` for each custom property:
 
 ```cs
-[SmartConfig]
-static class DatabaseSettings1
-{
-    [SmartConfigProperties]
-    public static class Properties
-    {
-        public static IDataSource DataSource { get; } =
-            new DbSource<TestSetting>("name=TestDb", "TestSetting");
-
-        public static IEnumerable<SettingKey> CustomKeys { get; } = new[]
-        {
-            new SettingKey("Environment", "A"),
-            new SettingKey("Version", "2.2.1"),
-        };
-    }
-}
+Configuration
+    .Load(typeof(ExampleDbConfig))
+    .WithCustomKey("Environment", "A")
+    .WithCustomKey("Version", "2.2.1")
+    .From(new SqlServerStore(
+        ExampleAppConfig.connectionString,
+        ExampleAppConfig.SettingsTableName));
 ```
 
 The custom properties will only work with data sources that support such extensions like a database or a xml (via additional attributes).
