@@ -5,6 +5,7 @@ using SmartConfig.DataStores.AppConfig;
 using SmartConfig.DataStores.Registry;
 using SmartConfig.DataStores.SqlServer;
 using SmartConfig.DataStores.XmlFile;
+using SmartConfig.Filters;
 
 namespace SmartConfig.Examples
 {
@@ -12,6 +13,7 @@ namespace SmartConfig.Examples
     {
         static void Main(string[] args)
         {
+            SqlServerExample();
         }
 
         private static void AppConfigExample()
@@ -32,8 +34,10 @@ namespace SmartConfig.Examples
         {
             Configuration
                 .Load(typeof(ExampleSqlServerConfig))
-                .WithCustomKey("Environment", "Examples")
-                .From(new SqlServerStore<CustomSetting>("name=ConnString", "Setting"));
+                .WithCustomKey("Environment", "sqlite")
+                .From(new SqlServerStore<CustomSetting>("name=configdb", "Setting"));
+
+            Console.WriteLine(ExampleSqlServerConfig.Greeting);
         }
 
 
@@ -47,6 +51,7 @@ namespace SmartConfig.Examples
 
     public class CustomSetting : BasicSetting
     {
+        [SettingFilter(typeof(StringFilter))]
         public string Environment { get; set; }
     }
 

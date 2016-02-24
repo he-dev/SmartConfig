@@ -52,7 +52,7 @@ namespace SmartConfig.DataStores.SqlServer
             {
                 var settings = context.Settings.Where(ce => ce.Name == keys.NameKey).ToList() as IEnumerable<TSetting>;
 
-                settings = ApplyFilters(settings, keys.Skip(1));
+                settings = ApplyFilters(settings, keys.CustomKeys);
 
                 var setting = settings.FirstOrDefault();
                 return setting?.Value;

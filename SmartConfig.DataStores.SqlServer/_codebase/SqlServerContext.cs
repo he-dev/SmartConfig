@@ -18,6 +18,7 @@ namespace SmartConfig.DataStores.SqlServer
             Debug.Assert(!string.IsNullOrEmpty(settingTableName));
 
             _settingTableName = settingTableName;
+            //Database.SetInitializer<SqlServerContext<TSetting>>(null);
         }
 
         /// <summary>

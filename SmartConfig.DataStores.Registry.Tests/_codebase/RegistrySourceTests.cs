@@ -15,7 +15,7 @@ namespace SmartConfig.DataStores.Registry.Tests.RegistryStoreTests
         {
             ExceptionAssert.Throws<ArgumentNullException>(() =>
             {
-                new RegistryStore<BasicSetting>(null, null);
+                new RegistryStore(null, null);
             }, null, Assert.Fail);
         }
 
@@ -24,7 +24,7 @@ namespace SmartConfig.DataStores.Registry.Tests.RegistryStoreTests
         {
             ExceptionAssert.Throws<ArgumentNullException>(() =>
             {
-                new RegistryStore<BasicSetting>(Microsoft.Win32.Registry.CurrentUser, null);
+                new RegistryStore(Microsoft.Win32.Registry.CurrentUser, null);
             }, null, Assert.Fail);
         }
     }
@@ -36,7 +36,7 @@ namespace SmartConfig.DataStores.Registry.Tests.RegistryStoreTests
         public void SelectsSettingsWithoutModelName()
         {
             Configuration.Load(typeof(Config1))
-                .From(new RegistryStore<BasicSetting>(
+                .From(new RegistryStore(
                     Microsoft.Win32.Registry.CurrentUser,
                     @"software\he-dev\smartconfig\datastores\registry"));
 
@@ -59,7 +59,7 @@ namespace SmartConfig.DataStores.Registry.Tests.RegistryStoreTests
         public void UpdatesStringSettingByName()
         {
             Configuration.Load(typeof(Config1))
-                .From(new RegistryStore<BasicSetting>(
+                .From(new RegistryStore(
                     Microsoft.Win32.Registry.CurrentUser,
                     @"software\he-dev\smartconfig\datastores\registry"));
 
