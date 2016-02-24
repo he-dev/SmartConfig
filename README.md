@@ -5,6 +5,15 @@ Because creating configurations should be easy!
 
 ---
 
+## Changes in v5.0
+
+- Changed the API to be still simpler and more fluent
+- Removed properties from the model
+- Moved database store modules as separate packages *(`SqlServerStore`, `SQLiteStore`)*
+- Added `SQLiteStore`
+
+---
+
 ## Why another one?
 I guess you're asking why you should care about another configuration framework and I'll tell you why. Because you want to setup and use settings within few minutes instead of writing another class for reading or parsing them.
 
@@ -56,17 +65,12 @@ Install-Package SmartConfig
   - `XmlFileStore` for own `XML` format 
   - `RegistryStore` for Windows Registry (supports: `REG_BINARY`, `REG_DWORD`, `REG_SZ`)
   - `IniFileStore` for `ini` files (requires `Martini` package)
+  - *NEW* `SQLiteStore` for serverless settings
 - Extendable:
   - You can specify additional criteria for finding settings.
   - You can write you own data source.
   - You can add you own data types..
 - Multiple configurations in a single storage.
-
-## Changes in v5.0
-
-- Changed the API to be more fluent
-- Removed properties from the model
-- Introduced data store modules as separate packages
 
 ## Hallo SmartConfig! - Getting started
 
