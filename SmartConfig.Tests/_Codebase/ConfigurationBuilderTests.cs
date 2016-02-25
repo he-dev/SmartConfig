@@ -26,7 +26,7 @@ namespace SmartConfig.Tests.ConfigurationBuilderTests
                 new ConfigurationBuilder(typeof(Foo));
             }, ex =>
             {
-                Assert.AreEqual(typeof(Foo).FullName, ex.ConfigurationType);
+                Assert.AreEqual(typeof(Foo).Name, ex.ConfigurationType);
             }, 
             Assert.Fail);
         }      
@@ -39,7 +39,7 @@ namespace SmartConfig.Tests.ConfigurationBuilderTests
                 new ConfigurationBuilder(typeof(Bar));
             }, ex =>
             {
-                Assert.AreEqual(typeof(Bar).FullName, ex.Type);
+                Assert.AreEqual(typeof(Bar).Name, ex.Type);
             },
             Assert.Fail);
         }

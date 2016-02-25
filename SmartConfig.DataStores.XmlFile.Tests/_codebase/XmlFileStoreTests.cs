@@ -15,7 +15,7 @@ namespace SmartConfig.DataStores.XmlFile.Tests.XmlFileStoreTests
     //[TestClass]
     public class XmlFileStoreTestsBase
     {
-        protected const string TestFileName = @"C:\Home\Projects\SmartConfig.DataStores.XmlFile\SmartConfig.DataStores.XmlFile.Tests\bin\Debug\_testHelpers\TestFile.xml";
+        protected const string TestFileName = @"C:\Home\Projects\SmartConfig\SmartConfig.DataStores.XmlFile.Tests\bin\Debug\TestFile.xml";
     }
 
     [TestClass]

@@ -9,8 +9,6 @@ namespace SmartConfig
 {
     public class NameKey
     {
-        
-
         private readonly SimpleSettingKey _simpleKey;
 
         public NameKey(SimpleSettingKey simpleKey)

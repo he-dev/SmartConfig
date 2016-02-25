@@ -19,8 +19,6 @@ namespace SmartConfig.DataStores.AppConfig
 
         private readonly IDictionary<string, IAppConfigSectionStore> _appConfigSectionSources;
 
-        private readonly FileSystemWatcher _appConfigWatcher;
-
         public AppConfigStore()
         {
             _exeConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
@@ -32,20 +30,7 @@ namespace SmartConfig.DataStores.AppConfig
             }
             .Cast<IAppConfigSectionStore>()
             .ToDictionary(x => x.SectionName, x => x, StringComparer.OrdinalIgnoreCase);
-
-            //ChangedNotificationSupported = true;
-
-            _appConfigWatcher = new FileSystemWatcher(_exeConfiguration.FilePath)
-            {
-                NotifyFilter = NotifyFilters.LastWrite
-            };
         }
-
-        //public override bool ChangedNotificationEnabled
-        //{
-        //    get { return _appConfigWatcher.EnableRaisingEvents; }
-        //    set { _appConfigWatcher.EnableRaisingEvents = value; }
-        //}
 
         private IAppConfigSectionStore GetAppConfigSectionStore(NameKey nameKey)
         {
