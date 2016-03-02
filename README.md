@@ -7,7 +7,7 @@ Because creating configurations should be easy!
 
 Contents:
 
-- [What's new][What's new in v5.0]
+- [What's new](#What's new in v5.0)
 
 ---
 
