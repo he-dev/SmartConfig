@@ -3,15 +3,7 @@ Because creating configurations should be easy!
 
 **`SmartConfig`** is a configuration framework that makes writing configurations easier then ever. 
 
----
-
-Contents:
-
-- [What's new](#whats-new)
-
----
-
-##<a name="whats-new"/>What's new in v5.0
+## What's new in v5.0
 
 - Optimized the API to be even simpler and more fluent
 - Reorganized data stores and packages
