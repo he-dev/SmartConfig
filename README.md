@@ -1,44 +1,52 @@
-# SmartConfig v5.0 _(in progress...)_
+# SmartConfig v5.0
 Because creating configurations should be easy!
 
 **`SmartConfig`** is a configuration framework that makes writing configurations easier then ever. 
 
 ---
 
-## Changes in v5.0
+Contents:
 
-- Changed the API to be still simpler and more fluent
-- Removed properties from the model
-- Moved database store modules as separate packages *(`SqlServerStore`, `SQLiteStore`)*
+- [What's new][What's new in v5.0]
+
+---
+
+## What's new in v5.0
+
+- Optimized the API to be even simpler and more fluent
+- Reorganized data stores and packages
 - Added `SQLiteStore`
 
 ---
 
 ## Why another one?
-I guess you're asking why you should care about another configuration framework and I'll tell you why. Because you want to setup and use settings within few minutes instead of writing another class for reading or parsing them.
+I guess you're asking why you should care about another configuration framework and I'll tell you why. Because you want to setup and use settings within few minutes instead of spending another few day writing another configuration system for the new project.
 
-With **`SmartConfig`** you can do it. It's all about simplicity and convinience. I dare to claim that it's the easiest configurtion framework out there. With only one tool you are able to use multiple configuration sources like database, app.config, xml, registry (more are comming). Your configuration is strongly typed and doesn't contain any magic strings. You work with real classes and properties. **`SmartConfig`** also can take care of validating your settings if you tell it to do so. 
+With **`SmartConfig`** it's possible. It's all about simplicity and convinience. I dare to claim that it's the easiest configurtion framework out there. With only one tool you are able to use multiple configuration sources like databases, app.config, xml, registry (more are can be added). Your configuration is strongly typed and doesn't contain any magic strings. You work with real classes and properties. **`SmartConfig`** also can take care of validating the values if you tell it to do so. 
 
 Keep reading and see for yourself.
 
 ## How does it work?
 Briefly, with **`SmartConfig`** you create a `static class` with static properties (and sub-classes) that will hold the settings when they are loaded. Its structure is used to build setting names. There is no need to use any hardcoded strings or create enums etc to get any values. **`SmartConfig`** eliminates all magic strings.
 
-**`SmartConfig`** is strongly typed and can validate your settings during loading as well as during updating. Thus you always know whether you start with valid values. If your configuration is invalid you'll know it right away because it reads all your settings at once.
+**`SmartConfig`** is strongly typed able to validate your setting values thus you always know whether you start with a working configuraiton. If your configuration contains invalid values you'll be notified right away because it reads all your settings at once.
 
 It supports many popular types and provides an interface to add your own types if you need to. By default **`SmartConfig`** looks for your settings by name however criteria like environment or version ([Semantic Version](http://semver.org)) can be easily added. With **`SmartConfig`** you don't have to instantiate anything. All settings are loaded at once and cached in your config definition so there is no overhead accessing them later.
 
 ## What dependencies does it have?
-**`SmartConfig`** requires `Entity Framework`, `JSON.NET` and `SmartUtilities`. The minimum required .NET version is 4.5.
-
-## Where are all the settings stored?
-Wherever you want them to be. **`SmartConfig`** supports several data sources and allows you to create your own adapters. The default data source is the `App.config` file and its to sections: `connectionStrings` and `appSettings`. If you want to store your settings in a database use the `DbSource` or `RegistrySource` to work with the windows registry if this is where you store them.
+The core package **`SmartConfig`** requires `JSON.NET` and `SmartUtilities`. Other packages depend on `Entity Framework` and `SQLite`. The minimum required .NET version is the v4.5.
 
 ## Where can I get it?
-You can install the latest version via the [NuGet](https://www.nuget.org/packages/SmartConfig/) package manager or by typing in the command:
+You'll find all packages on NuGet:
+- The *core* package: [**`SmartConfig`**](https://www.nuget.org/packages/SmartConfig/) (contains datastores: AppConfig, Xml, Registry)
+- The *SqlServer* package: [`SqlServerStore`](https://www.nuget.org/packages/SmartConfig.DataStores.SqlServer/)
+- The *SQLite* package [`SQLiteStore`](https://www.nuget.org/packages/SmartConfig.DataStores.SQLite/)
+- package manager or by typing in the command:
 
 ```
 Install-Package SmartConfig
+Install-Package SmartConfig.DataStores.SqlServer
+Install-Package SmartConfig.DataStores.SQLite
 ```
 
 ## Features
@@ -71,6 +79,8 @@ Install-Package SmartConfig
   - You can write you own data source.
   - You can add you own data types..
 - Multiple configurations in a single storage.
+
+---
 
 ## Hallo SmartConfig! - Getting started
 
