@@ -7,11 +7,11 @@ Because creating configurations should be easy!
 
 Contents:
 
-- [What's new](#what_s-new)
+- [What's new](#whats-new)
 
 ---
 
-##What's new in v5.0
+##<a name="whats-new"/>What's new in v5.0
 
 - Optimized the API to be even simpler and more fluent
 - Reorganized data stores and packages
