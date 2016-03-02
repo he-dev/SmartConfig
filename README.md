@@ -11,7 +11,7 @@ Contents:
 
 ---
 
-## What's new in v5.0
+##What's new in v5.0
 
 - Optimized the API to be even simpler and more fluent
 - Reorganized data stores and packages
