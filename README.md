@@ -74,30 +74,24 @@ Install-Package SmartConfig.DataStores.SQLite
 
 ---
 
-## Hallo SmartConfig! - Getting started
+## Hallo SmartConfig! - Examples
 
-Ok, let's get started!
+I'll show you a few examples how to use various **`SmartConfig`** data stores.
 
-In this short tutorial I'll show you how to use **`SmartConfig`**. It's short because it's so simple to use.
+### AppConfig
 
-We will use two basic data sources namely the `App.config` for the connection string and the setting table name so that we can access our final setting storage which is a database.
+The `AppConfigStore` supports two sections: `connectionString` and `appSettings`:
 
-### Using `AppConfigStore`
-
-In the `App.config` we need to add two settings: a connection string named _ExampleDb_ and the table name with the key _SettingsTableName_ in the `appSettings` section:
-
-#### `app.config`
 ```xml
 <connectionStrings>
-    <add name="ExampleDb" connectionString="Data Source=..." />
+    <add name="Foo" connectionString="Data Source=..." />
 </connectionStrings>
 <appSettings>
-    <add key="SettingsTableName" value="Setting" />
-    <add key="PrimeNumber" value="7" />
+    <add key="Bar" value="Baz" />
 </appSettings>
 ```
 
-Next we need to define a configuration that will allow us to access those settings and provide their values.
+To read the values you create this configuration:
 
 First we create a static class and mark it with the `SmartConfigAttribute` so that the setting loader can find it. Inside the config class we define two nested static classes that will represent the `connectionStrings` and the `appSettings` sections. The names of those two nested classes are important for the framework so that it knows which sections to get the settings from.
 
