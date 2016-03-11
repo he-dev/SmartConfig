@@ -78,9 +78,11 @@ Install-Package SmartConfig.DataStores.SQLite
 
 I'll show you a few examples how to use various **`SmartConfig`** data stores.
 
-### AppConfig
+---
 
-The `AppConfigStore` supports two sections: `connectionString` and `appSettings`:
+### How to use `AppConfigStore`?
+
+The `AppConfigStore` supports two sections: `connectionString` and `appSettings`. Let's be honest, who needs the other ones?
 
 ```xml
 <connectionStrings>
@@ -93,9 +95,6 @@ The `AppConfigStore` supports two sections: `connectionString` and `appSettings`
 
 To read the values you create this configuration:
 
-First we create a static class and mark it with the `SmartConfigAttribute` so that the setting loader can find it. Inside the config class we define two nested static classes that will represent the `connectionStrings` and the `appSettings` sections. The names of those two nested classes are important for the framework so that it knows which sections to get the settings from.
-
-#### `ExampleAppConfig.cs`
 ```cs
 [SmartConfig]
 static class ExampleAppConfig
@@ -112,11 +111,13 @@ static class ExampleAppConfig
 }
 ```
 
+Here we create a static class and mark it with the `SmartConfigAttribute` so that the setting loader can find it. Inside the config class we define two nested static classes that will represent the `connectionStrings` and the `appSettings` sections. The names of those two nested classes are important because they build the path to the actual settings.
+
 That's all. **`SmartConfig`** will take care of checking if each setting is available in the `app.config` and will complain if it doesn't find one. Thus **SmartConfig** minimizes this risk by loading and validating all settings at once. This way you can detect invalid settings before you start your application.
 
 We didn't mark any fields as optional so both settings are required and cannot be null/empty.
 
-I didn't mention the `PrimeNumber` setting but I've added it to show that the type of the setting can by actually any type. You are not forced to use string and parse anything. 
+I didn't mention the `PrimeNumber` setting but I've added it to show that the type of the setting can by actually any type. You are not forced to use string or parse anything. 
 
 OK, let's load them now:
 
@@ -127,19 +128,19 @@ Configuration
     .From(new AppConfigStore());
 ```
 
-That's it!
-
-You are ready to use the values now by simply going to the setting via the setting class you've just defined:
+Done! You are ready to use the values now by simply going to the setting via the setting class you've just defined:
 
 ```cs
 Console.WriteLine(ExampleAppConfig.PrimeNumber); // outputs: 7
 ```
 
-As you see the call is really simple. You just need to say which settings you want to load. By default **`SmartConfig`** uses the `AppConfigSource` as a data source so we didn't specified any here explicitly.
+### How to use `SqlServerStore`?
 
-### Using `SqlServerStore`
+`SqlServerStore` is not longer a part of the core package and needs to be installed separately:
 
-We're halfway there. Now we want to load the actual settings from the database table that in its simplest form has just two columns:
+`Install-Package SmartConfig.DataStores.SqlServer`
+
+To be able to use the `SqlServerStore` we first need a table to work with. Let's create one. For now it will have only two columns: `[Name]` and `[Value]` where the `[Name]` is the PK.
 
 ```sql
 CREATE TABLE [dbo].[Setting]
@@ -150,7 +151,19 @@ CREATE TABLE [dbo].[Setting]
 )
 ```
 
-In our table we can virtualy keep anything we want. Here we just have a welcome message, a monitor size and a list of prime numbers which is in this case optional. Here we have a configuration using the `DbSource` that for initialization uses settings we've just loaded from the `App.config`. The `DbSource` requires two parameters: a connection string or its name in the form `name=abc` and the name of the setting table.
+In our table we can virtualy keep anything we want. Here we just have a welcome message, a monitor size and a list of prime numbers which is in this case optional.
+
+This is how it could look like:
+
+```
+Name               | Value
+---                | ---
+Greeting           | 'Hallo SmartConfig!'
+MonitorSize.Width  | 1024
+MonitorSize.Height | 768
+```
+
+To get the values we create this configuration:
 
 ```cs
 [SmartConfig]
@@ -171,16 +184,6 @@ static class ExampleDbConfig
 ```
 
 The setting table must contain at least the `Greeting` and `MonitorSize` settings but the primes are marked as `Optional` and have a default value already. **`SmartConfig`** won't complain in this case.
-
-In the database we could have:
-
-```
-Name               | Value
----                | ---
-Greeting           | 'Hallo SmartConfig!'
-MonitorSize.Width  | 1024
-MonitorSize.Height | 768
-```
 
 It is important that we define the right type of the setting so that **SmartConfig** can already verify its value and type and we don't have to do any convertions later ourselfs.
 
@@ -206,7 +209,7 @@ static class ExampleDbConfig
 
 In this case **SmartConfig** would generate names like ``MyApp.Greeting`. You can use the `SettingNameAttribute` on any subclass or property to change its name.
 
-It's time to load the settings from the database. This is as simple as loading the `App.config`:
+It's time to load the settings from the database. This is as simple as loading an `App.config`. You just need to specify the connection string and the name of the setting table:
 
 ```cs
 Configuration
@@ -222,10 +225,42 @@ And that's it!
 Console.WriteLine(ExampleDbConfig.Greeting); // outputs: Hallo SmartConfig!
 ```
 
-### Additional criteria
-With **SmartConfig** you are not forced to use only the names. You can provide additional criteria for your settings like an environment, username or version. We'll take a look how to use the environment.
+### How to use `SQLiteStore`?
 
-In order to extend the setting the first thing you need to do is to create a new setting type derived from the `Setting` and add a new property `Environment`. The framework does not know by default how to treat this so you need to add the `FilterAttribute` and specify which filter it should use when getting settings. Here we're using the `StringFilter` one of the two filters **SmartConfig** provides for you. The other one is the `VersionFilter`. 
+This store is almost the same as the `SqlServerStore`. The only difference is that you need to install an additional package:
+
+`Install-Package SmartConfig.DataStores.SQLite`
+
+and use a different connection string: `Data Source=config.db;Version=3;` (assuming your configuration database is called `config.db` and sits in the application folder.
+...
+
+### How to use `RegistryStore`?
+
+The `RegistryStore` is a part of the core package and doesn't need to be installed separately.
+
+You use this store a follows:
+
+```cs
+Configuration
+  .Load(typeof(Config1))
+  .From(new RegistryStore(
+    Microsoft.Win32.Registry.CurrentUser,
+    @"software\yourApp\settings"
+  )
+);
+```
+
+The `Load` method still needs a static type as a parameter. Additional parameters are required by the `RegistryStore`. The first parameter specifies which registry hive to use. The second parameter specifies the base path to your settings.
+
+---
+
+### How to add more criteria?
+
+With **SmartConfig** you are not forced to use only the names. You can provide additional criteria for your settings like an environment, username or version. 
+
+We'll take a look how to use the environment.
+
+In order to extend the setting the first thing you need to do is to create a new setting type derived from the `Setting` and add a new property `Environment`. The framework does not know by default how to treat this so you need to tell it and add the `SettingFilterAttribute` and specify which filter it should use when getting the  settings. Here we're using the `StringFilter` one of the two filters **SmartConfig** provides for you. The other one is the `VersionFilter`. 
 
 The `StringFilter` is case insensitive and will check if the environment criteria is met. Additionaly a default environment can be provided by using the `*` asterisk.
 
@@ -237,13 +272,12 @@ class MySetting : Setting
 }
 ```
 
-Next, there is one more thing you need to add to the configuration properties namely the value for the environment property. You do this by adding the `CustomKeys` property and adding a `SettingKey` for each custom property:
+Next you need to give your new criteria a value by providing it via the `WithCustomKey` method. The first parameter is the name of the criteria, the second one is its value:
 
 ```cs
 Configuration
     .Load(typeof(ExampleDbConfig))
-    .WithCustomKey("Environment", "A")
-    .WithCustomKey("Version", "2.2.1")
+    .WithCustomKey("Environment", "examples")
     .From(new SqlServerStore(
         ExampleAppConfig.connectionString,
         ExampleAppConfig.SettingsTableName));
