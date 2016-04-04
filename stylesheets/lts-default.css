@@ -1,0 +1,79 @@
+
+div.lts span.b {
+    font-weight: bold;
+}
+
+div.lts span.i {
+    font-style: italic;
+}
+
+div.lts span.u {
+    text-decoration: underline;
+}
+
+div.lts span.s {
+    text-decoration: line-through;
+}
+
+div.lts span.ic {
+    font-family: monospace;
+    border: 1px solid #B0B0B0;
+    border-radius: 3px;
+    padding: 0 3px;
+    background-color: #E8E8E8;
+}
+
+div.lts a.link {
+}
+
+div.lts h1.h1 {
+}
+
+div.lts h2.h2 {
+}
+
+div.lts h3.h3 {
+}
+
+div.lts h4.h4 {
+}
+
+div.lts h5.h5 {
+}
+
+div.lts h6.h6 {
+}
+
+div.lts ul.ul {
+}
+
+div.lts ol.ol {
+}
+
+div.lts code.code {
+   
+}
+
+div.lts table.table {
+}
+
+div.lts thead.thead {
+}
+
+div.lts tbody.tbody {
+}
+
+div.lts tfoot.tfoot {
+}
+
+div.lts span.m {
+}
+
+div.lts span.var {
+}
+
+div.lts span.arg {
+}
+
+div.lts span.prop {
+}
