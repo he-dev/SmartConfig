@@ -44,7 +44,7 @@
     <ul>
         <li>Strongly typed values
             <ul>
-                <li>Numerics
+                <li>	Numerics
                 <ul>
                     <li>Integral types: <code class="ic">sbyte</code>, <code class="ic">byte</code>, <code class="ic">char</code>, <code class="ic">short</code>, <code class="ic">ushort</code>, <code class="ic">int</code>, <code class="ic">uint</code>, <code class="ic">long</code>, <code class="ic">ulong</code></li>
                     <li>Floating-point types: <code class="ic">float</code>, <code class="ic">double</code></li>
@@ -91,25 +91,25 @@
     <h2 class="h2">Using <span class="b">AppConfigStore</span></h2>
     <p class="p">The <code class="ic">AppConfigStore</code> supports two <code class="ic">app.config</code> sections: <code class="ic">connectionString</code> and <code class="ic">appSettings</code>. Let's be honest, who needs the other ones?</p>
     <p class="p">Example <code class="ic">app.config</code></p>
-        <pre><code class="code"><connectionStrings>
-<add name="Foo" connectionString="Data Source=..." />
-</connectionStrings>
-<appSettings>
-<add key="Bar" value="Baz" />
-</appSettings>        </code></pre>
+        <pre><code class="code">&lt;connectionStrings&gt;
+    &lt;add name=&quot;Foo&quot; connectionString=&quot;Data Source=...&quot; /&gt;
+&lt;/connectionStrings&gt;
+&lt;appSettings&gt;
+    &lt;add key=&quot;Bar&quot; value=&quot;Baz&quot; /&gt;
+&lt;/appSettings&gt;        </code></pre>
     <p class="p">To read the values you create this configuration:</p>
         <pre><code class="code">[SmartConfig]
 static class ExampleAppConfig
 {
-public static class ConnectionStrings
-{
-public static string ExampleDb { get; set}
-}
-public static class AppSettings
-{
-public static string SettingsTableName { get; set}
-public static int PrimeNumber { get; set; }
-}
+    public static class ConnectionStrings
+    {
+        public static string ExampleDb { get; set}
+    } 
+    public static class AppSettings
+    {   
+        public static string SettingsTableName { get; set}
+        public static int PrimeNumber { get; set; }
+    }
 }        </code></pre>
     <p class="p">Here we create a static class and mark it with the <code class="ic">SmartConfigAttribute</code> so that the setting loader can find it. Inside the config class we define two nested static classes that will represent the connectionStrings and the appSettings sections. The names of those two nested classes are important because they build the path to the actual settings.</p>
     <p class="p">That's all. SmartConfig will take care of checking if each setting is available in the <code class="ic">app.config</code> and will complain if it doesn't find one. Thus SmartConfig minimizes this risk by loading and validating all settings at once. This way you can detect invalid settings before you start your application.</p>
@@ -117,8 +117,8 @@ public static int PrimeNumber { get; set; }
     <p class="p">OK, let's load them now:</p>
     <p class="p"><code class="ic">Program.cs</code></p>
         <pre><code class="code">Configuration
-.Load(typeof(ExampleAppConfig))
-.From(new AppConfigStore());        </code></pre>
+    .Load(typeof(ExampleAppConfig))
+    .From(new AppConfigStore());        </code></pre>
     <p class="p">Done! You are ready to use the values now by simply going to the setting via the setting class you've just defined:</p>
         <pre><code class="code">Console.WriteLine(ExampleAppConfig.PrimeNumber); // outputs: 7        </code></pre>
     <h2 class="h2">Using <span class="b">SqlServerStore</span></h2>
@@ -126,9 +126,9 @@ public static int PrimeNumber { get; set; }
     <p class="p">First we need a table to hold our settings:</p>
         <pre><code class="code">CREATE TABLE [dbo].[Setting]
 (
-[Name] NVARCHAR(255) NOT NULL,
-[Value] NVARCHAR(MAX) NULL,
-PRIMARY KEY ([Name])
+   [Name] NVARCHAR(255) NOT NULL, 
+   [Value] NVARCHAR(MAX) NULL, 
+   PRIMARY KEY ([Name])
 )        </code></pre>
     <p class="p">In our table we can virtualy keep anything we want. Here we just have a welcome message, a monitor size and a list of prime numbers which is in this case optional.</p>
     <table class="table">
@@ -157,15 +157,15 @@ PRIMARY KEY ([Name])
         <pre><code class="code">[SmartConfig]
 static class ExampleDbConfig
 {
-public static string Greeting { get; set; }
-[Optional]
-[ObjectConverter(typeof(JsonConverter)]
-public static List<int> Primes { get; set; } = new List<int> { 3, 5, 7 };
-public static class MonitorSize
-{
-public static int Width { get; set; }
-public static int Height { get; set; }
-}
+    public static string Greeting { get; set; }
+    [Optional]
+    [ObjectConverter(typeof(JsonConverter)]
+    public static List&lt;int&gt; Primes { get; set; } = new List&lt;int&gt; { 3, 5, 7 };
+    public static class MonitorSize
+    {
+        public static int Width { get; set; }
+        public static int Height { get; set; }
+    }
 }        </code></pre>
     <p class="p">The setting table must contain at least the <span class="b">Greeting</span> and <span class="b">MonitorSize</span> settings but the primes are marked as <code class="ic">Optional</code> and have a default value already. SmartConfig won't complain in this case.</p>
     <p class="p">It is important that we define the right type of the setting so that SmartConfig can already verify its value and type and we don't have to do any convertions later ourselfs.</p>
@@ -186,18 +186,18 @@ public static int Height { get; set; }
     </table>
     <p class="p">SmartConfig uses the sturcture of the config class and its properties to generate keys for the settings and it skips the name of the root class. By default the name of the main class is not used because if you want to have multiple configurations you can give them different names by providing additional properties via the <code class="ic">SettingNameAttribute</code> class:</p>
         <pre><code class="code">[SmartConfig]
-[SettingName("MyApp")]
+[SettingName(&quot;MyApp&quot;)]
 static class ExampleDbConfig
 {
-// ...
+    // ...
 }        </code></pre>
     <p class="p">In this case SmartConfig would generate names like <span class="b">MyApp.Greeting</span>. You can use the <code class="ic">SettingNameAttribute</code> on any subclass or property to change its name.</p>
     <p class="p">It's time to load the settings from the database. This is as simple as loading an <code class="ic">App.config</code>. You just need to specify the connection string and the name of the setting table:</p>
         <pre><code class="code">Configuration
-.Load(typeof(ExampleDbConfig))
-.From(new SqlServerStore(
-ExampleAppConfig.connectionString,
-ExampleAppConfig.SettingsTableName));        </code></pre>
+    .Load(typeof(ExampleDbConfig))
+    .From(new SqlServerStore(
+        ExampleAppConfig.connectionString,
+        ExampleAppConfig.SettingsTableName));        </code></pre>
     <p class="p">And that's it!</p>
         <pre><code class="code">Console.WriteLine(ExampleDbConfig.Greeting); // outputs: Hallo SmartConfig!        </code></pre>
 </div>
