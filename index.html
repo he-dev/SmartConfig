@@ -24,7 +24,6 @@
       
       <div class="lts">
     <h1 class="h1">About</h1>
-    <h2 class="h2">tl;dr</h2>
     <p class="p"><span class="app">SmartConfig</span> is a configuration framework that makes writing configurations easier then ever.</p>
     <p class="p">I guess you're asking why you should care about another configuration framework and I'll tell you why. Because you want to setup and use application settings within few minutes instead of spending another few days on writing another configuration system for the next project.</p>
     <p class="p"><span class="app">SmartConfig</span> it's all about simplicity and convinience. I dare to claim that it's the easiest configurtion framework out there. With only one tool you are able to use multiple configuration sources like databases, app.config, xml, registry (more are can be added). Your configuration is strongly typed and doesn't contain any magic strings. You work with real classes and properties.</p>
@@ -89,7 +88,7 @@
         </li>
     </ul>
     <h1 class="h1">Examples and Tutorials</h1>
-    <h2 class="h2">Using <code class="ic">AppConfigStore</code>?</h2>
+    <h2 class="h2">Using <span class="b">AppConfigStore</span></h2>
     <p class="p">The <code class="ic">AppConfigStore</code> supports two <code class="ic">app.config</code> sections: <code class="ic">connectionString</code> and <code class="ic">appSettings</code>. Let's be honest, who needs the other ones?</p>
     <p class="p">Example <code class="ic">app.config</code></p>
         <pre><code class="code"><connectionStrings>
@@ -122,7 +121,7 @@ public static int PrimeNumber { get; set; }
 .From(new AppConfigStore());        </code></pre>
     <p class="p">Done! You are ready to use the values now by simply going to the setting via the setting class you've just defined:</p>
         <pre><code class="code">Console.WriteLine(ExampleAppConfig.PrimeNumber); // outputs: 7        </code></pre>
-    <h2 class="h2">Using <code class="ic">SqlServerStore</code></h2>
+    <h2 class="h2">Using <span class="b">SqlServerStore</span></h2>
     <p class="p"><span class="i">This store is no longer a part of the core package and needs to be installed separately.</span></p>
     <p class="p">First we need a table to hold our settings:</p>
         <pre><code class="code">CREATE TABLE [dbo].[Setting]
