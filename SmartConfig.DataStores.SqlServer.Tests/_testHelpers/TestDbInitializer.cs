@@ -3,7 +3,7 @@ using SmartConfig.Data;
 
 namespace SmartConfig.DataStores.SqlServer.Tests
 {
-    class TestDbInitializer : DropCreateDatabaseAlways<SqlServerContext<CustomTestSetting>>
+    internal class TestDbInitializer : DropCreateDatabaseAlways<SqlServerContext<CustomTestSetting>>
     {
         protected override void Seed(SqlServerContext<CustomTestSetting> dbContext)
         {

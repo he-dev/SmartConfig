@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Collections;
 using SmartConfig.Data;
+using SmartConfig.DataAnnotations;
 using SmartUtilities.UnitTesting;
 
 // ReSharper disable InconsistentNaming
@@ -63,9 +66,9 @@ namespace SmartConfig.DataStores.SqlServer.Tests.SqlServerStoreTests
         }
 
         [SmartConfig]
-        static class Config1
+        private static class Config1
         {
-            static public string Foo { get; set; }
+            public static string Foo { get; set; }
         }
 
         // ------------------------------------------------
@@ -78,10 +81,10 @@ namespace SmartConfig.DataStores.SqlServer.Tests.SqlServerStoreTests
         }
 
         [SmartConfig]
-        [SettingName("baz")]
-        static class Config2
+        [CustomName("baz")]
+        private static class Config2
         {
-            static public string Foo { get; set; }
+            public static string Foo { get; set; }
         }
 
         // ------------------------------------------------
@@ -91,16 +94,18 @@ namespace SmartConfig.DataStores.SqlServer.Tests.SqlServerStoreTests
         {
             Configuration
                 .Load(typeof(Config3))
-                .WithCustomKey("Environment", "corge")
-                .WithCustomKey("Version", "1.3.0")
-                .From(new SqlServerStore<CustomTestSetting>(ConnectionString, TestTableName));
+                .From(new SqlServerStore<CustomTestSetting>(ConnectionString, TestTableName), dataStore =>
+                {
+                    dataStore.SetCustomKey("Environment", "corge");
+                    dataStore.SetCustomKey("Version", "1.3.0");
+                });
             Assert.AreEqual("Plugh", Config3.Foo);
         }
 
         [SmartConfig]
-        static class Config3
+        private static class Config3
         {
-            static public string Foo { get; set; }
+            public static string Foo { get; set; }
         }
     }
 
@@ -112,9 +117,11 @@ namespace SmartConfig.DataStores.SqlServer.Tests.SqlServerStoreTests
         {
             Configuration
                 .Load(typeof(Config1))
-                .WithCustomKey("Environment", "corge")
-                .WithCustomKey("Version", "2.5.0")
-                .From(new SqlServerStore<CustomTestSetting>(ConnectionString, TestTableName));
+                .From(new SqlServerStore<CustomTestSetting>(ConnectionString, TestTableName), dataStore =>
+                {
+                    dataStore.SetCustomKey("Environment", "corge");
+                    dataStore.SetCustomKey("Version", "2.5.0");
+                });
             Assert.AreEqual("Baz", Config1.Bar);
 
             Config1.Bar = "Quuux";
@@ -126,9 +133,9 @@ namespace SmartConfig.DataStores.SqlServer.Tests.SqlServerStoreTests
         }
 
         [SmartConfig]
-        static class Config1
+        private static class Config1
         {
-            static public string Bar { get; set; }
+            public static string Bar { get; set; }
         }
     }
 }

@@ -6,8 +6,10 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Collections;
 using SmartConfig.Data;
+using SmartConfig.DataAnnotations;
 using SmartConfig.DataStores.XmlFile;
 using SmartConfig.DataStores.XmlFile.Tests;
+using SmartUtilities.ObjectConverters.DataAnnotations;
 
 // ReSharper disable once CheckNamespace
 namespace SmartConfig.DataStores.XmlFile.Tests.XmlFileStoreTests
@@ -61,9 +63,9 @@ namespace SmartConfig.DataStores.XmlFile.Tests.XmlFileStoreTests
         }
 
         [SmartConfig]
-        static class Config1
+        private static class Config1
         {
-             static public string Foo { get; set; }
+             public static string Foo { get; set; }
         }
 
         [TestMethod]
@@ -76,10 +78,10 @@ namespace SmartConfig.DataStores.XmlFile.Tests.XmlFileStoreTests
         }
 
         [SmartConfig]
-        [SettingName("baz")]
-        static class Config2
+        [CustomName("baz")]
+        private static class Config2
         {
-            static public string Foo { get; set; }
+            public static string Foo { get; set; }
         }
 
         [TestMethod]
@@ -87,15 +89,17 @@ namespace SmartConfig.DataStores.XmlFile.Tests.XmlFileStoreTests
         {
             Configuration
                 .Load(typeof(Config3))
-                .WithCustomKey("Environment", "corge")
-                .From(new XmlFileStore<CustomTestSetting>(TestFileName));
+                .From(new XmlFileStore<CustomTestSetting>(TestFileName), dataStore =>
+                {
+                    dataStore.SetCustomKey("Environment", "corge");
+                });
             Assert.AreEqual("Baaz", Config3.Foo);
         }
 
         [SmartConfig]
-        static class Config3
+        private static class Config3
         {
-            static public string Foo { get; set; }
+            public static string Foo { get; set; }
         }
     }
 
@@ -107,9 +111,11 @@ namespace SmartConfig.DataStores.XmlFile.Tests.XmlFileStoreTests
         {
             Configuration
                 .Load(typeof(Config1))
-                .WithCustomKey("Environment", "corge")
-                .WithCustomKey("Version", "4.1.5")
-                .From(new XmlFileStore<CustomTestSetting>(TestFileName));
+                .From(new XmlFileStore<CustomTestSetting>(TestFileName), dataStore =>
+                {
+                    dataStore.SetCustomKey("Environment", "corge");
+                    dataStore.SetCustomKey("Version", "4.1.5");
+                });
 
             Assert.AreEqual("plugh", Config1.Waldo);
 
@@ -123,9 +129,9 @@ namespace SmartConfig.DataStores.XmlFile.Tests.XmlFileStoreTests
         }
 
         [SmartConfig]
-        static class Config1
+        private static class Config1
         {
-            static public string Waldo { get; set; }
+            public static string Waldo { get; set; }
         }
 
         [TestMethod]
@@ -143,7 +149,7 @@ namespace SmartConfig.DataStores.XmlFile.Tests.XmlFileStoreTests
         }
 
         [SmartConfig]
-        static class Config2
+        private static class Config2
         {
             [Optional]
             public static string Xyzzy { get; set; } = "thud";

@@ -1,11 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Data;
+using SmartConfig.DataAnnotations;
+using SmartConfig.Filters;
 using SmartUtilities.UnitTesting;
 
-namespace SmartConfig.Core.Tests.Data
+namespace SmartConfig.Core.Tests.Data.SettingTests
 {
     [TestClass]
-    public class SettingTests_indexer
+    public class indexerTests
     {
         [TestMethod]
         public void GetsCustomPropertyByName()
@@ -23,26 +25,25 @@ namespace SmartConfig.Core.Tests.Data
         [TestMethod]
         public void ThrowsInvalidPropertyNameException()
         {
-            ExceptionAssert.Throws<InvalidPropertyNameException>(
-                () =>
+            ExceptionAssert.Throws<InvalidPropertyNameException>(() =>
+            {
+                var setting = new BasicSetting
                 {
-                    var setting = new TestSetting
-                    {
-                        Name = "n",
-                        Value = "v",
-                        Foo = "f"
-                    };
-                    var value = setting["b"];
-                }, ex =>
-                {
-                    Assert.AreEqual("b", ex.PropertyName);
-                    Assert.AreEqual(typeof(TestSetting).FullName, ex.TargetType);
-                },
-                Assert.Fail);
+                    Name = "n",
+                    Value = "v"
+                };
+                var value = setting["b"];
+            }, ex =>
+            {
+                Assert.AreEqual("b", ex.PropertyName);
+                Assert.AreEqual(typeof(BasicSetting).Name, ex.SettingType);
+            },
+            Assert.Fail);
         }
 
         public class TestSetting : BasicSetting
         {
+            [SettingFilter(typeof(StringFilter))]
             public string Foo { get; set; }
         }
     }

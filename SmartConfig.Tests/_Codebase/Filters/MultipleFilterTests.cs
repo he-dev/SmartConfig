@@ -6,7 +6,7 @@ using SmartConfig.Filters;
 
 // ReSharper disable InconsistentNaming
 
-namespace SmartConfig.Core.Tests.Filters
+namespace SmartConfig.Core.Tests.Filters.MultipleFilterTests
 {
    
     [TestClass]
@@ -28,13 +28,13 @@ namespace SmartConfig.Core.Tests.Filters
             IEnumerable<IIndexable> result;
             IIndexable setting;
 
-            result = new StringFilter().Apply(settings, new SimpleSettingKey("Environment", "b"));
-            result = new VersionFilter().Apply(result, new SimpleSettingKey("Version", "1.0.1"));
+            result = new StringFilter().Apply(settings, new KeyValuePair<string, object>("Environment", "b"));
+            result = new VersionFilter().Apply(result, new KeyValuePair<string, object>("Version", "1.0.1"));
             setting = result.FirstOrDefault();
             Assert.AreEqual(settings[2], setting);
 
-            result = new VersionFilter().Apply(settings, new SimpleSettingKey("Version", "1.0.1"));
-            result = new StringFilter().Apply(result, new SimpleSettingKey("Environment", "b"));
+            result = new VersionFilter().Apply(settings, new KeyValuePair<string, object>("Version", "1.0.1"));
+            result = new StringFilter().Apply(result, new KeyValuePair<string, object>("Environment", "b"));
             setting = result.FirstOrDefault();
             Assert.AreEqual(settings[2], setting);
         }

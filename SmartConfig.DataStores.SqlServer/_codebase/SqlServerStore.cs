@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data.Entity;
+using System.Data.Entity.Core;
+using System.Data.Entity.Infrastructure;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -42,30 +45,41 @@ namespace SmartConfig.DataStores.SqlServer
             }
         }
 
-        public override IReadOnlyCollection<Type> SupportedSettingDataTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+        public override IReadOnlyCollection<Type> SerializationDataTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
-        public override object Select(CompoundSettingKey keys)
+        public override object Select(SettingKey key)
         {
-            Debug.Assert(keys != null);
+            Debug.Assert(key != null && key.Any());
 
             using (var context = new SqlServerContext<TSetting>(_connectionString, _settingsTableName))
             {
-                var settings = context.Settings.Where(ce => ce.Name == keys.NameKey).ToList() as IEnumerable<TSetting>;
+                var name = key.Name.Value.ToString();
+                var settings = context.Settings.Where(ce => ce.Name == name).ToList() as IEnumerable<TSetting>;
 
-                settings = ApplyFilters(settings, keys.CustomKeys);
+                settings = ApplyFilters(settings, key.CustomKeys);
 
                 var setting = settings.FirstOrDefault();
                 return setting?.Value;
             }
         }
 
-        public override void Update(CompoundSettingKey keys, object value)
+        public override void Update(SettingKey key, object value)
         {
-            Debug.Assert(keys != null && keys.Any());
+            Debug.Assert(key != null && key.Any());
 
             using (var context = new SqlServerContext<TSetting>(_connectionString, _settingsTableName))
             {
-                var keyValues = keys.Select(x => (object)x.Value.ToString()).ToArray();
+                // debug code
+                //var createEntityKey = new Func<DbContext, TSetting, EntityKey>((c, e) =>
+                //{
+                //    const string entitySetName = "Settings";
+                //    var entityKey = ((IObjectContextAdapter)c).ObjectContext.CreateEntityKey(entitySetName, e);
+                //    return entityKey;
+                //});
+                //var entityKey3 = createEntityKey(context, context.Settings.FirstOrDefault());
+                //context.Database.Log = sql => Debug.WriteLine(sql);
+
+                var keyValues = key.Select(x => (object)x.Value.ToString()).ToArray();
                 var entity = context.Settings.Find(keyValues);
 
                 var entityExists = entity != null;
@@ -73,14 +87,14 @@ namespace SmartConfig.DataStores.SqlServer
                 {
                     entity = new TSetting
                     {
-                        Name = keys.NameKey.Value.ToString(),
+                        Name = key.Name.Value.ToString(),
                         Value = value?.ToString()
                     };
 
                     // set custom keys
-                    foreach (var key in keys.CustomKeys)
+                    foreach (var custom in key.CustomKeys)
                     {
-                        entity[key.Name] = key.Value.ToString();
+                        entity[custom.Key] = custom.Value.ToString();
                     }
 
                     context.Settings.Add(entity);

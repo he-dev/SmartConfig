@@ -1,20 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SmartConfig.Converters;
 using SmartConfig.Core.Tests;
 using SmartConfig.Core.Tests.TestModels.Constraints;
 using SmartConfig.Core.Tests.TestModels.Features;
+using SmartConfig.Data;
+using SmartConfig.DataAnnotations;
+using SmartUtilities;
+using SmartUtilities.ObjectConverters;
 using SmartUtilities.UnitTesting;
 
 // ReSharper disable InconsistentNaming
 
 // ReSharper disable once CheckNamespace
-namespace SmartConfig.Tests.ConfigurationTests
+namespace SmartConfig.Core.Tests.ConfigurationTests
 {
     [TestClass]
     public class ctor
@@ -22,14 +26,14 @@ namespace SmartConfig.Tests.ConfigurationTests
         [TestMethod]
         public void CreatesConfiguration()
         {
-            var configuration = new Configuration(typeof(Foo));
+            var configuration = Configuration.Load(typeof(Foo));
             Assert.IsTrue(configuration.Type == typeof(Foo));
             Assert.AreEqual("Bar", configuration.Name);
         }
 
         [SmartConfig]
-        [SettingName("Bar")]
-        static class Foo { }
+        [CustomName("Bar")]
+        private static class Foo { }
     }
 
     [TestClass]
@@ -205,7 +209,10 @@ namespace SmartConfig.Tests.ConfigurationTests
         public void LoadsJsonSettings()
         {
             Configuration
-                .Load(typeof(JsonSettings))
+                .Load(typeof(JsonSettings), converters =>
+                {
+                    converters.Add<JsonConverter>(converter => converter.AddObjectType<List<int>>());
+                })
                 .From(new BasicTestStore
                 {
                     SelectFunc = keys => "[1, 2, 3]"
@@ -220,17 +227,17 @@ namespace SmartConfig.Tests.ConfigurationTests
             {
                 SelectFunc = key =>
                 {
-                    if (key.NameKey.Value == "SubConfig.SubSetting")
+                    if (key.Name.Value == "SubConfig.SubSetting")
                     {
                         return "abc";
                     }
 
-                    if (key.NameKey.Value == "SubConfig.SubSubConfig.SubSubSetting")
+                    if (key.Name.Value == "SubConfig.SubSubConfig.SubSubSetting")
                     {
                         return "xyz";
                     }
 
-                    Assert.Fail($"Invalid setting path: {key.NameKey.Value}");
+                    Assert.Fail($"Invalid setting path: {key.Name.Value}");
                     return null;
                 }
             });
@@ -294,7 +301,8 @@ namespace SmartConfig.Tests.ConfigurationTests
             }, ex =>
             {
                 Assert.IsNotNull(ex.InnerException);
-                Assert.IsInstanceOfType(ex.InnerException, typeof(RangeViolationException));
+                Assert.IsInstanceOfType(ex.InnerException, typeof(DeserializationException));
+                //Assert.IsInstanceOfType(ex.InnerException.InnerException, typeof(RangeViolationException));
             },
                 Assert.Fail);
         }
@@ -352,7 +360,7 @@ namespace SmartConfig.Tests.ConfigurationTests
             },
             ex =>
             {
-                Assert.IsInstanceOfType(ex.InnerException, typeof(ConventerNotFoundException));
+                Assert.IsInstanceOfType(ex.InnerException, typeof(ObjectConverterNotFoundException));
             },
             Assert.Fail);
         }
@@ -372,6 +380,32 @@ namespace SmartConfig.Tests.ConfigurationTests
                 Assert.IsInstanceOfType(ex.InnerException, typeof(SettingNotOptionalException));
             },
             Assert.Fail);
+        }
+    }
+
+    [TestClass]
+    public class FromTests
+    {
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void RequiresCustomKeys()
+        {
+            Configuration
+                .Load(typeof(Foo))
+                .From(new Baz());
+        }
+
+        [SmartConfig]
+        private static class Foo
+        {
+            public static string Bar { get; set; }
+        }
+
+        public class Baz : DataStore<CustomTestSetting>
+        {
+            public override IReadOnlyCollection<Type> SerializationDataTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+            public override object Select(SettingKey key) { return null; }
+            public override void Update(SettingKey key, object value) { }
         }
     }
 

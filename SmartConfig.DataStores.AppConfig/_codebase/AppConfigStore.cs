@@ -32,11 +32,11 @@ namespace SmartConfig.DataStores.AppConfig
             .ToDictionary(x => x.SectionName, x => x, StringComparer.OrdinalIgnoreCase);
         }
 
-        private IAppConfigSectionStore GetAppConfigSectionStore(NameKey nameKey)
+        private IAppConfigSectionStore GetAppConfigSectionStore(SettingPath path)
         {
-            Debug.Assert(nameKey != null);
+            Debug.Assert(path != null);
 
-            var sectionName = new AppConfigPath(nameKey.Value).SectionName;
+            var sectionName = new AppConfigPath(path).SectionName;
 
             IAppConfigSectionStore appConfigSectionStore;
             if (!_appConfigSectionSources.TryGetValue(sectionName, out appConfigSectionStore))
@@ -47,27 +47,27 @@ namespace SmartConfig.DataStores.AppConfig
             return appConfigSectionStore;
         }
 
-        public override IReadOnlyCollection<Type> SupportedSettingDataTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+        public override IReadOnlyCollection<Type> SerializationDataTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
-        public override object Select(CompoundSettingKey keys)
+        public override object Select(SettingKey key)
         {
-            if (keys == null) { throw new ArgumentNullException(nameof(keys)); }
-            if (!keys.Any()) { throw new InvalidOperationException("There must be at least one key defined."); }
+            if (key == null) { throw new ArgumentNullException(nameof(key)); }
+            //if (!key.Any()) { throw new InvalidOperationException("There must be at least one key defined."); }
 
-            var appConfigSectionSource = GetAppConfigSectionStore(keys.NameKey);
+            var appConfigSectionSource = GetAppConfigSectionStore(key.Name.Value);
 
-            var settingName = new AppConfigPath(keys.NameKey.Value).ToString();
+            var settingName = new AppConfigPath(key.Name.Value).ToString();
             var value = appConfigSectionSource.Select(settingName);
 
             return value;
         }
 
-        public override void Update(CompoundSettingKey keys, object value)
+        public override void Update(SettingKey key, object value)
         {
-            Debug.Assert(keys != null && keys.Any());
+            Debug.Assert(key != null && key.Any());
 
-            var appConfigSectionSource = GetAppConfigSectionStore(keys.NameKey);
-            var settingName = new AppConfigPath(keys.NameKey.Value).ToString();
+            var appConfigSectionSource = GetAppConfigSectionStore(key.Name.Value);
+            var settingName = new AppConfigPath(key.Name.Value).ToString();
 
             appConfigSectionSource.Update(settingName, value?.ToString());
             _exeConfiguration.Save(ConfigurationSaveMode.Minimal);

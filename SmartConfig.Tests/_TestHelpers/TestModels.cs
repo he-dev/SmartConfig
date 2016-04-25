@@ -5,7 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using SmartConfig.Converters;
+using SmartConfig.DataAnnotations;
+using SmartUtilities.ObjectConverters.DataAnnotations;
 
 // ReSharper disable once CheckNamespace
 namespace SmartConfig.Core.Tests.TestModels
@@ -42,7 +43,6 @@ namespace SmartConfig.Core.Tests.TestModels
         [SmartConfig]
         public static class JsonSettings
         {
-            [ObjectConverter(typeof(JsonConverter))]
             public static List<int> ListInt32Setting { get; set; }
         }
 

@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using SmartConfig.Collections;
-using SmartConfig.Converters;
 using SmartConfig.Data;
+using SmartConfig.DataAnnotations;
 using SmartConfig.IO;
+using SmartUtilities;
+using SmartUtilities.Collections;
+using SmartUtilities.ObjectConverters;
 
 namespace SmartConfig
 {
@@ -22,7 +22,19 @@ namespace SmartConfig
         /// <summary>
         /// Gets the current converters and allows to add additional ones.
         /// </summary>
-        public static ObjectConverterCollection Converters { get; } = new ObjectConverterCollection
+        //public static ObjectConverterCollection Converters { get; } = new ObjectConverterCollection
+        //{
+        //    new NumericConverter(),
+        //    new BooleanConverter(),
+        //    new StringConverter(),
+        //    new EnumConverter(),
+        //    new DateTimeConverter(),
+        //    new ColorConverter(),
+        //    //new JsonConverter(),
+        //    new XmlConverter(),
+        //};
+
+        public ObjectConverterCollection Converters { get; } = new ObjectConverterCollection
         {
             new NumericConverter(),
             new BooleanConverter(),
@@ -30,38 +42,67 @@ namespace SmartConfig
             new EnumConverter(),
             new DateTimeConverter(),
             new ColorConverter(),
-            new JsonConverter(),
             new XmlConverter(),
         };
 
-        internal Configuration(Type configurationType)
+        private Configuration(Type configurationType)
         {
             Type = configurationType;
-            Name = Type.GetCustomAttribute<SettingNameAttribute>()?.SettingName;
             Settings = SettingCollection.Create(this);
         }
 
         internal Type Type { get; }
 
-        internal string Name { get; }
+        internal string Name => Type.GetCustomAttribute<CustomNameAttribute>()?.Name;
 
         internal IReadOnlyCollection<Setting> Settings { get; }
 
         internal IDataStore DataStore { get; set; }
 
-        internal List<SimpleSettingKey> CustomKeys { get; set; } = new List<SimpleSettingKey>();
+        // internal IDictionary<string, object> CustomKeys { get; } = new Dictionary<string, object>();
 
         public static event EventHandler<ReloadFailedEventArgs> ReloadFailed = delegate { };
 
-        public static ConfigurationBuilder Load(Type configurationType)
+        public static Configuration Load(Type configurationType, Action<ObjectConverterCollection> converters = null)
         {
-            return new ConfigurationBuilder(configurationType);
+            if (configurationType == null)
+            {
+                throw new ArgumentNullException(nameof(configurationType));
+            }
+
+            if (!configurationType.IsStatic())
+            {
+                throw new TypeNotStaticException { Type = configurationType.Name };
+            }
+
+            if (!configurationType.HasAttribute<SmartConfigAttribute>())
+            {
+                throw new SmartConfigAttributeNotFoundException { ConfigurationType = configurationType.Name };
+            }
+
+            var configuration = new Configuration(configurationType);
+            converters?.Invoke(configuration.Converters);
+            return configuration;
         }
 
-        internal static void Load(Configuration configuration)
+        public void From(IDataStore dataStore, Action<IDataStore> configureDataStore = null)
         {
-            SettingLoader.LoadSettings(configuration, Converters);
-            Cache[configuration.Type] = configuration;
+            if (dataStore == null) { throw new ArgumentNullException(nameof(dataStore)); }
+
+            configureDataStore?.Invoke(dataStore);
+
+            // check if all custom keys have values
+            var missingKeys = dataStore.CustomKeyFilters.Where(x => dataStore.CustomKeyValues[x.Key] == null).Select(x => x.Key).ToList();
+            if (missingKeys.Any())
+            {
+                throw new ArgumentException($"You need to set the {dataStore.SettingType}'s following custom keys: {string.Join(", ", missingKeys)}");
+            }
+
+
+            DataStore = dataStore;
+
+            SettingLoader.LoadSettings(this);
+            Cache[Type] = this;
         }
 
         public static void Reload(Type configurationType)
@@ -74,7 +115,7 @@ namespace SmartConfig
 
             try
             {
-                SettingLoader.LoadSettings(configuration, Converters);
+                SettingLoader.LoadSettings(configuration);
             }
             catch (Exception ex)
             {
@@ -95,47 +136,47 @@ namespace SmartConfig
 
             foreach (var setting in configuration.Settings)
             {
-                SettingUpdater.UpdateSetting(setting, setting.Value, Converters);
+                SettingUpdater.UpdateSetting(setting);
             }
         }
 
-       
-    //    /// <summary>
-    //    /// Updates a setting.
-    //    /// </summary>
-    //    /// <typeparam name="T">The type of the setting property.</typeparam>
-    //    /// <param name="expression">Member expression of the setting to be updated.</param>
-    //    /// <param name="value">Value to be set.</param>
-    //    public static void UpdateSetting<T>(Expression<Func<T>> expression, T value)
-    //    {
-    //        if (expression == null)
-    //        {
-    //            throw new ArgumentNullException(nameof(expression));
-    //        }
 
-    //        var memberExpression = expression.Body as MemberExpression;
-    //        if (memberExpression == null)
-    //        {
-    //            throw new ExpressionBodyNotMemberExpressionException { MemberFullName = expression.Body.Type.FullName };
-    //        }
+        //    /// <summary>
+        //    /// Updates a setting.
+        //    /// </summary>
+        //    /// <typeparam name="T">The type of the setting property.</typeparam>
+        //    /// <param name="expression">Member expression of the setting to be updated.</param>
+        //    /// <param name="value">Value to be set.</param>
+        //    public static void UpdateSetting<T>(Expression<Func<T>> expression, T value)
+        //    {
+        //        if (expression == null)
+        //        {
+        //            throw new ArgumentNullException(nameof(expression));
+        //        }
 
-    //        var property = memberExpression.Member as PropertyInfo;
-    //        if (property == null)
-    //        {
-    //            throw new MemberNotPropertyException { MemberName = memberExpression.Member.Name };
-    //        }
+        //        var memberExpression = expression.Body as MemberExpression;
+        //        if (memberExpression == null)
+        //        {
+        //            throw new ExpressionBodyNotMemberExpressionException { MemberFullName = expression.Body.Type.FullName };
+        //        }
 
-    //        var settingInfo =
-    //            Cache.SelectMany(x => x.Value.Settings)
-    //            .SingleOrDefault(si => si.Property == property);
+        //        var property = memberExpression.Member as PropertyInfo;
+        //        if (property == null)
+        //        {
+        //            throw new MemberNotPropertyException { MemberName = memberExpression.Member.Name };
+        //        }
 
-    //        if (settingInfo == null)
-    //        {
-    //            throw new MemberNotFoundException { MemberName = property.Name };
-    //        }
+        //        var settingInfo =
+        //            Cache.SelectMany(x => x.Value.Settings)
+        //            .SingleOrDefault(si => si.Property == property);
 
-    //        SettingUpdater.UpdateSetting(settingInfo, value, Converters);
-    //        settingInfo.Value = value;
-    //    }
+        //        if (settingInfo == null)
+        //        {
+        //            throw new MemberNotFoundException { MemberName = property.Name };
+        //        }
+
+        //        SettingUpdater.UpdateSetting(settingInfo, value, Converters);
+        //        settingInfo.Value = value;
+        //    }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Collections;
 using SmartConfig.Data;
+using SmartConfig.DataAnnotations;
 
 namespace SmartConfig.DataStores.AppConfig.Tests.AppConfigStoreTests
 {
@@ -16,11 +17,11 @@ namespace SmartConfig.DataStores.AppConfig.Tests.AppConfigStoreTests
         }
 
         [SmartConfig]
-        static class Config1
+        private static class Config1
         {
             public static class appSettings
             {
-                static public string Foo { get; set; }
+                public static string Foo { get; set; }
             }
         }
 
@@ -32,12 +33,12 @@ namespace SmartConfig.DataStores.AppConfig.Tests.AppConfigStoreTests
         }
 
         [SmartConfig]
-        [SettingName("baz")]
-        static class Config2
+        [CustomName("baz")]
+        private static class Config2
         {
             public static class appSettings
             {
-                static public string Foo { get; set; }
+                public static string Foo { get; set; }
             }
         }
 
@@ -49,7 +50,7 @@ namespace SmartConfig.DataStores.AppConfig.Tests.AppConfigStoreTests
         }
 
         [SmartConfig]
-        static class Config3
+        private static class Config3
         {
             public static class connectionStrings
             {
@@ -68,8 +69,8 @@ namespace SmartConfig.DataStores.AppConfig.Tests.AppConfigStoreTests
         }
 
         [SmartConfig]
-        [SettingName("bax")]
-        static class Config4
+        [CustomName("bax")]
+        private static class Config4
         {
             public static class connectionStrings
             {
@@ -99,7 +100,7 @@ namespace SmartConfig.DataStores.AppConfig.Tests.AppConfigStoreTests
         }
 
         [SmartConfig]
-        static class Config1
+        private static class Config1
         {
             public static class appSettings
             {

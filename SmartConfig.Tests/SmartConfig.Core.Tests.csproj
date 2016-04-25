@@ -45,11 +45,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SmartUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SmartUtilities.2.1.1\lib\net45\SmartUtilities.dll</HintPath>
+      <HintPath>..\packages\SmartUtilities.3.0.0\lib\net452\SmartUtilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -76,28 +76,14 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="_codebase\Collections\ObjectConverterCollectionTests.cs" />
-    <Compile Include="_codebase\Collections\SettingKeyNameCollectionTests.cs" />
-    <Compile Include="_codebase\Collections\SettingKeyCollectionTests.cs" />
-    <Compile Include="_codebase\ConfigurationBuilderTests.cs" />
-    <Compile Include="_codebase\Converters\StringConverterTests.cs" />
-    <Compile Include="_codebase\Converters\EnumConverterTests.cs" />
-    <Compile Include="_codebase\Converters\DateTimeConverterTests.cs" />
-    <Compile Include="_codebase\Converters\NumericConverterTests.cs" />
-    <Compile Include="_codebase\Converters\BooleanConverterTests.cs" />
+    <Compile Include="_codebase\Collections\SettingCollectionTests.cs" />
     <Compile Include="_codebase\Data\DataStoreTests.cs" />
     <Compile Include="_codebase\Data\SettingTests.cs" />
-    <Compile Include="_codebase\Converters\ColorConverterTests.cs" />
-    <Compile Include="_codebase\Converters\XmlConverterTests.cs" />
-    <Compile Include="_codebase\Converters\JsonConverterTests.cs" />
     <Compile Include="_codebase\Filters\MultipleFilterTests.cs" />
     <Compile Include="_codebase\Filters\VersionFilterTests.cs" />
-    <Compile Include="_codebase\NameKeyTests.cs" />
-    <Compile Include="_codebase\Collections\SettingCollectionTests.cs" />
-    <Compile Include="_codebase\SettingInfoTests.cs" />
+    <Compile Include="_codebase\Filters\WildcardComparer.cs" />
+    <Compile Include="_codebase\SettingTests.cs" />
     <Compile Include="_codebase\_attributes\KeyFilterAttributeTests.cs" />
-    <Compile Include="_codebase\_attributes\ObjectConverterAttributeTests.cs" />
-    <Compile Include="_codebase\_attributes\_constraints\RegularExpressionAttributeTests.cs" />
     <Compile Include="_codebase\ReflectorTests.cs" />
     <Compile Include="_codebase\ConfigurationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -106,7 +92,6 @@
     <Compile Include="_testHelpers\BasicTestStore.cs" />
     <Compile Include="_testHelpers\TestModels.cs" />
     <Compile Include="_testHelpers\TestEnum.cs" />
-    <Compile Include="_codebase\_attributes\_constraints\RangeAttributeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -118,6 +103,7 @@
       <Name>SmartConfig.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

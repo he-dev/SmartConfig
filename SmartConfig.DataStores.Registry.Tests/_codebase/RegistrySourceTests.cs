@@ -3,6 +3,8 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
 using SmartConfig.Data;
+using SmartConfig.DataAnnotations;
+using SmartUtilities.ObjectConverters.DataAnnotations;
 using SmartUtilities.UnitTesting;
 
 namespace SmartConfig.DataStores.Registry.Tests.RegistryStoreTests
@@ -45,10 +47,10 @@ namespace SmartConfig.DataStores.Registry.Tests.RegistryStoreTests
         }
 
         [SmartConfig]
-        static class Config1
+        private static class Config1
         {
-            static public string Foo { get; set; }
-            static public int Bar { get; set; }
+            public static string Foo { get; set; }
+            public static int Bar { get; set; }
         }    
     }
 
@@ -69,16 +71,16 @@ namespace SmartConfig.DataStores.Registry.Tests.RegistryStoreTests
             Configuration.Save(typeof(Config1));
             Config1.Qux = DateTime.MinValue;
             Configuration.Reload(typeof(Config1));
-            Assert.AreEqual(now, Config1.Qux);
+            Assert.AreEqual(now.ToLongDateString(), Config1.Qux.ToLongDateString());
 
 
         }
 
         [SmartConfig]
-        static class Config1
+        private static class Config1
         {
             [Optional]
-            static public DateTime Qux { get; set; }
+            public static DateTime Qux { get; set; }
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -13,16 +12,11 @@ namespace SmartConfig
     [DebuggerDisplay("{ToString()}")]
     public class SettingPath : ReadOnlyCollection<string>
     {
-        protected SettingPath(IList<string> list) : base(list) { }
-
-        public SettingPath(string configName, IEnumerable<string> path) : this(new[] { configName }.Concat(path).ToList())
+        internal SettingPath(IList<string> names) : base(names)
         {
-            if (path == null) { throw new ArgumentNullException(nameof(path)); }
-            if (!path.Any()) { throw new ArgumentException("Identifiers must not be empty."); }
+            if (names == null) { throw new ArgumentNullException(nameof(names)); }
+            if (!names.Any()) { throw new ArgumentException("There must be at least one name."); }
         }
-
-        // provides easy path creation for unit tests
-        internal SettingPath(string configName, params string[] path) : this(new[] { configName }.Concat(path).ToList()) { }
 
         public string Delimiter { get; set; } = ".";
 
@@ -31,6 +25,18 @@ namespace SmartConfig
         public string ConfigurationName => this.FirstOrDefault();
 
         public IEnumerable<string> WithoutConfigurationName => this.Skip(1);
+
+        internal static SettingPath Create(string configName, IEnumerable<string> names)
+        {
+            if (names == null) { throw new ArgumentNullException(nameof(names)); }
+
+            return new SettingPath(new[] { configName }.Concat(names).ToList());
+        }
+
+        internal static SettingPath Create(string configName,params string[] names)
+        {
+            return Create(configName, (IEnumerable<string>) names);
+        }
 
         public override string ToString()
         {

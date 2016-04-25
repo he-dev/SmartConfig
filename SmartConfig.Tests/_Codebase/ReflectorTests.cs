@@ -4,36 +4,37 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Core.Tests;
 using SmartConfig.Data;
+using SmartConfig.DataAnnotations;
 
 // ReSharper disable once CheckNamespace
-namespace SmartConfig.Tests.Reflection.ReflectorTests
+namespace SmartConfig.Core.Tests.Reflection.ReflectorTests
 {
-    [TestClass]
-    public class IsStatic
-    {
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void RequiresType()
-        {
-            ((Type)null).IsStatic();
-        }
+    //[TestClass]
+    //public class IsStatic
+    //{
+    //    [TestMethod]
+    //    [ExpectedException(typeof(ArgumentNullException))]
+    //    public void RequiresType()
+    //    {
+    //        ((Type)null).IsStatic();
+    //    }
 
-        [TestMethod]
-        public void ReturnsTrueIfTypeIsStatic()
-        {
-            Assert.IsTrue(typeof(StaticTestClass).IsStatic());
-        }
+    //    [TestMethod]
+    //    public void ReturnsTrueIfTypeIsStatic()
+    //    {
+    //        Assert.IsTrue(typeof(StaticTestClass).IsStatic());
+    //    }
 
-        [TestMethod]
-        public void ReturnsFalseIfTypeNotStatic()
-        {
-            Assert.IsFalse(typeof(NonStaticTestClass).IsStatic());
-        }
+    //    [TestMethod]
+    //    public void ReturnsFalseIfTypeNotStatic()
+    //    {
+    //        Assert.IsFalse(typeof(NonStaticTestClass).IsStatic());
+    //    }
 
-        public static class StaticTestClass { }
+    //    public static class StaticTestClass { }
 
-        public class NonStaticTestClass { }
-    }
+    //    public class NonStaticTestClass { }
+    //}
 
     [TestClass]
     public class GetSettingNameOrMemberName
@@ -42,7 +43,7 @@ namespace SmartConfig.Tests.Reflection.ReflectorTests
         [ExpectedException(typeof(ArgumentNullException))]
         public void RequiresMemberInfo()
         {
-            ((MemberInfo)null).GetSettingNameOrMemberName();
+            ((MemberInfo)null).GetName();
         }
 
         [TestMethod]
@@ -51,7 +52,7 @@ namespace SmartConfig.Tests.Reflection.ReflectorTests
             var testProperty = typeof(TestClass).GetProperty(nameof(TestClass.TestPropertyWithoutSettingNameAttribute), BindingFlags.Public | BindingFlags.Static);
             Assert.AreEqual(
                 nameof(TestClass.TestPropertyWithoutSettingNameAttribute),
-                testProperty.GetSettingNameOrMemberName());
+                testProperty.GetName());
         }
 
         [TestMethod]
@@ -60,14 +61,14 @@ namespace SmartConfig.Tests.Reflection.ReflectorTests
             var testProperty = typeof(TestClass).GetProperty(nameof(TestClass.TestPropertyWithSettingNameAttribute), BindingFlags.Public | BindingFlags.Static);
             Assert.AreEqual(
                 "DifferentPropertyName",
-                testProperty.GetSettingNameOrMemberName());
+                testProperty.GetName());
         }
 
-        static class TestClass
+        private static class TestClass
         {
             public static string TestPropertyWithoutSettingNameAttribute { get; set; }
 
-            [SettingName("DifferentPropertyName")]
+            [CustomName("DifferentPropertyName")]
             public static string TestPropertyWithSettingNameAttribute { get; set; }
         }
     }
@@ -94,13 +95,13 @@ namespace SmartConfig.Tests.Reflection.ReflectorTests
             Assert.IsTrue(typeof(ClassWithSmartConfigAttribute).IsSmartConfigType());
         }
 
-        static class ClassWithoutSmartConfigAttribute
+        private static class ClassWithoutSmartConfigAttribute
         {
 
         }
 
         [SmartConfig]
-        static class ClassWithSmartConfigAttribute
+        private static class ClassWithSmartConfigAttribute
         {
 
         }
@@ -113,7 +114,7 @@ namespace SmartConfig.Tests.Reflection.ReflectorTests
         [ExpectedException(typeof(ArgumentNullException))]
         public void RequiresPropertyInfo()
         {
-            ((PropertyInfo)null).GetSettingPath();
+            ((PropertyInfo)null).GetPropertyPath();
         }
 
         [TestMethod]
@@ -128,7 +129,7 @@ namespace SmartConfig.Tests.Reflection.ReflectorTests
                     nameof(Foo.SubFoo.SubSubFoo.SubSubSubFoo),
                     nameof(Foo.SubFoo.SubSubFoo.SubSubSubFoo.Bar),
                 },
-                barProperty.GetSettingPath().ToList());
+                barProperty.GetPropertyPath().ToList());
         }
 
         [TestMethod]
@@ -138,11 +139,11 @@ namespace SmartConfig.Tests.Reflection.ReflectorTests
             var barProperty =
                 typeof(Bar.SubBar)
                 .GetProperty(nameof(Bar.SubBar.Baz), BindingFlags.Public | BindingFlags.Static)
-                .GetSettingPath();
+                .GetPropertyPath();
         }
 
         [SmartConfig]
-        static class Foo
+        private static class Foo
         {
             public static class SubFoo
             {
@@ -156,7 +157,7 @@ namespace SmartConfig.Tests.Reflection.ReflectorTests
             }
         }
 
-        static class Bar
+        private static class Bar
         {
             public static class SubBar
             {
@@ -164,6 +165,61 @@ namespace SmartConfig.Tests.Reflection.ReflectorTests
             }
         }
     }
+
+    //[TestClass]
+    //public class GetTypesTests
+    //{
+    //    //[TestMethod]
+    //    //[ExpectedException(typeof(TypeNotStaticException))]
+    //    //public void RequiresTypeIsStatic()
+    //    //{
+    //    //    SettingCollection.GetSettingGroups(typeof(Bar), new List<Type>());
+    //    //}
+
+    //    [TestMethod]
+    //    public void GetsTypes()
+    //    {
+    //        var types = typeof(Foo).GetTypes().ToList();
+    //        Assert.AreEqual(6, types.Count);
+
+    //        // make sure the types that shouldn't be there aren't there
+    //        Assert.IsNull(types.SingleOrDefault(t => t == typeof(Foo.SubFoo2.Baz)));
+    //    }
+
+    //    [SmartConfig]
+    //    static class Foo
+    //    {
+    //        //[SmartConfigProperties]
+    //        //public static class Bar { }
+
+    //        public static class SubFoo1 { }
+
+    //        public static class SubFoo2
+    //        {
+    //            public static class SubSubFoo1
+    //            {
+    //                public static class SubSubSubFoo1 { }
+    //            }
+
+    //            public static class SubSubFoo2 { }
+
+    //            [SmartUtilities.ObjectConverters.DataAnnotations.Ignore]
+    //            public static class Baz { }
+    //        }
+    //    }
+
+    //    [SmartConfig]
+    //    private static class Bar
+    //    {
+    //        public static class SubBar1
+    //        {
+    //        }
+
+    //        public class SubBar2
+    //        {
+    //        }
+    //    }
+    //}
 
     //[TestClass]
     //public class GetConfigurationTypes
@@ -262,25 +318,25 @@ namespace SmartConfig.Tests.Reflection.ReflectorTests
     //    }
     //}
 
-    [TestClass]
-    public class GetSettingKeyNames
-    {
-        [TestMethod]
-        public void GetsMainKeyName()
-        {
-            CollectionAssert.AreEqual(
-                new[] { "Name" },
-                Reflector.GetSettingKeyNames<BasicSetting>().ToList()
-            );
-        }
+    //[TestClass]
+    //public class GetSettingKeyNames
+    //{
+    //    [TestMethod]
+    //    public void GetsMainKeyName()
+    //    {
+    //        CollectionAssert.AreEqual(
+    //            new[] { "Name" },
+    //            Reflector.GetSettingKeyNames<BasicSetting>().ToList()
+    //        );
+    //    }
 
-        [TestMethod]
-        public void GetsCustomKeyNames()
-        {
-            CollectionAssert.AreEqual(
-                new[] { "Name", "Environment", "Version" },
-                Reflector.GetSettingKeyNames<CustomTestSetting>().ToList()
-            );
-        }
-    }
+    //    [TestMethod]
+    //    public void GetsCustomKeyNames()
+    //    {
+    //        CollectionAssert.AreEqual(
+    //            new[] { "Name", "Environment", "Version" },
+    //            Reflector.GetSettingKeyNames<CustomTestSetting>().ToList()
+    //        );
+    //    }
+    //}
 }

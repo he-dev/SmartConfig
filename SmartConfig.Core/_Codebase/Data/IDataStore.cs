@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using SmartConfig.Collections;
+using SmartConfig.Filters;
 
 namespace SmartConfig.Data
 {
@@ -17,26 +17,32 @@ namespace SmartConfig.Data
     /// </summary>
     public interface IDataStore
     {
-        IReadOnlyCollection<Type> SupportedSettingDataTypes { get; }
+        Type SettingType { get; }
 
-        //bool ChangedNotificationSupported { get; }
+        IReadOnlyDictionary<string, object> CustomKeyValues { get; }
 
-        //bool ChangedNotificationEnabled { get; set; }
+        IReadOnlyDictionary<string, ISettingFilter> CustomKeyFilters { get; }
 
-        //event EventHandler<DataStoreChangedEventArgs> Changed;
+        IReadOnlyCollection<Type> SerializationDataTypes { get; }
+
+        Type DefaultSerializationDataType { get; }
+
+        Type GetSerializationDataType(Type objectType);
+
+        void SetCustomKey(string name, object value);
 
         /// <summary>
         /// Selects data from the data source.
         /// </summary>
-        /// <param name="keys"></param>
+        /// <param name="key"></param>
         /// <returns></returns>
-        object Select(CompoundSettingKey keys);
+        object Select(SettingKey key);
 
         /// <summary>
         /// Updates data in the data source.
         /// </summary>
-        /// <param name="keys"></param>
+        /// <param name="key"></param>
         /// <param name="value"></param>
-        void Update(CompoundSettingKey keys, object value);
+        void Update(SettingKey key, object value);
     }
 }

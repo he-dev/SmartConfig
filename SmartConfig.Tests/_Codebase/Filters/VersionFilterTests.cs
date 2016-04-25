@@ -1,10 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Filters;
 
 // ReSharper disable InconsistentNaming
 
-namespace SmartConfig.Core.Tests.Filters
+namespace SmartConfig.Core.Tests.Filters.VersionFilterTests
 {
     [TestClass]
     public class Filters_FilterByVersion_Method
@@ -20,7 +21,7 @@ namespace SmartConfig.Core.Tests.Filters
                 new CustomTestSetting("a|2.0.5|name|value"),
             };
 
-            var result = new VersionFilter().Apply(settings, new SimpleSettingKey("Version", "1.1.0"));
+            var result = new VersionFilter().Apply(settings, new KeyValuePair<string, object>("Version", "1.1.0"));
             var setting = result.FirstOrDefault();
             Assert.AreEqual(settings[2], setting);
         }
@@ -30,16 +31,16 @@ namespace SmartConfig.Core.Tests.Filters
         {
             var settings = new[]
             {
-                new CustomTestSetting("a|1.0.4|name|value"),
                 new CustomTestSetting("a|1.0.5|name|value"),
+                new CustomTestSetting("a|1.0.4|name|value"),
                 new CustomTestSetting("a|*|name|value"),
                 new CustomTestSetting("a|1.1.0|name|value"),
                 new CustomTestSetting("a|2.0.5|name|value"),
             };
 
-            var result = new VersionFilter().Apply(settings, new SimpleSettingKey("Version", "1.0.7"));
+            var result = new VersionFilter().Apply(settings, new KeyValuePair<string, object>("Version", "1.0.7"));
             var setting = result.FirstOrDefault();
-            Assert.AreEqual(settings[1], setting);
+            Assert.AreEqual(settings[0], setting);
         }
 
         [TestMethod]
@@ -53,7 +54,7 @@ namespace SmartConfig.Core.Tests.Filters
                     new CustomTestSetting("a|2.0.5|name|value"),
                 };
 
-            var result = new VersionFilter().Apply(settings, new SimpleSettingKey("Version", "1.0.3"));
+            var result = new VersionFilter().Apply(settings, new KeyValuePair<string, object>("Version", "1.0.3"));
             var setting = result.FirstOrDefault();
             Assert.AreEqual(settings[1], setting);
         }
@@ -68,7 +69,7 @@ namespace SmartConfig.Core.Tests.Filters
                 new CustomTestSetting("a|2.0.5|name|value"),
             };
 
-            var result = new VersionFilter().Apply(settings, new SimpleSettingKey("Version", "1.0.2"));
+            var result = new VersionFilter().Apply(settings, new KeyValuePair<string, object>("Version", "1.0.2"));
             var setting = result.FirstOrDefault();
             Assert.IsNull(setting);
         }

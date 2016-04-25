@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
+using SmartConfig.DataAnnotations;
+using SmartConfig.Filters;
 
 namespace SmartConfig.Data
 {
@@ -10,8 +15,11 @@ namespace SmartConfig.Data
     /// <summary>
     /// Basic setting class. Custom setting must be derived from this type.
     /// </summary>
+    [DebuggerDisplay("{ToString()}")]
     public class BasicSetting : IIndexable
     {
+        private IReadOnlyCollection<PropertyInfo> _customKeyProperties;
+
         private const string GetterPrefix = "get_";
         private const string SetterPrefix = "set_";
 
@@ -37,29 +45,32 @@ namespace SmartConfig.Data
         {
             get
             {
-                StringPropertyGetter stringPropertyGetter;
-                if (!_getters.TryGetValue($"{GetterPrefix}{propertyName}", out stringPropertyGetter))
+                var stringPropertyGetter = (StringPropertyGetter)null;
+                if (_getters.TryGetValue($"{GetterPrefix}{propertyName}", out stringPropertyGetter))
                 {
-                    throw new InvalidPropertyNameException
-                    {
-                        PropertyName = propertyName,
-                        TargetType = GetType().FullName
-                    };
+                    return stringPropertyGetter();
                 }
-                return stringPropertyGetter();
+                throw new InvalidPropertyNameException
+                {
+                    PropertyName = propertyName,
+                    SettingType = GetType().Name
+                };
             }
             set
             {
-                StringPropertySetter stringPropertySetter;
-                if (!_setters.TryGetValue($"{SetterPrefix}{propertyName}", out stringPropertySetter))
+                if (string.IsNullOrEmpty(value)) { throw new ArgumentNullException(nameof(propertyName)); }
+
+                var stringPropertySetter = (StringPropertySetter)null;
+                if (_setters.TryGetValue($"{SetterPrefix}{propertyName}", out stringPropertySetter))
                 {
-                    throw new InvalidPropertyNameException
-                    {
-                        PropertyName = propertyName,
-                        TargetType = GetType().FullName
-                    };
+                    _setters[$"{SetterPrefix}{propertyName}"](value);
+                    return;
                 }
-                _setters[$"{SetterPrefix}{propertyName}"](value);
+                throw new InvalidPropertyNameException
+                {
+                    PropertyName = propertyName,
+                    SettingType = GetType().FullName
+                };
             }
         }
 
@@ -73,22 +84,61 @@ namespace SmartConfig.Data
         /// </summary>
         public string Value { get; set; }
 
+        public bool IsCustomSetting => GetType() != typeof(BasicSetting);
+
+        public IReadOnlyCollection<PropertyInfo> CustomKeyProperties
+        {
+            get
+            {
+                if (_customKeyProperties != null)
+                {
+                    return _customKeyProperties;
+                }
+
+                if (!IsCustomSetting)
+                {
+                    _customKeyProperties = new List<PropertyInfo>();
+                    return _customKeyProperties;
+                }
+
+                _customKeyProperties = 
+                    GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
+                    .Where(property => property.HasAttribute<SettingFilterAttribute>())
+                    .OrderBy(p => p.Name).ToList();
+               
+                return _customKeyProperties;
+            }
+        }
+
+        public IReadOnlyDictionary<string, ISettingFilter> GetCustomSettingFilters()
+        {
+            var customSettingFilters = CustomKeyProperties.Select(p => new
+            {
+                p.Name,
+                p.GetCustomAttribute<SettingFilterAttribute>().FilterType
+            })
+            .ToDictionary(x => x.Name, x => (ISettingFilter)Activator.CreateInstance(x.FilterType));
+            return new ReadOnlyDictionary<string, ISettingFilter>(customSettingFilters);
+        }
+
         private void InitializeDelegates()
         {
-            var isDerived = GetType() != typeof(BasicSetting);
-            if (!isDerived)
-            {
-                return;
-            }
-
-            var properties = GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public);
-            foreach (var property in properties)
+            foreach (var property in CustomKeyProperties)
             {
                 var getStringMethod = (StringPropertyGetter)Delegate.CreateDelegate(typeof(StringPropertyGetter), this, property.GetGetMethod());
                 var setStringMethod = (StringPropertySetter)Delegate.CreateDelegate(typeof(StringPropertySetter), this, property.GetSetMethod());
                 _getters.Add($"{GetterPrefix}{property.Name}", getStringMethod);
                 _setters.Add($"{SetterPrefix}{property.Name}", setStringMethod);
             }
+        }
+
+        public override string ToString()
+        {
+            return string.Join(" ", 
+                new[] { $"Name = '{Name}'" }
+                .Concat(CustomKeyProperties.Select(c => $"{c.Name} = '{this[c.Name]}'"))
+                .Concat(new[] { $"Value = '{Value}'" })
+            );
         }
     }
 }

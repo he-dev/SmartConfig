@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using SmartConfig.Data;
-using SmartUtilities;
 
 namespace SmartConfig.Filters
 {
@@ -11,13 +10,19 @@ namespace SmartConfig.Filters
     /// </summary>
     public class StringFilter : ISettingFilter
     {
-        public IEnumerable<IIndexable> Apply(IEnumerable<IIndexable> settings, SimpleSettingKey key)
+        public IEnumerable<IIndexable> Apply(IEnumerable<IIndexable> settings, KeyValuePair<string, object> custom)
         {
             var result = settings
-                    .Where(setting => setting[key.Name].Equals(key.Value.ToString(), StringComparison.OrdinalIgnoreCase))
-                    .Concat(settings.Where(setting => setting[key.Name].Equals(Wildcards.Asterisk)));
+                // get settings by custom key and asterisk
+                .Where(setting =>
+                    setting[custom.Key].Equals(custom.Value.ToString(), StringComparison.OrdinalIgnoreCase) ||
+                    setting[custom.Key].Equals(Wildcards.Asterisk)
+                )
+                // sort settings with asterisk last
+                .OrderBy(x => x[custom.Key], new WildcardComparer());
 
             return result;
-        }        
+        }
+
     }
 }

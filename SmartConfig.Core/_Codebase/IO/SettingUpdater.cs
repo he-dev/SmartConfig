@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using SmartConfig.Collections;
+using SmartUtilities.Collections;
+using SmartUtilities.ObjectConverters.DataAnnotations;
 
 namespace SmartConfig.IO
 {
     internal class SettingUpdater
     {
-        //public void UpdateSetting(DeclaringTypeName configType, string SettingPath, object value)
+        //public void UpdateSetting(SettingType configType, string SettingPath, object value)
         //{
         //    //var Setting = _configurationReflector.FindSettingInfo(configType, SettingPath);
         //    //if (Setting == null)
@@ -19,16 +20,19 @@ namespace SmartConfig.IO
         //    //UpdateSetting(Setting, value);
         //}
 
-        public static void UpdateSetting(Setting setting, object value, ObjectConverterCollection converters)
+        public static void UpdateSetting(Setting setting) //, object value, ObjectConverterCollection converters)
         {
             Debug.Assert(setting != null);
 
             try
             {
                 var dataSource = setting.Configuration.DataStore;
-                var converter = converters[setting.ConverterType];
-                value = converter.SerializeObject(value, setting.Type, setting.Atributes);
-                dataSource.Update(setting.Key, value);
+
+                var serializationType = dataSource.GetSerializationDataType(setting.NormalizedType);
+
+                var converter = setting.Configuration.Converters[setting.NormalizedType];
+                var serializedValue = converter.SerializeObject(setting.Value, serializationType, setting.Atributes.OfType<ValidationAttribute>());
+                dataSource.Update(setting.Key, serializedValue);
             }
             catch (Exception ex)
             {

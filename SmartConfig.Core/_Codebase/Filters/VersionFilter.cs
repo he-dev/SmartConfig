@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using SmartConfig.Data;
 using SmartUtilities;
@@ -11,20 +10,18 @@ namespace SmartConfig.Filters
     /// </summary>
     public class VersionFilter : ISettingFilter
     {
-        public IEnumerable<IIndexable> Apply(IEnumerable<IIndexable> settings, SimpleSettingKey key)
+        public IEnumerable<IIndexable> Apply(IEnumerable<IIndexable> settings, KeyValuePair<string, object> custom)
         {
-            var filtered = settings
-                // get matching versions
+            var result = settings
+                // get versions and asterisk
                 .Where(setting =>
-                    !setting[key.Name].Equals(Wildcards.Asterisk) &&
-                    SemanticVersion.Parse(setting[key.Name]) <= SemanticVersion.Parse(key.Value.ToString()))
-                // sort versions
-                .OrderByDescending(setting => SemanticVersion.Parse(setting[key.Name]))
-                // attach * at the end
-                .Concat(settings.Where(setting => setting[key.Name].Equals(Wildcards.Asterisk)));
+                    setting[custom.Key].Equals(Wildcards.Asterisk) ||
+                    SemanticVersion.Parse(setting[custom.Key]) <= SemanticVersion.Parse(custom.Value.ToString())
+                )
+                // sort versions desc with the asterisk last
+                .OrderByDescending(setting => setting[custom.Key] == Wildcards.Asterisk ? null : SemanticVersion.Parse(setting[custom.Key]));
 
-            // there can be only one version
-            return filtered;
+            return result;
         }
     }
 }

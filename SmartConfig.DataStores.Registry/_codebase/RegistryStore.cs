@@ -28,16 +28,16 @@ namespace SmartConfig.DataStores.Registry
             _baseSubKeyName = subRegistryKey;
         }
 
-        public override IReadOnlyCollection<Type> SupportedSettingDataTypes { get; } = new ReadOnlyCollection<Type>(new[]
+        public override IReadOnlyCollection<Type> SerializationDataTypes { get; } = new ReadOnlyCollection<Type>(new[]
         {
             typeof(string),
             typeof(int),
             typeof(byte[]),
         });
 
-        public override object Select(CompoundSettingKey keys)
+        public override object Select(SettingKey key)
         {
-            var registryPath = new RegistryPath(keys.NameKey.Value);
+            var registryPath = new RegistryPath(key.Name.Value);
 
             var subKeyName = Path.Combine(_baseSubKeyName, registryPath.SubKeyName);
             using (var subKey = _baseRegistryKey.OpenSubKey(subKeyName, false))
@@ -47,9 +47,9 @@ namespace SmartConfig.DataStores.Registry
             }
         }
 
-        public override void Update(CompoundSettingKey keys, object value)
+        public override void Update(SettingKey key, object value)
         {
-            var registryPath = new RegistryPath(keys.NameKey.Value);
+            var registryPath = new RegistryPath(key.Name.Value);
 
             var subKeyName = Path.Combine(_baseSubKeyName, registryPath.SubKeyName);
 
@@ -64,7 +64,7 @@ namespace SmartConfig.DataStores.Registry
                     throw new UnsupportedRegistryTypeException
                     {
                         ValueTypeName = value.GetType().Name,
-                        SettingName = keys.NameKey.Value.ToString()
+                        SettingName = key.Name.ToString()
                     };
                 }
                 subKey.SetValue(registryPath.ValueName, value, registryValueKind);

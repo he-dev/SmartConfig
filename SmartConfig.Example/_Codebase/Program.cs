@@ -9,9 +9,9 @@ using SmartConfig.Filters;
 
 namespace SmartConfig.Examples
 {
-    static class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             SqlServerExample();
         }
@@ -57,7 +57,7 @@ namespace SmartConfig.Examples
 
     [SmartConfig]
     [SettingName("Examples")]
-    static class ExampleAppConfig
+    internal static class ExampleAppConfig
     {
         public static class AppSettings
         {
@@ -80,7 +80,7 @@ namespace SmartConfig.Examples
 
     [SmartConfig]
     [SettingName("Examples")]
-    static class ExampleSqlServerConfig
+    internal static class ExampleSqlServerConfig
     {
         [Optional]
         public static string Greeting { get; set; } = "Hello SmartConfig!";
@@ -108,7 +108,7 @@ namespace SmartConfig.Examples
 
     [SmartConfig]
     [SettingName("Examples")]
-    static class ExampleXmlFleConfig
+    internal static class ExampleXmlFleConfig
     {
         [Optional]
         public static string Greeting { get; set; } = "Hello SmartConfig!";

@@ -44,12 +44,12 @@ namespace SmartConfig.DataStores.XmlFile
 
         private XDocument XConfig { get; }
 
-        public override IReadOnlyCollection<Type> SupportedSettingDataTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+        public override IReadOnlyCollection<Type> SerializationDataTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
-        public override object Select(CompoundSettingKey keys)
+        public override object Select(SettingKey key)
         {
-            var attributeName = keys.NameKey.Name;
-            var attributeValue = keys.NameKey.Value;
+            var attributeName = key.Name.Key;
+            var attributeValue = key.Name.Value.ToString();
             var defaultKeyXPath = $"//{RootElementName}/{SettingElementName}[@{attributeName}='{attributeValue}']";
 
             var xSettings = XConfig.XPathSelectElements(defaultKeyXPath);
@@ -60,32 +60,32 @@ namespace SmartConfig.DataStores.XmlFile
                 // set default key and value
                 var element = new TSetting
                 {
-                    Name = x.Attribute(keys.NameKey.Name).Value,
+                    Name = x.Attribute(key.Name.Key).Value,
                     Value = x.Value
                 };
 
                 // set other keys
-                foreach (var key in keys.CustomKeys)
+                foreach (var custom in key.CustomKeys)
                 {
-                    var attr = x.Attribute(key.Name);
+                    var attr = x.Attribute(custom.Key);
 
                     // use the attribute value or an asterisk if attribute not found
-                    element[key.Name] = attr?.Value ?? Wildcards.Asterisk;
+                    element[custom.Key] = attr?.Value ?? Wildcards.Asterisk;
                 }
                 return element;
             }).ToList() as IEnumerable<TSetting>;
 
-            elements = ApplyFilters(elements, keys.Skip(1));
+            elements = ApplyFilters(elements, key.CustomKeys);
             var result = elements.FirstOrDefault();
             return result?.Value;
         }
 
-        public override void Update(CompoundSettingKey keys, object value)
+        public override void Update(SettingKey key, object value)
         {
-            if (keys == null) { throw new ArgumentNullException(nameof(keys)); }
+            if (key == null) { throw new ArgumentNullException(nameof(key)); }
             if (value == null) { throw new ArgumentNullException(nameof(value)); }
 
-            var attributeConditions = string.Join(" and ", keys.Select(key => $"@{key.Name} = '{key.Value}'"));
+            var attributeConditions = string.Join(" and ", key.Select(custom => $"@{custom.Key} = '{custom.Value}'"));
             var settingXPath = $"//{RootElementName}/{SettingElementName}[{attributeConditions}]";
 
             var xSettings = XConfig.XPathSelectElements(settingXPath);
@@ -96,11 +96,11 @@ namespace SmartConfig.DataStores.XmlFile
             {
                 xSetting = new XElement(
                     SettingElementName,
-                    new XAttribute(keys.NameKey.Name, keys.NameKey.Value), value);
+                    new XAttribute(BasicSetting.DefaultKeyName, key.Name), value);
 
-                foreach (var key in keys.CustomKeys)
+                foreach (var custom in key.CustomKeys)
                 {
-                    xSetting.Add(new XAttribute(key.Name, key.Value));
+                    xSetting.Add(new XAttribute(custom.Key, custom.Value));
                 }
 
                 XConfig.Root.Add(xSetting);
@@ -108,9 +108,9 @@ namespace SmartConfig.DataStores.XmlFile
             else
             {
                 // set custom keys
-                foreach (var key in keys.CustomKeys)
+                foreach (var custom in key.CustomKeys)
                 {
-                    xSetting.Attribute(key.Name).Value = key.Value.ToString();
+                    xSetting.Attribute(custom.Key).Value = custom.Value.ToString();
                 }
             }
 

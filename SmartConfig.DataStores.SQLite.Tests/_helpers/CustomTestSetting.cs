@@ -1,4 +1,5 @@
 ﻿using SmartConfig.Data;
+using SmartConfig.DataAnnotations;
 using SmartConfig.Filters;
 
 namespace SmartConfig.DataStores.SQLite.Tests

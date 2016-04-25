@@ -7,20 +7,20 @@ namespace SmartConfig.Core.Tests
 {
     public class BasicTestStore : DataStore<BasicSetting>
     {
-        public Func<CompoundSettingKey, string> SelectFunc;
+        public Func<SettingKey, string> SelectFunc;
 
-        public Action<CompoundSettingKey, object> UpdateAction;
+        public Action<SettingKey, object> UpdateAction;
 
-        public override IReadOnlyCollection<Type> SupportedSettingDataTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+        public override IReadOnlyCollection<Type> SerializationDataTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
-        public override object Select(CompoundSettingKey keys)
+        public override object Select(SettingKey key)
         {
-            return SelectFunc(keys);
+            return SelectFunc(key);
         }
 
-        public override void Update(CompoundSettingKey keys, object value)
+        public override void Update(SettingKey key, object value)
         {
-            UpdateAction(keys, value);
+            UpdateAction(key, value);
         }
     }
 

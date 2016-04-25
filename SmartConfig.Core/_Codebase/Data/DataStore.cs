@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
 using SmartConfig.Collections;
+using SmartConfig.DataAnnotations;
 using SmartConfig.Filters;
 
 namespace SmartConfig.Data
@@ -12,38 +13,58 @@ namespace SmartConfig.Data
     /// </summary>
     public abstract class DataStore<TSetting> : IDataStore where TSetting : BasicSetting, new()
     {
+        private readonly IDictionary<string, object> _customKeyValues;
+
         protected DataStore()
         {
-            SettingFilters = SettingFilterDictionary.Create<TSetting>();
+            var setting = new TSetting();
+            SettingType = typeof(TSetting);
+            _customKeyValues = setting.CustomKeyProperties.ToDictionary(p => p.Name, p => (object)null);
+            CustomKeyFilters = setting.GetCustomSettingFilters();
         }
 
-        /// <summary>
-        /// Gets filters for custom keys.
-        /// </summary>
-        internal SettingFilterDictionary SettingFilters { get; }
+        public Type SettingType { get; }
 
-        public abstract IReadOnlyCollection<Type> SupportedSettingDataTypes { get; }
+        public IReadOnlyDictionary<string, object> CustomKeyValues => new ReadOnlyDictionary<string, object>(_customKeyValues);
 
-        //public bool ChangedNotificationSupported { get; protected set; } = false;
+        //=> new ReadOnlyDictionary<string, object>(_customKeyValues);
 
-        //public virtual bool ChangedNotificationEnabled { get; set; } = false;
+        public IReadOnlyDictionary<string, ISettingFilter> CustomKeyFilters { get; }
 
-        //public event EventHandler<DataStoreChangedEventArgs> Changed = delegate { };
+        public abstract IReadOnlyCollection<Type> SerializationDataTypes { get; }
 
-        public abstract object Select(CompoundSettingKey keys);
+        public Type DefaultSerializationDataType => SerializationDataTypes.FirstOrDefault();
 
-        public abstract void Update(CompoundSettingKey keys, object value);
+        public Type GetSerializationDataType(Type objectType)
+        {
+            return SerializationDataTypes.Contains(objectType) ? objectType : DefaultSerializationDataType;
+        }
+
+        public void SetCustomKey(string name, object value)
+        {
+            if (string.IsNullOrEmpty(name)) { throw new ArgumentNullException(nameof(name)); }
+            if (value == null) { throw new ArgumentNullException(nameof(value)); }
+
+            if (!_customKeyValues.ContainsKey(name))
+            {
+            }
+            _customKeyValues[name] = value;
+        }
+
+        public abstract object Select(SettingKey key);
+
+        public abstract void Update(SettingKey key, object value);
 
         /// <summary>
         /// Applies all of the specified filters.
         /// </summary>
-        protected IEnumerable<TSetting> ApplyFilters(IEnumerable<TSetting> settings, IEnumerable<SimpleSettingKey> customKeys)
+        protected IEnumerable<TSetting> ApplyFilters(IEnumerable<TSetting> settings, IDictionary<string, object> keys)
         {
-            settings =
-                customKeys.Aggregate(
-                    settings,
-                    (current, key) => SettingFilters[key.Name].Apply(current, key).Cast<TSetting>()
-                );
+            settings = keys.Aggregate
+            (
+                settings,
+                (current, custom) => CustomKeyFilters[custom.Key].Apply(current, custom).Cast<TSetting>()
+            );
             return settings;
         }
     }

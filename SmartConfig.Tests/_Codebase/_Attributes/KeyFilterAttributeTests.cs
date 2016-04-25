@@ -1,10 +1,11 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SmartConfig.DataAnnotations;
 using SmartConfig.Filters;
 using SmartUtilities.UnitTesting;
 
 // ReSharper disable once CheckNamespace
-namespace SmartConfig.Tests.Attributes.KeyFilterAttributeTests
+namespace SmartConfig.Core.Tests.KeyFilterAttributeTests
 {
     [TestClass]
     public class ctor
@@ -21,13 +22,11 @@ namespace SmartConfig.Tests.Attributes.KeyFilterAttributeTests
         [TestMethod]
         public void RequiresFilterTypeIsIKeyFilter()
         {
-            ExceptionAssert.Throws<TypeDoesNotImplementInterfaceException>(() =>
+            ExceptionAssert.Throws<ArgumentException>(() =>
             {
                 new SettingFilterAttribute(typeof(string));
             }, ex =>
             {
-                Assert.AreEqual(typeof(ISettingFilter).FullName, ex.ExpectedType);
-                Assert.AreEqual(typeof(string).FullName, ex.ActualType);
             }, Assert.Fail);
         }
 

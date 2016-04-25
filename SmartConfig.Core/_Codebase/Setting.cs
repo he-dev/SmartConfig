@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using SmartConfig.Collections;
-using SmartConfig.Data;
+using SmartUtilities.ObjectConverters.DataAnnotations;
 
 namespace SmartConfig
 {
@@ -14,51 +13,38 @@ namespace SmartConfig
     [DebuggerDisplay("Configuration = {Configuration.Type.Name} SettingPath = \"{Path}\"")]
     internal class Setting
     {
-        public Setting(PropertyInfo propertyInfo, Configuration configuration)
-        {
-            Property = propertyInfo;
-            Configuration = configuration;
+        private SettingPath _settingPath;
 
-            var path = propertyInfo.GetSettingPath();
-            Path = new SettingPath(Configuration.Name, path);
-        }
+        internal Configuration Configuration { get; private set; }
 
-        internal Configuration Configuration { get; }
-
-        internal PropertyInfo Property { get; }
+        internal PropertyInfo Property { get; private set; }
 
         public Type Type => Property.PropertyType;
 
-        public Type ConverterType
-        {
-            get
-            {
-                if (Type.BaseType == typeof(Enum))
-                {
-                    return typeof(Enum);
-                }
+        // in some cases we need the base type instead of the actual type
+        public Type NormalizedType => Type.BaseType == typeof(Enum) ? Type.BaseType : Type;
 
-                var objectConverterAttribute = Property.GetCustomAttribute<ObjectConverterAttribute>(false);
-                return objectConverterAttribute != null ? objectConverterAttribute.Type : Type;
-            }
-        }
+        public SettingPath Path => _settingPath ?? (_settingPath = SettingPath.Create(Configuration.Name, Property.GetPropertyPath()));
 
-        public SettingPath Path { get; }
-
-        public CompoundSettingKey Key => new CompoundSettingKey(
-            new SimpleSettingKey(BasicSetting.DefaultKeyName, Path),
-            Configuration.CustomKeys);
+        public SettingKey Key => new SettingKey(Path, Configuration.DataStore.CustomKeyValues);
 
         public IEnumerable<Attribute> Atributes => Property?.GetCustomAttributes(false).Cast<Attribute>() ?? Enumerable.Empty<Attribute>();
 
         public bool IsOptional => Property.GetCustomAttribute<OptionalAttribute>() != null;
 
-        public bool Loaded => !IsOptional && Value != null;
-       
         public object Value
         {
             get { return Property.GetValue(null); }
             set { Property.SetValue(null, value); }
+        }
+
+        public static Setting Create(PropertyInfo property, Configuration configuration)
+        {
+            return new Setting
+            {
+                Property = property,
+                Configuration = configuration,
+            };
         }
 
         public override bool Equals(object obj)

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using SmartUtilities;
+using SmartUtilities.ObjectConverters.DataAnnotations;
 
 namespace SmartConfig.Collections
 {
@@ -15,37 +14,18 @@ namespace SmartConfig.Collections
 
         internal static SettingCollection Create(Configuration configuration)
         {
-            var settingGroups = GetSettingGroups(configuration.Type);
+            if (configuration == null) { throw new ArgumentNullException(nameof(configuration)); }
 
-            var settings = settingGroups
-                .Select(t => t.GetProperties(BindingFlags.Public | BindingFlags.Static))
-                .SelectMany(sis => sis)
-                .Where(p => !p.HasAttribute<IgnoreAttribute>())
-                .Select(p => new Setting(p, configuration))
+            var types = configuration.Type.NestedTypes().Where(type => !type.HasAttribute<IgnoreAttribute>());
+
+            var settings =
+                types.Select(type => type.GetProperties(BindingFlags.Public | BindingFlags.Static))
+                .SelectMany(properties => properties)
+                .Where(property => !property.HasAttribute<IgnoreAttribute>())
+                .Select(property => Setting.Create(property, configuration))
                 .ToList();
 
             return new SettingCollection(settings);
-        }
-
-        internal static List<Type> GetSettingGroups(Type type, List<Type> settingGroups = null)
-        {
-            Debug.Assert(type != null);
-
-            if (!type.IsStatic()) { throw new TypeNotStaticException { Type = type.FullName }; }
-
-            settingGroups = settingGroups ?? new List<Type> { type }; ;
-
-            var nestedSettingGroups = type
-                .GetNestedTypes(BindingFlags.Public | BindingFlags.Public)
-                .Where(t => !t.HasAttribute<IgnoreAttribute>());
-
-            foreach (var nestedSettingGroup in nestedSettingGroups)
-            {
-                settingGroups.Add(nestedSettingGroup);
-                GetSettingGroups(nestedSettingGroup, settingGroups);
-            }
-
-            return settingGroups;
         }
     }
 }

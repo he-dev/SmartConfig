@@ -19,6 +19,8 @@ namespace SmartConfig.DataStores.SQLite
         private readonly string _connectionString;
         private readonly string _settingsTableName;
 
+        public bool UTF8FixEnabled { get; set; }
+
         public SQLiteStore(string connectionString, string settingsTableName)
         {
             if (string.IsNullOrEmpty(connectionString)) { throw new ArgumentNullException(nameof(connectionString)); }
@@ -44,18 +46,18 @@ namespace SmartConfig.DataStores.SQLite
             }
         }
 
-        public override IReadOnlyCollection<Type> SupportedSettingDataTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+        public override IReadOnlyCollection<Type> SerializationDataTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
-        public override object Select(CompoundSettingKey key)
+        public override object Select(SettingKey key)
         {
             using (var conn = new SQLiteConnection(_connectionString)) // "Data Source=config.db;Version=3;"))
             {
                 conn.Open();
 
-                var sql = "SELECT * FROM {table} WHERE Name = '{name}'".Format(new
+                var sql = "SELECT * FROM {table} WHERE [Name] = '{name}'".Format(new
                 {
                     table = _settingsTableName,
-                    name = key.NameKey.Value.ToString()
+                    name = key.Name.Value.ToString()
                 });
 
                 using (var cmd = new SQLiteCommand(sql, conn))
@@ -65,16 +67,17 @@ namespace SmartConfig.DataStores.SQLite
 
                     while (settingReader.Read())
                     {
+                        var value = (string)settingReader["Value"];
+
                         var setting = new TSetting
                         {
                             Name = (string)settingReader["Name"],
-                            Value = (string)settingReader["Value"]
+                            Value = UTF8FixEnabled ? value.AsUTF8() : value
                         };
 
-                        var settingKeyNames = SettingKeyNameCollection.Create<TSetting>();
-                        foreach (var customKeyName in settingKeyNames.CustomKeyNames)
+                        foreach (var custom in key.CustomKeys)
                         {
-                            ((IIndexable)setting)[customKeyName] = (string)settingReader[customKeyName];
+                            ((IIndexable)setting)[custom.Key] = (string)settingReader[custom.Key];
                         }
                         settings.Add(setting);
                     }
@@ -86,7 +89,7 @@ namespace SmartConfig.DataStores.SQLite
             }
         }
 
-        public override void Update(CompoundSettingKey key, object value)
+        public override void Update(SettingKey key, object value)
         {
             // INSERT OR REPLACE INTO Setting(Name, Value, Environment) VALUES('Greeting' 'Hallo SQLite!', 'sqlite',);
 
@@ -95,12 +98,12 @@ namespace SmartConfig.DataStores.SQLite
             {
                 conn.Open();
 
-                var otherKeys = string.Join(" ", key.CustomKeys.Select(x => $", {x.Name}"));
-                var otherValues = string.Join(" ", key.CustomKeys.Select(x => $", '{x.Value.ToString()}'"));
+                var otherKeys = string.Join(" ", key.CustomKeys.Select(custom => $", [{custom.Key}]"));
+                var otherValues = string.Join(" ", key.CustomKeys.Select(custom => $", '{custom.Value.ToString()}'"));
 
                 var sql =
-                    $"INSERT OR REPLACE INTO Setting(Name, Value{otherKeys}) " +
-                    $"VALUES('{key.NameKey.Value}', '{value}'{otherValues})";
+                    $"INSERT OR REPLACE INTO Setting([Name], [Value]{otherKeys}) " +
+                    $"VALUES('{key.Name.Value}', '{value}'{otherValues})";
 
                 using (var cmd = new SQLiteCommand(sql, conn))
                 {

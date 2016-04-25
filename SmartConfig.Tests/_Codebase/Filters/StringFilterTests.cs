@@ -1,10 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Filters;
 
 // ReSharper disable InconsistentNaming
 
-namespace SmartConfig.Core.Tests.Filters
+namespace SmartConfig.Core.Tests.Filters.StringFilterTests
 {
     [TestClass]
     public class StringFilter_Filter_Method
@@ -19,7 +20,7 @@ namespace SmartConfig.Core.Tests.Filters
                 new CustomTestSetting("d|1.0.0|name|value"),
             };
 
-            var result = new StringFilter().Apply(testSettings, new SimpleSettingKey("Environment", "b"));
+            var result = new StringFilter().Apply(testSettings, new KeyValuePair<string, object>("Environment", "b"));
             var setting = result.FirstOrDefault();
             Assert.IsNotNull(setting);
             Assert.AreEqual(testSettings[1], setting);
@@ -36,7 +37,7 @@ namespace SmartConfig.Core.Tests.Filters
                 new CustomTestSetting("d|1.0.0|name|value"),
             };
 
-            var result = new StringFilter().Apply(settings, new SimpleSettingKey("Environment", "c"));
+            var result = new StringFilter().Apply(settings, new KeyValuePair<string, object>("Environment", "c"));
             var setting = result.FirstOrDefault();
             Assert.IsNotNull(setting);
             Assert.AreEqual(settings[2], setting);
@@ -52,7 +53,7 @@ namespace SmartConfig.Core.Tests.Filters
                 new CustomTestSetting("d|1.0.0|name|value"),
             };
 
-            var result = new StringFilter().Apply(settings, new SimpleSettingKey("Environment", "c"));
+            var result = new StringFilter().Apply(settings, new KeyValuePair<string, object>("Environment", "c"));
             var setting = result.FirstOrDefault();
             Assert.IsNull(setting);
         }

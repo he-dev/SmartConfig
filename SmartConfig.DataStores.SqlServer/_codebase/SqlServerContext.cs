@@ -1,5 +1,6 @@
 using System.Data.Entity;
 using System.Diagnostics;
+using System.Linq;
 using SmartConfig.Collections;
 using SmartConfig.Data;
 
@@ -8,7 +9,7 @@ namespace SmartConfig.DataStores.SqlServer
     /// <summary>
     /// Provides <c>DbContext</c> for retreiving configuration from a database.
     /// </summary>
-    internal sealed class SqlServerContext<TSetting> : DbContext where TSetting : BasicSetting
+    internal sealed class SqlServerContext<TSetting> : DbContext where TSetting : BasicSetting, new()
     {
         private readonly string _settingTableName;
 
@@ -34,13 +35,13 @@ namespace SmartConfig.DataStores.SqlServer
 
             // configure keys
             var columnOrder = 0;
-            var keyNames = SettingKeyNameCollection.Create<TSetting>();
-            foreach (var keyName in keyNames)
+            var key = SettingKey.From<TSetting>();
+            foreach (var name in key.Select(x => x.Key))
             {
                 var columnOrderClosure = columnOrder++;
                 modelBuilder
                     .Properties<string>()
-                    .Where(p => p.Name == keyName)
+                    .Where(p => p.Name == name)
                     .Configure(p => p.IsKey().HasColumnOrder(columnOrderClosure).HasMaxLength(200));
             }
 

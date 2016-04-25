@@ -2,23 +2,22 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using SmartConfig.Collections;
-using SmartConfig.Data;
+using SmartUtilities.Collections;
+using SmartUtilities.ObjectConverters.DataAnnotations;
 
 namespace SmartConfig.IO
 {
     internal class SettingLoader
     {
-        internal static void LoadSettings(Configuration configuration, ObjectConverterCollection converters)
+        internal static void LoadSettings(Configuration configuration)
         {
             Debug.Assert(configuration != null);
-            Debug.Assert(converters != null);
 
             // try to load all settings first
             var settingValues = new Dictionary<string, object>();
             foreach (var setting in configuration.Settings)
             {
-                var value = LoadSetting(setting, converters);
+                var value = LoadSetting(setting);
                 settingValues[setting.Path] = value;
             }
 
@@ -30,10 +29,9 @@ namespace SmartConfig.IO
         }
 
         // loads a setting from a data source into the correspondig field in the configuration class
-        private static object LoadSetting(Setting setting, ObjectConverterCollection converters)
+        private static object LoadSetting(Setting setting)
         {
             Debug.Assert(setting != null);
-            Debug.Assert(converters != null);
 
             try
             {
@@ -53,12 +51,12 @@ namespace SmartConfig.IO
                     {
                         ConfigurationType = setting.Configuration.Type.Name,
                         SettingPath = setting.Path,
-                        Hint = "Check other keys if you have any custom ones like environment or version."
+                        HelpText = "Check other keys if you have any custom ones like environment or version."
                     };
                 }
             
-                var converter = converters[setting.ConverterType];
-                var value = converter.DeserializeObject(data, setting.Type, setting.Atributes);
+                var converter = setting.Configuration.Converters[setting.Type];
+                var value = converter.DeserializeObject(data, setting.Type, setting.Atributes.OfType<ValidationAttribute>());
                 return value;
             }
             catch (Exception ex)

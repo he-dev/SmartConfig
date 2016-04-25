@@ -8,7 +8,7 @@ namespace SmartConfig.DataStores.Registry.Tests.RegistryPathTests
         [TestMethod]
         public void CreatesRegistryPathWithModelName()
         {
-            var registryPath = new RegistryPath(new SettingPath(null, "Foo", "Bar", "Baz"));
+            var registryPath = new RegistryPath(SettingPath.Create(null, "Foo", "Bar", "Baz"));
 
             Assert.AreEqual(@"Foo\Bar", registryPath.SubKeyName);
             Assert.AreEqual(@"Baz", registryPath.ValueName);
@@ -17,7 +17,7 @@ namespace SmartConfig.DataStores.Registry.Tests.RegistryPathTests
         [TestMethod]
         public void CreatesRegistryPathWithoutModelName()
         {
-            var registryPath = new RegistryPath(new SettingPath("qux", "Foo", "Bar", "Baz"));
+            var registryPath = new RegistryPath(SettingPath.Create("qux", "Foo", "Bar", "Baz"));
 
             Assert.AreEqual(@"qux\Foo\Bar", registryPath.SubKeyName);
             Assert.AreEqual(@"Baz", registryPath.ValueName);

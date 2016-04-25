@@ -35,7 +35,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.6' ">
     <DefineConstants>NET46</DefineConstants>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -59,11 +59,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SmartUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SmartUtilities.2.1.1\lib\net45\SmartUtilities.dll</HintPath>
+      <HintPath>..\packages\SmartUtilities.3.0.0\lib\net452\SmartUtilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -80,52 +80,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="_codebase\Collections\SettingFilterDictionary.cs" />
     <Compile Include="_codebase\Collections\SettingCollection.cs" />
-    <Compile Include="_codebase\_keys\CompoundSettingKey.cs" />
-    <Compile Include="_codebase\Collections\SettingKeyNameCollection.cs" />
+    <Compile Include="_codebase\Filters\WildcardComparer.cs" />
+    <Compile Include="_codebase\SettingKey.cs" />
     <Compile Include="_codebase\Exceptions.cs" />
     <Compile Include="_codebase\_eventArgs\ReloadFailedEventArgs.cs" />
     <Compile Include="_codebase\Filters\ISettingFilter.cs" />
     <Compile Include="_codebase\Filters\StringFilter.cs" />
     <Compile Include="_codebase\Filters\VersionFilter.cs" />
-    <Compile Include="_codebase\Converters\NumericConverter.cs" />
-    <Compile Include="_codebase\Converters\BooleanConverter.cs" />
     <Compile Include="_codebase\Data\IIndexable.cs" />
-    <Compile Include="_codebase\ConfigurationBuilder.cs" />
-    <Compile Include="_codebase\_keys\NameKey.cs" />
     <Compile Include="_codebase\Setting.cs" />
-    <Compile Include="_codebase\Converters\DateTimeConverter.cs" />
-    <Compile Include="_codebase\Converters\EnumConverter.cs" />
-    <Compile Include="_codebase\Collections\ObjectConverterCollection.cs" />
     <Compile Include="_codebase\Data\BasicSetting.cs" />
     <Compile Include="_codebase\Data\DataStore.cs" />
     <Compile Include="_codebase\IO\SettingLoader.cs" />
     <Compile Include="_codebase\IO\SettingUpdater.cs" />
-    <Compile Include="_codebase\_keys\SimpleSettingKey.cs" />
-    <Compile Include="_codebase\_attributes\SettingNameAttribute.cs" />
-    <Compile Include="_codebase\_attributes\_converterParameters\DateTimeFormatAttribute.cs" />
-    <Compile Include="_codebase\_attributes\_converterParameters\ConverterParameterAttribute.cs" />
+    <Compile Include="_codebase\DataAnnotations\CustomNameAttribute.cs" />
     <Compile Include="_codebase\Wildcards.cs" />
-    <Compile Include="_codebase\_attributes\SettingFilterAttribute.cs" />
-    <Compile Include="_codebase\_attributes\IgnoreAttribute.cs" />
-    <Compile Include="_codebase\_attributes\OptionalAttribute.cs" />
-    <Compile Include="_codebase\_attributes\_constraints\RegularExpressionAttribute.cs" />
-    <Compile Include="_codebase\_attributes\_constraints\RangeAttribute.cs" />
-    <Compile Include="_codebase\_attributes\_constraints\ConstraintAttribute.cs" />
+    <Compile Include="_codebase\DataAnnotations\SettingFilterAttribute.cs" />
     <Compile Include="_codebase\Reflector.cs" />
-    <Compile Include="_codebase\Converters\ColorConverter.cs" />
-    <Compile Include="_codebase\Converters\StringConverter.cs" />
-    <Compile Include="_codebase\Converters\XmlConverter.cs" />
-    <Compile Include="_codebase\Converters\JsonConverter.cs" />
-    <Compile Include="_codebase\_attributes\ObjectConverterAttribute.cs" />
-    <Compile Include="_codebase\Converters\ObjectConverter.cs" />
     <Compile Include="_codebase\Configuration.cs" />
     <Compile Include="_codebase\SettingPath.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="_codebase\_attributes\SmartConfigAttribute.cs" />
+    <Compile Include="_codebase\DataAnnotations\SmartConfigAttribute.cs" />
     <Compile Include="_codebase\Data\IDataStore.cs" />
-    <Compile Include="_codebase\_eventArgs\DataStoreChangedEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

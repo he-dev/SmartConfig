@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SmartConfig.Filters;
+using SmartUtilities;
 
-namespace SmartConfig
+namespace SmartConfig.DataAnnotations
 {
     [AttributeUsage(AttributeTargets.Property)]
     public class SettingFilterAttribute : Attribute
@@ -17,13 +14,14 @@ namespace SmartConfig
                 throw new ArgumentNullException(nameof(filterType));
             }
 
-            if (!typeof(ISettingFilter).IsAssignableFrom(filterType))
+            if (!filterType.Implements<ISettingFilter>())
             {
-                throw new TypeDoesNotImplementInterfaceException
-                {
-                    ExpectedType = typeof(ISettingFilter).FullName,
-                    ActualType = filterType.FullName
-                };
+                throw new ArgumentException($"Filter {filterType.Name} must implement the {typeof(ISettingFilter).Name} interface.");
+            }
+
+            if (!filterType.HasDefaultConstructor())
+            {
+                throw new ArgumentException($"Filter {filterType.Name} must provide a default constructor.");
             }
 
             FilterType = filterType;

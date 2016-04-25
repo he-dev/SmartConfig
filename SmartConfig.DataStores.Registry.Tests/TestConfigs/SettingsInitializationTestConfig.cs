@@ -1,4 +1,6 @@
-﻿namespace SmartConfig.Tests.TestConfigs
+﻿using SmartConfig.DataAnnotations;
+
+namespace SmartConfig.Tests.TestConfigs
 {
     [SmartConfig]
     public static class SettingsInitializationTestConfig

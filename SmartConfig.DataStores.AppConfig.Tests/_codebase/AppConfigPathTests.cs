@@ -9,7 +9,7 @@ namespace SmartConfig.DataStores.AppConfig.Tests.AppConfigPathTests
         [TestMethod]
         public void CreatesAppConfigPathWithoutConfigurationName()
         {
-            var appConfigPath = new AppConfigPath(new SettingPath(null, "foo", "bar"));
+            var appConfigPath = new AppConfigPath(SettingPath.Create(null, "foo", "bar"));
             Assert.AreEqual("foo", appConfigPath.SectionName);
             Assert.AreEqual("bar", appConfigPath);
         }
@@ -17,7 +17,7 @@ namespace SmartConfig.DataStores.AppConfig.Tests.AppConfigPathTests
         [TestMethod]
         public void CreatesAppConfigPathWithConfigurationName()
         {
-            var appConfigPath = new AppConfigPath(new SettingPath("foo", "bar", "baz"));
+            var appConfigPath = new AppConfigPath(SettingPath.Create("foo", "bar", "baz"));
             Assert.AreEqual("bar", appConfigPath.SectionName);
             Assert.AreEqual("foo.baz", appConfigPath);
         }

@@ -17,7 +17,7 @@ namespace SmartConfig.DataStores.AppConfig
             _settingPath = settingPath;
         }
 
-        public AppConfigPath(SimpleSettingKey simpleKey) : this(simpleKey.Value as SettingPath) { }
+        //public AppConfigPath(SettingKey key) : this(simpleKey.Value as SettingPath) { }
 
         public string SectionName => _settingPath.WithoutConfigurationName.FirstOrDefault();
 
