@@ -1,3 +1,11 @@
+#SmartConfig v6.0
+
+The new version is comming soon. It contains some bugfixes (e.g. SQLite UTF8 encoding fix) and a lot of improvements. Some parts of the API have changed and are now easier to use and more reliable.
+
+The `ObjectConverterAttribute` is no longer necessary and each non-standard type has to be declared explicitly.
+
+There will also be a new prettier readme powered by `LessThenStyle.NET` - my new templating engine.
+
 # SmartConfig v5.0
 Because creating configurations should be easy!
 
