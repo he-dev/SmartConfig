@@ -1,4 +1,4 @@
-#SmartConfig v6.0
+#SmartConfig v6.0-beta-1
 
 The new version is comming soon. It contains some bugfixes (e.g. SQLite UTF8 encoding fix) and a lot of improvements. Some parts of the API have changed and are now easier to use and more reliable.
 
