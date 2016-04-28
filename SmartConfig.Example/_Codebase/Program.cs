@@ -1,11 +1,14 @@
 ﻿using System;
 using Microsoft.Win32;
 using SmartConfig.Data;
+using SmartConfig.DataAnnotations;
 using SmartConfig.DataStores.AppConfig;
 using SmartConfig.DataStores.Registry;
 using SmartConfig.DataStores.SqlServer;
+using SmartConfig.DataStores.SQLite;
 using SmartConfig.DataStores.XmlFile;
 using SmartConfig.Filters;
+using SmartUtilities.ObjectConverters.DataAnnotations;
 
 namespace SmartConfig.Examples
 {
@@ -13,6 +16,8 @@ namespace SmartConfig.Examples
     {
         private static void Main(string[] args)
         {
+            AppConfigExample();
+            SQLiteExample();
             SqlServerExample();
         }
 
@@ -21,6 +26,7 @@ namespace SmartConfig.Examples
             Configuration
                 .Load(typeof(ExampleAppConfig))
                 .From(new AppConfigStore());
+            Console.WriteLine(ExampleAppConfig.AppSettings.Greeting);
         }
 
         private static void RegistryExample()
@@ -34,8 +40,22 @@ namespace SmartConfig.Examples
         {
             Configuration
                 .Load(typeof(ExampleSqlServerConfig))
-                .WithCustomKey("Environment", "sqlite")
-                .From(new SqlServerStore<CustomSetting>("name=configdb", "Setting"));
+                .From(new SqlServerStore<CustomSetting>("name=configdb", "Setting"), dataStore =>
+                {
+                    dataStore.SetCustomKey("Environment", "sqlite");
+                });
+
+            Console.WriteLine(ExampleSqlServerConfig.Greeting);
+        }
+
+        private static void SQLiteExample()
+        {
+            Configuration
+                .Load(typeof(ExampleSqlServerConfig))
+                .From(new SQLiteStore<CustomSetting>("name=configdb", "Setting"), dataStore =>
+                {
+                    dataStore.SetCustomKey("Environment", "sqlite");
+                });
 
             Console.WriteLine(ExampleSqlServerConfig.Greeting);
         }
@@ -46,6 +66,7 @@ namespace SmartConfig.Examples
             Configuration
                 .Load(typeof(ExampleXmlFleConfig))
                 .From(new XmlFileStore<BasicSetting>("config.xml"));
+            
         }
     }
 
@@ -56,14 +77,12 @@ namespace SmartConfig.Examples
     }
 
     [SmartConfig]
-    [SettingName("Examples")]
+    [CustomName("Examples")]
     internal static class ExampleAppConfig
     {
         public static class AppSettings
         {
-            public static string Environment { get; set; }
-
-            public static string Greeting { get; set; } = "Hallo SmartConfig!";
+            public static string Greeting { get; set; }
 
             [Optional]
             public static string Farewell { get; set; } = "Good bye!";
@@ -72,14 +91,11 @@ namespace SmartConfig.Examples
         public static class ConnectionStrings
         {
             public static string ExampleDb { get; set; }
-
-            [Optional]
-            public static string MissingExampleDb { get; set; }
         }
     }
 
     [SmartConfig]
-    [SettingName("Examples")]
+    [CustomName("Examples")]
     internal static class ExampleSqlServerConfig
     {
         [Optional]
@@ -98,16 +114,16 @@ namespace SmartConfig.Examples
         [Optional]
         public static string REG_SZ_TEST2 { get; set; }
 
-        [SettingName("New Key #1")]
+        [CustomName("New Key #1")]
         public static class NewKey1
         {
-            [SettingName("New Value #1")]
+            [CustomName("New Value #1")]
             public static string NewValue1 { get; set; }
         }
     }
 
     [SmartConfig]
-    [SettingName("Examples")]
+    [CustomName("Examples")]
     internal static class ExampleXmlFleConfig
     {
         [Optional]
