@@ -1,8 +1,9 @@
 
 div.lts span.app {
-    
+    font-family: monospace;
+    color: #667B92;
 }
 
 div.lts span.readme {
-    
+    color: #C7C6C6;
 }
