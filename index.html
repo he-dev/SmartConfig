@@ -33,24 +33,25 @@
     <section class="main-content">
       
       <div class="lts">
-    <h1 class="h1">About</h1>
-    <p class="p"><span class="app">SmartConfig</span> is a configuration framework that makes writing configurations easier then ever.</p>
-    <p class="p">I guess you're asking why you should care about another configuration framework and I'll tell you why. Because you want to setup and use application settings within few minutes instead of spending another few days on writing another configuration system for the next project.</p>
-    <p class="p"><span class="app">SmartConfig</span> it's all about simplicity and convinience. I dare to claim that it's the easiest configurtion framework out there. With only one tool you are able to use multiple configuration sources like databases, app.config, xml, registry (more are can be added). Your configuration is strongly typed and doesn't contain any magic strings. You work with real classes and properties.</p>
+    <h1 class="h1">SmartConfig v6.0</h1>
+    <p class="p"><span class="readme">README v1.0.0</span></p>
+    <p class="p"><span class="app">SmartConfig</span> is a configuration framework that makes writing configurations very easy.</p>
+    <p class="p">I guess you're asking why you should care about another configuration framework. Because you want to setup and use application settings within few minutes instead of spending another few days on writing another configuration system for the next project.</p>
+    <p class="p"><span class="app">SmartConfig</span> is all about simplicity and convinience. I dare to claim that it's the easiest configurtion framework out there. With only one tool you are able to use multiple configuration sources like databases, app.config, xml, registry (more can be added). Your configuration is strongly typed and doesn't contain any magic strings. You work with real classes and properties.</p>
     <p class="p">Keep reading and see for yourself.</p>
     <h1 class="h1">How does it work?</h1>
-    <p class="p">Briefly, with <span class="app">SmartConfig</span> you create a static class with static properties and/or sub-classes that will hold the settings when they are loaded. Its structure is used to build setting names. There is no need to use any hardcoded strings or create enums etc. to get any values. <span class="app">SmartConfig</span> completely eliminates all magic strings.</p>
+    <p class="p">With <span class="app">SmartConfig</span> you create a static class with static properties and/or sub-classes that will hold the settings when they are loaded. Its structure is used to build setting names. There is no need to use any hardcoded strings or create enums etc. to get any values. <span class="app">SmartConfig</span> completely eliminates all magic strings.</p>
     <p class="p"><span class="app">SmartConfig</span> is strongly typed and also able to validate your settings so that you always know whether you start with a working configuraiton. If your configuration contains invalid values you'll be notified right away because it reads all your settings at once.</p>
     <p class="p">It supports many popular types and provides an interface to add your own types if you need to. By default <span class="app">SmartConfig</span> looks for your settings by name however criteria like environment or version (Semantic Version) can be easily added. With SmartConfig you don't have to instantiate anything. All settings are loaded at once and cached in your config definition so there is no overhead accessing them later.</p>
-    <h1 class="h1">Where can I get it?</h1>
+    <h1 class="h1">Installation</h1>
     <p class="p">You'll find all packages on NuGet:</p>
-    <ul>
-        <li>Core packageId: <code class="ic">SmartConfig</code> (contains data stores: <code class="ic">AppConfig</code>, <code class="ic">Xml</code>, <code class="ic">Registry</code>)</li>
-        <li>SqlServer packageId: <code class="ic">SmartConfig.DataStores.SqlServer</code></li>
-        <li>SQLite packageId: <code class="ic">SmartConfig.DataStores.SQLite</code></li>
-    </ul>
-        <pre><code class="code">Install-Package packageId        </code></pre>
-    <h1 class="h1">Features</h1>
+    <p class="p">SmartConfig Core Package - contains data stores: <code class="ic">AppConfig</code>, <code class="ic">Xml</code>, <code class="ic">Registry</code></p>
+    <pre><code class="code">Install-Package SmartConfig    </code></pre>
+    <p class="p">Data store for the SQL Server</p>
+    <pre><code class="code">Install-Package SmartConfig.DataStores.SqlServer    </code></pre>
+    <p class="p">Data store for the SQLite</p>
+    <pre><code class="code">Install-Package SmartConfig.DataStores.SQLite    </code></pre>
+    <h1 class="h1">Feature Overview</h1>
     <ul>
         <li>Strongly typed values
             <ul>
@@ -70,77 +71,73 @@
         <li>Colors (<code class="ic">System.Drawing.Color</code> as Name (Red), HEX (#FF00AA), Decimal (122, 134,90)</li>
         <li><code class="ic">DateTime</code></li>
         <li><code class="ic">string</code></li>
-        <li>Read/Write value validation:
+        <li>Value validation:
             <ul>
-                <li><code class="ic">OptionalAttribute</code></li>
-                <li><code class="ic">RegularExpressionAttribute</code></li>
-                <li><code class="ic">DateTimeFormatAttribute</code></li>
-                <li><code class="ic">IgnoreAttribute</code></li>
+                <li><code class="ic">OptionalAttribute</code> for optional settings</li>
+                <li><code class="ic">RegularExpressionAttribute</code> for string</li>
+                <li><code class="ic">DateTimeFormatAttribute</code> for custom date time format</li>
+                <li><code class="ic">RangeAttribute</code> for numeric values</li>
+                <li><code class="ic">IgnoreAttribute</code> for settings that should be ignored</li>
             </ul>
         </li>
         <li>Multiple data stores
             <ul>
                 <li><code class="ic">AppConfigStore</code> for <code class="ic">app.config</code></li>
-                <li><code class="ic">SqlServerStore</code> for database</li>
-                <li><code class="ic">XmlFileStore</code> for own XML format</li>
+                <li><code class="ic">SqlServerStore</code> for the SQL Server database</li>
+                <li><code class="ic">XmlFileStore</code> for its own XML format</li>
                 <li><code class="ic">RegistryStore</code> for Windows Registry (supports: <code class="ic">REG_BINARY</code>, <code class="ic">REG_DWORD</code>, <code class="ic">REG_SZ</code>)</li>
-                <li><code class="ic">IniFileStore</code> for ini files (requires Martini package)</li>
-                <li><code class="ic">SQLiteStore</code> for serverless settings</li>
+                <li><code class="ic">SQLiteStore</code> for serverless SQLite settings</li>
             </ul>
         </li>
         <li>Extendable:
             <ul>
                 <li>You can specify additional criteria for finding settings.</li>
                 <li>You can write you own data source.</li>
-                <li>You can add you own data types..</li>
+                <li>You can add you own data types.</li>
                 <li>Multiple configurations in a single storage.</li>
             </ul>
         </li>
     </ul>
-    <h1 class="h1">Examples and Tutorials</h1>
+    <h1 class="h1">Examples</h1>
     <h2 class="h2">Using <span class="b">AppConfigStore</span></h2>
-    <p class="p">The <code class="ic">AppConfigStore</code> supports two <code class="ic">app.config</code> sections: <code class="ic">connectionString</code> and <code class="ic">appSettings</code>. Let's be honest, who needs the other ones?</p>
-    <p class="p">Example <code class="ic">app.config</code></p>
-        <pre><code class="code">&lt;connectionStrings&gt;
+    <p class="p">The <code class="ic">AppConfigStore</code> supports two <code class="ic">app.config</code> sections: <code class="ic">connectionString</code> and <code class="ic">appSettings</code>. <span class="i">Let's be honest, who needs the other ones?</span></p>
+    <p class="p">To load the following values from the app.config</p>
+    <pre><code class="code">&lt;connectionStrings&gt;
     &lt;add name=&quot;Foo&quot; connectionString=&quot;Data Source=...&quot; /&gt;
 &lt;/connectionStrings&gt;
 &lt;appSettings&gt;
     &lt;add key=&quot;Bar&quot; value=&quot;Baz&quot; /&gt;
-&lt;/appSettings&gt;        </code></pre>
-    <p class="p">To read the values you create this configuration:</p>
-        <pre><code class="code">[SmartConfig]
+&lt;/appSettings&gt;    </code></pre>
+    <p class="p">you'll need to create a class like this:</p>
+    <pre><code class="code">[SmartConfig]
 static class ExampleAppConfig
 {
     public static class ConnectionStrings
     {
-        public static string ExampleDb { get; set}
+        public static string Foo { get; set}
     } 
     public static class AppSettings
     {   
-        public static string SettingsTableName { get; set}
-        public static int PrimeNumber { get; set; }
+        public static string Bar { get; set}
     }
-}        </code></pre>
-    <p class="p">Here we create a static class and mark it with the <code class="ic">SmartConfigAttribute</code> so that the setting loader can find it. Inside the config class we define two nested static classes that will represent the connectionStrings and the appSettings sections. The names of those two nested classes are important because they build the path to the actual settings.</p>
-    <p class="p">That's all. SmartConfig will take care of checking if each setting is available in the <code class="ic">app.config</code> and will complain if it doesn't find one. Thus SmartConfig minimizes this risk by loading and validating all settings at once. This way you can detect invalid settings before you start your application.</p>
-    <p class="p">We didn't mark any fields as optional so both settings are required and cannot be null/empty.</p>
-    <p class="p">OK, let's load them now:</p>
-    <p class="p"><code class="ic">Program.cs</code></p>
-        <pre><code class="code">Configuration
+}    </code></pre>
+    <p class="p">Here we create a static class and mark it with the <code class="ic">SmartConfigAttribute</code> so that the setting loader can find it.</p>
+    <p class="p">Inside the config class we define two nested static classes that will represent the connectionStrings and the appSettings sections. The names of those two nested classes are important because they build the path to the actual settings.</p>
+    <p class="p">Finally you need to load the configuration into the class you've just created by telling the API the configuration type and the data store:</p>
+    <pre><code class="code">Configuration
     .Load(typeof(ExampleAppConfig))
-    .From(new AppConfigStore());        </code></pre>
-    <p class="p">Done! You are ready to use the values now by simply going to the setting via the setting class you've just defined:</p>
-        <pre><code class="code">Console.WriteLine(ExampleAppConfig.PrimeNumber); // outputs: 7        </code></pre>
+    .From(new AppConfigStore());    </code></pre>
+    <p class="p">That's it. Your settings are loaded now and you can use them:</p>
+    <pre><code class="code">Console.WriteLine(ExampleAppConfig.Bar); // outputs: Baz    </code></pre>
     <h2 class="h2">Using <span class="b">SqlServerStore</span></h2>
-    <p class="p"><span class="i">This store is no longer a part of the core package and needs to be installed separately.</span></p>
-    <p class="p">First we need a table to hold our settings:</p>
-        <pre><code class="code">CREATE TABLE [dbo].[Setting]
+    <p class="p">To store your settings in a database you need to create a table with at least two columns <code class="ic">Name</code> and <code class="ic">Value</code> where the name is a key:</p>
+    <pre><code class="code">CREATE TABLE [dbo].[Setting]
 (
    [Name] NVARCHAR(255) NOT NULL, 
    [Value] NVARCHAR(MAX) NULL, 
    PRIMARY KEY ([Name])
-)        </code></pre>
-    <p class="p">In our table we can virtualy keep anything we want. Here we just have a welcome message, a monitor size and a list of prime numbers which is in this case optional.</p>
+)    </code></pre>
+    <p class="p">In our table we can virtualy keep anything we want. Here we just have a welcome message, a monitor size:</p>
     <table class="table">
         <thead>
             <tr>
@@ -163,55 +160,116 @@ static class ExampleAppConfig
             </tr>
         </tbody>
     </table>
-    <p class="p">To get the values we create this configuration:</p>
-        <pre><code class="code">[SmartConfig]
+    <p class="p">As in the first example you need to create a static class that will hold the values after loading them:</p>
+    <pre><code class="code">[SmartConfig]
 static class ExampleDbConfig
 {
-    public static string Greeting { get; set; }
-    [Optional]
-    [ObjectConverter(typeof(JsonConverter)]
-    public static List&lt;int&gt; Primes { get; set; } = new List&lt;int&gt; { 3, 5, 7 };
+    public static string Greeting { get; set; }    
     public static class MonitorSize
     {
         public static int Width { get; set; }
         public static int Height { get; set; }
     }
-}        </code></pre>
-    <p class="p">The setting table must contain at least the <span class="b">Greeting</span> and <span class="b">MonitorSize</span> settings but the primes are marked as <code class="ic">Optional</code> and have a default value already. SmartConfig won't complain in this case.</p>
-    <p class="p">It is important that we define the right type of the setting so that SmartConfig can already verify its value and type and we don't have to do any convertions later ourselfs.</p>
-    <p class="p">If we wanted to define other primes we could add such a setting to the database and SmartConfig would take its value then. We just need to use a json format in this case because it handles such types as lists, arrays and other more complex types. This is why we added the ObjectConverterAttribute to the field.</p>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Value</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Primes</td>
-                <td>'[3, 5, 7, 11]'</td>
-            </tr>
-        </tbody>
-    </table>
-    <p class="p">SmartConfig uses the sturcture of the config class and its properties to generate keys for the settings and it skips the name of the root class. By default the name of the main class is not used because if you want to have multiple configurations you can give them different names by providing additional properties via the <code class="ic">SettingNameAttribute</code> class:</p>
-        <pre><code class="code">[SmartConfig]
-[SettingName(&quot;MyApp&quot;)]
-static class ExampleDbConfig
-{
-    // ...
-}        </code></pre>
-    <p class="p">In this case SmartConfig would generate names like <span class="b">MyApp.Greeting</span>. You can use the <code class="ic">SettingNameAttribute</code> on any subclass or property to change its name.</p>
-    <p class="p">It's time to load the settings from the database. This is as simple as loading an <code class="ic">App.config</code>. You just need to specify the connection string and the name of the setting table:</p>
-        <pre><code class="code">Configuration
+}    </code></pre>
+    <p class="p">You can see that the setting names are build from the class and property names.</p>
+    <p class="p">It is important that we define the right type of the setting so that <code class="ic">SmartConfig</code> can already verify its value and the type and we don't have to do any convertions later ourselfs.</p>
+    <p class="p">It's time to load the settings from the database. This is as simple as loading an <code class="ic">App.config</code>. You just need to use a different data store class that in this case requiers a connection string and the name of the setting table:</p>
+    <pre><code class="code">Configuration
     .Load(typeof(ExampleDbConfig))
     .From(new SqlServerStore(
         ExampleAppConfig.connectionString,
-        ExampleAppConfig.SettingsTableName));        </code></pre>
+        ExampleAppConfig.SettingsTableName));    </code></pre>
     <p class="p">And that's it!</p>
-        <pre><code class="code">Console.WriteLine(ExampleDbConfig.Greeting); // outputs: Hallo SmartConfig!        </code></pre>
-        
-        <p class="p"><span class="i">This README is powered by <a href="https://github.com/he-dev/LessThenStyle.NET" class="link">LessThenStyle.NET</a></span></p>
+    <pre><code class="code">Console.WriteLine(ExampleDbConfig.Greeting); // outputs: Hallo SmartConfig!    </code></pre>
+    <h2 class="h2">Using <span class="b">SQLite</span></h2>
+    <p class="p">This data store might be a good choice if you want to use local settings.</p>
+    <p class="p">In case you are new to SQLite I've prepered a few scripts so you can start using it more easily.</p>
+    <p class="p">When you install the SQLite package you'll find a new <code class="ic">PackageContent\SmartConfig.DataStores.SQLite.6.0.0</code> folder in your project and inside there a few files:</p>
+    <ul>
+        <li><code class="ic">config.sql</code> - this is the sql script where you can add your settings</li>
+        <li><code class="ic">open-console.lnk</code> - this file will open the PowerShell console</li>
+        <li><code class="ic">update-config.ps1</code> - execute this script to create the SQLite database file <code class="ic">config.db</code></li>
+    </ul>
+    <p class="p">In the app.config you will also need this connection string:</p>
+    <pre><code class="ic">&lt;connectionStrings&gt;
+    &lt;add name=&quot;configdb&quot; connectionString=&quot;Data Source=config.db;Version=3;&quot; providerName=&quot;System.Data.SQLite&quot;/&gt;
+&lt;/connectionStrings&gt;    </code></pre>
+    <p class="p">You create the configuration class like shown in the other examples but to load it you just need another data store:</p>
+    <pre><code class="code">Configuration
+    .Load(typeof(ExampleDbConfig))
+    .From(new SQLiteStore(
+        ExampleAppConfig.connectionString,
+        ExampleAppConfig.SettingsTableName));    </code></pre>
+    <h2 class="h2">Using <span class="b">Windows Registry</span></h2>
+    <h2 class="h2">Custom Converters and Data Types</h2>
+    <p class="p">In most configurations you will want to use more data types then just the basic ones. Currently <code class="ic">SmartConfig</code> can handle them via the <code class="ic">JsonConverter</code>. It supports a lot of types but to be sure that you use the types you want you need to specify each type explicitly. Such settings must be in JSON format.</p>
+    <p class="p">Let's assume your configuration has a property of type <code class="ic">List&lt;int&gt;</code>. To tell <code class="ic">SmartConfig</code> how to handle it you need to write this code:</p>
+    <pre><code class="code">Configuration
+    .Load(typeof(...), converters =&gt;
+	{
+        converters.Add&lt;JsonConverter&gt;(converter =&gt; 
+		{ 
+		    converter.AddObjectType&lt;List&lt;int&gt;&gt;(); 
+		    converter.AddObjectType&lt;List&lt;double&gt;&gt;(); 
+		});
+    })
+    .From(...);    </code></pre>
+    <p class="p">The <code class="ic">Load</code> method has a second parameter that passes you a collection of converters that you can configure. In the first step you add the new converter and then you tell it what types you want it to support.</p>
+    <h2 class="h2">Optional Settings</h2>
+    <p class="p">By default all properties are mandatory and you need to provide values for them. You can make settings optional by decorating a property or a class with the <code class="ic">OptionalAttribute</code>.</p>
+    <pre><code class="code">[SmartConfig]
+static class ExampleDbConfig
+{
+    [Optional]
+    public static string Greeting { get; set; } = &quot;Hallo SmartConfig!&quot;;    
+}    </code></pre>
+    <p class="p">It's generally a good idea to provide default values for such settings.</p>
+    <h2 class="h2">Custom Names</h2>
+    <p class="p"><span class="app">SmartConfig</span> uses the sturcture of the config class and its properties to generate keys for the settings and it skips the name of the root class. By default the name of the main class is not used because if you want to have multiple configurations in the same data store you can give them different names by providing additional properties via the <code class="ic">SettingNameAttribute</code> class:</p>
+    <pre><code class="code">[SmartConfig]
+[SettingName(&quot;MyApp&quot;)]
+static class ExampleDbConfig
+{
+    [SettingName(&quot;Hallo&quot;)]
+    public static string Greeting { get; set; } = &quot;Hallo SmartConfig!&quot;;
+}    </code></pre>
+    <p class="p">For this class <code class="ic">SmartConfig</code> would generate names like <span class="b">MyApp.Hallo</span>. You can use the <code class="ic">SettingNameAttribute</code> on any subclass or property to change its name.</p>
+    <h2 class="h2">Custom Keys</h2>
+    <p class="p">Sometime a single name for a setting might not be enough to identify a value. You may need a UserName or an Environment or a Version.</p>
+    <p class="p">To handle this you need create a custom setting type derived from the base type and during loading provide values for the keys.</p>
+    <p class="p">Custom setting class:</p>
+    <pre><code class="code">class MySetting : BasicSetting
+{
+    [SettingFilter(typeof(StringFilter))]
+    public string UserName { get; set; } 
+}    </code></pre>
+    <p class="p">Setting custom key value:</p>
+    <pre><code class="code">Configuration
+    .Load(typeof(...))
+    .From(new SqlServerStore&lt;MySetting&gt;(ConnectionString, TestTableName), dataStore =&gt;
+    {
+        dataStore.SetCustomKey(&quot;Environment&quot;, &quot;corge&quot;);
+    });    </code></pre>
+    <p class="p"><code class="ic">SmartConfig</code> provides you two filters:</p>
+    <ul>
+        <li><code class="ic">StringFilter</code> - for filtering string keys</li>
+        <li><code class="ic">VersionFilter</code> - for filtering version keys; this filter supports semantic versioning as described on <a href="www.semver.org" class="link">semver</a></li>
+    </ul>
+    <p class="p">Each of the filters will try to find the value you specified during loading. An exception will occur if the value is not found and the setting is not optional.</p>
+    <p class="p">You can however define default values and set the key value to <span class="b">*</span> (asterisk) which will be used if no exact value could be found.</p>
+    <p class="p">The version filter will also fallback to the last smaller value then the specified if such was found or to the asterisk.</p>
+    <h2 class="h2">Reloading a Configuration</h2>
+    <p class="p">You reload a configuration by using the <code class="ic">Reload</code> API:</p>
+    <pre><code class="code">Configuration.Reload(typeof(...));    </code></pre>
+    <p class="p">Before you can use it you need to load a configuration first.</p>
+    <p class="p">This method won't throw any exceptions if a configuration couldn't be reloaded. Instead you can subscribe to the <code class="ic">Configuraiton.ReloadFailed</code> event.</p>
+    <p class="p">The idea is to be able to update the configuration at runtime and not to overwrite the current one until all settings were successfuly loaded. This means if you could load a configuration and change it later the already loaded one will be replaced only if the entire reload operation worked.</p>
+    <h2 class="h2">Saving a Configuration</h2>
+    <p class="p">Changed configuraitons can be saved with the <code class="ic">Save</code> API:</p>
+    <pre><code class="code">Configuration.Save(typeof(...));    </code></pre>
+    <p class="p">It will throw if you try to save a configuration that isn't loaded yet.</p>
+    <h3 class="h3">Footnote</h3>
+    <p class="p">This <a href="https://raw.githubusercontent.com/he-dev/LessThenStyle.NET/master/LessThenStyle.Console/_READMEs/SmartConfig.Readme.lts" class="link">README</a> is powerd by <a href="https://github.com/he-dev/LessThenStyle.NET" class="link">LessThenStyle.NET</a></p>
 </div>
       
     
