@@ -45,7 +45,7 @@ namespace SmartConfig.DataStores.SqlServer
             }
         }
 
-        public override IReadOnlyCollection<Type> SerializationDataTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+        public override IReadOnlyCollection<Type> SerializationTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
         public override object Select(SettingKey key)
         {
@@ -53,7 +53,7 @@ namespace SmartConfig.DataStores.SqlServer
 
             using (var context = new SqlServerContext<TSetting>(_connectionString, _settingsTableName))
             {
-                var name = key.Name.Value.ToString();
+                var name = key.Main.Value.ToString();
                 var settings = context.Settings.Where(ce => ce.Name == name).ToList() as IEnumerable<TSetting>;
 
                 settings = ApplyFilters(settings, key.CustomKeys);
@@ -69,6 +69,7 @@ namespace SmartConfig.DataStores.SqlServer
 
             using (var context = new SqlServerContext<TSetting>(_connectionString, _settingsTableName))
             {
+#if DEBUG
                 // debug code
                 //var createEntityKey = new Func<DbContext, TSetting, EntityKey>((c, e) =>
                 //{
@@ -78,16 +79,16 @@ namespace SmartConfig.DataStores.SqlServer
                 //});
                 //var entityKey3 = createEntityKey(context, context.Settings.FirstOrDefault());
                 //context.Database.Log = sql => Debug.WriteLine(sql);
+#endif
 
                 var keyValues = key.Select(x => (object)x.Value.ToString()).ToArray();
                 var entity = context.Settings.Find(keyValues);
 
-                var entityExists = entity != null;
-                if (!entityExists)
+                if (entity == null)
                 {
                     entity = new TSetting
                     {
-                        Name = key.Name.Value.ToString(),
+                        Name = key.Main.Value.ToString(),
                         Value = value?.ToString()
                     };
 

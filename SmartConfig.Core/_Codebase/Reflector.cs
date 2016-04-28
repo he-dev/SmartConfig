@@ -56,52 +56,5 @@ namespace SmartConfig
 
             return memberInfo.GetCustomAttributes(typeof(T), false).Any();
         }
-        
-
-        //public static bool IsNullable(this Type memberInfo)
-        //{
-        //    var isNullable =
-        //        memberInfo.IsGenericType
-        //        && memberInfo.GetGenericTypeDefinition() == typeof(Nullable<>);
-        //    return isNullable;
-        //}
-
-        //public static bool IsIEnumerable(this Type memberInfo)
-        //{
-        //    var isIEnumerable =
-        //        memberInfo != typeof(string)
-        //        && memberInfo.GetInterfaces()
-        //        .Any(t => t.IsGenericType && memberInfo.GetGenericTypeDefinition() == typeof(IEnumerable<>));
-        //    return isIEnumerable;
-        //}
-
-        //public static bool IsList(this Type memberInfo)
-        //{
-        //    var isList =
-        //        memberInfo != typeof(string)
-        //        && memberInfo.IsGenericType
-        //        && memberInfo.GetGenericTypeDefinition() == typeof(List<>);
-        //    return isList;
-        //}
-
-        //public static bool IsDictionary(this Type memberInfo)
-        //{
-        //    var isList =
-        //        memberInfo != typeof(string)
-        //        && memberInfo.IsGenericType
-        //        && memberInfo.GetGenericTypeDefinition() == typeof(Dictionary<,>);
-        //    return isList;
-        //}
-
-
-
-        //        public static T GetCustomAttribute<T>(this Type memberInfo, bool inherit = false) where T : Attribute
-        //        {
-        //#if NET40
-        //            return (T)memberInfo.GetCustomAttributes(typeof(T), inherit).SingleOrDefault();
-        //#else
-        //            return memberInfo.GetCustomAttributes(inherit).OfType<T>().SingleOrDefault();
-        //#endif
-        //        }
     }
 }

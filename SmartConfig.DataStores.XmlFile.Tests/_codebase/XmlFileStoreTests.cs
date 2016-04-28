@@ -93,7 +93,8 @@ namespace SmartConfig.DataStores.XmlFile.Tests.XmlFileStoreTests
                 {
                     dataStore.SetCustomKey("Environment", "corge");
                 });
-            Assert.AreEqual("Baaz", Config3.Foo);
+            //Assert.AreEqual("Baaz", Config3.Foo);
+            Assert.Inconclusive("Need to write a new custom setting with only one custom key fro this.");
         }
 
         [SmartConfig]

@@ -47,16 +47,16 @@ namespace SmartConfig.DataStores.AppConfig
             return appConfigSectionStore;
         }
 
-        public override IReadOnlyCollection<Type> SerializationDataTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+        public override IReadOnlyCollection<Type> SerializationTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
         public override object Select(SettingKey key)
         {
             if (key == null) { throw new ArgumentNullException(nameof(key)); }
             //if (!key.Any()) { throw new InvalidOperationException("There must be at least one key defined."); }
 
-            var appConfigSectionSource = GetAppConfigSectionStore(key.Name.Value);
+            var appConfigSectionSource = GetAppConfigSectionStore(key.Main.Value);
 
-            var settingName = new AppConfigPath(key.Name.Value).ToString();
+            var settingName = new AppConfigPath(key.Main.Value).ToString();
             var value = appConfigSectionSource.Select(settingName);
 
             return value;
@@ -66,8 +66,8 @@ namespace SmartConfig.DataStores.AppConfig
         {
             Debug.Assert(key != null && key.Any());
 
-            var appConfigSectionSource = GetAppConfigSectionStore(key.Name.Value);
-            var settingName = new AppConfigPath(key.Name.Value).ToString();
+            var appConfigSectionSource = GetAppConfigSectionStore(key.Main.Value);
+            var settingName = new AppConfigPath(key.Main.Value).ToString();
 
             appConfigSectionSource.Update(settingName, value?.ToString());
             _exeConfiguration.Save(ConfigurationSaveMode.Minimal);

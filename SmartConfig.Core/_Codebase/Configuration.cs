@@ -17,23 +17,10 @@ namespace SmartConfig
     /// </summary>
     public class Configuration
     {
+        // cache for all loaded configurations
         private static readonly IDictionary<Type, Configuration> Cache = new Dictionary<Type, Configuration>();
 
-        /// <summary>
-        /// Gets the current converters and allows to add additional ones.
-        /// </summary>
-        //public static ObjectConverterCollection Converters { get; } = new ObjectConverterCollection
-        //{
-        //    new NumericConverter(),
-        //    new BooleanConverter(),
-        //    new StringConverter(),
-        //    new EnumConverter(),
-        //    new DateTimeConverter(),
-        //    new ColorConverter(),
-        //    //new JsonConverter(),
-        //    new XmlConverter(),
-        //};
-
+        // converters supported by this configuraiton
         public ObjectConverterCollection Converters { get; } = new ObjectConverterCollection
         {
             new NumericConverter(),
@@ -57,12 +44,11 @@ namespace SmartConfig
 
         internal IReadOnlyCollection<Setting> Settings { get; }
 
-        internal IDataStore DataStore { get; set; }
-
-        // internal IDictionary<string, object> CustomKeys { get; } = new Dictionary<string, object>();
+        internal IDataStore DataStore { get; private set; }
 
         public static event EventHandler<ReloadFailedEventArgs> ReloadFailed = delegate { };
 
+        // initializes configuration and allows to configure converters
         public static Configuration Load(Type configurationType, Action<ObjectConverterCollection> converters = null)
         {
             if (configurationType == null)
@@ -72,12 +58,20 @@ namespace SmartConfig
 
             if (!configurationType.IsStatic())
             {
-                throw new TypeNotStaticException { Type = configurationType.Name };
+                throw new TypeNotStaticException
+                {
+                    Type = configurationType.Name,
+                    HelpText = "Configuration type must be a static class."
+                };
             }
 
             if (!configurationType.HasAttribute<SmartConfigAttribute>())
             {
-                throw new SmartConfigAttributeNotFoundException { ConfigurationType = configurationType.Name };
+                throw new SmartConfigAttributeNotFoundException
+                {
+                    ConfigurationType = configurationType.Name,
+                    HelpText = $"Configuration class must be decorated with the {nameof(SmartConfigAttribute)}."
+                };
             }
 
             var configuration = new Configuration(configurationType);
@@ -95,9 +89,13 @@ namespace SmartConfig
             var missingKeys = dataStore.CustomKeyFilters.Where(x => dataStore.CustomKeyValues[x.Key] == null).Select(x => x.Key).ToList();
             if (missingKeys.Any())
             {
-                throw new ArgumentException($"You need to set the {dataStore.SettingType}'s following custom keys: {string.Join(", ", missingKeys)}");
+                throw new CustomKeyNullException
+                {
+                    SettingType = dataStore.SettingType.Name,
+                    CustomKey = "[" + string.Join(", ", missingKeys) + "]",
+                    HelpText = "Custom keys must not be null or empty."
+                };
             }
-
 
             DataStore = dataStore;
 
@@ -110,7 +108,7 @@ namespace SmartConfig
             var configuration = (Configuration)null;
             if (!Cache.TryGetValue(configurationType, out configuration))
             {
-                throw new InvalidOperationException("Configuraiton not loaded.");
+                throw new InvalidOperationException($"To reload a configuration you need to load it first. Configuration {configurationType.Name} isn't loaded yet.");
             }
 
             try
@@ -121,7 +119,8 @@ namespace SmartConfig
             {
                 ReloadFailed(null, new ReloadFailedEventArgs
                 {
-                    Exception = ex
+                    Exception = ex,
+                    Configuration = configurationType.Name
                 });
             }
         }
@@ -131,7 +130,7 @@ namespace SmartConfig
             var configuration = (Configuration)null;
             if (!Cache.TryGetValue(configurationType, out configuration))
             {
-                throw new InvalidOperationException("Configuraiton not loaded.");
+                throw new InvalidOperationException($"To save a configuration you need to load it first. Configuration {configurationType.Name} isn't loaded yet.");
             }
 
             foreach (var setting in configuration.Settings)
@@ -139,44 +138,5 @@ namespace SmartConfig
                 SettingUpdater.UpdateSetting(setting);
             }
         }
-
-
-        //    /// <summary>
-        //    /// Updates a setting.
-        //    /// </summary>
-        //    /// <typeparam name="T">The type of the setting property.</typeparam>
-        //    /// <param name="expression">Member expression of the setting to be updated.</param>
-        //    /// <param name="value">Value to be set.</param>
-        //    public static void UpdateSetting<T>(Expression<Func<T>> expression, T value)
-        //    {
-        //        if (expression == null)
-        //        {
-        //            throw new ArgumentNullException(nameof(expression));
-        //        }
-
-        //        var memberExpression = expression.Body as MemberExpression;
-        //        if (memberExpression == null)
-        //        {
-        //            throw new ExpressionBodyNotMemberExpressionException { MemberFullName = expression.Body.Type.FullName };
-        //        }
-
-        //        var property = memberExpression.Member as PropertyInfo;
-        //        if (property == null)
-        //        {
-        //            throw new MemberNotPropertyException { MemberName = memberExpression.Member.Name };
-        //        }
-
-        //        var settingInfo =
-        //            Cache.SelectMany(x => x.Value.Settings)
-        //            .SingleOrDefault(si => si.Property == property);
-
-        //        if (settingInfo == null)
-        //        {
-        //            throw new MemberNotFoundException { MemberName = property.Name };
-        //        }
-
-        //        SettingUpdater.UpdateSetting(settingInfo, value, Converters);
-        //        settingInfo.Value = value;
-        //    }
     }
 }

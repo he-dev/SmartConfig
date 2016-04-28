@@ -9,7 +9,7 @@ namespace SmartConfig
     /// <summary>
     /// Provides utility methods for creating configuration element names.
     /// </summary>
-    [DebuggerDisplay("{ToString()}")]
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class SettingPath : ReadOnlyCollection<string>
     {
         internal SettingPath(IList<string> names) : base(names)
@@ -37,6 +37,8 @@ namespace SmartConfig
         {
             return Create(configName, (IEnumerable<string>) names);
         }
+
+        private string DebuggerDisplay => ToString();
 
         public override string ToString()
         {

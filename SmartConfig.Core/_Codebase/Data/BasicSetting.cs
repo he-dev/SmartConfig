@@ -15,15 +15,15 @@ namespace SmartConfig.Data
     /// <summary>
     /// Basic setting class. Custom setting must be derived from this type.
     /// </summary>
-    [DebuggerDisplay("{ToString()}")]
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class BasicSetting : IIndexable
     {
-        private IReadOnlyCollection<PropertyInfo> _customKeyProperties;
+        private IReadOnlyCollection<PropertyInfo> _filterProperties;
 
         private const string GetterPrefix = "get_";
         private const string SetterPrefix = "set_";
 
-        public const string DefaultKeyName = nameof(Name);
+        public const string MainKeyName = nameof(Name);
 
         private readonly IDictionary<string, StringPropertyGetter> _getters = new Dictionary<string, StringPropertyGetter>();
         private readonly IDictionary<string, StringPropertySetter> _setters = new Dictionary<string, StringPropertySetter>();
@@ -33,7 +33,8 @@ namespace SmartConfig.Data
         /// </summary>
         public BasicSetting()
         {
-            InitializeDelegates();
+            InitializeFilterProperties();
+            InitializeFilterDelegates();
         }
 
         /// <summary>
@@ -53,7 +54,7 @@ namespace SmartConfig.Data
                 throw new InvalidPropertyNameException
                 {
                     PropertyName = propertyName,
-                    SettingType = GetType().Name
+                    SettingType = GetType().Name,
                 };
             }
             set
@@ -86,33 +87,11 @@ namespace SmartConfig.Data
 
         public bool IsCustomSetting => GetType() != typeof(BasicSetting);
 
-        public IReadOnlyCollection<PropertyInfo> CustomKeyProperties
+        public IReadOnlyCollection<string> CustomKeyNames => _filterProperties.Select(x => x.Name).ToList();
+
+        public IReadOnlyDictionary<string, ISettingFilter> GetCustomKeyFilters()
         {
-            get
-            {
-                if (_customKeyProperties != null)
-                {
-                    return _customKeyProperties;
-                }
-
-                if (!IsCustomSetting)
-                {
-                    _customKeyProperties = new List<PropertyInfo>();
-                    return _customKeyProperties;
-                }
-
-                _customKeyProperties = 
-                    GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
-                    .Where(property => property.HasAttribute<SettingFilterAttribute>())
-                    .OrderBy(p => p.Name).ToList();
-               
-                return _customKeyProperties;
-            }
-        }
-
-        public IReadOnlyDictionary<string, ISettingFilter> GetCustomSettingFilters()
-        {
-            var customSettingFilters = CustomKeyProperties.Select(p => new
+            var customSettingFilters = _filterProperties.Select(p => new
             {
                 p.Name,
                 p.GetCustomAttribute<SettingFilterAttribute>().FilterType
@@ -121,9 +100,23 @@ namespace SmartConfig.Data
             return new ReadOnlyDictionary<string, ISettingFilter>(customSettingFilters);
         }
 
-        private void InitializeDelegates()
+        private void InitializeFilterProperties()
         {
-            foreach (var property in CustomKeyProperties)
+            if (!IsCustomSetting)
+            {
+                _filterProperties = new List<PropertyInfo>();
+                return;
+            }
+
+            _filterProperties =
+                GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
+                .Where(property => property.HasAttribute<SettingFilterAttribute>())
+                .OrderBy(p => p.Name).ToList();
+        }
+
+        private void InitializeFilterDelegates()
+        {
+            foreach (var property in _filterProperties)
             {
                 var getStringMethod = (StringPropertyGetter)Delegate.CreateDelegate(typeof(StringPropertyGetter), this, property.GetGetMethod());
                 var setStringMethod = (StringPropertySetter)Delegate.CreateDelegate(typeof(StringPropertySetter), this, property.GetSetMethod());
@@ -132,13 +125,17 @@ namespace SmartConfig.Data
             }
         }
 
-        public override string ToString()
+        private string DebuggerDisplay
         {
-            return string.Join(" ", 
-                new[] { $"Name = '{Name}'" }
-                .Concat(CustomKeyProperties.Select(c => $"{c.Name} = '{this[c.Name]}'"))
-                .Concat(new[] { $"Value = '{Value}'" })
-            );
+            get
+            {
+                return string.Join(" ",
+                    new[] { $"Name = '{Name}'" }
+                    .Concat(_filterProperties.Select(c => $"{c.Name} = '{this[c.Name]}'"))
+                    .Concat(new[] { $"Value = '{Value}'" })
+                );
+
+            }
         }
     }
 }

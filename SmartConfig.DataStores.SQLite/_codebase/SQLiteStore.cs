@@ -19,7 +19,7 @@ namespace SmartConfig.DataStores.SQLite
         private readonly string _connectionString;
         private readonly string _settingsTableName;
 
-        public bool UTF8FixEnabled { get; set; }
+        public bool UTF8FixEnabled { get; set; } = true;
 
         public SQLiteStore(string connectionString, string settingsTableName)
         {
@@ -46,7 +46,7 @@ namespace SmartConfig.DataStores.SQLite
             }
         }
 
-        public override IReadOnlyCollection<Type> SerializationDataTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+        public override IReadOnlyCollection<Type> SerializationTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
         public override object Select(SettingKey key)
         {
@@ -57,7 +57,7 @@ namespace SmartConfig.DataStores.SQLite
                 var sql = "SELECT * FROM {table} WHERE [Name] = '{name}'".Format(new
                 {
                     table = _settingsTableName,
-                    name = key.Name.Value.ToString()
+                    name = key.Main.Value.ToString()
                 });
 
                 using (var cmd = new SQLiteCommand(sql, conn))
@@ -71,7 +71,7 @@ namespace SmartConfig.DataStores.SQLite
 
                         var setting = new TSetting
                         {
-                            Name = (string)settingReader["Name"],
+                            Name = (string)settingReader[key.Main.Key],
                             Value = UTF8FixEnabled ? value.AsUTF8() : value
                         };
 
@@ -91,7 +91,7 @@ namespace SmartConfig.DataStores.SQLite
 
         public override void Update(SettingKey key, object value)
         {
-            // INSERT OR REPLACE INTO Setting(Name, Value, Environment) VALUES('Greeting' 'Hallo SQLite!', 'sqlite',);
+            // INSERT OR REPLACE INTO Setting(Main, Value, Environment) VALUES('Greeting' 'Hallo SQLite!', 'sqlite',);
 
 
             using (var conn = new SQLiteConnection(_connectionString)) // "Data Source=config.db;Version=3;"))
@@ -103,7 +103,7 @@ namespace SmartConfig.DataStores.SQLite
 
                 var sql =
                     $"INSERT OR REPLACE INTO Setting([Name], [Value]{otherKeys}) " +
-                    $"VALUES('{key.Name.Value}', '{value}'{otherValues})";
+                    $"VALUES('{key.Main.Value}', '{value}'{otherValues})";
 
                 using (var cmd = new SQLiteCommand(sql, conn))
                 {

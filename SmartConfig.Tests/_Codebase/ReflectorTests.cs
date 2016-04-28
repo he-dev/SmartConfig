@@ -325,7 +325,7 @@ namespace SmartConfig.Core.Tests.Reflection.ReflectorTests
     //    public void GetsMainKeyName()
     //    {
     //        CollectionAssert.AreEqual(
-    //            new[] { "Name" },
+    //            new[] { "Main" },
     //            Reflector.GetSettingKeyNames<BasicSetting>().ToList()
     //        );
     //    }
@@ -334,7 +334,7 @@ namespace SmartConfig.Core.Tests.Reflection.ReflectorTests
     //    public void GetsCustomKeyNames()
     //    {
     //        CollectionAssert.AreEqual(
-    //            new[] { "Name", "Environment", "Version" },
+    //            new[] { "Main", "Environment", "Version" },
     //            Reflector.GetSettingKeyNames<CustomTestSetting>().ToList()
     //        );
     //    }

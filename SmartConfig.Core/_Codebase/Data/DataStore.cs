@@ -19,25 +19,23 @@ namespace SmartConfig.Data
         {
             var setting = new TSetting();
             SettingType = typeof(TSetting);
-            _customKeyValues = setting.CustomKeyProperties.ToDictionary(p => p.Name, p => (object)null);
-            CustomKeyFilters = setting.GetCustomSettingFilters();
+            _customKeyValues = setting.CustomKeyNames.ToDictionary(name => name, p => (object)null);
+            CustomKeyFilters = setting.GetCustomKeyFilters();
         }
 
         public Type SettingType { get; }
 
         public IReadOnlyDictionary<string, object> CustomKeyValues => new ReadOnlyDictionary<string, object>(_customKeyValues);
 
-        //=> new ReadOnlyDictionary<string, object>(_customKeyValues);
-
         public IReadOnlyDictionary<string, ISettingFilter> CustomKeyFilters { get; }
 
-        public abstract IReadOnlyCollection<Type> SerializationDataTypes { get; }
+        public abstract IReadOnlyCollection<Type> SerializationTypes { get; }
 
-        public Type DefaultSerializationDataType => SerializationDataTypes.FirstOrDefault();
+        public Type DefaultSerializationType => SerializationTypes.FirstOrDefault();
 
-        public Type GetSerializationDataType(Type objectType)
+        public Type GetSerializationType(Type objectType)
         {
-            return SerializationDataTypes.Contains(objectType) ? objectType : DefaultSerializationDataType;
+            return SerializationTypes.Contains(objectType) ? objectType : DefaultSerializationType;
         }
 
         public void SetCustomKey(string name, object value)

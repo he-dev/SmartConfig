@@ -4,10 +4,10 @@ using SmartConfig.DataAnnotations;
 using SmartConfig.Filters;
 using SmartUtilities.UnitTesting;
 
-namespace SmartConfig.Core.Tests.Data.BasicSettingTests
+namespace SmartConfig.Core.Tests.Data.SettingTests
 {
     [TestClass]
-    public class ConstructorTests
+    public class indexerTests
     {
         [TestMethod]
         public void GetsCustomPropertyByName()

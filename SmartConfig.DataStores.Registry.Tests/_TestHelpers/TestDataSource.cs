@@ -13,7 +13,7 @@ namespace SmartConfig.DataStores.Registry.Tests
 
         public Action<SettingKey, object> UpdateAction;
 
-        public override IReadOnlyCollection<Type> SerializationDataTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+        public override IReadOnlyCollection<Type> SerializationTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
         public override object Select(SettingKey key)
         {
@@ -32,7 +32,7 @@ namespace SmartConfig.DataStores.Registry.Tests
 
         public Action<SettingKey, object> UpdateAction;
 
-        public override IReadOnlyCollection<Type> SerializationDataTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+        public override IReadOnlyCollection<Type> SerializationTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
         public override object Select(SettingKey key)
         {

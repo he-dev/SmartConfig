@@ -7,9 +7,7 @@ using SmartUtilities.ObjectConverters.DataAnnotations;
 
 namespace SmartConfig
 {
-    /// <summary>
-    /// Represents a single setting info.
-    /// </summary>
+    // stores information about a single setting
     [DebuggerDisplay("Configuration = {Configuration.Type.Name} SettingPath = \"{Path}\"")]
     internal class Setting
     {
@@ -29,6 +27,8 @@ namespace SmartConfig
         public SettingKey Key => new SettingKey(Path, Configuration.DataStore.CustomKeyValues);
 
         public IEnumerable<Attribute> Atributes => Property?.GetCustomAttributes(false).Cast<Attribute>() ?? Enumerable.Empty<Attribute>();
+
+        public IEnumerable<ValidationAttribute> ValidationAttributes => Atributes.OfType<ValidationAttribute>();
 
         public bool IsOptional => Property.GetCustomAttribute<OptionalAttribute>() != null;
 

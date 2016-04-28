@@ -7,17 +7,15 @@ using SmartConfig.Data;
 
 namespace SmartConfig
 {
-    [DebuggerDisplay("{ToString()}")]
-    public class SettingKey : IEnumerable<KeyValuePair<string, object>> //: ReadOnlyCollection<SimpleSettingKey>
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
+    public class SettingKey : IEnumerable<KeyValuePair<string, object>>
     {
         private readonly IDictionary<string, object> _keys = new Dictionary<string, object>();
 
-        internal SettingKey(SettingPath path, IEnumerable<KeyValuePair<string, object>> customKeys)
+        internal SettingKey(SettingPath path, IEnumerable<KeyValuePair<string, object>> customKeyValuePairs)
         {
-            _keys[BasicSetting.DefaultKeyName] = path;
-
-            // customKeys are ordered alphabeticaly
-            foreach (var item in customKeys.OrderBy(x => x.Key))
+            _keys[BasicSetting.MainKeyName] = path;
+            foreach (var item in customKeyValuePairs)
             {
                 _keys[item.Key] = item.Value;
             }
@@ -25,13 +23,16 @@ namespace SmartConfig
 
         public object this[string keyName] => _keys[keyName];
 
-        public KeyValuePair<string, SettingPath> Name => new KeyValuePair<string, SettingPath>
-        (
-            BasicSetting.DefaultKeyName,
-            (SettingPath)_keys[BasicSetting.DefaultKeyName]
-        );
+        public KeyValuePair<string, SettingPath> Main
+        {
+            get
+            {
+                var main = _keys.First();
+                return new KeyValuePair<string, SettingPath>(main.Key, (SettingPath)main.Value);
+            }
+        }
 
-        public IDictionary<string, object> CustomKeys => _keys.Where(x => x.Key != BasicSetting.DefaultKeyName).ToDictionary(x => x.Key, x => x.Value);
+        public IDictionary<string, object> CustomKeys => _keys.Where(x => x.Key != BasicSetting.MainKeyName).ToDictionary(x => x.Key, x => x.Value);
 
         public static SettingKey From(SettingPath path, IEnumerable<KeyValuePair<string, object>> otherKeys)
         {
@@ -41,18 +42,18 @@ namespace SmartConfig
         public static SettingKey From<TSetting>() where TSetting : BasicSetting, new()
         {
             var setting = new TSetting();
-            var customKeys = setting.CustomKeyProperties.Select(property => new KeyValuePair<string, object>(property.Name, null));
-
+            var customKeys = setting.CustomKeyNames.Select(name => new KeyValuePair<string, object>(name, null));
             return new SettingKey(null, customKeys);
         }
+
+        private string DebuggerDisplay
+        {
+            get { return string.Join(" ", _keys.Select(x => $"{x.Key} = '{x.Value}'")); }
+        }
+
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
             return _keys.GetEnumerator();
-        }
-
-        public override string ToString()
-        {
-            return string.Join(" ", _keys.Select(x => $"{x.Key} = '{x.Value}'"));
         }
 
         IEnumerator IEnumerable.GetEnumerator()

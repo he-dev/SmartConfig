@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using SmartUtilities;
 using SmartUtilities.Collections;
 using SmartUtilities.ObjectConverters.DataAnnotations;
 
 namespace SmartConfig.IO
 {
+    // this class knows how to load settings
     internal class SettingLoader
     {
         internal static void LoadSettings(Configuration configuration)
@@ -51,22 +53,23 @@ namespace SmartConfig.IO
                     {
                         ConfigurationType = setting.Configuration.Type.Name,
                         SettingPath = setting.Path,
-                        HelpText = "Check other keys if you have any custom ones like environment or version."
+                        HelpText = "You need to provide a value for this setting or mark it as optional."
                     };
                 }
-            
+
                 var converter = setting.Configuration.Converters[setting.Type];
                 var value = converter.DeserializeObject(data, setting.Type, setting.Atributes.OfType<ValidationAttribute>());
                 return value;
             }
-            catch (Exception ex)
+            catch (Exception inner)
             {
-                throw new LoadSettingFailedException(ex)
+                throw SmartException.Create<LoadSettingException>(ex =>
                 {
-                    DataStore = setting.Configuration.DataStore.GetType().Name,
-                    Configuration = setting.Configuration.Type.FullName,
-                    SettingPath = setting.Path
-                };
+                    ex.DataStore = setting.Configuration.DataStore.GetType().Name;
+                    ex.Configuration = setting.Configuration.Type.Name;
+                    ex.SettingPath = setting.Path;
+                    ex.HelpText = "See inner exeption for details.";
+                }, inner);
             }
         }
     }

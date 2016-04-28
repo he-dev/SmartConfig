@@ -44,12 +44,12 @@ namespace SmartConfig.DataStores.XmlFile
 
         private XDocument XConfig { get; }
 
-        public override IReadOnlyCollection<Type> SerializationDataTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+        public override IReadOnlyCollection<Type> SerializationTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
 
         public override object Select(SettingKey key)
         {
-            var attributeName = key.Name.Key;
-            var attributeValue = key.Name.Value.ToString();
+            var attributeName = key.Main.Key;
+            var attributeValue = key.Main.Value.ToString();
             var defaultKeyXPath = $"//{RootElementName}/{SettingElementName}[@{attributeName}='{attributeValue}']";
 
             var xSettings = XConfig.XPathSelectElements(defaultKeyXPath);
@@ -60,7 +60,7 @@ namespace SmartConfig.DataStores.XmlFile
                 // set default key and value
                 var element = new TSetting
                 {
-                    Name = x.Attribute(key.Name.Key).Value,
+                    Name = x.Attribute(key.Main.Key).Value,
                     Value = x.Value
                 };
 
@@ -96,7 +96,7 @@ namespace SmartConfig.DataStores.XmlFile
             {
                 xSetting = new XElement(
                     SettingElementName,
-                    new XAttribute(BasicSetting.DefaultKeyName, key.Name), value);
+                    new XAttribute(BasicSetting.MainKeyName, key.Main), value);
 
                 foreach (var custom in key.CustomKeys)
                 {

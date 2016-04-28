@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using SmartUtilities;
 using SmartUtilities.Collections;
 using SmartUtilities.ObjectConverters.DataAnnotations;
 
@@ -8,40 +9,27 @@ namespace SmartConfig.IO
 {
     internal class SettingUpdater
     {
-        //public void UpdateSetting(SettingType configType, string SettingPath, object value)
-        //{
-        //    //var Setting = _configurationReflector.FindSettingInfo(configType, SettingPath);
-        //    //if (Setting == null)
-        //    //{
-        //    //    // todo: create a meaningfull exception
-        //    //    throw new Exception("Setting not found.");
-        //    //}
-
-        //    //UpdateSetting(Setting, value);
-        //}
-
-        public static void UpdateSetting(Setting setting) //, object value, ObjectConverterCollection converters)
+        public static void UpdateSetting(Setting setting)
         {
             Debug.Assert(setting != null);
 
             try
             {
                 var dataSource = setting.Configuration.DataStore;
-
-                var serializationType = dataSource.GetSerializationDataType(setting.NormalizedType);
-
+                var serializationType = dataSource.GetSerializationType(setting.NormalizedType);
                 var converter = setting.Configuration.Converters[setting.NormalizedType];
-                var serializedValue = converter.SerializeObject(setting.Value, serializationType, setting.Atributes.OfType<ValidationAttribute>());
+                var serializedValue = converter.SerializeObject(setting.Value, serializationType, setting.ValidationAttributes);
                 dataSource.Update(setting.Key, serializedValue);
             }
-            catch (Exception ex)
+            catch (Exception inner)
             {
-                throw new UpdateSettingFailedException(ex)
+                throw SmartException.Create<UpdateSettingException>(ex =>
                 {
-                    DataStore = setting.Configuration.DataStore.GetType().Name,
-                    Configuration = setting.Configuration.Type.Name,
-                    SettingPath = setting.Path
-                };
+                    ex.DataStore = setting.Configuration.DataStore.GetType().Name;
+                    ex.Configuration = setting.Configuration.Type.Name;
+                    ex.SettingPath = setting.Path;
+                    ex.HelpText = "See inner exception for details.";
+                }, inner);
             }
         }
     }

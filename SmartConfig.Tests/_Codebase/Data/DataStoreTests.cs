@@ -24,7 +24,7 @@ namespace SmartConfig.Core.Tests.Data.DataStoreTests
         //    }, ex =>
         //    {
         //        Assert.AreEqual("Foo", ex.Property);
-        //        Assert.AreEqual(typeof(TestSettingWithoutFilter).Name, ex.SettingType);
+        //        Assert.AreEqual(typeof(TestSettingWithoutFilter).Main, ex.SettingType);
         //    }, Assert.Fail);
         //}
 
@@ -41,7 +41,7 @@ namespace SmartConfig.Core.Tests.Data.DataStoreTests
 
         public class TestDataStore<TSetting> : DataStore<TSetting> where TSetting : BasicSetting, new()
         {
-            public override IReadOnlyCollection<Type> SerializationDataTypes { get; } = new ReadOnlyCollection<Type>(Enumerable.Empty<Type>().ToList());
+            public override IReadOnlyCollection<Type> SerializationTypes { get; } = new ReadOnlyCollection<Type>(Enumerable.Empty<Type>().ToList());
 
             public override object Select(SettingKey key)
             {
@@ -70,15 +70,15 @@ namespace SmartConfig.Core.Tests.Data.DataStoreTests
     public class SelectTests
     {
         [TestMethod]
-        public void ReceivesCompundKeyWithoutModelName()
+        public void ReceivesSettingKeyWithoutConfigurationName()
         {
             Configuration.Load(typeof(Foo)).From(new TestDataStore<BasicSetting>
             {
                 SelectFunc = key =>
                 {
                     Assert.IsTrue(key.Count() == 1);
-                    Assert.AreEqual("Name", key.Name.Key);
-                    Assert.AreEqual("Bar", key.Name.Value.ToString());
+                    Assert.AreEqual(BasicSetting.MainKeyName, key.Main.Key);
+                    Assert.AreEqual("Bar", key.Main.Value.ToString());
                     Assert.IsFalse(key.CustomKeys.Any());
                     return null;
                 }
@@ -86,15 +86,15 @@ namespace SmartConfig.Core.Tests.Data.DataStoreTests
         }
 
         [TestMethod]
-        public void ReceivesCompundKeyWithModelName()
+        public void ReceivesSettingKeyWithConfigurationName()
         {
             Configuration.Load(typeof(Foo2)).From(new TestDataStore<BasicSetting>
             {
                 SelectFunc = key =>
                 {
                     Assert.IsTrue(key.Count() == 1);
-                    Assert.AreEqual("Name", key.Name.Key);
-                    Assert.AreEqual("baz.Bar2", key.Name.Value);
+                    Assert.AreEqual(BasicSetting.MainKeyName, key.Main.Key);
+                    Assert.AreEqual("baz.Bar2", key.Main.Value);
                     Assert.IsFalse(key.CustomKeys.Any());
                     return null;
                 }
@@ -102,7 +102,7 @@ namespace SmartConfig.Core.Tests.Data.DataStoreTests
         }
 
         [TestMethod]
-        public void ReceivesCompundKeyWithFilters()
+        public void ReceivesSettingKeyWithFilters()
         {
             Configuration
                 .Load(typeof(Foo))
@@ -111,8 +111,8 @@ namespace SmartConfig.Core.Tests.Data.DataStoreTests
                     SelectFunc = key =>
                     {
                         Assert.IsTrue(key.Count() == 2);
-                        Assert.AreEqual("Name", key.Name.Key);
-                        Assert.AreEqual("Bar", key.Name.Value);
+                        Assert.AreEqual(BasicSetting.MainKeyName, key.Main.Key);
+                        Assert.AreEqual("Bar", key.Main.Value);
                         Assert.IsTrue(key.CustomKeys.Count() == 1);
                         Assert.AreEqual("Qux", key.CustomKeys.First().Key);
                         Assert.AreEqual("bax", key.CustomKeys.First().Value);
@@ -142,7 +142,7 @@ namespace SmartConfig.Core.Tests.Data.DataStoreTests
 
     internal class TestDataStore<TSetting> : DataStore<TSetting> where TSetting : BasicSetting, new()
     {
-        public override IReadOnlyCollection<Type> SerializationDataTypes { get; }
+        public override IReadOnlyCollection<Type> SerializationTypes { get; }
 
         public Func<SettingKey, object> SelectFunc { get; set; }
 

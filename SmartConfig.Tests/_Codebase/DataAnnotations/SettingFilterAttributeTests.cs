@@ -5,7 +5,7 @@ using SmartConfig.Filters;
 using SmartUtilities.UnitTesting;
 
 // ReSharper disable once CheckNamespace
-namespace SmartConfig.Core.Tests.KeyFilterAttributeTests
+namespace SmartConfig.Core.Tests.SettingFilterAttributeTests
 {
     [TestClass]
     public class ctor
@@ -25,9 +25,7 @@ namespace SmartConfig.Core.Tests.KeyFilterAttributeTests
             ExceptionAssert.Throws<ArgumentException>(() =>
             {
                 new SettingFilterAttribute(typeof(string));
-            }, ex =>
-            {
-            }, Assert.Fail);
+            }, ex => { }, Assert.Fail);
         }
 
         [TestMethod]

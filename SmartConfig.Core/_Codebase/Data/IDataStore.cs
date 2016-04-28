@@ -23,11 +23,11 @@ namespace SmartConfig.Data
 
         IReadOnlyDictionary<string, ISettingFilter> CustomKeyFilters { get; }
 
-        IReadOnlyCollection<Type> SerializationDataTypes { get; }
+        IReadOnlyCollection<Type> SerializationTypes { get; }
 
-        Type DefaultSerializationDataType { get; }
+        Type DefaultSerializationType { get; }
 
-        Type GetSerializationDataType(Type objectType);
+        Type GetSerializationType(Type objectType);
 
         void SetCustomKey(string name, object value);
 

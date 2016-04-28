@@ -101,8 +101,8 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="PackageContent\SmartConfig.4.5.0\dbo.Create basic setting table.sql" />
-    <Content Include="PackageContent\SmartConfig.4.5.0\dbo.Create custom setting table.sql" />
+    <Content Include="PackageContent\SmartConfig.DataStores.SqlServer.6.0.0\dbo.Create basic setting table.sql" />
+    <Content Include="PackageContent\SmartConfig.DataStores.SqlServer.6.0.0\dbo.Create custom setting table.sql" />
     <Content Include="LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>

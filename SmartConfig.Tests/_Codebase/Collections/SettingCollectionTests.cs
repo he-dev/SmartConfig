@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Collections;
 using SmartConfig.DataAnnotations;
+using SmartUtilities.UnitTesting;
+
 
 // ReSharper disable once CheckNamespace
 namespace SmartConfig.Core.Tests.Collections.SettingCollectionTests
@@ -12,14 +15,16 @@ namespace SmartConfig.Core.Tests.Collections.SettingCollectionTests
     public class CreateTests
     {
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void RequiresConfigurationInfo()
         {
-            SettingCollection.Create(null);
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                SettingCollection.Create(null);
+            }, null, Assert.Fail);
         }
 
         [TestMethod]
-        public void CreatesSettingCollection()
+        public void IgnoresNotMappedTypes()
         {
             var configuration = Configuration.Load(typeof(Foo));
             Assert.AreEqual(3, configuration.Settings.Count);
@@ -37,6 +42,12 @@ namespace SmartConfig.Core.Tests.Collections.SettingCollectionTests
 
                 [SmartUtilities.ObjectConverters.DataAnnotations.Ignore]
                 public static string Baz2 { get; set; }
+            }
+
+            [SmartUtilities.ObjectConverters.DataAnnotations.Ignore]
+            public static class SubBaz
+            {
+                public static string Quux { get; set; }
             }
         }
     }

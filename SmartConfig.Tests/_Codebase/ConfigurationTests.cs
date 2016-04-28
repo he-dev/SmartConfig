@@ -72,9 +72,9 @@ namespace SmartConfig.Core.Tests.ConfigurationTests
 
             Configuration
                 .Load(typeof(NumericSettings))
-                .From(new BasicTestStore
+                .From(new TestStore<BasicSetting>
                 {
-                    SelectFunc = key => testData[key.First().Value.ToString()]
+                    SelectFunc = key => testData[key.Main.Value.ToString()]
                 });
 
             Assert.AreEqual(sbyte.MaxValue, NumericSettings.sbyteSetting);
@@ -90,11 +90,11 @@ namespace SmartConfig.Core.Tests.ConfigurationTests
             Assert.AreEqual(double.MaxValue, NumericSettings.doubleSetting);
             Assert.AreEqual(decimal.MaxValue, NumericSettings.decimalSetting);
 
-            ExceptionAssert.Throws<LoadSettingFailedException>(() =>
+            ExceptionAssert.Throws<LoadSettingException>(() =>
             {
                 Configuration
                 .Load(typeof(NumericSettings))
-                .From(new BasicTestStore
+                .From(new TestStore<BasicSetting>
                 {
                     SelectFunc = key => "abc"
                 });
@@ -115,7 +115,7 @@ namespace SmartConfig.Core.Tests.ConfigurationTests
 
             Configuration
                 .Load(typeof(BooleanSettings))
-                .From(new BasicTestStore
+                .From(new TestStore<BasicSetting>
                 {
                     SelectFunc = key => testData[key.First().Value.ToString()]
                 });
@@ -129,7 +129,7 @@ namespace SmartConfig.Core.Tests.ConfigurationTests
         {
             Configuration
                 .Load(typeof(EnumSettings))
-                .From(new BasicTestStore
+                .From(new TestStore<BasicSetting>
                 {
                     SelectFunc = keys => TestEnum.TestValue2.ToString()
                 });
@@ -141,7 +141,7 @@ namespace SmartConfig.Core.Tests.ConfigurationTests
         {
             Configuration
                 .Load(typeof(StringSettings))
-                .From(new BasicTestStore
+                .From(new TestStore<BasicSetting>
                 {
                     SelectFunc = keys => "abcd"
                 });
@@ -154,7 +154,7 @@ namespace SmartConfig.Core.Tests.ConfigurationTests
             var utcNow = DateTime.UtcNow;
             Configuration
                 .Load(typeof(DateTimeSettings))
-                .From(new BasicTestStore
+                .From(new TestStore<BasicSetting>
                 {
                     SelectFunc = keys => utcNow.ToString(DateTimeConverter.DefaultDateTimeFormat)
                 });
@@ -175,7 +175,7 @@ namespace SmartConfig.Core.Tests.ConfigurationTests
 
             Configuration
                 .Load(typeof(ColorSettings))
-                .From(new BasicTestStore
+                .From(new TestStore<BasicSetting>
                 {
                     SelectFunc = key => testData[key.First().Value.ToString()]
                 });
@@ -195,7 +195,7 @@ namespace SmartConfig.Core.Tests.ConfigurationTests
 
             Configuration
                 .Load(typeof(XmlSettings))
-                .From(new BasicTestStore
+                .From(new TestStore<BasicSetting>
                 {
                     SelectFunc = key => testData[key.First().Value.ToString()]
                 });
@@ -213,7 +213,7 @@ namespace SmartConfig.Core.Tests.ConfigurationTests
                 {
                     converters.Add<JsonConverter>(converter => converter.AddObjectType<List<int>>());
                 })
-                .From(new BasicTestStore
+                .From(new TestStore<BasicSetting>
                 {
                     SelectFunc = keys => "[1, 2, 3]"
                 });
@@ -223,21 +223,21 @@ namespace SmartConfig.Core.Tests.ConfigurationTests
         [TestMethod]
         public void LoadsNestedSettings()
         {
-            Configuration.Load(typeof(NestedSettings)).From(new BasicTestStore
+            Configuration.Load(typeof(NestedSettings)).From(new TestStore<BasicSetting>
             {
                 SelectFunc = key =>
                 {
-                    if (key.Name.Value == "SubConfig.SubSetting")
+                    if (key.Main.Value == "SubConfig.SubSetting")
                     {
                         return "abc";
                     }
 
-                    if (key.Name.Value == "SubConfig.SubSubConfig.SubSubSetting")
+                    if (key.Main.Value == "SubConfig.SubSubConfig.SubSubSetting")
                     {
                         return "xyz";
                     }
 
-                    Assert.Fail($"Invalid setting path: {key.Name.Value}");
+                    Assert.Fail($"Invalid setting path: {key.Main.Value}");
                     return null;
                 }
             });
@@ -248,7 +248,7 @@ namespace SmartConfig.Core.Tests.ConfigurationTests
         [TestMethod]
         public void LoadsOptionalSettings()
         {
-            Configuration.Load(typeof(OptionalSettings)).From(new BasicTestStore
+            Configuration.Load(typeof(OptionalSettings)).From(new TestStore<BasicSetting>
             {
                 SelectFunc = keys => null
             });
@@ -259,16 +259,16 @@ namespace SmartConfig.Core.Tests.ConfigurationTests
         public void ValidatesDateTimeFormat()
         {
             // value is in correct format
-            Configuration.Load(typeof(CustomDateTimeFormatSettings)).From(new BasicTestStore
+            Configuration.Load(typeof(CustomDateTimeFormatSettings)).From(new TestStore<BasicSetting>
             {
                 SelectFunc = keys => "14AUG15"
             });
             Assert.AreEqual(new DateTime(2015, 8, 14).Date, CustomDateTimeFormatSettings.DateTimeSetting.Date);
 
             // value is not in correct format
-            ExceptionAssert.Throws<LoadSettingFailedException>(() =>
+            ExceptionAssert.Throws<LoadSettingException>(() =>
             {
-                Configuration.Load(typeof(CustomDateTimeFormatSettings)).From(new BasicTestStore
+                Configuration.Load(typeof(CustomDateTimeFormatSettings)).From(new TestStore<BasicSetting>
                 {
                     SelectFunc = keys => "14AUG2015"
                 });
@@ -285,16 +285,16 @@ namespace SmartConfig.Core.Tests.ConfigurationTests
         public void ValidatesRange()
         {
             // value is in range
-            Configuration.Load(typeof(CustomRangeSettings)).From(new BasicTestStore
+            Configuration.Load(typeof(CustomRangeSettings)).From(new TestStore<BasicSetting>
             {
                 SelectFunc = keys => "4"
             });
             Assert.AreEqual(4, CustomRangeSettings.Int32Field);
 
             // value is not in range
-            ExceptionAssert.Throws<LoadSettingFailedException>(() =>
+            ExceptionAssert.Throws<LoadSettingException>(() =>
             {
-                Configuration.Load(typeof(CustomRangeSettings)).From(new BasicTestStore
+                Configuration.Load(typeof(CustomRangeSettings)).From(new TestStore<BasicSetting>
                 {
                     SelectFunc = keys => "8"
                 });
@@ -311,7 +311,7 @@ namespace SmartConfig.Core.Tests.ConfigurationTests
         public void ValidatesRegularExpression()
         {
             // value matchs pattern
-            Configuration.Load(typeof(CustomRegularExpressionSettings)).From(new BasicTestStore
+            Configuration.Load(typeof(CustomRegularExpressionSettings)).From(new TestStore<BasicSetting>
             {
                 SelectFunc = keys => "21"
             });
@@ -319,9 +319,9 @@ namespace SmartConfig.Core.Tests.ConfigurationTests
             Assert.AreEqual("21", CustomRegularExpressionSettings.StringSetting);
 
             // value does not match pattern
-            ExceptionAssert.Throws<LoadSettingFailedException>(() =>
+            ExceptionAssert.Throws<LoadSettingException>(() =>
             {
-                Configuration.Load(typeof(CustomRegularExpressionSettings)).From(new BasicTestStore
+                Configuration.Load(typeof(CustomRegularExpressionSettings)).From(new TestStore<BasicSetting>
                 {
                     SelectFunc = keys => "7"
                 });
@@ -336,9 +336,9 @@ namespace SmartConfig.Core.Tests.ConfigurationTests
         [TestMethod]
         public void ThrowsIfIncompatibleTypes()
         {
-            ExceptionAssert.Throws<LoadSettingFailedException>(() =>
+            ExceptionAssert.Throws<LoadSettingException>(() =>
             {
-                Configuration.Load(typeof(NumericSettings)).From(new BasicTestStore
+                Configuration.Load(typeof(NumericSettings)).From(new TestStore<BasicSetting>
                 {
                     SelectFunc = key => "abc"
                 });
@@ -351,9 +351,9 @@ namespace SmartConfig.Core.Tests.ConfigurationTests
         [TestMethod]
         public void ThrowsConverterNotFoundException()
         {
-            ExceptionAssert.Throws<LoadSettingFailedException>(() =>
+            ExceptionAssert.Throws<LoadSettingException>(() =>
             {
-                Configuration.Load(typeof(UnsupportedTypeSettings)).From(new BasicTestStore
+                Configuration.Load(typeof(UnsupportedTypeSettings)).From(new TestStore<BasicSetting>
                 {
                     SelectFunc = keys => "Lorem ipsum."
                 });
@@ -368,9 +368,9 @@ namespace SmartConfig.Core.Tests.ConfigurationTests
         [TestMethod]
         public void ThrowsIfSettingNotOptional()
         {
-            ExceptionAssert.Throws<LoadSettingFailedException>(() =>
+            ExceptionAssert.Throws<LoadSettingException>(() =>
             {
-                Configuration.Load(typeof(NonOptionalSettings)).From(new BasicTestStore
+                Configuration.Load(typeof(NonOptionalSettings)).From(new TestStore<BasicSetting>
                 {
                     SelectFunc = keys => null
                 });
@@ -387,7 +387,7 @@ namespace SmartConfig.Core.Tests.ConfigurationTests
     public class FromTests
     {
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(CustomKeyNullException))]
         public void RequiresCustomKeys()
         {
             Configuration
@@ -403,7 +403,7 @@ namespace SmartConfig.Core.Tests.ConfigurationTests
 
         public class Baz : DataStore<CustomTestSetting>
         {
-            public override IReadOnlyCollection<Type> SerializationDataTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+            public override IReadOnlyCollection<Type> SerializationTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
             public override object Select(SettingKey key) { return null; }
             public override void Update(SettingKey key, object value) { }
         }

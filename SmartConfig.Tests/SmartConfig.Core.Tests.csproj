@@ -78,18 +78,19 @@
   <ItemGroup>
     <Compile Include="_codebase\Collections\SettingCollectionTests.cs" />
     <Compile Include="_codebase\Data\DataStoreTests.cs" />
+    <Compile Include="_codebase\Data\BasicSettingTests.cs" />
     <Compile Include="_codebase\Data\SettingTests.cs" />
     <Compile Include="_codebase\Filters\MultipleFilterTests.cs" />
     <Compile Include="_codebase\Filters\VersionFilterTests.cs" />
     <Compile Include="_codebase\Filters\WildcardComparer.cs" />
     <Compile Include="_codebase\SettingTests.cs" />
-    <Compile Include="_codebase\_attributes\KeyFilterAttributeTests.cs" />
+    <Compile Include="_codebase\DataAnnotations\SettingFilterAttributeTests.cs" />
     <Compile Include="_codebase\ReflectorTests.cs" />
     <Compile Include="_codebase\ConfigurationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="_codebase\Filters\StringFilterTests.cs" />
     <Compile Include="_testHelpers\CustomTestSetting.cs" />
-    <Compile Include="_testHelpers\BasicTestStore.cs" />
+    <Compile Include="_testHelpers\TestStore.cs" />
     <Compile Include="_testHelpers\TestModels.cs" />
     <Compile Include="_testHelpers\TestEnum.cs" />
   </ItemGroup>
