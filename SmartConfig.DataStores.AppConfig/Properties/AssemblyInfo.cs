@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SmartConfig.DataStores.AppConfig")]
-[assembly: AssemblyCopyright("Copyright by MTk4MQ © 2015")]
+[assembly: AssemblyCopyright("Copyright by he-dev © 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
