@@ -68,15 +68,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="TestConfigs\SettingsInitializationTestConfig.cs" />
-    <Compile Include="TestConfigs\NamedTestConfig.cs" />
     <Compile Include="_codebase\RegistrySourceTests.cs" />
-    <Compile Include="TestConfigs\SimpteTestConfig.cs" />
     <Compile Include="_codebase\RegistryPathTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="_TestHelpers\TestSetting.cs" />
-    <Compile Include="_TestHelpers\TestDataSource.cs" />
-    <Compile Include="_TestHelpers\TestEnum.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

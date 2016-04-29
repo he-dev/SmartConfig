@@ -3,10 +3,10 @@
 namespace SmartConfig.DataStores.Registry.Tests.RegistryPathTests
 {
     [TestClass]
-    public class ctor
+    public class ConstructorTests
     {
         [TestMethod]
-        public void CreatesRegistryPathWithModelName()
+        public void CreatesRegistryPathWithDefaultNames()
         {
             var registryPath = new RegistryPath(SettingPath.Create(null, "Foo", "Bar", "Baz"));
 
@@ -15,7 +15,7 @@ namespace SmartConfig.DataStores.Registry.Tests.RegistryPathTests
         }
 
         [TestMethod]
-        public void CreatesRegistryPathWithoutModelName()
+        public void CreatesRegistryPathWithCustomNames()
         {
             var registryPath = new RegistryPath(SettingPath.Create("qux", "Foo", "Bar", "Baz"));
 
