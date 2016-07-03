@@ -36,20 +36,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SmartUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SmartUtilities.3.0.0\lib\net452\SmartUtilities.dll</HintPath>
+      <HintPath>..\packages\SmartUtilities.4.0.12-beta\lib\net452\SmartUtilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -76,23 +68,12 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="_codebase\Collections\SettingCollectionTests.cs" />
-    <Compile Include="_codebase\Data\DataStoreTests.cs" />
-    <Compile Include="_codebase\Data\BasicSettingTests.cs" />
-    <Compile Include="_codebase\Data\SettingTests.cs" />
-    <Compile Include="_codebase\Filters\MultipleFilterTests.cs" />
-    <Compile Include="_codebase\Filters\VersionFilterTests.cs" />
-    <Compile Include="_codebase\Filters\WildcardComparer.cs" />
-    <Compile Include="_codebase\SettingTests.cs" />
-    <Compile Include="_codebase\DataAnnotations\SettingFilterAttributeTests.cs" />
-    <Compile Include="_codebase\ReflectorTests.cs" />
-    <Compile Include="_codebase\ConfigurationTests.cs" />
+    <Compile Include="_codebase\IntegrationTests\ConfigurationTests.cs" />
+    <Compile Include="_codebase\UnitTests\Collections\SettingCollectionTests.cs" />
+    <Compile Include="_codebase\UnitTests\ReflectorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="_codebase\Filters\StringFilterTests.cs" />
-    <Compile Include="_testHelpers\CustomTestSetting.cs" />
-    <Compile Include="_testHelpers\TestStore.cs" />
-    <Compile Include="_testHelpers\TestModels.cs" />
-    <Compile Include="_testHelpers\TestEnum.cs" />
+    <Compile Include="_helpers\TestStore.cs" />
+    <Compile Include="_helpers\TestEnum.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

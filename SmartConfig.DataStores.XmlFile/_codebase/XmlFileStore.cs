@@ -7,115 +7,114 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using SmartConfig.Collections;
 using SmartConfig.Data;
+using SmartUtilities.ValidationExtensions;
 
 namespace SmartConfig.DataStores.XmlFile
 {
-    public class XmlFileStore<TSetting> : DataStore<TSetting> where TSetting : BasicSetting, new()
+    public class XmlFileStore : IDataStore
     {
         private const string RootElementName = "SmartConfig";
         private const string SettingElementName = "Setting";
 
         public XmlFileStore(string fileName)
         {
-            if (string.IsNullOrEmpty(fileName))
-            {
-                throw new ArgumentNullException(nameof(fileName));
-            }
-
-            if (!Path.IsPathRooted(fileName))
-            {
-                throw new FileNameNotRootedException { FileName = fileName };
-            }
-
-            if (!File.Exists(fileName))
-            {
-                throw new FileNotFoundException(null, fileName);
-            }
+            fileName.Validate(nameof(fileName)).IsNotNullOrEmpty();
+            Path.IsPathRooted(fileName).Validate(nameof(fileName)).IsTrue(ctx => $"File name path must be rooted.");
+            File.Exists(fileName).Validate(nameof(fileName)).IsTrue(ctx => $"'{fileName}' not found.");
 
             FileName = fileName;
             XConfig = XDocument.Load(FileName);
-            if (XConfig.Root == null || XConfig.Root.Name != RootElementName)
-            {
-                throw new SmartConfigRootElementNotFountException { FileName = fileName };
-            }
+
+            XConfig.Root.Validate(nameof(fileName))
+                .IsNotNull(ctx => "Root element not found.")
+                .And(x => x.Name.ToString())
+                .IsEqual(RootElementName, ctx => $"Invalid root element name '{ctx.Argument}'. Expected '{RootElementName}'");
         }
 
         public string FileName { get; }
 
         private XDocument XConfig { get; }
 
-        public override IReadOnlyCollection<Type> SerializationTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
+        public Type MapDataType(Type settingType) => typeof(string);
 
-        public override object Select(SettingKey key)
+        public List<Setting> GetSettings(SettingPath name, IReadOnlyDictionary<string, object> namespaces)
         {
-            var attributeName = key.Main.Key;
-            var attributeValue = key.Main.Value.ToString();
-            var defaultKeyXPath = $"//{RootElementName}/{SettingElementName}[@{attributeName}='{attributeValue}']";
+            var attributes = namespaces.Aggregate(
+                $"@{nameof(Setting.Name)}='{name}'",
+                (result, next) => $"{result} and @{next.Key}='{next.Value}'");
 
-            var xSettings = XConfig.XPathSelectElements(defaultKeyXPath);
+            var xPath = $"//{RootElementName}/{SettingElementName}[{attributes}]";
+            var xSettings = XConfig.XPathSelectElements(xPath);
 
-            // create TSetting from each item
             var elements = xSettings.Select(x =>
             {
                 // set default key and value
-                var element = new TSetting
+                var element = new Setting
                 {
-                    Name = x.Attribute(key.Main.Key).Value,
+                    Name = x.Attribute(nameof(Setting.Name)).Value,
                     Value = x.Value
                 };
 
                 // set other keys
-                foreach (var custom in key.CustomKeys)
+                foreach (var settingNamespace in namespaces)
                 {
-                    var attr = x.Attribute(custom.Key);
-
-                    // use the attribute value or an asterisk if attribute not found
-                    element[custom.Key] = attr?.Value ?? Wildcards.Asterisk;
+                    element[settingNamespace.Key] = x.Attribute(settingNamespace.Key).Value;
                 }
                 return element;
-            }).ToList() as IEnumerable<TSetting>;
+            }).ToList();
 
-            elements = ApplyFilters(elements, key.CustomKeys);
-            var result = elements.FirstOrDefault();
-            return result?.Value;
+            return elements;
         }
 
-        public override void Update(SettingKey key, object value)
+        public int SaveSetting(SettingPath name, IReadOnlyDictionary<string, object> namespaces, object value)
         {
-            if (key == null) { throw new ArgumentNullException(nameof(key)); }
-            if (value == null) { throw new ArgumentNullException(nameof(value)); }
+            throw new NotImplementedException();
+        }
 
-            var attributeConditions = string.Join(" and ", key.Select(custom => $"@{custom.Key} = '{custom.Value}'"));
-            var settingXPath = $"//{RootElementName}/{SettingElementName}[{attributeConditions}]";
-
-            var xSettings = XConfig.XPathSelectElements(settingXPath);
-            var xSetting = xSettings.SingleOrDefault();
-
-            // add new setting
-            if (xSetting == null)
+        public int SaveSettings(IReadOnlyDictionary<SettingPath, object> settings, IReadOnlyDictionary<string, object> namespaces)
+        {
+            var affectedSettings = 0;
+            foreach (var setting in settings)
             {
-                xSetting = new XElement(
-                    SettingElementName,
-                    new XAttribute(BasicSetting.MainKeyName, key.Main), value);
+                var xSettings = GetXSettings(setting.Key, namespaces).ToList();
+                xSettings.Count
+                    .Validate(setting.Key)
+                    .IsTrue(x => x <= 1, ctx => $"'{ctx.MemberName}' found more the once.");
 
-                foreach (var custom in key.CustomKeys)
+                var xSetting = xSettings.SingleOrDefault();
+
+                // add new setting
+                if (xSetting == null)
                 {
-                    xSetting.Add(new XAttribute(custom.Key, custom.Value));
-                }
+                    xSetting = new XElement(
+                        SettingElementName,
+                        new XAttribute(nameof(Setting.Name), setting.Key), setting.Value);
 
-                XConfig.Root.Add(xSetting);
-            }
-            else
-            {
-                // set custom keys
-                foreach (var custom in key.CustomKeys)
-                {
-                    xSetting.Attribute(custom.Key).Value = custom.Value.ToString();
+                    foreach (var settingNamespace in namespaces)
+                    {
+                        xSetting.Add(new XAttribute(settingNamespace.Key, settingNamespace.Value));
+                    }
+
+                    // ReSharper disable once PossibleNullReferenceException
+                    XConfig.Root.Add(xSetting);
                 }
+                xSetting.Value = setting.Value.ToString();
+                affectedSettings++;
             }
 
-            xSetting.Value = value.ToString();
             XConfig.Save(FileName);
+            return affectedSettings;
+        }
+
+        private IEnumerable<XElement> GetXSettings(SettingPath name, IReadOnlyDictionary<string, object> namespaces)
+        {
+            var attributes = namespaces.Aggregate(
+                $"@{nameof(Setting.Name)}='{name}'",
+                (result, next) => $"{result} and {next.Key}='{next.Value}'");
+
+            var xPath = $"//{RootElementName}/{SettingElementName}[{attributes}]";
+            var xSettings = XConfig.XPathSelectElements(xPath);
+            return xSettings;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using SmartConfig.DataAnnotations;
-using SmartUtilities.ObjectConverters.DataAnnotations;
+using SmartUtilities.DataAnnotations;
 
 namespace SmartConfig.Examples
 {

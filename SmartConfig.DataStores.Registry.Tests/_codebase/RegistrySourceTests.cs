@@ -1,92 +1,43 @@
 ﻿using System;
 using System.Linq;
+using System.Web.ApplicationServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
 using SmartConfig.Data;
 using SmartConfig.DataAnnotations;
-using SmartUtilities.ObjectConverters.DataAnnotations;
-using SmartUtilities.UnitTesting;
+using SmartUtilities.DataAnnotations;
+using SmartUtilities.ValidationExtensions;
+using SmartUtilities.ValidationExtensions.Testing;
 
-namespace SmartConfig.DataStores.Registry.Tests.RegistryStoreTests
+namespace SmartConfig.DataStores.Registry.Tests.Unit.RegistryStore.Positive
 {
-    [TestClass]
-    public class ConstructorTests
-    {
-        [TestMethod]
-        public void RequiresBaseRegistryKey()
-        {
-            ExceptionAssert.Throws<ArgumentNullException>(delegate
-            {
-                var registryStore = new RegistryStore(null, null);
-            }, null, Assert.Fail);
-        }
-
-        [TestMethod]
-        public void RequiresRegistrySubKey()
-        {
-            ExceptionAssert.Throws<ArgumentNullException>(delegate 
-            {
-                var registryStore = new RegistryStore(Microsoft.Win32.Registry.CurrentUser, null);
-            }, null, Assert.Fail);
-        }
-    }
+    using Registry;   
 
     [TestClass]
-    public class SelectTests
+    public class ctor
     {
-        [TestMethod]
-        public void SelectsSettingsWithoutModelName()
-        {
-            Configuration
-                .Load(typeof(TestConfig))
-                .From(new RegistryStore(Microsoft.Win32.Registry.CurrentUser, @"Software\SmartConfig\Tests"));
-
-            Assert.AreEqual("baz", TestConfig.Foo);
-            Assert.AreEqual(123, TestConfig.Bar);
-            Assert.AreEqual(TestEnum.TestValue2, TestConfig.Quux);
-        }
-
-        [SmartConfig]
-        private static class TestConfig
-        {
-            public static string Foo { get; set; }
-            public static int Bar { get; set; }
-            public static TestEnum Quux { get; set; }
-        }
-
-        public enum TestEnum
-        {
-            TestValue1,
-            TestValue2,
-            TestValue3
-        }
+        
     }
+}
+
+namespace SmartConfig.DataStores.Registry.Tests.Unit.RegistryStore.Negative
+{
+    using Registry;
 
     [TestClass]
-    public class UpdateTests
+    public class ctor
     {
         [TestMethod]
-        public void UpdatesStringSettingByName()
+        public void BaseKeyNull()
         {
-            Configuration
-                .Load(typeof(TestConfig))
-                .From(new RegistryStore(Microsoft.Win32.Registry.CurrentUser, @"Software\SmartConfig\Tests"));
-
-            var now = DateTime.Now;
-            TestConfig.Qux = now;
-            Configuration.Save(typeof(TestConfig));
-
-            // change the last value that should be overwritten on reload
-            TestConfig.Qux = DateTime.MinValue;
-            Configuration.Reload(typeof(TestConfig));
-            Assert.AreEqual(now.ToLongDateString(), TestConfig.Qux.ToLongDateString());
+            new Action(() => new RegistryStore(null, null)).Verify().Throws<ValidationException>();
         }
 
-        [SmartConfig]
-        private static class TestConfig
+        [TestMethod]
+        public void SubKeyNull()
         {
-            [Optional]
-            public static DateTime Qux { get; set; }
+            new Action(() => new RegistryStore(Microsoft.Win32.Registry.CurrentUser, null))
+                .Validate().Throws<ArgumentNullException>();
         }
-    }
+    }    
 }

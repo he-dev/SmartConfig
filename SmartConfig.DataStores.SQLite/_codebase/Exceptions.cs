@@ -10,13 +10,9 @@ namespace SmartConfig.DataStores.SQLite
     internal class Exceptions
     {
         [Serializable]
-        public class ConnectionStringNotFoundException : SmartException
+        public class ConnectionStringNotFoundException : FormattableException
         {
-            public string ConnectionStringName
-            {
-                get { return GetValue<string>(); }
-                internal set { SetValue(value); }
-            }
+            public string ConnectionStringName { get; internal set; }
         }
     }
 }

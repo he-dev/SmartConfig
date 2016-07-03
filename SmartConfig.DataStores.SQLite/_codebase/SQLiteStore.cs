@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
+using System.Data.Common;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.Linq;
@@ -10,106 +12,288 @@ using System.Threading.Tasks;
 using SmartConfig.Collections;
 using SmartConfig.Data;
 using SmartUtilities;
-using SmartUtilities.Collections;
+using SmartUtilities.ValidationExtensions;
 
 namespace SmartConfig.DataStores.SQLite
 {
-    public class SQLiteStore<TSetting> : DataStore<TSetting> where TSetting : BasicSetting, new()
+    public class SQLiteStore : IDataStore
     {
-        private readonly string _connectionString;
-        private readonly string _settingsTableName;
+        public SQLiteStore(string nameOrConnectionString, Action<SettingTableProperties.Builder> buildSettingTableProperties = null)
+        {
+            nameOrConnectionString.Validate(nameof(nameOrConnectionString)).IsNotNullOrEmpty();
+
+            ConnectionString = nameOrConnectionString;
+
+            string connectionStringName;
+            if (nameOrConnectionString.TryGetConnectionStringName(out connectionStringName))
+            {
+                ConnectionString = AppConfigRepository.GetConnectionString(connectionStringName);
+            }
+
+            ConnectionString.Validate(nameof(nameOrConnectionString)).IsNotNullOrEmpty();
+
+            var settingTablePropertiesBuilder = new SettingTableProperties.Builder();
+            buildSettingTableProperties?.Invoke(settingTablePropertiesBuilder);
+            SettingTableProperties = settingTablePropertiesBuilder.ToSettingTableProperties();
+        }
+
+        internal AppConfigRepository AppConfigRepository { get; } = new AppConfigRepository();
+
+        public string ConnectionString { get; }
+
+        public SettingTableProperties SettingTableProperties { get; }
 
         public bool UTF8FixEnabled { get; set; } = true;
 
-        public SQLiteStore(string connectionString, string settingsTableName)
+        public Type MapDataType(Type settingType) => typeof(string);
+
+        public List<Setting> GetSettings(SettingPath name, IReadOnlyDictionary<string, object> namespaces)
         {
-            if (string.IsNullOrEmpty(connectionString)) { throw new ArgumentNullException(nameof(connectionString)); }
-            if (string.IsNullOrEmpty(settingsTableName)) { throw new ArgumentNullException(nameof(settingsTableName)); }
+            name.Validate(nameof(name)).IsNotNull();
+            namespaces.Validate(nameof(namespaces)).IsNotNull();
 
-            _connectionString = connectionString;
-            _settingsTableName = settingsTableName;
-
-
-            var connectionStringNameMatch = Regex.Match(_connectionString, "^name=(?<connectionStringName>.+)", RegexOptions.IgnoreCase);
-            if (connectionStringNameMatch.Success)
+            using (var connection = new SQLiteConnection(ConnectionString)) // "Data Source=config.db;Version=3;"))
+            using (var command = CreateSelectCommand(connection, name, namespaces))
             {
-                var connectionStringsRepository = new ConnectionStringsRepository();
-                _connectionString = connectionStringsRepository[connectionStringNameMatch.Groups["connectionStringName"].Value];
-            }
+                connection.Open();
+                command.Prepare();
 
-            if (string.IsNullOrEmpty(_connectionString))
-            {
-                throw new Exceptions.ConnectionStringNotFoundException
+                using (var settingReader = command.ExecuteReader())
                 {
-                    ConnectionStringName = connectionStringNameMatch.Groups["connectionStringName"].Value
-                };
-            }
-        }
-
-        public override IReadOnlyCollection<Type> SerializationTypes { get; } = new ReadOnlyCollection<Type>(new[] { typeof(string) });
-
-        public override object Select(SettingKey key)
-        {
-            using (var conn = new SQLiteConnection(_connectionString)) // "Data Source=config.db;Version=3;"))
-            {
-                conn.Open();
-
-                var sql = "SELECT * FROM {table} WHERE [Name] = '{name}'".Format(new
-                {
-                    table = _settingsTableName,
-                    name = key.Main.Value.ToString()
-                });
-
-                using (var cmd = new SQLiteCommand(sql, conn))
-                using (var settingReader = cmd.ExecuteReader())
-                {
-                    var settings = new List<TSetting>();
+                    var settings = new List<Setting>();
 
                     while (settingReader.Read())
                     {
-                        var value = (string)settingReader["Value"];
+                        var value = (string)settingReader[nameof(Setting.Value)];
 
-                        var setting = new TSetting
+                        var setting = new Setting
                         {
-                            Name = (string)settingReader[key.Main.Key],
+                            Name = (string)settingReader[nameof(Setting.Name)],
                             Value = UTF8FixEnabled ? value.AsUTF8() : value
                         };
 
-                        foreach (var custom in key.CustomKeys)
+                        foreach (var property in namespaces)
                         {
-                            ((IIndexable)setting)[custom.Key] = (string)settingReader[custom.Key];
+                            setting[property.Key] = settingReader[property.Key];
                         }
                         settings.Add(setting);
                     }
-
-                    settings = ApplyFilters(settings, key.CustomKeys).ToList();
-                    var result = settings.FirstOrDefault();
-                    return result?.Value;
+                    return settings;
                 }
             }
         }
 
-        public override void Update(SettingKey key, object value)
+        public int SaveSetting(SettingPath name, IReadOnlyDictionary<string, object> namespaces, object value)
         {
-            // INSERT OR REPLACE INTO Setting(Main, Value, Environment) VALUES('Greeting' 'Hallo SQLite!', 'sqlite',);
+            throw new NotImplementedException();
+        }
 
-
-            using (var conn = new SQLiteConnection(_connectionString)) // "Data Source=config.db;Version=3;"))
+        public int SaveSettings(IReadOnlyDictionary<SettingPath, object> settings, IReadOnlyDictionary<string, object> namespaces)
+        {
+            using (var connection = new SQLiteConnection(ConnectionString)) // "Data Source=config.db;Version=3;"))
             {
-                conn.Open();
-
-                var otherKeys = string.Join(" ", key.CustomKeys.Select(custom => $", [{custom.Key}]"));
-                var otherValues = string.Join(" ", key.CustomKeys.Select(custom => $", '{custom.Value.ToString()}'"));
-
-                var sql =
-                    $"INSERT OR REPLACE INTO Setting([Name], [Value]{otherKeys}) " +
-                    $"VALUES('{key.Main.Value}', '{value}'{otherValues})";
-
-                using (var cmd = new SQLiteCommand(sql, conn))
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                using (var command = CreateInsertCommand(connection, namespaces))
                 {
-                    var affectedRows = cmd.ExecuteNonQuery();
-                    Debug.Assert(affectedRows == 1, "Invalid number of affected rows.");
+                    command.Transaction = transaction;
+                    command.Prepare();
+
+                    try
+                    {
+                        var affectedSettings = 0;
+                        foreach (var setting in settings)
+                        {
+                            command.Parameters[nameof(Setting.Name)].Value = setting.Key.ToString();
+                            command.Parameters[nameof(Setting.Value)].Value = setting.Value;
+
+                            foreach (var settingNamespace in namespaces)
+                            {
+                                command.Parameters[settingNamespace.Key].Value = settingNamespace.Value;
+                            }
+
+                            affectedSettings += command.ExecuteNonQuery();
+                        }
+                        transaction.Commit();
+                        return affectedSettings;
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
                 }
+            }
+        }
+
+        private SQLiteCommand CreateSelectCommand(SQLiteConnection connection, SettingPath name, IReadOnlyDictionary<string, object> namespaces)
+        {
+            // --- build sql
+
+            // SELECT * FROM {table} WHERE [Name] = '{name}' AND 'Foo' = 'bar'
+
+            var sql = new StringBuilder();
+
+            var dbProviderFactory = DbProviderFactories.GetFactory(connection);
+            using (var commandBuilder = dbProviderFactory.CreateCommandBuilder())
+            {
+                var tableName = commandBuilder.QuoteIdentifier(SettingTableProperties.TableName);
+
+                sql.Append($"SELECT *").AppendLine();
+                sql.Append($"FROM {tableName}").AppendLine();
+
+                var where = namespaces.Aggregate(
+                    $"WHERE [{nameof(Setting.Name)}] = @{nameof(Setting.Name)}",
+                    (result, next) => $"{result} AND {commandBuilder.QuoteIdentifier(next.Key)} = @{next.Key}");
+                sql.Append(where);
+            }
+
+            var command = connection.CreateCommand();
+            command.CommandType = CommandType.Text;
+            command.CommandText = sql.ToString();
+
+            // --- add parameters
+
+            command.Parameters.Add(
+                nameof(Setting.Name),
+                SettingTableProperties.GetDbTypeOrDefault(nameof(Setting.Name)),
+                SettingTableProperties.GetColumnLengthOrDefault(nameof(Setting.Name))
+                ).Value = name.ToString();
+
+            foreach (var settingNamespace in namespaces)
+            {
+                command.Parameters.Add(
+                    settingNamespace.Key,
+                    SettingTableProperties.GetDbTypeOrDefault(settingNamespace.Key),
+                    SettingTableProperties.GetColumnLengthOrDefault(settingNamespace.Key)
+                    ).Value = settingNamespace.Value;
+            }
+
+            return command;
+        }
+
+        private SQLiteCommand CreateInsertCommand(SQLiteConnection connection, IReadOnlyDictionary<string, object> namespaces)
+        {
+            /*
+                INSERT OR REPLACE INTO Setting([Name], [Value])
+                VALUES('{key.Main.Value}', '{value}')
+            */
+
+            // --- build sql
+
+            var sql = new StringBuilder();
+
+            var dbProviderFactory = DbProviderFactories.GetFactory(connection);
+            using (var commandBuilder = dbProviderFactory.CreateCommandBuilder())
+            {
+                var tableName = commandBuilder.QuoteIdentifier(SettingTableProperties.TableName);
+
+                var quotedColumnNames = namespaces.Keys
+                        .Select(columnName => commandBuilder.QuoteIdentifier(columnName))
+                        .Aggregate($"[{nameof(Setting.Name)}], [{nameof(Setting.Value)}]", (result, next) => $"{result}, {next}");
+
+                sql.Append($"INSERT OR REPLACE INTO {tableName}({quotedColumnNames})").AppendLine();
+
+                var parameterNames = namespaces.Keys
+                    .Aggregate($"@{nameof(Setting.Name)}, @{nameof(Setting.Value)}", (result, next) => $"{result}, @{next}");
+                sql.Append($"VALUES ({parameterNames})").AppendLine();
+            }
+
+            var command = connection.CreateCommand();
+            command.CommandType = CommandType.Text;
+            command.CommandText = sql.ToString();
+
+            // --- add parameters
+
+            command.Parameters.Add(
+                nameof(Setting.Name),
+                SettingTableProperties.GetDbTypeOrDefault(nameof(Setting.Name)),
+                SettingTableProperties.GetColumnLengthOrDefault(nameof(Setting.Name))
+            );
+
+            command.Parameters.Add(
+                nameof(Setting.Value),
+                SettingTableProperties.GetDbTypeOrDefault(nameof(Setting.Value)),
+                SettingTableProperties.GetColumnLengthOrDefault(nameof(Setting.Value))
+            );
+
+            foreach (var settingNamespace in namespaces)
+            {
+                command.Parameters.Add(
+                    settingNamespace.Key,
+                    SettingTableProperties.GetDbTypeOrDefault(settingNamespace.Key),
+                    SettingTableProperties.GetColumnLengthOrDefault(settingNamespace.Key)
+                );
+            }
+
+            return command;
+        }
+    }
+
+    public class SettingTableProperties
+    {
+        public string TableName { get; private set; }
+
+        private static readonly DbType DefaultDbType = DbType.String;
+
+        private static readonly int DefaultColumnLength = 50;
+
+        private readonly Dictionary<string, DbType> _dbTypes = new Dictionary<string, DbType>();
+
+        private readonly Dictionary<string, int> _columnLengths = new Dictionary<string, int>();
+
+        public IReadOnlyDictionary<string, DbType> DbTypes => _dbTypes;
+
+        public IReadOnlyDictionary<string, int> ColumnLengths => _columnLengths;
+
+        public DbType GetDbTypeOrDefault(string name)
+        {
+            DbType result;
+            return DbTypes.TryGetValue(name, out result) ? result : DefaultDbType;
+        }
+
+        public int GetColumnLengthOrDefault(string name)
+        {
+            int result;
+            return ColumnLengths.TryGetValue(name, out result) ? result : DefaultColumnLength;
+        }
+
+        public class Builder
+        {
+            private SettingTableProperties _properties = new SettingTableProperties();
+
+            internal Builder()
+            {
+                TableName("Setting");
+                ColumnProperties("Name", DbType.String, 200);
+                ColumnProperties("Value", DbType.String, -1);
+            }
+
+            public Builder TableName(string tableName)
+            {
+                _properties.TableName = tableName;
+                return this;
+            }
+
+            public Builder ColumnProperties(string columnName, DbType dbType, int length)
+            {
+                _properties._dbTypes[columnName] = dbType;
+                _properties._columnLengths[columnName] = length;
+                return this;
+            }
+
+            public Builder ColumnProperties(string columnName, DbType dbType)
+            {
+                _properties._dbTypes[columnName] = dbType;
+                return this;
+            }
+
+
+            internal SettingTableProperties ToSettingTableProperties()
+            {
+                var result = _properties;
+                _properties = null;
+                return result;
             }
         }
     }
