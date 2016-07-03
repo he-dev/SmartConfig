@@ -1,30 +1,26 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SmartUtilities.ValidationExtensions.Testing;
-using SmartUtilities.ValidationExtensions;
 
-namespace SmartConfig.DataStores.Registry.Tests.Unit.RegistryPath.Positive
+namespace SmartConfig.DataStores.Registry.Tests.RegistryPathTests
 {
-    using Registry;
-
     [TestClass]
-    public class ctor
+    public class ConstructorTests
     {
         [TestMethod]
-        public void CreateWithoutConfigurationName()
+        public void CreatesRegistryPathWithDefaultNames()
         {
-            var registryPath = new RegistryPath(new SettingPath(null, "Foo", "Bar", "Baz"));
+            var registryPath = new RegistryPath(SettingPath.Create(null, "Foo", "Bar", "Baz"));
 
-            registryPath.SubKeyName.Verify().IsEqual(@"Foo\Bar");
-            registryPath.ValueName.Verify().IsEqual(@"Baz");
+            Assert.AreEqual(@"Foo\Bar", registryPath.SubKeyName);
+            Assert.AreEqual(@"Baz", registryPath.ValueName);
         }
 
         [TestMethod]
-        public void CreateWithConfigurationName()
+        public void CreatesRegistryPathWithCustomNames()
         {
-            var registryPath = new RegistryPath(new SettingPath("qux", "Foo", "Bar", "Baz"));
+            var registryPath = new RegistryPath(SettingPath.Create("qux", "Foo", "Bar", "Baz"));
 
-            registryPath.SubKeyName.Verify().IsEqual(@"qux\Foo\Bar");
-            registryPath.ValueName.Verify().IsEqual(@"Baz");
+            Assert.AreEqual(@"qux\Foo\Bar", registryPath.SubKeyName);
+            Assert.AreEqual(@"Baz", registryPath.ValueName);
         }
     }
 }

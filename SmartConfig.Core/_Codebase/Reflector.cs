@@ -3,47 +3,58 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SmartConfig.DataAnnotations;
-using SmartUtilities.ValidationExtensions;
 
 namespace SmartConfig
 {
     internal static class Reflector
     {
         // gets either custom or default member name
-        public static string GetCustomNameOrDefault(this MemberInfo member)
+        public static string GetName(this MemberInfo member)
         {
-            member.Validate(nameof(member)).IsNotNull();
-            return member.GetCustomAttribute<RenameAttribute>()?.Name ?? member.Name;
+            if (member == null) { throw new ArgumentNullException(nameof(member)); }
+
+            return member.GetCustomAttribute<CustomNameAttribute>()?.Name ?? member.Name;
         }
 
-        public static bool HasAttribute<T>(this MemberInfo memberInfo) where T : Attribute
+        public static bool IsSmartConfigType(this Type type)
         {
-            return memberInfo.GetCustomAttributes<T>(false).Any();
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
+            var smartConfigAttribute = type.GetCustomAttribute<SmartConfigAttribute>();
+            return smartConfigAttribute != null;
         }
 
-        public static List<string> GetSettingPath(this PropertyInfo propertyInfo)
+        public static List<string> GetPropertyPath(this PropertyInfo propertyInfo)
         {
-            var path = new List<string> { propertyInfo.GetCustomNameOrDefault() };
+            if (propertyInfo == null) throw new ArgumentNullException(nameof(propertyInfo));
+
+            var path = new List<string> { propertyInfo.GetName() };
 
             var type = propertyInfo.DeclaringType;
 
-            while (type != null && !type.HasAttribute<SmartConfigAttribute>())
+            while (type != null && !type.IsSmartConfigType())
             {
-                path.Add(type.GetCustomNameOrDefault());
+                path.Add(type.GetName());
+
                 type = type.DeclaringType;
                 if (type == null)
                 {
                     throw new SmartConfigAttributeNotFoundException
                     {
-                        Property = propertyInfo.Name
+                        AffectedProperty = propertyInfo.PropertyType.FullName
                     };
                 }
             }
 
-            // add config name if available
-            path.Add(type.GetCustomAttribute<SmartConfigAttribute>()?.Name);
             path.Reverse();
             return path;
+        }        
+
+        public static bool HasAttribute<T>(this MemberInfo memberInfo) where T : Attribute
+        {
+            if (memberInfo == null) { throw new ArgumentNullException(nameof(memberInfo)); }
+
+            return memberInfo.GetCustomAttributes(typeof(T), false).Any();
         }
     }
 }
