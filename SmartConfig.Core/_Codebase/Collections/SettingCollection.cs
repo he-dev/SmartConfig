@@ -3,29 +3,30 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using SmartConfig.Data;
 using SmartUtilities;
-using SmartUtilities.ObjectConverters.DataAnnotations;
+using SmartUtilities.DataAnnotations;
+using SmartUtilities.TypeFramework;
+using SmartUtilities.ValidationExtensions;
 
 namespace SmartConfig.Collections
 {
-    internal class SettingCollection : ReadOnlyCollection<Setting>
+    internal class SettingCollection : ReadOnlyCollection<SettingInfo>
     {
-        private SettingCollection(IList<Setting> list) : base(list) { }
+        private SettingCollection(IList<SettingInfo> list) : base(list) { }
 
-        internal static SettingCollection Create(Configuration configuration)
+        internal static SettingCollection From(Type configurationType)
         {
-            if (configuration == null) { throw new ArgumentNullException(nameof(configuration)); }
-
-            var types = configuration.Type.NestedTypes().Where(type => !type.HasAttribute<IgnoreAttribute>());
+            var types = configurationType.AsEnumerable().Where(type => !type.HasAttribute<IgnoreAttribute>());
 
             var settings =
                 types.Select(type => type.GetProperties(BindingFlags.Public | BindingFlags.Static))
                 .SelectMany(properties => properties)
                 .Where(property => !property.HasAttribute<IgnoreAttribute>())
-                .Select(property => Setting.Create(property, configuration))
+                .Select(property => new SettingInfo(property))
                 .ToList();
 
             return new SettingCollection(settings);
-        }
+        }        
     }
 }

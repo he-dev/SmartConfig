@@ -2,73 +2,130 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using Microsoft.Win32;
 using SmartConfig.Collections;
 using SmartConfig.Data;
+using SmartUtilities;
+using SmartUtilities.ValidationExtensions;
 
 namespace SmartConfig.DataStores.Registry
 {
-    public class RegistryStore : DataStore<BasicSetting> //where TSetting : BasicSetting, new()
+    public class RegistryStore : IDataStore
     {
-        private readonly RegistryKey _baseRegistryKey;
+        private readonly RegistryKey _baseKey;
         private readonly string _baseSubKeyName;
-        private readonly IDictionary<Type, RegistryValueKind> _supportedRegistryValueKinds = new Dictionary<Type, RegistryValueKind>
+
+        private readonly IDictionary<Type, RegistryValueKind> _typeToRegistryValueKindMap = new Dictionary<Type, RegistryValueKind>
         {
             { typeof(string), RegistryValueKind.String },
             { typeof(int), RegistryValueKind.DWord },
             { typeof(byte[]), RegistryValueKind.Binary },
         };
 
-        public RegistryStore(RegistryKey baseRegistryKey, string subRegistryKey)
+        public RegistryStore(RegistryKey baseKey, string subKey)
         {
-            if (baseRegistryKey == null) { throw new ArgumentNullException(nameof(baseRegistryKey)); }
-            if (subRegistryKey == null) { throw new ArgumentNullException(nameof(subRegistryKey)); }
+            baseKey.Validate(nameof(baseKey)).IsNotNull();
+            subKey.Validate(nameof(subKey)).IsNotNullOrEmpty();
 
-            _baseRegistryKey = baseRegistryKey;
-            _baseSubKeyName = subRegistryKey;
+            _baseKey = baseKey;
+            _baseSubKeyName = subKey;
         }
 
-        public override IReadOnlyCollection<Type> SerializationTypes { get; } = new ReadOnlyCollection<Type>(new[]
+        public Type MapDataType(Type settingType)
         {
-            typeof(string),
-            typeof(int),
-            typeof(byte[]),
-        });
+            if (settingType == typeof(int)) return typeof(int);
+            if (settingType == typeof(byte[])) return typeof(byte[]);
+            return typeof(string);
+        }
 
-        public override object Select(SettingKey key)
+        public List<Setting> GetSettings(SettingPath name, IReadOnlyDictionary<string, object> namespaces)
         {
-            var registryPath = new RegistryPath(key.Main.Value);
+            name.Validate(nameof(name)).IsNotNull();
+
+            var registryPath = new RegistryPath(name);
 
             var subKeyName = Path.Combine(_baseSubKeyName, registryPath.SubKeyName);
-            using (var subKey = _baseRegistryKey.OpenSubKey(subKeyName, false))
+            using (var subKey = _baseKey.OpenSubKey(subKeyName, false))
             {
                 var value = subKey?.GetValue(registryPath.ValueName);
-                return value;
+                return new List<Setting>
+                {
+                    new Setting
+                    {
+                        Name = name.ToString(),
+                        Value = value
+                    }
+                };
             }
         }
 
-        public override void Update(SettingKey key, object value)
+        public int SaveSetting(SettingPath name, IReadOnlyDictionary<string, object> namespaces, object value)
         {
-            var registryPath = new RegistryPath(key.Main.Value);
+            name.Validate(nameof(name)).IsNotNull();
 
-            var subKeyName = Path.Combine(_baseSubKeyName, registryPath.SubKeyName);
-
-            using (var subKey =
-                _baseRegistryKey.OpenSubKey(subKeyName, true)
-                ?? _baseRegistryKey.CreateSubKey(subKeyName)
-            )
+            // check value type
+            var registryValueKind = RegistryValueKind.None;
+            if (!_typeToRegistryValueKindMap.TryGetValue(value.GetType(), out registryValueKind))
             {
-                RegistryValueKind registryValueKind;
-                if (!_supportedRegistryValueKinds.TryGetValue(value.GetType(), out registryValueKind))
+                throw new UnsupportedTypeException
                 {
-                    throw new UnsupportedRegistryTypeException
-                    {
-                        ValueTypeName = value.GetType().Name,
-                        SettingName = key.Main.ToString()
-                    };
-                }
+                    ValueType = value.GetType().Name,
+                    SettingName = name.ToString()
+                };
+            }
+
+            var registryPath = new RegistryPath(name);
+            var subKeyName = Path.Combine(_baseSubKeyName, registryPath.SubKeyName);
+            using (var subKey = _baseKey.OpenSubKey(subKeyName, true) ?? _baseKey.CreateSubKey(subKeyName))
+            {
+                if (subKey == null) throw new RegistryKeyException($"Could not open/create sub key: '{subKeyName}'.");
                 subKey.SetValue(registryPath.ValueName, value, registryValueKind);
             }
+            return 1;
         }
+
+        public int SaveSettings(IReadOnlyDictionary<SettingPath, object> settings, IReadOnlyDictionary<string, object> namespaces)
+        {
+            return settings.Sum(setting => SaveSetting(setting.Key, namespaces, setting.Value));
+        }
+
+        public static RegistryStore CreateForCurrentUser(string subRegistryKey)
+        {
+            return new RegistryStore(Microsoft.Win32.Registry.CurrentUser, subRegistryKey);
+        }
+
+        public static RegistryStore CreateForClassesRoot(string subRegistryKey)
+        {
+            return new RegistryStore(Microsoft.Win32.Registry.ClassesRoot, subRegistryKey);
+        }
+
+        public static RegistryStore CreateForCurrentConfig(string subRegistryKey)
+        {
+            return new RegistryStore(Microsoft.Win32.Registry.CurrentConfig, subRegistryKey);
+        }
+
+        public static RegistryStore CreateForLocalMachine(string subRegistryKey)
+        {
+            return new RegistryStore(Microsoft.Win32.Registry.LocalMachine, subRegistryKey);
+        }
+
+        public static RegistryStore CreateForUsers(string subRegistryKey)
+        {
+            return new RegistryStore(Microsoft.Win32.Registry.Users, subRegistryKey);
+        }
+    }
+
+    public class UnsupportedTypeException : FormattableException
+    {
+        public string ValueType { get; internal set; }
+        public string SettingName { get; internal set; }
+    }
+
+    public class RegistryKeyException : FormattableException
+    {
+        public RegistryKeyException(string message) : base(message) { }
+        //public string ValueType { get; internal set; }
+        //public string SettingName { get; internal set; }
     }
 }

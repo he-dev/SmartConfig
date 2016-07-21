@@ -3,20 +3,19 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using SmartUtilities.ValidationExtensions;
 
 namespace SmartConfig
 {
-    /// <summary>
-    /// Provides utility methods for creating configuration element names.
-    /// </summary>
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class SettingPath : ReadOnlyCollection<string>
     {
         internal SettingPath(IList<string> names) : base(names)
         {
-            if (names == null) { throw new ArgumentNullException(nameof(names)); }
-            if (!names.Any()) { throw new ArgumentException("There must be at least one name."); }
+            names.Validate(nameof(names)).IsNotNull().IsTrue(x => x.Any());
         }
+
+        internal SettingPath(params string[] names) : this(names.ToList()) { }
 
         public string Delimiter { get; set; } = ".";
 
@@ -25,18 +24,6 @@ namespace SmartConfig
         public string ConfigurationName => this.FirstOrDefault();
 
         public IEnumerable<string> WithoutConfigurationName => this.Skip(1);
-
-        internal static SettingPath Create(string configName, IEnumerable<string> names)
-        {
-            if (names == null) { throw new ArgumentNullException(nameof(names)); }
-
-            return new SettingPath(new[] { configName }.Concat(names).ToList());
-        }
-
-        internal static SettingPath Create(string configName,params string[] names)
-        {
-            return Create(configName, (IEnumerable<string>) names);
-        }
 
         private string DebuggerDisplay => ToString();
 

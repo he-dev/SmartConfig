@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SmartConfig>
+  <Setting Name="Foo">Bar</Setting>
+  <Setting Name="ns.Bar" Environment="Baz">Qux</Setting>
+  <Setting Name="Qux" Environment="corge" Version="3.2.0">Fred</Setting>
+  <Setting Name="Waldo" Environment="corge" Version="4.1.5">plugh</Setting>
+</SmartConfig>

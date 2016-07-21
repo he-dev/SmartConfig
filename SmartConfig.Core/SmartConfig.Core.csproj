@@ -58,12 +58,12 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SmartUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SmartUtilities.3.0.0\lib\net452\SmartUtilities.dll</HintPath>
+      <HintPath>..\packages\SmartUtilities.4.0.12-beta\lib\net452\SmartUtilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -81,22 +81,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="_codebase\Collections\SettingCollection.cs" />
-    <Compile Include="_codebase\Filters\WildcardComparer.cs" />
-    <Compile Include="_codebase\SettingKey.cs" />
+    <Compile Include="_codebase\Converters.cs" />
+    <Compile Include="_codebase\Data\Setting.cs" />
+    <Compile Include="_codebase\IO\SettingReader.cs" />
+    <Compile Include="_codebase\IO\SettingWriter.cs" />
     <Compile Include="_codebase\Exceptions.cs" />
-    <Compile Include="_codebase\_eventArgs\ReloadFailedEventArgs.cs" />
-    <Compile Include="_codebase\Filters\ISettingFilter.cs" />
-    <Compile Include="_codebase\Filters\StringFilter.cs" />
-    <Compile Include="_codebase\Filters\VersionFilter.cs" />
-    <Compile Include="_codebase\Data\IIndexable.cs" />
-    <Compile Include="_codebase\Setting.cs" />
-    <Compile Include="_codebase\Data\BasicSetting.cs" />
-    <Compile Include="_codebase\Data\DataStore.cs" />
-    <Compile Include="_codebase\IO\SettingLoader.cs" />
-    <Compile Include="_codebase\IO\SettingUpdater.cs" />
-    <Compile Include="_codebase\DataAnnotations\CustomNameAttribute.cs" />
-    <Compile Include="_codebase\Wildcards.cs" />
-    <Compile Include="_codebase\DataAnnotations\SettingFilterAttribute.cs" />
+    <Compile Include="_codebase\ReloadFailedEventArgs.cs" />
+    <Compile Include="_codebase\SettingInfo.cs" />
+    <Compile Include="_codebase\DataAnnotations\RenameAttribute.cs" />
     <Compile Include="_codebase\Reflector.cs" />
     <Compile Include="_codebase\Configuration.cs" />
     <Compile Include="_codebase\SettingPath.cs" />
