@@ -12,19 +12,19 @@ namespace SmartConfig.DataStores.Registry.Tests.Unit.RegistryPath.Positive
         [TestMethod]
         public void CreateWithoutConfigurationName()
         {
-            var registryPath = new RegistryPath(new SettingPath(null, "Foo", "Bar", "Baz"));
+            var registryPath = new RegistryPath(new SettingPath(new[] { "Foo", "Bar", "Baz" }));
 
-            registryPath.SubKeyName.Verify().IsEqual(@"Foo\Bar");
-            registryPath.ValueName.Verify().IsEqual(@"Baz");
+            registryPath.SettingNamespace.Verify().IsEqual(@"Foo\Bar");
+            registryPath.SettingName.Verify().IsEqual(@"Baz");
         }
 
         [TestMethod]
         public void CreateWithConfigurationName()
         {
-            var registryPath = new RegistryPath(new SettingPath("qux", "Foo", "Bar", "Baz"));
+            var registryPath = new RegistryPath(new SettingPath(new[] { "qux", "Foo", "Bar", "Baz" }));
 
-            registryPath.SubKeyName.Verify().IsEqual(@"qux\Foo\Bar");
-            registryPath.ValueName.Verify().IsEqual(@"Baz");
+            registryPath.SettingNamespace.Verify().IsEqual(@"qux\Foo\Bar");
+            registryPath.SettingName.Verify().IsEqual(@"Baz");
         }
     }
 }

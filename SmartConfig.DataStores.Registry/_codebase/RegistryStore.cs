@@ -39,30 +39,32 @@ namespace SmartConfig.DataStores.Registry
             return typeof(string);
         }
 
-        public List<Setting> GetSettings(SettingPath name, IReadOnlyDictionary<string, object> namespaces)
+        public List<Setting> GetSettings(SettingPath path, IReadOnlyDictionary<string, object> namespaces)
         {
-            name.Validate(nameof(name)).IsNotNull();
+            path.Validate(nameof(path)).IsNotNull();
 
-            var registryPath = new RegistryPath(name);
+            path = new RegistryPath(path);
 
-            var subKeyName = Path.Combine(_baseSubKeyName, registryPath.SubKeyName);
+            var subKeyName = Path.Combine(_baseSubKeyName, path.SettingNamespace);
             using (var subKey = _baseKey.OpenSubKey(subKeyName, false))
             {
-                var value = subKey?.GetValue(registryPath.ValueName);
+                var value = subKey?.GetValue(path.SettingNameWithValueKey);
                 return new List<Setting>
                 {
                     new Setting
                     {
-                        Name = name.ToString(),
+                        Name = path.ToString(),
                         Value = value
                     }
                 };
             }
         }
 
-        public int SaveSetting(SettingPath name, IReadOnlyDictionary<string, object> namespaces, object value)
+        public int SaveSetting(SettingPath path, IReadOnlyDictionary<string, object> namespaces, object value)
         {
-            name.Validate(nameof(name)).IsNotNull();
+            path.Validate(nameof(path)).IsNotNull();
+
+            path = new RegistryPath(path);
 
             // check value type
             var registryValueKind = RegistryValueKind.None;
@@ -71,16 +73,15 @@ namespace SmartConfig.DataStores.Registry
                 throw new UnsupportedTypeException
                 {
                     ValueType = value.GetType().Name,
-                    SettingName = name.ToString()
+                    SettingName = path.ToString()
                 };
             }
 
-            var registryPath = new RegistryPath(name);
-            var subKeyName = Path.Combine(_baseSubKeyName, registryPath.SubKeyName);
+            var subKeyName = Path.Combine(_baseSubKeyName, path.SettingNamespace);
             using (var subKey = _baseKey.OpenSubKey(subKeyName, true) ?? _baseKey.CreateSubKey(subKeyName))
             {
                 if (subKey == null) throw new RegistryKeyException($"Could not open/create sub key: '{subKeyName}'.");
-                subKey.SetValue(registryPath.ValueName, value, registryValueKind);
+                subKey.SetValue(path.SettingName, value, registryValueKind);
             }
             return 1;
         }

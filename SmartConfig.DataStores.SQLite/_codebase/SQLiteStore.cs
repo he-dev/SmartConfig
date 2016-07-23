@@ -47,13 +47,13 @@ namespace SmartConfig.DataStores.SQLite
 
         public Type MapDataType(Type settingType) => typeof(string);
 
-        public List<Setting> GetSettings(SettingPath name, IReadOnlyDictionary<string, object> namespaces)
+        public List<Setting> GetSettings(SettingPath path, IReadOnlyDictionary<string, object> namespaces)
         {
-            name.Validate(nameof(name)).IsNotNull();
+            path.Validate(nameof(path)).IsNotNull();
             namespaces.Validate(nameof(namespaces)).IsNotNull();
 
             using (var connection = new SQLiteConnection(ConnectionString)) // "Data Source=config.db;Version=3;"))
-            using (var command = CreateSelectCommand(connection, name, namespaces))
+            using (var command = CreateSelectCommand(connection, path, namespaces))
             {
                 connection.Open();
                 command.Prepare();
@@ -83,7 +83,7 @@ namespace SmartConfig.DataStores.SQLite
             }
         }
 
-        public int SaveSetting(SettingPath name, IReadOnlyDictionary<string, object> namespaces, object value)
+        public int SaveSetting(SettingPath path, IReadOnlyDictionary<string, object> namespaces, object value)
         {
             throw new NotImplementedException();
         }

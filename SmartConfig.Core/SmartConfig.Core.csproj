@@ -80,8 +80,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="_codebase\CollectionFactory.cs" />
+    <Compile Include="_codebase\CollectionItemizer.cs" />
     <Compile Include="_codebase\Collections\SettingCollection.cs" />
     <Compile Include="_codebase\Converters.cs" />
+    <Compile Include="_codebase\DataAnnotations\ItemizedAttribute.cs" />
     <Compile Include="_codebase\Data\Setting.cs" />
     <Compile Include="_codebase\IO\SettingReader.cs" />
     <Compile Include="_codebase\IO\SettingWriter.cs" />
@@ -95,6 +98,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="_codebase\DataAnnotations\SmartConfigAttribute.cs" />
     <Compile Include="_codebase\Data\IDataStore.cs" />
+    <Compile Include="_codebase\TypeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -50,7 +50,7 @@ namespace SmartConfig.DataStores.AppConfig.Tests.Integration.ConnectionStringsSt
 
 namespace SmartConfig.DataStores.AppConfig.Tests.Integration.ConnectionStringsStore.Positive.TestConfigs
 {
-    [SmartConfig(Name = "Bar")]
+    [SmartConfig("Bar")]
     internal static class TestConfig1
     {
         public static string Foo { get; set; }

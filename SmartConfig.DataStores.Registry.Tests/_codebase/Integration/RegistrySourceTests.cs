@@ -23,7 +23,8 @@ namespace SmartConfig.DataStores.Registry.Tests.Integration.RegistryStore.Positi
         {
             Configuration.Load
                 .From(RegistryStore.CreateForCurrentUser(@"Software\SmartConfig\Tests"))
-                .Select(typeof(TestConfig), converter => converter.Register<StringToEnumConverter<TestEnum>>());
+                .Register<StringToEnumConverter<TestEnum>>()
+                .Select(typeof(TestConfig));
 
             TestConfig.Foo.Verify().IsEqual("baz");
             TestConfig.Bar.Verify().IsEqual(123);

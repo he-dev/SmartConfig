@@ -113,7 +113,6 @@ namespace SmartConfig.Core.Tests.ReflectorTests
             CollectionAssert.AreEqual(
                 new []
                 {
-                    null,
                     nameof(Foo.SubFoo),
                     nameof(Foo.SubFoo.SubSubFoo),
                     nameof(Foo.SubFoo.SubSubFoo.SubSubSubFoo),

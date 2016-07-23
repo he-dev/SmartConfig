@@ -22,7 +22,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
     public class GetSettings
     {
         [TestMethod]
-        public void ByName()
+        public void GetSettingsByName()
         {
             var config = Configuration.Load
                 .From(new SqlServerStore("name=SmartConfigTest"))
@@ -33,7 +33,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
         }
 
         [TestMethod]
-        public void ByNameAndNamespace()
+        public void GetSettingsByNameAndNamespace()
         {
             var config = Configuration.Load
                 .From(new SqlServerStore("name=SmartConfigTest"))
@@ -42,6 +42,18 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
 
             config.Settings.Count.Validate().IsEqual(1);
             TestConfig2.Rox.Verify("TestConfig.Rox").IsNotNullOrEmpty().IsEqual("Quux");
+        }
+
+        [TestMethod]
+        public void GetItemizedDictionary()
+        {
+            var config = Configuration.Load
+                .From(new SqlServerStore("name=SmartConfigTest"))
+                .Where("Environment", "Itemized")
+                .Select(typeof(ItemizedDictionary));
+
+            config.Settings.Count.Validate().IsEqual(1);
+            ItemizedDictionary.Numbers.Count.Verify("ItemizedDictionary.Numbers").IsEqual(2);
         }
 
         [SmartConfig]
@@ -54,6 +66,13 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
         private static class TestConfig2
         {
             public static string Rox { get; set; }
+        }
+
+        [SmartConfig]
+        public static class ItemizedDictionary
+        {
+            [Itemized]
+            public static Dictionary<string, int> Numbers { get; set; }
         }
     }
 
@@ -68,13 +87,13 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
                 .Select(typeof(TestConfig1));
 
             var rnd = new Random();
-            var newValue = $"{nameof(TestConfig1.Rox)}{rnd.Next(101)}";
-            TestConfig1.Rox = newValue;
+            var newValue = $"{nameof(TestConfig1.Roxy)}{rnd.Next(101)}";
+            TestConfig1.Roxy = newValue;
 
             Configuration.Save(typeof(TestConfig1));
-            TestConfig1.Rox = string.Empty;
+            TestConfig1.Roxy = string.Empty;
             Configuration.Reload(typeof(TestConfig1));
-            TestConfig1.Rox.Verify().IsNotNullOrEmpty().IsEqual(newValue);
+            TestConfig1.Roxy.Verify().IsNotNullOrEmpty().IsEqual(newValue);
         }
 
         [TestMethod]
@@ -95,10 +114,35 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
             TestConfig2.Bar.Verify().IsNotNullOrEmpty().IsEqual(newValue);
         }
 
+        [TestMethod]
+        public void SaveItemizedSettings()
+        {
+            Configuration.Load
+                .From(new SqlServerStore("name=SmartConfigTest"))
+                .Where("Environment", "Itemized")
+                .Select(typeof(ItemizedConfig));
+            
+            ItemizedConfig.Numbers2 = new Dictionary<string, int>();
+
+            // add few items
+            for (var i = 0; i < 3; i++)
+            {
+                ItemizedConfig.Numbers2.Add(((char)(97 + i)).ToString(), 65 + i);
+            }
+
+            Configuration.Save(typeof(ItemizedConfig));
+
+            ItemizedConfig.Numbers2.Remove(ItemizedConfig.Numbers2.ElementAt(1).Key);
+            Configuration.Save(typeof(ItemizedConfig));
+            Configuration.Reload(typeof(ItemizedConfig));
+
+            ItemizedConfig.Numbers2.Count.Verify().IsEqual(2);
+        }
+
         [SmartConfig]
         private static class TestConfig1
         {
-            public static string Rox { get; set; }
+            public static string Roxy { get; set; }
         }
 
         [SmartConfig]
@@ -106,6 +150,14 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
         {
             [Optional]
             public static string Bar { get; set; }
+        }
+
+        [SmartConfig]
+        private static class ItemizedConfig
+        {
+            [Itemized]
+            [Optional]
+            public static Dictionary<string, int> Numbers2 { get; set; }
         }
     }
 }

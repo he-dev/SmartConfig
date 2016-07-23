@@ -10,9 +10,9 @@ namespace SmartConfig.Data
     {
         Type MapDataType(Type settingType);
 
-        List<Setting> GetSettings(SettingPath name, IReadOnlyDictionary<string, object> namespaces);
+        List<Setting> GetSettings(SettingPath path, IReadOnlyDictionary<string, object> namespaces);
 
-        int SaveSetting(SettingPath name, IReadOnlyDictionary<string, object> namespaces, object value);
+        int SaveSetting(SettingPath path, IReadOnlyDictionary<string, object> namespaces, object value);
 
         int SaveSettings(IReadOnlyDictionary<SettingPath, object> settings, IReadOnlyDictionary<string, object> namespaces);
     }

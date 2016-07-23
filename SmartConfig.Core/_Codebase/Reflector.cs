@@ -21,28 +21,37 @@ namespace SmartConfig
             return memberInfo.GetCustomAttributes<T>(false).Any();
         }
 
-        public static List<string> GetSettingPath(this PropertyInfo propertyInfo)
+        public static IEnumerable<string> GetSettingPath(this PropertyInfo propertyInfo)
         {
-            var path = new List<string> { propertyInfo.GetCustomNameOrDefault() };
+            var path = new LinkedList<string>();
+            path.AddFirst(propertyInfo.GetCustomNameOrDefault());
 
             var type = propertyInfo.DeclaringType;
 
             while (type != null && !type.HasAttribute<SmartConfigAttribute>())
             {
-                path.Add(type.GetCustomNameOrDefault());
+                path.AddFirst(type.GetCustomNameOrDefault());
                 type = type.DeclaringType;
-                if (type == null)
+            }
+
+            if (type == null)
+            {
+                throw new SmartConfigAttributeNotFoundException
                 {
-                    throw new SmartConfigAttributeNotFoundException
-                    {
-                        Property = propertyInfo.Name
-                    };
-                }
+                    Property = propertyInfo.Name
+                };
             }
 
             // add config name if available
-            path.Add(type.GetCustomAttribute<SmartConfigAttribute>()?.Name);
-            path.Reverse();
+            var smartConfigAttribute = type.GetCustomAttribute<SmartConfigAttribute>();
+            if (smartConfigAttribute.NameOption == ConfigNameOption.AsPath)
+            {
+                if (!string.IsNullOrEmpty(smartConfigAttribute.Name))
+                {
+                    path.AddFirst(smartConfigAttribute.Name);
+                }
+            }
+            
             return path;
         }
     }

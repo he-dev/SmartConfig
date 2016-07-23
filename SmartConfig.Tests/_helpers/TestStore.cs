@@ -10,11 +10,11 @@ namespace SmartConfig.Core.Tests
     {
         public Type MapDataType(Type settingType) => typeof(string);
 
-        public List<Setting> GetSettings(SettingPath name, IReadOnlyDictionary<string, object> namespaces)
-            => GetSettingsFunc(name, namespaces);
+        public List<Setting> GetSettings(SettingPath path, IReadOnlyDictionary<string, object> namespaces)
+            => GetSettingsFunc(path, namespaces);
 
-        public int SaveSetting(SettingPath name, IReadOnlyDictionary<string, object> namespaces, object value)
-            => UpdateSettingFunc(name, namespaces, value);
+        public int SaveSetting(SettingPath path, IReadOnlyDictionary<string, object> namespaces, object value)
+            => UpdateSettingFunc(path, namespaces, value);
 
         public int SaveSettings(IReadOnlyDictionary<SettingPath, object> settings, IReadOnlyDictionary<string, object> namespaces)
         {
@@ -32,10 +32,10 @@ namespace SmartConfig.Core.Tests
     {
         public Type MapDataType(Type settingType) => typeof(string);
 
-        public List<Setting> GetSettings(SettingPath name, IReadOnlyDictionary<string, object> customProperties)
+        public List<Setting> GetSettings(SettingPath path, IReadOnlyDictionary<string, object> customProperties)
             => Enumerable.Empty<Setting>().ToList();
 
-        public int SaveSetting(SettingPath name, IReadOnlyDictionary<string, object> customProperties, object value)
+        public int SaveSetting(SettingPath path, IReadOnlyDictionary<string, object> customProperties, object value)
             => 0;
 
         public int SaveSettings(IReadOnlyDictionary<SettingPath, object> settings, IReadOnlyDictionary<string, object> namespaces)

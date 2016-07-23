@@ -27,22 +27,22 @@ namespace SmartConfig.DataStores.AppConfig
 
         public Type MapDataType(Type settingType) => typeof(string);
 
-        public List<Setting> GetSettings(SettingPath name, IReadOnlyDictionary<string, object> namespaces)
+        public List<Setting> GetSettings(SettingPath path, IReadOnlyDictionary<string, object> namespaces)
         {
             var result = new List<Setting>
             {
                 new Setting
                 {
-                    Name = name.ToString(),
-                    Value = _connectionStringsSection.ConnectionStrings[name.ToString()]?.ConnectionString
+                    Name = new SettingPath(path),
+                    Value = _connectionStringsSection.ConnectionStrings[path.ToString()]?.ConnectionString
                 }
             };
             return result;
         }
 
-        public int SaveSetting(SettingPath name, IReadOnlyDictionary<string, object> namespaces, object value)
+        public int SaveSetting(SettingPath path, IReadOnlyDictionary<string, object> namespaces, object value)
         {
-            return SaveSettings(new Dictionary<SettingPath, object> { [name] = value }, namespaces);
+            return SaveSettings(new Dictionary<SettingPath, object> { [path] = value }, namespaces);
         }
 
         public int SaveSettings(IReadOnlyDictionary<SettingPath, object> settings, IReadOnlyDictionary<string, object> namespaces)

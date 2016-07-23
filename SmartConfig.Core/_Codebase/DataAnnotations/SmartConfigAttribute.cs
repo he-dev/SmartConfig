@@ -1,4 +1,5 @@
 ﻿using System;
+using SmartUtilities.ValidationExtensions;
 
 namespace SmartConfig.DataAnnotations
 {
@@ -8,6 +9,21 @@ namespace SmartConfig.DataAnnotations
     [AttributeUsage(AttributeTargets.Class)]
     public class SmartConfigAttribute : Attribute
     {
-        public string Name { get; set; }
+        public SmartConfigAttribute() { }
+
+        public SmartConfigAttribute(string name)
+        {
+            Name = name.Validate(nameof(name)).IsNotNullOrEmpty().Argument;
+        }
+
+        public string Name { get; }
+
+        public ConfigNameOption NameOption { get; set; } = ConfigNameOption.AsPath;
+    }
+
+    public enum ConfigNameOption
+    {
+        AsPath,
+        AsNamespace
     }
 }

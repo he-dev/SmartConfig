@@ -47,39 +47,42 @@ namespace SmartConfig.DataStores.SqlServer
 
         public Type MapDataType(Type settingType) => typeof(string);
 
-        public List<Setting> GetSettings(SettingPath name, IReadOnlyDictionary<string, object> namespaces)
+        public List<Setting> GetSettings(SettingPath path, IReadOnlyDictionary<string, object> namespaces)
         {
             using (var connection = new SqlConnection(ConnectionString))
-            using (var command = CreateSelectCommand(connection, name, namespaces))
             {
-                connection.Open();
-                command.Prepare();
-
-                // execute query
-                using (var settingReader = command.ExecuteReader())
+                var commandFactory = new CommandFactory(SettingTableProperties);
+                using (var command = commandFactory.CreateSelectCommand(connection, path, namespaces))
                 {
-                    var settings = new List<Setting>();
-                    while (settingReader.Read())
+                    connection.Open();
+                    command.Prepare();
+
+                    // execute query
+                    using (var settingReader = command.ExecuteReader())
                     {
-                        var setting = new Setting
+                        var settings = new List<Setting>();
+                        while (settingReader.Read())
                         {
-                            Name = (string)settingReader[nameof(Setting.Name)],
-                            Value = settingReader[nameof(Setting.Value)]
-                        };
-                        foreach (var property in namespaces)
-                        {
-                            setting[property.Key] = settingReader[property.Key];
+                            var setting = new Setting
+                            {
+                                Name = new SettingPath((string)settingReader[nameof(Setting.Name)]),
+                                Value = settingReader[nameof(Setting.Value)]
+                            };
+                            foreach (var property in namespaces)
+                            {
+                                setting[property.Key] = settingReader[property.Key];
+                            }
+                            settings.Add(setting);
                         }
-                        settings.Add(setting);
+                        return settings;
                     }
-                    return settings;
                 }
             }
         }
 
-        public int SaveSetting(SettingPath name, IReadOnlyDictionary<string, object> namespaces, object value)
+        public int SaveSetting(SettingPath path, IReadOnlyDictionary<string, object> namespaces, object value)
         {
-            return SaveSettings(new Dictionary<SettingPath, object> {[name] = value}, namespaces);
+            return SaveSettings(new Dictionary<SettingPath, object> { [path] = value }, namespaces);
         }
 
         public int SaveSettings(IReadOnlyDictionary<SettingPath, object> settings, IReadOnlyDictionary<string, object> namespaces)
@@ -87,29 +90,55 @@ namespace SmartConfig.DataStores.SqlServer
             using (var connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
-                using (var command = CreateInsertCommand(connection, namespaces))
-                {
-                    command.Transaction = transaction;
-                    command.Prepare();
+                var commandFactory = new CommandFactory(SettingTableProperties);
 
+                using (var transaction = connection.BeginTransaction())
+                {
                     try
                     {
-                        var affectedSettings = 0;
-                        foreach (var setting in settings)
+                        var rowsAffected = 0;
+
+                        // delete old settings
+                        using (var deleteCommand = commandFactory.CreateDeleteCommand(connection, namespaces))
                         {
-                            command.Parameters[nameof(Setting.Name)].Value = setting.Key.ToString();
-                            command.Parameters[nameof(Setting.Value)].Value = setting.Value;
+                            deleteCommand.Transaction = transaction;
+                            deleteCommand.Prepare();
+
+                            foreach (var path in settings.Keys.Select(x => x.ToString()).Distinct())
+                            {
+                                deleteCommand.Parameters[nameof(Setting.Name)].Value = path;
+                            }
 
                             foreach (var settingNamespace in namespaces)
                             {
-                                command.Parameters[settingNamespace.Key].Value = settingNamespace.Value;
+                                deleteCommand.Parameters[settingNamespace.Key].Value = settingNamespace.Value;
                             }
 
-                            affectedSettings += command.ExecuteNonQuery();
+                            rowsAffected += deleteCommand.ExecuteNonQuery();
                         }
+
+                        // insert new settings
+                        using (var insertCommand = commandFactory.CreateInsertCommand(connection, namespaces))
+                        {
+                            insertCommand.Transaction = transaction;
+                            insertCommand.Prepare();
+
+                            foreach (var setting in settings)
+                            {
+                                insertCommand.Parameters[nameof(Setting.Name)].Value = setting.Key.SettingNameWithValueKey;
+                                insertCommand.Parameters[nameof(Setting.Value)].Value = setting.Value;
+
+                                foreach (var settingNamespace in namespaces)
+                                {
+                                    insertCommand.Parameters[settingNamespace.Key].Value = settingNamespace.Value;
+                                }
+
+                                rowsAffected += insertCommand.ExecuteNonQuery();
+                            }
+                        }
+
                         transaction.Commit();
-                        return affectedSettings;
+                        return rowsAffected;
                     }
                     catch (Exception)
                     {
@@ -118,122 +147,6 @@ namespace SmartConfig.DataStores.SqlServer
                     }
                 }
             }
-        }
-
-        private SqlCommand CreateSelectCommand(SqlConnection connection, SettingPath name, IReadOnlyDictionary<string, object> namespaces)
-        {
-            // --- build sql
-
-            var sql = new StringBuilder();
-
-            var dbProviderFactory = DbProviderFactories.GetFactory(connection);
-            using (var commandBuilder = dbProviderFactory.CreateCommandBuilder())
-            {
-                var schemaName = commandBuilder.QuoteIdentifier(SettingTableProperties.SchemaName);
-                var tableName = commandBuilder.QuoteIdentifier(SettingTableProperties.TableName);
-
-                sql.Append($"SELECT *").AppendLine();
-                sql.Append($"FROM {schemaName}.{tableName}").AppendLine();
-
-                var where = namespaces.Aggregate($"WHERE [{nameof(Setting.Name)}] = @{nameof(Setting.Name)}", (result, next) =>
-                    $"{result} AND {commandBuilder.QuoteIdentifier(next.Key)} = @{next.Key}");
-                sql.Append(where);
-            }
-
-            var command = connection.CreateCommand();
-            command.CommandText = sql.ToString();
-
-            // --- add parameters
-
-            command.Parameters.Add(
-                    nameof(Setting.Name),
-                    SettingTableProperties.GetSqlDbTypeOrDefault(nameof(Setting.Name)),
-                    SettingTableProperties.GetColumnLengthOrDefault(nameof(Setting.Name))
-                ).Value = name.ToString();
-
-            foreach (var settingNamespace in namespaces)
-            {
-                command.Parameters.Add(
-                    settingNamespace.Key,
-                    SettingTableProperties.GetSqlDbTypeOrDefault(settingNamespace.Key),
-                    SettingTableProperties.GetColumnLengthOrDefault(settingNamespace.Key)
-                ).Value = settingNamespace.Value;
-            }
-
-            return command;
-        }
-
-        private SqlCommand CreateInsertCommand(SqlConnection connection, IReadOnlyDictionary<string, object> namespaces)
-        {
-            /*
-             
-            UPDATE [Setting]
-	            SET [Value] = 'Hallo update!'
-	            WHERE [Name]='baz' AND [Environment] = 'boz'
-            IF @@ROWCOUNT = 0 
-	            INSERT INTO [Setting]([Name], [Value], [Environment])
-	            VALUES ('baz', 'Hallo insert!', 'boz')
-             */
-
-            // --- build sql
-
-            var sql = new StringBuilder();
-
-            var dbProviderFactory = DbProviderFactories.GetFactory(connection);
-            using (var commandBuilder = dbProviderFactory.CreateCommandBuilder())
-            {
-                var schemaName = commandBuilder.QuoteIdentifier(SettingTableProperties.SchemaName);
-                var tableName = commandBuilder.QuoteIdentifier(SettingTableProperties.TableName);
-
-                sql.Append($"UPDATE {schemaName}.{tableName}").AppendLine();
-                sql.Append($"SET [{nameof(Setting.Value)}] = @{nameof(Setting.Value)}").AppendLine();
-
-                var where = namespaces.Keys
-                    .Aggregate($"WHERE [{nameof(Setting.Name)}] = @{nameof(Setting.Name)}", (result, next) =>
-                        $"{result} AND {commandBuilder.QuoteIdentifier(next)} = @{next} ");
-                sql.Append(where).AppendLine();
-
-                sql.Append($"IF @@ROWCOUNT = 0").AppendLine();
-
-                var quotedColumnNames = namespaces.Keys
-                        .Select(columnName => commandBuilder.QuoteIdentifier(columnName))
-                        .Aggregate($"[{nameof(Setting.Name)}], [{nameof(Setting.Value)}]", (result, next) => $"{result}, {next}");
-
-                sql.Append($"INSERT INTO {schemaName}.{tableName}({quotedColumnNames})").AppendLine();
-
-                var parameterNames = namespaces.Keys
-                    .Aggregate($"@{nameof(Setting.Name)}, @{nameof(Setting.Value)}", (result, next) => $"{result}, @{next}");
-                sql.Append($"VALUES ({parameterNames})");
-            }
-
-            var command = connection.CreateCommand();
-            command.CommandType = CommandType.Text;
-            command.CommandText = sql.ToString();
-
-            // --- add parameters
-
-            command.Parameters.Add(
-                nameof(Setting.Name),
-                SettingTableProperties.GetSqlDbTypeOrDefault(nameof(Setting.Name)),
-                SettingTableProperties.GetColumnLengthOrDefault(nameof(Setting.Name))
-            );
-
-            command.Parameters.Add(
-                nameof(Setting.Value),
-                SettingTableProperties.GetSqlDbTypeOrDefault(nameof(Setting.Value)),
-                SettingTableProperties.GetColumnLengthOrDefault(nameof(Setting.Value))
-            );
-
-            foreach (var settingNamespace in namespaces)
-            {
-                command.Parameters.Add(
-                    settingNamespace.Key,
-                    SettingTableProperties.GetSqlDbTypeOrDefault(settingNamespace.Key),
-                    SettingTableProperties.GetColumnLengthOrDefault(settingNamespace.Key)
-                );
-            }
-
-            return command;
         }
     }
 

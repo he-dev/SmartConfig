@@ -5,8 +5,11 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using SmartConfig.Data;
+using SmartConfig.DataAnnotations;
+using SmartUtilities;
 using SmartUtilities.DataAnnotations;
 using SmartUtilities.TypeFramework;
+using SmartUtilities.ValidationExtensions;
 
 namespace SmartConfig
 {
@@ -18,19 +21,28 @@ namespace SmartConfig
         {
             Property = property;
             SettingPath = new SettingPath(Property.GetSettingPath().ToList());
-            ValidationAttributes = Property.GetCustomAttributes<ValidationAttribute>();
-            IsOptional = Property.GetCustomAttribute<OptionalAttribute>() != null;
+            //ValidationAttributes = Property.GetCustomAttributes<ValidationAttribute>();
+
+            // an itemzed setting must be an enumerable
+            if (IsItemized)
+            {
+                IsEnumerable.Validate(nameof(IsEnumerable)).IsTrue();
+            }
         }
 
         public PropertyInfo Property { get; }
+
+        public bool IsEnumerable => Property.PropertyType.IsEnumerable();
+
+        public bool IsItemized => Property.GetCustomAttribute<ItemizedAttribute>() != null;
 
         public Type Type => Property.PropertyType;
 
         public SettingPath SettingPath { get; }
 
-        public IEnumerable<ValidationAttribute> ValidationAttributes { get; }
+        //public IEnumerable<ValidationAttribute> ValidationAttributes { get; }
 
-        public bool IsOptional { get; }
+        public bool IsOptional => Property.GetCustomAttribute<OptionalAttribute>() != null;
 
         public object Value
         {

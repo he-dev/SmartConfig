@@ -37,10 +37,10 @@ namespace SmartConfig.DataStores.XmlFile
 
         public Type MapDataType(Type settingType) => typeof(string);
 
-        public List<Setting> GetSettings(SettingPath name, IReadOnlyDictionary<string, object> namespaces)
+        public List<Setting> GetSettings(SettingPath path, IReadOnlyDictionary<string, object> namespaces)
         {
             var attributes = namespaces.Aggregate(
-                $"@{nameof(Setting.Name)}='{name}'",
+                $"@{nameof(Setting.Name)}='{path}'",
                 (result, next) => $"{result} and @{next.Key}='{next.Value}'");
 
             var xPath = $"//{RootElementName}/{SettingElementName}[{attributes}]";
@@ -66,7 +66,7 @@ namespace SmartConfig.DataStores.XmlFile
             return elements;
         }
 
-        public int SaveSetting(SettingPath name, IReadOnlyDictionary<string, object> namespaces, object value)
+        public int SaveSetting(SettingPath path, IReadOnlyDictionary<string, object> namespaces, object value)
         {
             throw new NotImplementedException();
         }

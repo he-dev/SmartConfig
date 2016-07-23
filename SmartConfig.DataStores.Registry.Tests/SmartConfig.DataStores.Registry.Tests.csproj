@@ -69,8 +69,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="_codebase\Integration\RegistrySourceTests.cs" />
-    <Compile Include="_codebase\RegistrySourceTests.cs" />
     <Compile Include="_codebase\RegistryPathTests.cs" />
+    <Compile Include="_codebase\RegistrySourceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

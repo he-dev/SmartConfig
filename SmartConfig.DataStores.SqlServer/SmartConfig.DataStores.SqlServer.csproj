@@ -80,6 +80,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="_codebase\CommandFactory.cs" />
     <Compile Include="_codebase\SqlServerStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

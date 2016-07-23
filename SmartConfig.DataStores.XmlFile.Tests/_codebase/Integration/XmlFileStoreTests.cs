@@ -111,7 +111,7 @@ namespace SmartConfig.DataStores.XmlFile.Tests.Integration.XmlFileStore.Positive
         public static string Foo { get; set; }
     }
 
-    [SmartConfig(Name = "ns")]
+    [SmartConfig("ns")]
     internal static class TestConfig2
     {
         public static string Bar { get; set; }

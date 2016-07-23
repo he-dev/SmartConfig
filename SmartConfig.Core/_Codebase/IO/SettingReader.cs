@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -32,6 +33,8 @@ namespace SmartConfig.IO
             _cache.Clear();
             var validationExceptions = new List<Exception>();
 
+            var culture = CultureInfo.InvariantCulture;
+
             foreach (var setting in settings)
             {
                 // data store exeptions shouldn't be cought
@@ -39,22 +42,28 @@ namespace SmartConfig.IO
 
                 try
                 {
-                    settingRows.Count.Validate().IsTrue(x => x <= 1, ctx => $"'{setting.SettingPath.ToString()}' found more then once.");
-                    var settingRow = settingRows.SingleOrDefault();
-
-                    if (settingRow == null)
+                    if (setting.IsItemized)
                     {
-                        if (setting.IsOptional) { continue; }
-                        throw new SettingNotFoundException { SettingPath = setting.SettingPath };
+                        var value = CollectionFactory.CreateCollection(settingRows, setting.Type, Converter);
+                        _cache[setting] = value;
                     }
+                    else
+                    {
+                        settingRows.Count.Validate().IsTrue(x => x <= 1, ctx => $"'{setting.SettingPath.ToString()}' found more then once.");
+                        var settingRow = settingRows.SingleOrDefault();
 
-                    var culture = CultureInfo.InvariantCulture;
-                    var value = 
-                        settingRow.Value.GetType() == setting.Type 
-                            ? settingRow.Value 
-                            : Converter.Convert(settingRow.Value, setting.Type, culture);
-                    _cache[setting] = value;
+                        if (settingRow == null)
+                        {
+                            if (setting.IsOptional) { continue; }
+                            throw new SettingNotFoundException { SettingPath = setting.SettingPath };
+                        }
 
+                        var value =
+                            settingRow.Value.GetType() == setting.Type
+                                ? settingRow.Value
+                                : Converter.Convert(settingRow.Value, setting.Type, culture);
+                        _cache[setting] = value;
+                    }
                 }
                 catch (Exception ex)
                 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -90,6 +91,8 @@ namespace SmartConfig
         {
             private Configuration _configuration = new Configuration();
 
+            private TypeConverter _converter = CreateDefaultConverter();
+
             internal Builder() { }
 
             private static TypeConverter CreateDefaultConverter()
@@ -135,8 +138,8 @@ namespace SmartConfig
             {
                 dataStore.Validate(nameof(dataStore)).IsNotNull(ctx => "You need to specify a data store.");
 
-                _configuration.SettingReader = new SettingReader(dataStore, CreateDefaultConverter());
-                _configuration.SettingWriter = new SettingWriter(dataStore, CreateDefaultConverter());
+                _configuration.SettingReader = new SettingReader(dataStore, _converter);
+                _configuration.SettingWriter = new SettingWriter(dataStore, _converter);
 
                 return this;
             }
@@ -154,22 +157,30 @@ namespace SmartConfig
                 return this;
             }
 
-            public Configuration Select(Type type, Func<TypeConverter, TypeConverter> configureConverter = null)
+            public Builder Register<TConverter>() where TConverter : TypeConverter, new()
+            {
+                _converter = _converter.Register<TConverter>();
+                return this;
+            }
+
+            public Configuration Select(Type type)
             {
                 type.Validate(nameof(type))
                     .IsNotNull(ctx => "You need to specify a configuration type.")
                     .IsTrue(x => x.IsStatic(), ctx => $"Type '{type.FullName}' must be a static class.")
                     .IsTrue(x => x.HasAttribute<SmartConfigAttribute>(), ctx => $"Type '{type.FullName}' must be decorated with the '{nameof(SmartConfigAttribute)}'");
 
+                var smartConfigAttribute = type.GetCustomAttribute<SmartConfigAttribute>();
+                if (smartConfigAttribute.NameOption == ConfigNameOption.AsNamespace)
+                {
+                    _configuration.SettingReader.Namespaces.Add("blah", smartConfigAttribute.Name);
+                    _configuration.SettingWriter.Namespaces.Add("blah", smartConfigAttribute.Name);
+                }
+
                 _configuration.Type = type;
                 _configuration.Settings = SettingCollection.From(type);
-
-                if (configureConverter != null)
-                {
-                    var converter = configureConverter(CreateDefaultConverter());
-                    _configuration.SettingReader.Converter = converter;
-                    _configuration.SettingWriter.Converter = converter;
-                }
+                _configuration.SettingReader.Converter = _converter;
+                _configuration.SettingWriter.Converter = _converter;
 
                 _configuration._Load();
 

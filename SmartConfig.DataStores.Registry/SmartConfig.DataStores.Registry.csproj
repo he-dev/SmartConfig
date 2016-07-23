@@ -80,8 +80,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="_codebase\RegistryStore.cs" />
     <Compile Include="_codebase\RegistryPath.cs" />
+    <Compile Include="_codebase\RegistryStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

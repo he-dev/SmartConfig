@@ -11,7 +11,7 @@ namespace SmartConfig.IO
 {
     internal class SettingWriter
     {
-        private readonly IDictionary<SettingInfo, object> _cache = new Dictionary<SettingInfo, object>();
+        private readonly Dictionary<SettingPath, object> _cache = new Dictionary<SettingPath, object>();
 
         public SettingWriter(IDataStore dataStore, TypeConverter converter)
         {
@@ -34,9 +34,22 @@ namespace SmartConfig.IO
             {
                 try
                 {
-                    var dataType = DataStore.MapDataType(setting.Type);
-                    var value = dataType == setting.Type ? setting.Value : Converter.Convert(setting.Value, dataType, CultureInfo.InvariantCulture);
-                    _cache[setting] = value;
+                    if (setting.IsItemized)
+                    {
+                        var items = CollectionItemizer.ItemizeCollection(setting.Value, DataStore.MapDataType, Converter);
+                        foreach (var item in items)
+                        {
+                            _cache[new SettingPath(setting.SettingPath, item.Key)] = item.Value;
+                        }
+                    }
+                    else
+                    {
+                        var dataType = DataStore.MapDataType(setting.Type);
+                        var value = dataType == setting.Type
+                            ? setting.Value
+                            : Converter.Convert(setting.Value, dataType, CultureInfo.InvariantCulture);
+                        _cache[setting.SettingPath] = value;
+                    }
                 }
                 catch (Exception ex) { validationExceptions.Add(ex); }
             }
@@ -47,8 +60,7 @@ namespace SmartConfig.IO
         {
             try
             {
-                var settings = _cache.ToDictionary(x => x.Key.SettingPath, x => x.Value);
-                var affectedSettings = DataStore.SaveSettings(settings, Namespaces);
+                var affectedSettings = DataStore.SaveSettings(_cache, Namespaces);
                 return affectedSettings;
             }
             catch (Exception ex)

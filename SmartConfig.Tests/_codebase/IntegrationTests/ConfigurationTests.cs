@@ -16,7 +16,7 @@ using SmartConfig.Core.Tests;
 // ReSharper disable InconsistentNaming
 // ReSharper disable CheckNamespace
 
-namespace SmartConfig.Core.IntegrationTests.Configuration.Positive
+namespace SmartConfig.Core.Tests.Integration.ConfigurationTests.Positive
 {
     using SmartConfig;
     using TestConfigs;
@@ -36,7 +36,7 @@ namespace SmartConfig.Core.IntegrationTests.Configuration.Positive
         }
 
         [TestMethod]
-        public void LoadVariousTypes()
+        public void LoadDefaultTypes()
         {
             var culture = CultureInfo.InvariantCulture;
 
@@ -73,7 +73,8 @@ namespace SmartConfig.Core.IntegrationTests.Configuration.Positive
                 {
                     GetSettingsFunc = (name, props) => testData[name.ToString()].AsEnumerable().ToList()
                 })
-                .Select(typeof(TypesConfig), converter => converter.Register<StringToEnumConverter<TestEnum>>());
+                .Register<StringToEnumConverter<TestEnum>>()
+                .Select(typeof(TypesConfig));
 
             TypesConfig.SByte.Validate().IsEqual(SByte.MaxValue);
             TypesConfig.Enum.Validate().IsEqual(TestEnum.TestValue2);
@@ -83,6 +84,78 @@ namespace SmartConfig.Core.IntegrationTests.Configuration.Positive
             //TypesConfig.XDocument.ToString().Validate().IsEqual(XDocument.Parse(@"<?xml version=""1.0""?><testXml></testXml>").ToString());
             //TypesConfig.XElement.ToString().Validate().IsEqual(XElement.Parse(@"<testXml></testXml>").ToString());
             //TypesConfig.ListInt32.SequenceEqual(new[] { 1, 2, 3 }).Validate().IsTrue();
+        }
+
+        [TestMethod]
+        public void LoadItemizedDictionary()
+        {
+            var testData = new AutoKeyDictionary<string, Setting>(x => x.Name)
+            {
+                new Setting { Name = "Numbers[Foo]", Value = "3" },
+                new Setting { Name = "Numbers[Bar]", Value = "7" },
+            };
+
+            Configuration.Load.From(new TestStore
+            {
+                GetSettingsFunc = (path, props) => testData.Values.Where(x => x.Name.ToString().StartsWith(path)).ToList()
+            })
+            .Select(typeof(ItemizedDictionaryConfig));
+
+            ItemizedDictionaryConfig.Numbers.Count.Validate().IsEqual(2);
+        }
+
+        [TestMethod]
+        public void LoadItemizedList()
+        {
+            var testData = new []
+            {
+                new Setting { Name = "Numbers", Value = "3" },
+                new Setting { Name = "Numbers", Value = "7" },
+            };
+
+            Configuration.Load.From(new TestStore
+            {
+                GetSettingsFunc = (path, props) => testData.Where(x => x.Name.ToString().StartsWith(path)).ToList()
+            })
+            .Select(typeof(ItemizedListConfig));
+
+            ItemizedListConfig.Numbers.Count.Validate().IsEqual(2);
+        }
+
+        [TestMethod]
+        public void LoadItemizedHashSet()
+        {
+            var testData = new[]
+            {
+                new Setting { Name = "Numbers", Value = "3" },
+                new Setting { Name = "Numbers", Value = "7" },
+            };
+
+            Configuration.Load.From(new TestStore
+            {
+                GetSettingsFunc = (path, props) => testData.Where(x => x.Name.ToString().StartsWith(path)).ToList()
+            })
+            .Select(typeof(ItemizedHashSetConfig));
+
+            ItemizedHashSetConfig.Numbers.Count.Validate().IsEqual(2);
+        }
+
+        [TestMethod]
+        public void LoadItemizedArray()
+        {
+            var testData = new[]
+            {
+                new Setting { Name = "Numbers", Value = "3" },
+                new Setting { Name = "Numbers", Value = "7" },
+            };
+
+            Configuration.Load.From(new TestStore
+            {
+                GetSettingsFunc = (path, props) => testData.Where(x => x.Name.ToString().StartsWith(path)).ToList()
+            })
+            .Select(typeof(ItemizedArrayConfig));
+
+            ItemizedArrayConfig.Numbers.Length.Validate().IsEqual(2);
         }
 
         [TestMethod]
@@ -115,7 +188,7 @@ namespace SmartConfig.Core.IntegrationTests.Configuration.Positive
     }
 }
 
-namespace SmartConfig.Core.IntegrationTests.Configuration.Positive.TestConfigs
+namespace SmartConfig.Core.Tests.Integration.ConfigurationTests.Positive.TestConfigs
 {
     [SmartConfig]
     public static class EmptyConfig { }
@@ -170,6 +243,34 @@ namespace SmartConfig.Core.IntegrationTests.Configuration.Positive.TestConfigs
                 public static string SubSubSetting { get; set; }
             }
         }
+    }
+
+    [SmartConfig]
+    public static class ItemizedDictionaryConfig
+    {
+        [Itemized]
+        public static Dictionary<string, int> Numbers { get; set; }
+    }
+
+    [SmartConfig]
+    public static class ItemizedListConfig
+    {
+        [Itemized]
+        public static List<int> Numbers { get; set; }
+    }
+
+    [SmartConfig]
+    public static class ItemizedHashSetConfig
+    {
+        [Itemized]
+        public static HashSet<int> Numbers { get; set; }
+    }
+
+    [SmartConfig]
+    public static class ItemizedArrayConfig
+    {
+        [Itemized]
+        public static int[] Numbers { get; set; }
     }
 }
 

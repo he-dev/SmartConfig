@@ -72,6 +72,7 @@
     <Compile Include="_codebase\UnitTests\Collections\SettingCollectionTests.cs" />
     <Compile Include="_codebase\UnitTests\ReflectorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="_codebase\UnitTests\SettingPathTests.cs" />
     <Compile Include="_helpers\TestStore.cs" />
     <Compile Include="_helpers\TestEnum.cs" />
   </ItemGroup>

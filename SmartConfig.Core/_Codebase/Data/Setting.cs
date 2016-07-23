@@ -10,9 +10,9 @@ namespace SmartConfig.Data
     {
         public Setting() : base(StringComparer.OrdinalIgnoreCase) { }
 
-        public string Name
+        public SettingPath Name
         {
-            get { return (string)this[nameof(Name)]; }
+            get { return (SettingPath)this[nameof(Name)]; }
             set { this[nameof(Name)] = value; }
         }
 
