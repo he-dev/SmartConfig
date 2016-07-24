@@ -7,8 +7,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartUtilities.ValidationExtensions;
 using SmartUtilities.ValidationExtensions.Testing;
 
-namespace SmartConfig.Core.Tests.SettingPathUnit.Positive
+namespace SmartConfig.Core.Tests.Unit.SettingPath.Positive
 {
+    using SmartConfig;
+
     [TestClass]
     public class ctor_IList_String
     {
@@ -79,6 +81,20 @@ namespace SmartConfig.Core.Tests.SettingPathUnit.Positive
             path.ToString().Verify().IsEqual("foo.bar");
             path.ToStringWithValueKey().Verify().IsEqual("foo.bar[baz]");
         }
+    }
+
+    [TestClass]
+    public class IsMatch
+    {
+        [TestMethod]
+        public void CreateSettingPathWithoutValueKey()
+        {
+            var path = new SettingPath("foo.bar");
+
+            path.IsMatch("foo.bar").Validate().IsTrue();
+            path.IsMatch("foo.bar[baz]").Validate().IsTrue();
+            path.IsMatch("foo.baz").Validate().IsFalse();
+        }       
     }
 
 }

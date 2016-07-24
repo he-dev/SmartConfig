@@ -63,7 +63,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="SmartUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SmartUtilities.4.0.12-beta\lib\net452\SmartUtilities.dll</HintPath>
+      <HintPath>..\packages\SmartUtilities.4.0.20-beta\lib\net452\SmartUtilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -80,11 +80,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="_codebase\CollectionFactory.cs" />
     <Compile Include="_codebase\CollectionItemizer.cs" />
     <Compile Include="_codebase\Collections\SettingCollection.cs" />
-    <Compile Include="_codebase\Converters.cs" />
     <Compile Include="_codebase\DataAnnotations\ItemizedAttribute.cs" />
+    <Compile Include="_codebase\DataStores\MemoryStore.cs" />
     <Compile Include="_codebase\Data\Setting.cs" />
     <Compile Include="_codebase\IO\SettingReader.cs" />
     <Compile Include="_codebase\IO\SettingWriter.cs" />

@@ -9,12 +9,13 @@ using SmartUtilities.TypeFramework;
 using SmartUtilities.ValidationExtensions;
 using SmartUtilities.ValidationExtensions.Testing;
 
-
 // ReSharper disable once CheckNamespace
-namespace SmartConfig.Core.Tests.Collections.SettingCollectionTests
+namespace SmartConfig.Core.Tests.Collections.SettingCollection.Positive
 {
+    using SmartConfig.Collections;
+
     [TestClass]
-    public class From_UseCases
+    public class From
     {
         [TestMethod]
         public void CreateSettingCollection()
@@ -41,8 +42,12 @@ namespace SmartConfig.Core.Tests.Collections.SettingCollectionTests
             public static class SubBaz
             {
                 public static string Quux { get; set; }
+
+                public static class SubSubBaz
+                {
+                    public static string SubQuux { get; set; }
+                }
             }
         }
     }
-
 }

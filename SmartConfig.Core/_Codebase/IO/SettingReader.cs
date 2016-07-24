@@ -37,33 +37,9 @@ namespace SmartConfig.IO
 
             foreach (var setting in settings)
             {
-                // data store exeptions shouldn't be cought
-                var settingRows = DataStore.GetSettings(setting.SettingPath, Namespaces);
-
                 try
                 {
-                    if (setting.IsItemized)
-                    {
-                        var value = CollectionFactory.CreateCollection(settingRows, setting.Type, Converter);
-                        _cache[setting] = value;
-                    }
-                    else
-                    {
-                        settingRows.Count.Validate().IsTrue(x => x <= 1, ctx => $"'{setting.SettingPath.ToString()}' found more then once.");
-                        var settingRow = settingRows.SingleOrDefault();
-
-                        if (settingRow == null)
-                        {
-                            if (setting.IsOptional) { continue; }
-                            throw new SettingNotFoundException { SettingPath = setting.SettingPath };
-                        }
-
-                        var value =
-                            settingRow.Value.GetType() == setting.Type
-                                ? settingRow.Value
-                                : Converter.Convert(settingRow.Value, setting.Type, culture);
-                        _cache[setting] = value;
-                    }
+                    ReadSetting(setting);
                 }
                 catch (Exception ex)
                 {
@@ -77,6 +53,62 @@ namespace SmartConfig.IO
             }
 
             return Commit();
+        }
+
+        private void ReadSetting(SettingInfo setting)
+        {
+            var culture = CultureInfo.InvariantCulture;
+
+            // data store exeptions shouldn't be cought
+            var settingRows = DataStore.GetSettings(setting.SettingPath, Namespaces);
+
+            if (setting.IsItemized)
+            {
+                var data = (object)null;
+
+                if (setting.Type.IsArray)
+                {
+                    data = settingRows.Select(x => x.Value);
+                }
+
+                if (setting.Type.IsList())
+                {
+                    data = settingRows.Select(x => x.Value);
+                }
+
+                if (setting.Type.IsHashSet())
+                {
+                    data = settingRows.Select(x => x.Value);
+                }
+
+                if (setting.Type.IsDictionary())
+                {
+                    data = settingRows.ToDictionary(x => x.Name.ValueKey, x => x.Value);
+                }
+
+                var value = Converter.Convert(data, setting.Type, culture);
+                _cache[setting] = value;
+            }
+            else
+            {
+                settingRows.Count.Validate().IsTrue(x => x <= 1, ctx => $"'{setting.SettingPath.ToString()}' found more then once.");
+                var settingRow = settingRows.SingleOrDefault();
+
+                if (settingRow == null)
+                {
+                    if (setting.IsOptional)
+                    {
+                        return;
+                    }
+                    throw new SettingNotFoundException { SettingPath = setting.SettingPath };
+                }
+
+                var value =
+                    settingRow.Value.GetType() == setting.Type
+                        ? settingRow.Value
+                        : Converter.Convert(settingRow.Value, setting.Type, culture);
+                _cache[setting] = value;
+            }
         }
 
         private int Commit()

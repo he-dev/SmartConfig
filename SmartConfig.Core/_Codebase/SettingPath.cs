@@ -55,6 +55,8 @@ namespace SmartConfig
 
         public int Count => Names.Count;
 
+        public bool IsMatch(string path) => Regex.IsMatch(path, $"^{ToString()}(\\[.+\\])?$", RegexOptions.IgnoreCase);
+
         public override string ToString() => string.Join(Delimiter, Names);
 
         public string ToStringWithValueKey() => $"{SettingNamespace}{Delimiter}{SettingNameWithValueKey}";
@@ -76,7 +78,7 @@ namespace SmartConfig
 
         public static implicit operator SettingPath(string name)
         {
-            return new SettingPath(new List<string> { name });
+            return new SettingPath(name);
         }
 
         protected bool Equals(SettingPath other)

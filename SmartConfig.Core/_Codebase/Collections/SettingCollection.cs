@@ -17,7 +17,7 @@ namespace SmartConfig.Collections
 
         internal static SettingCollection From(Type configurationType)
         {
-            var types = configurationType.AsEnumerable().Where(type => !type.HasAttribute<IgnoreAttribute>());
+            var types = configurationType.NestedTypes(type => !type.HasAttribute<IgnoreAttribute>());
 
             var settings =
                 types.Select(type => type.GetProperties(BindingFlags.Public | BindingFlags.Static))

@@ -12,22 +12,23 @@ using SmartUtilities.TypeFramework.Converters;
 using SmartUtilities.ValidationExtensions;
 using SmartUtilities.ValidationExtensions.Testing;
 using SmartConfig.Core.Tests;
+using SmartConfig.DataStores;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable CheckNamespace
 
-namespace SmartConfig.Core.Tests.Integration.ConfigurationTests.Positive
+namespace SmartConfig.Core.Tests.Integration.Configuration.Positive
 {
     using SmartConfig;
     using TestConfigs;
 
     [TestClass]
-    public class LoadTests
+    public class Load
     {
         [TestMethod]
         public void LoadEmptyConfig()
         {
-            var configuration = Configuration.Load.From(new NullStore()).Select(typeof(EmptyConfig));
+            var configuration = Configuration.Load.From(new MemoryStore()).Select(typeof(EmptyConfig));
 
             configuration.Type.Validate().IsTrue(x => x == typeof(EmptyConfig));
             configuration.Settings.Count.Validate().IsEqual(0);
@@ -40,7 +41,7 @@ namespace SmartConfig.Core.Tests.Integration.ConfigurationTests.Positive
         {
             var culture = CultureInfo.InvariantCulture;
 
-            var testData = new AutoKeyDictionary<string, Setting>(x => x.Name)
+            Configuration.Load.From(new MemoryStore
             {
                 new Setting { Name = nameof(TypesConfig.SByte), Value = SByte.MaxValue.ToString() },
                 new Setting { Name = nameof(TypesConfig.Byte), Value = Byte.MaxValue.ToString() },
@@ -66,15 +67,8 @@ namespace SmartConfig.Core.Tests.Integration.ConfigurationTests.Positive
                 //new Setting { Name = nameof(TypesConfig.Uri), Value = bool.TrueString },
                 //new Setting { Name = nameof(TypesConfig.XDocument), Value = @"<?xml version=""1.0""?><testXml></testXml>" },
                 //new Setting { Name = nameof(TypesConfig.XElement), Value = @"<testXml></testXml>" },
-            };
-
-            Configuration.Load
-                .From(new TestStore
-                {
-                    GetSettingsFunc = (name, props) => testData[name.ToString()].AsEnumerable().ToList()
-                })
-                .Register<StringToEnumConverter<TestEnum>>()
-                .Select(typeof(TypesConfig));
+            })
+            .Select(typeof(TypesConfig));
 
             TypesConfig.SByte.Validate().IsEqual(SByte.MaxValue);
             TypesConfig.Enum.Validate().IsEqual(TestEnum.TestValue2);
@@ -87,35 +81,27 @@ namespace SmartConfig.Core.Tests.Integration.ConfigurationTests.Positive
         }
 
         [TestMethod]
-        public void LoadItemizedDictionary()
+        public void LoadItemizedArray()
         {
-            var testData = new AutoKeyDictionary<string, Setting>(x => x.Name)
+            Configuration.Load.From(new MemoryStore
             {
-                new Setting { Name = "Numbers[Foo]", Value = "3" },
-                new Setting { Name = "Numbers[Bar]", Value = "7" },
-            };
-
-            Configuration.Load.From(new TestStore
-            {
-                GetSettingsFunc = (path, props) => testData.Values.Where(x => x.Name.ToString().StartsWith(path)).ToList()
+                { "Numbers", "3" },
+                { "Numbers", "7" },
+                { "Foo", "Bar" }
             })
-            .Select(typeof(ItemizedDictionaryConfig));
+            .Select(typeof(ItemizedArrayConfig));
 
-            ItemizedDictionaryConfig.Numbers.Count.Validate().IsEqual(2);
+            ItemizedArrayConfig.Numbers.Length.Validate().IsEqual(2);
         }
 
         [TestMethod]
         public void LoadItemizedList()
         {
-            var testData = new []
+            Configuration.Load.From(new MemoryStore
             {
-                new Setting { Name = "Numbers", Value = "3" },
-                new Setting { Name = "Numbers", Value = "7" },
-            };
-
-            Configuration.Load.From(new TestStore
-            {
-                GetSettingsFunc = (path, props) => testData.Where(x => x.Name.ToString().StartsWith(path)).ToList()
+                { "Numbers", "3" },
+                { "Numbers", "7" },
+                { "Foo", "Bar" }
             })
             .Select(typeof(ItemizedListConfig));
 
@@ -125,15 +111,11 @@ namespace SmartConfig.Core.Tests.Integration.ConfigurationTests.Positive
         [TestMethod]
         public void LoadItemizedHashSet()
         {
-            var testData = new[]
+            Configuration.Load.From(new MemoryStore
             {
-                new Setting { Name = "Numbers", Value = "3" },
-                new Setting { Name = "Numbers", Value = "7" },
-            };
-
-            Configuration.Load.From(new TestStore
-            {
-                GetSettingsFunc = (path, props) => testData.Where(x => x.Name.ToString().StartsWith(path)).ToList()
+                { "Numbers", "3" },
+                { "Numbers", "7" },
+                { "Foo", "Bar" }
             })
             .Select(typeof(ItemizedHashSetConfig));
 
@@ -141,54 +123,69 @@ namespace SmartConfig.Core.Tests.Integration.ConfigurationTests.Positive
         }
 
         [TestMethod]
-        public void LoadItemizedArray()
+        public void LoadItemizedDictionary()
         {
-            var testData = new[]
+            Configuration.Load.From(new MemoryStore
             {
-                new Setting { Name = "Numbers", Value = "3" },
-                new Setting { Name = "Numbers", Value = "7" },
-            };
-
-            Configuration.Load.From(new TestStore
-            {
-                GetSettingsFunc = (path, props) => testData.Where(x => x.Name.ToString().StartsWith(path)).ToList()
+                { "Numbers[Foo]", "3" },
+                { "Numbers[Bar]", "7" },
+                { "Foo", "Bar" }
             })
-            .Select(typeof(ItemizedArrayConfig));
+            .Select(typeof(ItemizedDictionaryConfig));
 
-            ItemizedArrayConfig.Numbers.Length.Validate().IsEqual(2);
+            ItemizedDictionaryConfig.Numbers.Count.Validate().IsEqual(2);
         }
 
         [TestMethod]
-        public void CreateConfigurationWithNamespaces()
+        public void LoadWithNamespaces()
         {
-            var configuration = Configuration.Load.From(new NullStore()).Where("Foo", "Bar").Select(typeof(EmptyConfig));
-            configuration.SettingReader.Namespaces.Count.Validate().IsEqual(1);
-            configuration.SettingReader.Namespaces.Validate().IsTrue(x => x.ContainsKey("foo"));
-            configuration.SettingReader.Namespaces["foo"].Validate().IsTrue(x => (string)x == "Bar");
+            Configuration.Load.From(new MemoryStore
+            {
+                new Setting
+                {
+                    [nameof(Setting.Name)] = (SettingPath)"foo",
+                    [nameof(Setting.Value)] = "bar",
+                    ["testnamespace"] = "qux",
+                },
+                new Setting
+                {
+                    [nameof(Setting.Name)] = (SettingPath)"foo",
+                    [nameof(Setting.Value)] = "bax",
+                    ["testnamespace"] = "quo",
+                }
+            })
+            .Where("testnamespace", "quo")
+            .Select(typeof(NamespaceConfig));
+
+            NamespaceConfig.Foo.Verify().IsEqual("bax");
         }
 
         [TestMethod]
         public void IgnoreOptionalSettings()
         {
             new Action(() =>
-                Configuration.Load.From(new NullStore()).Select(typeof(OptionalSettings))
+                Configuration.Load.From(new MemoryStore()).Select(typeof(OptionalConfig))
             ).Validate().DoesNotThrow();
         }
 
         [TestMethod]
-        public void ReadNestedSettings()
+        public void LoadNestedSettings()
         {
-            var configuration = Configuration.Load.From(new NullStore()).Select(typeof(NestedSettings));
+            Configuration.Load.From(new MemoryStore
+            {
+                { "SubConfig.SubSetting", "foo" },
+                { "SubConfig.SubSubConfig.SubSubSetting", "bar" },
+            })
+            .Select(typeof(NestedConfig));
 
-            configuration.Settings.Count.Validate().IsEqual(2);
-            configuration.Settings.SingleOrDefault(x => x.SettingPath.ToString() == "SubConfig.SubSetting").Validate().IsNotNull();
-            configuration.Settings.SingleOrDefault(x => x.SettingPath.ToString() == "SubConfig.SubSubConfig.SubSubSetting").Validate().IsNotNull();
+            NestedConfig.SubConfig.SubSetting.Verify().IsEqual("foo");
+            NestedConfig.SubConfig.SubSubConfig.SubSubSetting.Verify().IsEqual("bar");
         }
 
     }
 }
 
-namespace SmartConfig.Core.Tests.Integration.ConfigurationTests.Positive.TestConfigs
+namespace SmartConfig.Core.Tests.Integration.Configuration.Positive.TestConfigs
 {
     [SmartConfig]
     public static class EmptyConfig { }
@@ -223,14 +220,14 @@ namespace SmartConfig.Core.Tests.Integration.ConfigurationTests.Positive.TestCon
     }
 
     [SmartConfig]
-    public static class OptionalSettings
+    public static class OptionalConfig
     {
         [Optional]
         public static string String { get; set; }
     }
 
     [SmartConfig]
-    public static class NestedSettings
+    public static class NestedConfig
     {
         public static class SubConfig
         {
@@ -272,8 +269,13 @@ namespace SmartConfig.Core.Tests.Integration.ConfigurationTests.Positive.TestCon
         [Itemized]
         public static int[] Numbers { get; set; }
     }
-}
 
+    [SmartConfig]
+    public static class NamespaceConfig
+    {
+        public static string Foo { get; set; }
+    }
+}
 
 namespace SmartConfig.Core.Tests.IntegrationTests.ErrorHandling
 {
@@ -286,21 +288,21 @@ namespace SmartConfig.Core.Tests.IntegrationTests.ErrorHandling
         public void RequiredSettingNotFound()
         {
             new Action(() =>
-                Configuration.Load.From(new NullStore()).Select(typeof(RequiredSettings))
+                Configuration.Load.From(new MemoryStore()).Select(typeof(RequiredSettings))
             ).Validate().Throws<AggregateException>();
         }
 
         [TestMethod]
         public void PropertyNameNullOrEmpty()
         {
-            new Action(() => Configuration.Load.From(new NullStore()).Where(null, null)).Validate().Throws<ValidationException>();
-            new Action(() => Configuration.Load.From(new NullStore()).Where(string.Empty, null)).Validate().Throws<ValidationException>();
+            new Action(() => Configuration.Load.From(new MemoryStore()).Where(null, null)).Validate().Throws<ValidationException>();
+            new Action(() => Configuration.Load.From(new MemoryStore()).Where(string.Empty, null)).Validate().Throws<ValidationException>();
         }
 
         [TestMethod]
         public void ValueNull()
         {
-            new Action(() => Configuration.Load.From(new NullStore()).Where("foo", null)).Validate().Throws<ValidationException>();
+            new Action(() => Configuration.Load.From(new MemoryStore()).Where("foo", null)).Validate().Throws<ValidationException>();
         }
     }
 
