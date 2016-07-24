@@ -8,8 +8,11 @@ For a detailed description refer to http://he-dev.github.io/SmartConfig/
 
 Comming out soon ;-)
 
-- Improved API
-- Improved converters extendibility
-- Improved filters (that are now called namespaces)
-- Removed Entity Framework dependency
-- Removed AppConfigSource which is now splitted into section sources (currently AppSetting and ConnectionStrings)
+- Improved API: `Configuration.Load.From(mystore).Where(env, foo).Select(typeof(config));`
+- Improved converters (enums are now resolved automaticaly)
+- Replaced filters with namespaces
+- Removed Entity Framework dependency from `SqlServerStore`
+- Splitted `AppConfigSource` into `AppSettingStore` and `ConnectionStringsStore`
+- Added option for config name `AsPath` and `AsNamespace`
+- Added *Itemized* settings that allow to create dynamic collections (currently: arrays, lists, hashsets and dictionaries)
+- Added `MemoryStore` for debugging and temporary settings
