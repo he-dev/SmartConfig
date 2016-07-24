@@ -18,12 +18,9 @@ namespace SmartConfig.DataStores.AppConfig.Tests.Integration.AppSettingsStore.Po
     public class GetSettings
     {
         [TestMethod]
-        public void ByKey()
+        public void GetSettingsByName()
         {
-            Configuration.Load
-                .From(new AppSettingsStore())
-                .Select(typeof(TestConfig1));
-
+            Configuration.Load.From(new AppSettingsStore()).Select(typeof(TestConfig1));
             TestConfig1.Foo.Verify().IsNotNullOrEmpty().IsEqual("Bar");
         }
     }
@@ -31,7 +28,7 @@ namespace SmartConfig.DataStores.AppConfig.Tests.Integration.AppSettingsStore.Po
     public class SaveSetting
     {
         [TestMethod]
-        public void ByKey()
+        public void SaveSettingByName()
         {
             var value = DateTime.UtcNow.ToFileTime().ToString();
 
@@ -66,5 +63,5 @@ namespace SmartConfig.DataStores.AppConfig.Tests.Integration.AppSettingsStore.Po
 
 namespace SmartConfig.DataStores.AppConfig.Tests.Integration.AppSettingsStore.Negative
 {
-   
+
 }

@@ -16,10 +16,10 @@ namespace SmartConfig
     {
         private static readonly Func<object, Func<Type, Type>, TypeConverter, KeyValuePair<string, object>[]>[] Factories =
         {
-            ItemizeDictionary,
+            ItemizeArray,
             ItemizeList,
             ItemizeHashSet,
-            //CreateArray
+            ItemizeDictionary,
         };
 
         public static KeyValuePair<string, object>[] ItemizeCollection(object settings, Func<Type, Type> mapDataType, TypeConverter converter)
@@ -28,23 +28,19 @@ namespace SmartConfig
                 Factories
                     .Select(factory => factory(settings, mapDataType, converter))
                     .FirstOrDefault(collection => collection != null);
-
         }
 
-        public static KeyValuePair<string, object>[] ItemizeDictionary(object settings, Func<Type, Type> mapDataType, TypeConverter converter)
+        public static KeyValuePair<string, object>[] ItemizeArray(object settings, Func<Type, Type> mapDataType, TypeConverter converter)
         {
-            if (!settings.GetType().IsDictionary()) { return null; }
+            if (!settings.GetType().IsArray) { return null; }
 
-            var valueType = settings.GetType().GetGenericArguments()[1];
+            var valueType = settings.GetType().GetGenericArguments()[0];
             var dataType = mapDataType(valueType);
 
-            var dictionary = (IDictionary)settings;
-
-            var result = dictionary.Keys.Cast<object>().Select(
-                key => new KeyValuePair<string, object>(
-                    key: (string)converter.Convert(key, typeof(string)),
-                    value: converter.Convert(dictionary[key], dataType)
-            )).ToArray();
+            var result =
+                ((IEnumerable)settings).Cast<object>()
+                .Select(x => new KeyValuePair<string, object>(key: null, value: converter.Convert(x, dataType)))
+                .ToArray();
 
             return result;
         }
@@ -79,22 +75,70 @@ namespace SmartConfig
             return result;
         }
 
-        public static KeyValuePair<string, object>[] CreateArray(object settings, Func<Type, Type> mapDataType, TypeConverter converter)
+        public static KeyValuePair<string, object>[] ItemizeDictionary(object settings, Func<Type, Type> mapDataType, TypeConverter converter)
         {
-            if (!settings.GetType().IsArray)
-            {
-                return null;
-            }
+            if (!settings.GetType().IsDictionary()) { return null; }
 
-            var valueType = settings.GetType().GetGenericArguments()[0];
+            var valueType = settings.GetType().GetGenericArguments()[1];
             var dataType = mapDataType(valueType);
 
-            var result =
-                ((IEnumerable)settings).Cast<object>()
-                .Select(x => new KeyValuePair<string, object>(key: null, value: converter.Convert(x, dataType)))
-                .ToArray();
+            var dictionary = (IDictionary)settings;
+
+            var result = dictionary.Keys.Cast<object>().Select(
+                key => new KeyValuePair<string, object>(
+                    key: (string)converter.Convert(key, typeof(string)),
+                    value: converter.Convert(dictionary[key], dataType)
+            )).ToArray();
 
             return result;
         }
     }
+
+    //internal class CollectionItemizer2
+    //{
+    //    private static readonly Func<object, object>[] Factories =
+    //    {
+    //        ItemizeArray,
+    //        ItemizeList,
+    //        ItemizeHashSet,
+    //        ItemizeDictionary,
+    //    };
+
+    //    public static object ItemizeCollection(object settings)
+    //    {
+    //        return
+    //            Factories
+    //                .Select(factory => factory(settings))
+    //                .FirstOrDefault(collection => collection != null);
+    //    }
+
+    //    public static object ItemizeArray(object settings)
+    //    {
+    //        if (!settings.GetType().IsArray) { return null; }
+    //        var result = ((IEnumerable)settings).Cast<object>().Select(x => x);
+    //        return result;
+    //    }
+
+    //    public static object ItemizeList(object settings)
+    //    {
+    //        if (!settings.GetType().IsList()) { return null; }
+    //        var result = ((IEnumerable)settings).Cast<object>().Select(x => x);
+    //        return result;
+    //    }
+
+    //    public static object ItemizeHashSet(object settings)
+    //    {
+    //        if (!settings.GetType().IsHashSet()) { return null; }
+    //        var result = ((IEnumerable)settings).Cast<object>().Select(x => x);
+    //        return result;
+    //    }
+
+    //    public static object ItemizeDictionary(object settings)
+    //    {
+    //        if (!settings.GetType().IsDictionary()) { return null; }
+    //        var dictionary = (IDictionary)settings;
+    //        var result = dictionary.Keys.Cast<object>().ToDictionary(key => key, key => dictionary[key]);
+    //        return result;
+    //    }
+    //}
 }

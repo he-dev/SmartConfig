@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,11 +16,11 @@ namespace SmartConfig.DataStores
         public List<Setting> GetSettings(SettingPath path, IReadOnlyDictionary<string, object> namespaces)
         {
             var settings =
-                from x in Data
-                where x.Name.IsMatch(path) && (namespaces == null || namespaces.All(n => x[n.Key] == n.Value))
-                select x;
+                (from x in Data
+                 where x.Name.IsMatch(path) && (namespaces == null || namespaces.All(n => x.NamespaceEquals(n.Key, n.Value)))
+                 select x).ToList();
 
-            return settings.ToList();
+            return settings;
         }
 
         public int SaveSetting(SettingPath path, IReadOnlyDictionary<string, object> namespaces, object value)
@@ -46,7 +47,8 @@ namespace SmartConfig.DataStores
             return settings.Count;
         }
 
-        public List<Setting> Data { get; set; } = new List<Setting>();
+
+        public List<Setting> Data { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = new List<Setting>();
 
         public void Add(Setting setting) => Data.Add(setting);
 

@@ -13,6 +13,7 @@ using SmartUtilities.ValidationExtensions;
 using SmartUtilities.ValidationExtensions.Testing;
 using SmartConfig.Core.Tests;
 using SmartConfig.DataStores;
+// ReSharper disable BuiltInTypeReferenceStyle
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable CheckNamespace
@@ -43,27 +44,27 @@ namespace SmartConfig.Core.Tests.Integration.Configuration.Positive
 
             Configuration.Load.From(new MemoryStore
             {
-                new Setting { Name = nameof(TypesConfig.SByte), Value = SByte.MaxValue.ToString() },
-                new Setting { Name = nameof(TypesConfig.Byte), Value = Byte.MaxValue.ToString() },
-                new Setting { Name = nameof(TypesConfig.Char), Value = Char.MaxValue.ToString() },
-                new Setting { Name = nameof(TypesConfig.Int16), Value = Int16.MaxValue.ToString() },
-                new Setting { Name = nameof(TypesConfig.Int32), Value = Int32.MaxValue.ToString() },
-                new Setting { Name = nameof(TypesConfig.Int64), Value = Int64.MaxValue.ToString() },
-                new Setting { Name = nameof(TypesConfig.UInt16), Value = UInt16.MaxValue.ToString() },
-                new Setting { Name = nameof(TypesConfig.UInt32), Value = UInt32.MaxValue.ToString() },
-                new Setting { Name = nameof(TypesConfig.UInt64), Value = UInt64.MaxValue.ToString() },
-                new Setting { Name = nameof(TypesConfig.Single), Value = Single.MaxValue.ToString("R", culture) },
-                new Setting { Name = nameof(TypesConfig.Double), Value = Double.MaxValue.ToString("R", culture) },
-                new Setting { Name = nameof(TypesConfig.Decimal), Value = Decimal.MaxValue.ToString(culture) },
+                { nameof(TypesConfig.SByte), SByte.MaxValue.ToString() },
+                { nameof(TypesConfig.Byte), Byte.MaxValue.ToString() },
+                { nameof(TypesConfig.Char), Char.MaxValue.ToString() },
+                { nameof(TypesConfig.Int16), Int16.MaxValue.ToString() },
+                { nameof(TypesConfig.Int32), Int32.MaxValue.ToString() },
+                { nameof(TypesConfig.Int64), Int64.MaxValue.ToString() },
+                { nameof(TypesConfig.UInt16), UInt16.MaxValue.ToString() },
+                { nameof(TypesConfig.UInt32), UInt32.MaxValue.ToString() },
+                { nameof(TypesConfig.UInt64), UInt64.MaxValue.ToString() },
+                { nameof(TypesConfig.Single), Single.MaxValue.ToString("R", culture) },
+                { nameof(TypesConfig.Double), Double.MaxValue.ToString("R", culture) },
+                { nameof(TypesConfig.Decimal), Decimal.MaxValue.ToString(culture) },
                 //new Setting { Name = nameof(TypesConfig.ColorName), Value = Color.DarkRed.Name },
                 //new Setting { Name = nameof(TypesConfig.ColorDec), Value = $"{Color.Plum.R},{Color.Plum.G},{Color.Plum.B}" },
                 //new Setting { Name = nameof(TypesConfig.ColorHex), Value = Color.Beige.ToArgb().ToString("X") },
-                new Setting { Name = nameof(TypesConfig.False), Value = bool.FalseString },
-                new Setting { Name = nameof(TypesConfig.True), Value = bool.TrueString },
-                new Setting { Name = nameof(TypesConfig.DateTime), Value = new DateTime().ToString(culture) },
-                new Setting { Name = nameof(TypesConfig.Enum), Value = TestEnum.TestValue2.ToString() },
+                { nameof(TypesConfig.False), bool.FalseString },
+                { nameof(TypesConfig.True), bool.TrueString },
+                { nameof(TypesConfig.DateTime), new DateTime().ToString(culture) },
+                { nameof(TypesConfig.Enum), TestEnum.TestValue2.ToString() },
                 //new Setting { Name = nameof(TypesConfig.ListInt32), Value = "[1, 2, 3]" },
-                new Setting { Name = nameof(TypesConfig.String), Value = "foo" },
+                { nameof(TypesConfig.String), "foo" },
                 //new Setting { Name = nameof(TypesConfig.Uri), Value = bool.TrueString },
                 //new Setting { Name = nameof(TypesConfig.XDocument), Value = @"<?xml version=""1.0""?><testXml></testXml>" },
                 //new Setting { Name = nameof(TypesConfig.XElement), Value = @"<testXml></testXml>" },
@@ -79,6 +80,65 @@ namespace SmartConfig.Core.Tests.Integration.Configuration.Positive
             //TypesConfig.XElement.ToString().Validate().IsEqual(XElement.Parse(@"<testXml></testXml>").ToString());
             //TypesConfig.ListInt32.SequenceEqual(new[] { 1, 2, 3 }).Validate().IsTrue();
         }
+
+        [TestMethod]
+        public void LoadWithNamespaces()
+        {
+            Configuration.Load.From(new MemoryStore
+            {
+                new Setting
+                {
+                    [nameof(Setting.Name)] = (SettingPath)"foo",
+                    [nameof(Setting.Value)] = "bar",
+                    ["testnamespace"] = "qux",
+                },
+                new Setting
+                {
+                    [nameof(Setting.Name)] = (SettingPath)"foo",
+                    [nameof(Setting.Value)] = "bax",
+                    ["testnamespace"] = "quo",
+                }
+            })
+            .Where("testnamespace", "quo")
+            .Select(typeof(NamespaceConfig));
+
+            NamespaceConfig.Foo.Verify().IsEqual("bax");
+        }
+
+        [TestMethod]
+        public void LoadWithoutOptionalSettings()
+        {
+            Configuration.Load.From(new MemoryStore()).Select(typeof(OptionalConfig));
+            OptionalConfig.String.Verify().IsNullOrEmpty();
+        }
+
+        [TestMethod]
+        public void LoadNestedSettingsWithoutIgnored()
+        {
+            Configuration.Load.From(new MemoryStore
+            {
+                { "SubConfig.SubSetting", "foo" },
+                { "SubConfig.SubSubConfig1.SubSubSetting", "bar" },
+            })
+            .Select(typeof(NestedConfig));
+
+            NestedConfig.SubConfig.SubSetting.Verify().IsEqual("foo");
+            NestedConfig.SubConfig.SubSubConfig1.SubSubSetting.Verify().IsEqual("bar");
+        }
+
+        [TestMethod]
+        public void LoadWithConfigNameAsNamespace()
+        {
+            Configuration.Load.From(new MemoryStore
+            {
+                new Setting{ Name = (SettingPath)"Foo", Value = "Bar", ConfigName = "Quux"},
+                new Setting{ Name = (SettingPath)"Foo", Value = "Bax", ConfigName = "Baz"},
+            }).Select(typeof(ConfigNameAsNamespaceConfig));
+
+            ConfigNameAsNamespaceConfig.Foo.Verify().IsNotNullOrEmpty().IsEqual("Bax");
+        }
+
+        // --- itemized tests
 
         [TestMethod]
         public void LoadItemizedArray()
@@ -136,57 +196,18 @@ namespace SmartConfig.Core.Tests.Integration.Configuration.Positive
             ItemizedDictionaryConfig.Numbers.Count.Validate().IsEqual(2);
         }
 
-        [TestMethod]
-        public void LoadWithNamespaces()
-        {
-            Configuration.Load.From(new MemoryStore
-            {
-                new Setting
-                {
-                    [nameof(Setting.Name)] = (SettingPath)"foo",
-                    [nameof(Setting.Value)] = "bar",
-                    ["testnamespace"] = "qux",
-                },
-                new Setting
-                {
-                    [nameof(Setting.Name)] = (SettingPath)"foo",
-                    [nameof(Setting.Value)] = "bax",
-                    ["testnamespace"] = "quo",
-                }
-            })
-            .Where("testnamespace", "quo")
-            .Select(typeof(NamespaceConfig));
-
-            NamespaceConfig.Foo.Verify().IsEqual("bax");
-        }
-
-        [TestMethod]
-        public void IgnoreOptionalSettings()
-        {
-            new Action(() =>
-                Configuration.Load.From(new MemoryStore()).Select(typeof(OptionalConfig))
-            ).Validate().DoesNotThrow();
-        }
-
-        [TestMethod]
-        public void LoadNestedSettings()
-        {
-            Configuration.Load.From(new MemoryStore
-            {
-                { "SubConfig.SubSetting", "foo" },
-                { "SubConfig.SubSubConfig.SubSubSetting", "bar" },
-            })
-            .Select(typeof(NestedConfig));
-
-            NestedConfig.SubConfig.SubSetting.Verify().IsEqual("foo");
-            NestedConfig.SubConfig.SubSubConfig.SubSubSetting.Verify().IsEqual("bar");
-        }
-
     }
 }
 
 namespace SmartConfig.Core.Tests.Integration.Configuration.Positive.TestConfigs
 {
+    public enum TestEnum
+    {
+        TestValue1,
+        TestValue2,
+        TestValue3
+    }
+
     [SmartConfig]
     public static class EmptyConfig { }
 
@@ -234,9 +255,15 @@ namespace SmartConfig.Core.Tests.Integration.Configuration.Positive.TestConfigs
             [Optional]
             public static string SubSetting { get; set; }
 
-            public static class SubSubConfig
+            public static class SubSubConfig1
             {
                 [Optional]
+                public static string SubSubSetting { get; set; }
+            }
+
+            [SmartUtilities.DataAnnotations.Ignore]
+            public static class SubSubConfig2
+            {
                 public static string SubSubSetting { get; set; }
             }
         }
@@ -275,10 +302,17 @@ namespace SmartConfig.Core.Tests.Integration.Configuration.Positive.TestConfigs
     {
         public static string Foo { get; set; }
     }
+
+    [SmartConfig("Baz", NameOption = ConfigNameOption.AsNamespace)]
+    public static class ConfigNameAsNamespaceConfig
+    {
+        public static string Foo { get; set; }
+    }
 }
 
-namespace SmartConfig.Core.Tests.IntegrationTests.ErrorHandling
+namespace SmartConfig.Core.Tests.Integration.Configuration.Negative
 {
+    using SmartConfig;
     using TestConfigs;
 
     [TestClass]
@@ -316,7 +350,7 @@ namespace SmartConfig.Core.Tests.IntegrationTests.ErrorHandling
     }
 }
 
-namespace SmartConfig.Core.Tests.IntegrationTests.ErrorHandling.TestConfigs
+namespace SmartConfig.Core.Tests.Integration.Configuration.Negative.TestConfigs
 {
     [SmartConfig]
     public static class RequiredSettings

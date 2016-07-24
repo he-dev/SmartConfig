@@ -184,8 +184,8 @@ namespace SmartConfig
                 var smartConfigAttribute = type.GetCustomAttribute<SmartConfigAttribute>();
                 if (smartConfigAttribute.NameOption == ConfigNameOption.AsNamespace)
                 {
-                    _configuration.SettingReader.Namespaces.Add("blah", smartConfigAttribute.Name);
-                    _configuration.SettingWriter.Namespaces.Add("blah", smartConfigAttribute.Name);
+                    _configuration.SettingReader.Namespaces.Add(nameof(Setting.ConfigName), smartConfigAttribute.Name);
+                    _configuration.SettingWriter.Namespaces.Add(nameof(Setting.ConfigName), smartConfigAttribute.Name);
                 }
 
                 _configuration.Type = type;

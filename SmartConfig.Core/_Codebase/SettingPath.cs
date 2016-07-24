@@ -55,7 +55,12 @@ namespace SmartConfig
 
         public int Count => Names.Count;
 
-        public bool IsMatch(string path) => Regex.IsMatch(path, $"^{ToString()}(\\[.+\\])?$", RegexOptions.IgnoreCase);
+        public bool IsMatch(string path)
+        {
+            var settingPathString = ToString();
+            var isMatch = Regex.IsMatch(path, $"^{settingPathString}(\\[.+\\])?$", RegexOptions.IgnoreCase);
+            return isMatch;
+        }
 
         public override string ToString() => string.Join(Delimiter, Names);
 
