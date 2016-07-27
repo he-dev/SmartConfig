@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
@@ -28,30 +29,24 @@ namespace SmartConfig
 
         internal IReadOnlyCollection<SettingInfo> Settings { get; private set; }
 
+        internal IReadOnlyDictionary<string, object> Namespaces { get; private set; } = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
         internal SettingReader SettingReader { get; private set; }
 
         internal SettingWriter SettingWriter { get; private set; }
 
-        public static event EventHandler<ReloadFailedEventArgs> ReloadFailed = delegate { };
-
-        //public static Configuration Build(Action<Builder> buildConfiguration)
-        //{
-        //    buildConfiguration.Validate(nameof(buildConfiguration)).IsNotNull(); //(ctx => "You need to specify a data store.");
-        //    var builder = new Builder();
-        //    buildConfiguration(builder);
-        //    return builder.ToConfiguration();
-        //}
+        public static event EventHandler<ReloadFailedEventArgs> ReloadFailed = delegate { };      
 
         private int _Load()
         {
-            var affectedSettingCount = SettingReader.ReadSettings(Settings);
+            var affectedSettingCount = SettingReader.ReadSettings(Settings, Namespaces);
             Cache[Type] = this;
             return affectedSettingCount;
         }
 
         private int _Save()
         {
-            return SettingWriter.SaveSettings(Settings);
+            return SettingWriter.SaveSettings(Settings, Namespaces);
         }
 
         public static void Reload(Type configurationType)
@@ -64,7 +59,7 @@ namespace SmartConfig
 
             try
             {
-                configuration.SettingReader.ReadSettings(configuration.Settings);
+                configuration.SettingReader.ReadSettings(configuration.Settings, configuration.Namespaces);
             }
             catch (Exception ex)
             {
@@ -91,7 +86,11 @@ namespace SmartConfig
         {
             private Configuration _configuration = new Configuration();
 
+            private IDataStore _dataStore;
+
             private TypeConverter _converter = CreateDefaultConverter();
+
+            private Dictionary<string, object> _namespaces = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
             internal Builder() { }
 
@@ -114,7 +113,7 @@ namespace SmartConfig
                     new StringToColorConverter(),
                     new StringToBooleanConverter(),
                     new StringToDateTimeConverter(),
-                    new StringToEnumConverter(), 
+                    new StringToEnumConverter(),
 
                     new SByteToStringConverter(),
                     new ByteToStringConverter(),
@@ -133,25 +132,21 @@ namespace SmartConfig
                     new DateTimeToStringConverter(),
                     new EnumToStringConverter(),
 
-                    new EnumerableObjectToArrayObjectConverter(), 
-                    new EnumerableObjectToListObjectConverter(), 
-                    new EnumerableObjectToHashSetObjectConverter(), 
-                    new DictionaryObjectObjectToDictionaryObjectObjectConverter(), 
+                    new EnumerableObjectToArrayObjectConverter(),
+                    new EnumerableObjectToListObjectConverter(),
+                    new EnumerableObjectToHashSetObjectConverter(),
+                    new DictionaryObjectObjectToDictionaryObjectObjectConverter(),
 
                     new EnumerableObjectToArrayStringConverter(),
-                    new EnumerableObjectToListStringConverter(), 
-                    new EnumerableObjectToHashSetStringConverter(), 
-                    new DictionaryObjectObjectToDictionaryStringStringConverter(), 
+                    new EnumerableObjectToListStringConverter(),
+                    new EnumerableObjectToHashSetStringConverter(),
+                    new DictionaryObjectObjectToDictionaryStringStringConverter(),
                 });
             }
 
             public Builder From(IDataStore dataStore)
             {
-                dataStore.Validate(nameof(dataStore)).IsNotNull(ctx => "You need to specify a data store.");
-
-                _configuration.SettingReader = new SettingReader(dataStore, _converter);
-                _configuration.SettingWriter = new SettingWriter(dataStore, _converter);
-
+                _dataStore = dataStore.Validate(nameof(dataStore)).IsNotNull(ctx => "You need to specify a data store.").Argument;                
                 return this;
             }
 
@@ -162,8 +157,7 @@ namespace SmartConfig
                 //_configuration.DataStore.Validate().IsNotNull(ctx => "You need to first specify the data store by calling the 'From' method.");
                 //DataStore.SettingNamespaces[name] = value;
 
-                _configuration.SettingReader.Namespaces.Add(name, value);
-                _configuration.SettingWriter.Namespaces.Add(name, value);
+                _namespaces.Add(name, value);
 
                 return this;
             }
@@ -174,7 +168,7 @@ namespace SmartConfig
                 return this;
             }
 
-            public Configuration Select(Type type)
+            public Configuration Select(Type type, string name = null, ConfigNameOption nameOption = ConfigNameOption.AsPath)
             {
                 type.Validate(nameof(type))
                     .IsNotNull(ctx => "You need to specify a configuration type.")
@@ -182,16 +176,24 @@ namespace SmartConfig
                     .IsTrue(x => x.HasAttribute<SmartConfigAttribute>(), ctx => $"Type '{type.FullName}' must be decorated with the '{nameof(SmartConfigAttribute)}'");
 
                 var smartConfigAttribute = type.GetCustomAttribute<SmartConfigAttribute>();
+
+                // override attribute settings
+                if (!string.IsNullOrEmpty(name))
+                {
+                    smartConfigAttribute.Name = name;
+                    smartConfigAttribute.NameOption = nameOption;
+                }
+
                 if (smartConfigAttribute.NameOption == ConfigNameOption.AsNamespace)
                 {
-                    _configuration.SettingReader.Namespaces.Add(nameof(Setting.ConfigName), smartConfigAttribute.Name);
-                    _configuration.SettingWriter.Namespaces.Add(nameof(Setting.ConfigName), smartConfigAttribute.Name);
+                    _namespaces.Add(nameof(Setting.ConfigName), smartConfigAttribute.Name);
                 }
 
                 _configuration.Type = type;
                 _configuration.Settings = SettingCollection.From(type);
-                _configuration.SettingReader.Converter = _converter;
-                _configuration.SettingWriter.Converter = _converter;
+                _configuration.Namespaces = _namespaces;
+                _configuration.SettingReader = new SettingReader(_dataStore, _converter);
+                _configuration.SettingWriter = new SettingWriter(_dataStore, _converter);
 
                 _configuration._Load();
 

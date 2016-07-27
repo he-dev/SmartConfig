@@ -7,41 +7,96 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Data
 {
-    public class Setting : Dictionary<string, object>
+    public class Setting
     {
-        public Setting() : base(StringComparer.OrdinalIgnoreCase) { }
+        private readonly Dictionary<string, object> _values = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
+        public Setting() { }
+
+        public Setting(SettingPath path, IReadOnlyDictionary<string, object> namespaces)
+        {
+            Name = path;
+            if (namespaces != null)
+            {
+                foreach (var ns in namespaces)
+                {
+                    _values.Add(ns.Key, ns.Value);
+                }
+            }
+        }
+
+        public Setting(SettingPath path, IReadOnlyDictionary<string, object> namespaces, object value)
+            : this(path, namespaces)
+        {
+            Value = value;
+        }
+
+        public object this[string key]
+        {
+            get { return _values[key]; }
+            set { _values[key] = value; }
+        }
 
         public SettingPath Name
         {
             [DebuggerStepThrough]
-            get { return (SettingPath)this[nameof(Name)]; }
+            get { return (SettingPath)_values[nameof(Name)]; }
 
             [DebuggerStepThrough]
-            set { this[nameof(Name)] = value; }
+            set { _values[nameof(Name)] = value; }
         }
 
         public object Value
         {
             [DebuggerStepThrough]
-            get { return this[nameof(Value)]; }
+            get { return _values[nameof(Value)]; }
 
             [DebuggerStepThrough]
-            set { this[nameof(Value)] = value; }
+            set { _values[nameof(Value)] = value; }
         }
 
         public string ConfigName
         {
             [DebuggerStepThrough]
-            get { return (string)this[nameof(ConfigName)]; }
+            get { return (string)_values[nameof(ConfigName)]; }
 
             [DebuggerStepThrough]
-            set { this[nameof(ConfigName)] = value; }
+            set { _values[nameof(ConfigName)] = value; }
+        }
+
+        public IReadOnlyDictionary<string, object> Namespaces
+        {
+            get
+            {
+                var namespaces = _values.Where(x => !x.Key.Equals(nameof(Name)) && !x.Key.Equals(nameof(Value)));
+                return namespaces.ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
+            }
         }
 
         public bool NamespaceEquals(string key, object value)
         {
             var temp = (object)null;
-            return TryGetValue(key, out temp) && temp.Equals(value);
+            return Namespaces.TryGetValue(key, out temp) && temp.Equals(value);
         }
+
+        public bool IsLike(Setting setting)
+        {
+            return
+                Name.IsLike(setting.Name) &&
+                Namespaces.All(ns => setting.NamespaceEquals(ns.Key, ns.Value));
+        }
+
+        //public static bool operator ==(Setting x, Setting y)
+        //{
+        //    if (ReferenceEquals(x, null) || ReferenceEquals(y, null)) return false;
+
+        //    return 
+        //        x.na;
+        //}
+
+        //public static bool operator !=(Setting x, Setting y)
+        //{
+        //    return !(x == y);
+        //}
     }
 }

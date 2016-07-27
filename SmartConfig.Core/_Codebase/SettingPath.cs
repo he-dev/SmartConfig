@@ -20,19 +20,6 @@ namespace SmartConfig
             ValueKey = valueKey;
         }
 
-        public SettingPath(string path, string delimiter = DefaultDelimiter)
-        {
-            var names = path.Split(new[] { delimiter }, StringSplitOptions.None);
-
-            // extract the key from the last name
-            // https://regex101.com/r/qT2xX9/2
-            var lastNameMatch = Regex.Match(names[names.Length - 1], @"(?<name>[a-z_][a-z0-9_]*)(\[(?<key>.+)\])?$", RegexOptions.IgnoreCase);
-            names[names.Length - 1] = lastNameMatch.Groups["name"].Value;
-            ValueKey = lastNameMatch.Groups["key"].Value;
-
-            Names = names;
-        }
-
         public SettingPath(SettingPath path, string valueKey = null)
         {
             Names = path.Names;
@@ -49,31 +36,55 @@ namespace SmartConfig
 
         public string SettingNameWithValueKey => string.IsNullOrEmpty(ValueKey) ? SettingName : $"{SettingName}[{ValueKey}]";
 
+        public string FullName => string.Join(Delimiter, Names);
+
+        public string FullNameEx => Names.Count > 1 ? $"{SettingNamespace}{Delimiter}{SettingNameWithValueKey}" : FullName;
+
         public string ValueKey { get; }
 
-        private string DebuggerDisplay => ToString();
+        private string DebuggerDisplay => FullNameEx;
 
         public int Count => Names.Count;
 
-        public bool IsMatch(string path)
+        public static SettingPath Parse(string value, string delimiter = DefaultDelimiter)
         {
-            var settingPathString = ToString();
-            var isMatch = Regex.IsMatch(path, $"^{settingPathString}(\\[.+\\])?$", RegexOptions.IgnoreCase);
-            return isMatch;
+            var names = value.Trim().Split(new[] { delimiter }, StringSplitOptions.None);
+
+            // extract the key from the last name
+            // https://regex101.com/r/qT2xX9/2
+            var lastNameMatch = Regex.Match(names[names.Length - 1], @"(?<name>[a-z_][a-z0-9_]*)(\[(?<key>.+)\])?$", RegexOptions.IgnoreCase);
+            names[names.Length - 1] = lastNameMatch.Groups["name"].Value;
+            var valueKey = lastNameMatch.Groups["key"].Value;
+
+            return new SettingPath(names, valueKey);
         }
 
-        public override string ToString() => string.Join(Delimiter, Names);
+        //public bool IsMatch(string path)
+        //{
+        //    var isMatch = Regex.IsMatch(path, $"^{FullName}(\\[.+\\])?$", RegexOptions.IgnoreCase);
+        //    return isMatch;
+        //}
 
-        public string ToStringWithValueKey() => $"{SettingNamespace}{Delimiter}{SettingNameWithValueKey}";
+        public bool IsLike(SettingPath path)
+        {
+            return FullName.Equals(path.FullName, StringComparison.OrdinalIgnoreCase);
+        }
 
-        public static implicit operator string(SettingPath settingPath) => settingPath.ToString();
+#if DEBUG
+        public override string ToString()
+        {
+            throw new InvalidOperationException($"Use {FullName} instead.");
+        }
+#endif
+
+        public static explicit operator string(SettingPath settingPath) => settingPath.FullNameEx;
 
         public static bool operator ==(SettingPath x, SettingPath y)
         {
             return
                 !ReferenceEquals(x, null) &&
                 !ReferenceEquals(y, null) &&
-                x.ToStringWithValueKey() == y.ToStringWithValueKey();
+                x.FullNameEx.Equals(y.FullNameEx, StringComparison.OrdinalIgnoreCase);
         }
 
         public static bool operator !=(SettingPath x, SettingPath y)
@@ -83,7 +94,7 @@ namespace SmartConfig
 
         public static implicit operator SettingPath(string name)
         {
-            return new SettingPath(name);
+            return Parse(name);
         }
 
         protected bool Equals(SettingPath other)
@@ -99,7 +110,7 @@ namespace SmartConfig
             return Equals((SettingPath)obj);
         }
 
-        public override int GetHashCode() => ToString().GetHashCode();
+        public override int GetHashCode() => FullNameEx.GetHashCode();
 
         public IEnumerator<string> GetEnumerator() => Names.GetEnumerator();
 

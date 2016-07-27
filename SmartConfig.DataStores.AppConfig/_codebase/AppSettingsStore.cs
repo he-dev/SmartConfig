@@ -27,37 +27,54 @@ namespace SmartConfig.DataStores.AppConfig
 
         public Type MapDataType(Type settingType) => typeof(string);
 
-        public List<Setting> GetSettings(SettingPath path, IReadOnlyDictionary<string, object> namespaces)
+        public List<Setting> GetSettings(Setting setting)
         {
-            var result = new List<Setting>
+            var keys =
+                _appSettingsSection.Settings.AllKeys
+                .Where(k => SettingPath.Parse(k).IsLike(setting.Name))
+                .ToArray();
+
+            var settings = keys.Select(k => new Setting
             {
-                new Setting
-                {
-                    Name = path.ToString(),
-                   Value = _appSettingsSection.Settings[path.ToString()]?.Value
-                }
-            };
-            return result;
+                Name = k,
+                Value = _appSettingsSection.Settings[k].Value
+            })
+            .ToList();
+
+            return settings;
         }
 
-        public int SaveSetting(SettingPath path, IReadOnlyDictionary<string, object> namespaces, object value)
+        public int SaveSetting(Setting setting)
         {
-            return SaveSettings(new Dictionary<SettingPath, object> { [path] = value }, namespaces);
+            return SaveSettings(new[] { setting });
         }
 
-        public int SaveSettings(IReadOnlyDictionary<SettingPath, object> settings, IReadOnlyDictionary<string, object> namespaces)
+        public int SaveSettings(IReadOnlyCollection<Setting> settings)
         {
             var affectedSettings = 0;
+
+            // remove settings
+            var removeKeys = settings.Select(x => x.Name.FullName).Distinct().ToList();
+            var removeConfigurationElements =
+                    _appSettingsSection.Settings.Cast<KeyValueConfigurationElement>()
+                        .Where(x => removeKeys.Contains(x.Key, StringComparer.OrdinalIgnoreCase))
+                        .ToList();
+
+            foreach (var configurationElement in removeConfigurationElements)
+            {
+                _appSettingsSection.Settings.Remove(configurationElement.Key);
+            }
+
             foreach (var setting in settings)
             {
-                var element = _appSettingsSection.Settings[setting.Key.ToString()];
-                if (element == null)
+                var configurationElement = _appSettingsSection.Settings[setting.Name.FullNameEx];
+                if (configurationElement == null)
                 {
-                    _appSettingsSection.Settings.Add(setting.Key.ToString(), (string)setting.Value);
+                    _appSettingsSection.Settings.Add(setting.Name.FullNameEx, (string)setting.Value);
                 }
                 else
                 {
-                    element.Value = (string)setting.Value;
+                    configurationElement.Value = (string)setting.Value;
                 }
                 affectedSettings++;
             }

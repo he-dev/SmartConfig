@@ -24,22 +24,18 @@ namespace SmartConfig.IO
 
         public IDataStore DataStore { get; }
 
-        public TypeConverter Converter { get; set; }
+        public TypeConverter Converter { get; }
 
-        public Dictionary<string, object> Namespaces { get; } = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-
-        public int ReadSettings(IEnumerable<SettingInfo> settings)
+        public int ReadSettings(IReadOnlyCollection<SettingInfo> settings, IReadOnlyDictionary<string, object> namespaces)
         {
             _cache.Clear();
             var validationExceptions = new List<Exception>();
-
-            var culture = CultureInfo.InvariantCulture;
 
             foreach (var setting in settings)
             {
                 try
                 {
-                    ReadSetting(setting);
+                    ReadSetting(setting, namespaces);
                 }
                 catch (Exception ex)
                 {
@@ -55,12 +51,12 @@ namespace SmartConfig.IO
             return Commit();
         }
 
-        private void ReadSetting(SettingInfo setting)
+        private void ReadSetting(SettingInfo setting, IReadOnlyDictionary<string, object> namespaces)
         {
             var culture = CultureInfo.InvariantCulture;
 
             // data store exeptions shouldn't be cought
-            var settingRows = DataStore.GetSettings(setting.SettingPath, Namespaces);
+            var settingRows = DataStore.GetSettings(new Setting(setting.SettingPath, namespaces));
 
             if (setting.IsItemized)
             {
@@ -91,7 +87,7 @@ namespace SmartConfig.IO
             }
             else
             {
-                settingRows.Count.Validate().IsTrue(x => x <= 1, ctx => $"'{setting.SettingPath.ToString()}' found more then once.");
+                settingRows.Count.Validate().IsTrue(x => x <= 1, ctx => $"'{setting.SettingPath.FullName}' found more then once.");
                 var settingRow = settingRows.SingleOrDefault();
 
                 if (settingRow == null)
@@ -100,7 +96,7 @@ namespace SmartConfig.IO
                     {
                         return;
                     }
-                    throw new SettingNotFoundException { SettingPath = setting.SettingPath };
+                    throw new SettingNotFoundException { SettingPath = setting.SettingPath.FullNameEx };
                 }
 
                 var value =

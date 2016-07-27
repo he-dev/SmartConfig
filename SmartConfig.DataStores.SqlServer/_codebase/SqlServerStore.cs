@@ -47,7 +47,7 @@ namespace SmartConfig.DataStores.SqlServer
 
         public Type MapDataType(Type settingType) => typeof(string);
 
-        public List<Setting> GetSettings(SettingPath path, IReadOnlyDictionary<string, object> namespaces)
+        public List<Setting> GetSettings(Setting setting)
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
@@ -80,12 +80,12 @@ namespace SmartConfig.DataStores.SqlServer
             }
         }
 
-        public int SaveSetting(SettingPath path, IReadOnlyDictionary<string, object> namespaces, object value)
+        public int SaveSetting(Setting setting)
         {
             return SaveSettings(new Dictionary<SettingPath, object> { [path] = value }, namespaces);
         }
 
-        public int SaveSettings(IReadOnlyDictionary<SettingPath, object> settings, IReadOnlyDictionary<string, object> namespaces)
+        public int SaveSettings(IReadOnlyCollection<Setting> settings)
         {
             using (var connection = new SqlConnection(ConnectionString))
             {

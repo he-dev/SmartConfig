@@ -26,8 +26,8 @@ namespace SmartConfig.Core.Tests.Unit.SettingPath.Positive
             path.SettingNameWithValueKey.Verify().IsEqual("bar");
             path.ValueKey.Verify().IsNullOrEmpty();
 
-            path.ToString().Verify().IsEqual("foo.bar");
-            path.ToStringWithValueKey().Verify().IsEqual("foo.bar");
+            path.FullName.Verify().IsEqual("foo.bar");
+            path.FullNameEx.Verify().IsEqual("foo.bar");
         }
 
         [TestMethod]
@@ -42,8 +42,8 @@ namespace SmartConfig.Core.Tests.Unit.SettingPath.Positive
             path.SettingNameWithValueKey.Verify().IsEqual("bar[baz]");
             path.ValueKey.Verify().IsEqual("baz");
 
-            path.ToString().Verify().IsEqual("foo.bar");
-            path.ToStringWithValueKey().Verify().IsEqual("foo.bar[baz]");
+            path.FullName.Verify().IsEqual("foo.bar");
+            path.FullNameEx.Verify().IsEqual("foo.bar[baz]");
         }
     }
 
@@ -62,8 +62,8 @@ namespace SmartConfig.Core.Tests.Unit.SettingPath.Positive
             path.SettingNameWithValueKey.Verify().IsEqual("bar");
             path.ValueKey.Verify().IsNullOrEmpty();
 
-            path.ToString().Verify().IsEqual("foo.bar");
-            path.ToStringWithValueKey().Verify().IsEqual("foo.bar");
+            path.FullName.Verify().IsEqual("foo.bar");
+            path.FullNameEx.Verify().IsEqual("foo.bar");
         }
 
         [TestMethod]
@@ -78,23 +78,37 @@ namespace SmartConfig.Core.Tests.Unit.SettingPath.Positive
             path.SettingNameWithValueKey.Verify().IsEqual("bar[baz]");
             path.ValueKey.Verify().IsEqual("baz");
 
-            path.ToString().Verify().IsEqual("foo.bar");
-            path.ToStringWithValueKey().Verify().IsEqual("foo.bar[baz]");
+            path.FullName.Verify().IsEqual("foo.bar");
+            path.FullNameEx.Verify().IsEqual("foo.bar[baz]");
         }
     }
 
+    //[TestClass]
+    //public class IsMatch
+    //{
+    //    [TestMethod]
+    //    public void CreateSettingPathWithoutValueKey()
+    //    {
+    //        var path = new SettingPath("foo.bar");
+
+    //        path.IsMatch("foo.bar").Validate().IsTrue();
+    //        path.IsMatch("foo.bar[baz]").Validate().IsTrue();
+    //        path.IsMatch("foo.baz").Validate().IsFalse();
+    //    }       
+    //}
+
     [TestClass]
-    public class IsMatch
+    public class IsLike
     {
         [TestMethod]
         public void CreateSettingPathWithoutValueKey()
         {
             var path = new SettingPath("foo.bar");
 
-            path.IsMatch("foo.bar").Validate().IsTrue();
-            path.IsMatch("foo.bar[baz]").Validate().IsTrue();
-            path.IsMatch("foo.baz").Validate().IsFalse();
-        }       
+            path.IsLike("foo.bar").Validate().IsTrue();
+            path.IsLike("foo.bar[baz]").Validate().IsTrue();
+            path.IsLike("foo.baz").Validate().IsFalse();
+        }
     }
 
 }

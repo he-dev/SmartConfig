@@ -12,6 +12,7 @@ using SmartUtilities.TypeFramework.Converters;
 using SmartUtilities.ValidationExtensions;
 using SmartUtilities.ValidationExtensions.Testing;
 using SmartConfig.Core.Tests;
+using SmartConfig.Core.Tests.DataStores;
 using SmartConfig.DataStores;
 // ReSharper disable BuiltInTypeReferenceStyle
 
@@ -29,12 +30,95 @@ namespace SmartConfig.Core.Tests.Integration.Configuration.Positive
         [TestMethod]
         public void LoadEmptyConfig()
         {
-            var configuration = Configuration.Load.From(new MemoryStore()).Select(typeof(EmptyConfig));
+            var testStore = new TestStore();
+            var configuration = Configuration.Load.From(new TestStore()).Select(typeof(EmptyConfig));
 
-            configuration.Type.Validate().IsTrue(x => x == typeof(EmptyConfig));
-            configuration.Settings.Count.Validate().IsEqual(0);
-            configuration.SettingReader.Validate().IsNotNull();
-            configuration.SettingWriter.Validate().IsNotNull();
+            configuration.Type.Verify().IsTrue(x => x == typeof(EmptyConfig));
+            configuration.Settings.Count.Verify().IsEqual(0);
+
+            testStore.GetSettingsParameters.Count.Verify().IsEqual(0);
+            testStore.SaveSettingsParameters.Count.Verify().IsEqual(0);
+        }
+
+        [TestMethod]
+        public void LoadByName()
+        {
+            var store = new TestStore(new MemoryStore
+            {
+                new Setting { Name = "Foox", Value = "Quux" },
+                new Setting { Name = "Foo", Value = "Qux" }
+            });
+            Configuration.Load.From(store).Select(typeof(SelectorConfig1));
+
+            store.GetSettingsParameters.Count.Verify().IsEqual(1);
+            store.GetSettingsParameters[0].IsLike(new Setting(SettingPath.Parse("Foo"), null)).Verify().IsTrue();
+            SelectorConfig1.Foo.Verify().IsEqual("Qux");
+        }
+
+        [TestMethod]
+        public void LoadByNameAndNamespace()
+        {
+            var store = new TestStore(new MemoryStore
+            {
+                new Setting { Name = "Foox", Value = "Quux", ["Corge"] = "Waldo" },
+                new Setting { Name = "Foo", Value = "Qux", ["Corge"] = "Waldo" },
+            });
+            Configuration.Load.From(store).Where("Corge", "Waldo").Select(typeof(SelectorConfig2));
+
+            store.GetSettingsParameters.Count.Verify().IsEqual(1);
+            store.GetSettingsParameters[0].Verify().IsTrue(x => x.IsLike(new Setting { Name = "Foo", Value = "Qux", ["Corge"] = "Waldo" }));
+            SelectorConfig2.Foo.Verify().IsEqual("Qux");
+        }
+
+        [TestMethod]
+        public void LoadByConfigAndName()
+        {
+            var store = new TestStore(new MemoryStore
+            {
+                new Setting { Name = "Bar.Foox", Value = "Quux", ["Corge"] = "Waldo" },
+                new Setting { Name = "Bar.Foo", Value = "Qux", ["Corge"] = "Waldo" },
+            });
+            Configuration.Load.From(store).Where("Corge", "Waldo").Select(typeof(SelectorConfig3));
+
+            store.GetSettingsParameters.Count.Verify().IsEqual(1);
+            store.GetSettingsParameters[0].Verify().IsTrue(x => x.IsLike(new Setting { Name = "Bar.Foo", Value = "Qux", ["Corge"] = "Waldo" }));
+            SelectorConfig3.Foo.Verify().IsEqual("Qux");
+        }
+
+        [TestMethod]
+        public void LoadByNameAndNamespaceAndConfig()
+        {
+            var store = new TestStore(new MemoryStore
+            {
+                new Setting { Name = "Foox", Value = "Quux", ["Corge"] = "Waldo", ConfigName = "Bar"},
+                new Setting { Name = "Foo", Value = "Qux", ["Corge"] = "Waldo", ConfigName = "Bar" },
+            });
+            Configuration.Load.From(store).Where("Corge", "Waldo").Select(typeof(SelectorConfig4));
+
+            store.GetSettingsParameters.Count.Verify().IsEqual(1);
+            store.GetSettingsParameters[0].Verify().IsTrue(x => x.IsLike(new Setting { Name = "Foo", Value = "Qux", ["Corge"] = "Waldo", ConfigName = "Bar" }));
+            SelectorConfig4.Foo.Verify().IsEqual("Qux");
+        }
+
+        [TestMethod]
+        public void LoadAndSkipOptionalSettings()
+        {
+            Configuration.Load.From(new MemoryStore()).Select(typeof(OptionalConfig));
+            OptionalConfig.String.Verify().IsNullOrEmpty();
+        }
+
+        [TestMethod]
+        public void LoadNestedSettingsWithoutIgnored()
+        {
+            Configuration.Load.From(new MemoryStore
+            {
+                { "SubConfig.SubSetting", "foo" },
+                { "SubConfig.SubSubConfig1.SubSubSetting", "bar" },
+            })
+            .Select(typeof(NestedConfig));
+
+            NestedConfig.SubConfig.SubSetting.Verify().IsEqual("foo");
+            NestedConfig.SubConfig.SubSubConfig1.SubSubSetting.Verify().IsEqual("bar");
         }
 
         [TestMethod]
@@ -79,65 +163,8 @@ namespace SmartConfig.Core.Tests.Integration.Configuration.Positive
             //TypesConfig.XDocument.ToString().Validate().IsEqual(XDocument.Parse(@"<?xml version=""1.0""?><testXml></testXml>").ToString());
             //TypesConfig.XElement.ToString().Validate().IsEqual(XElement.Parse(@"<testXml></testXml>").ToString());
             //TypesConfig.ListInt32.SequenceEqual(new[] { 1, 2, 3 }).Validate().IsTrue();
-        }
-
-        [TestMethod]
-        public void LoadWithNamespaces()
-        {
-            Configuration.Load.From(new MemoryStore
-            {
-                new Setting
-                {
-                    [nameof(Setting.Name)] = (SettingPath)"foo",
-                    [nameof(Setting.Value)] = "bar",
-                    ["testnamespace"] = "qux",
-                },
-                new Setting
-                {
-                    [nameof(Setting.Name)] = (SettingPath)"foo",
-                    [nameof(Setting.Value)] = "bax",
-                    ["testnamespace"] = "quo",
-                }
-            })
-            .Where("testnamespace", "quo")
-            .Select(typeof(NamespaceConfig));
-
-            NamespaceConfig.Foo.Verify().IsEqual("bax");
-        }
-
-        [TestMethod]
-        public void LoadWithoutOptionalSettings()
-        {
-            Configuration.Load.From(new MemoryStore()).Select(typeof(OptionalConfig));
-            OptionalConfig.String.Verify().IsNullOrEmpty();
-        }
-
-        [TestMethod]
-        public void LoadNestedSettingsWithoutIgnored()
-        {
-            Configuration.Load.From(new MemoryStore
-            {
-                { "SubConfig.SubSetting", "foo" },
-                { "SubConfig.SubSubConfig1.SubSubSetting", "bar" },
-            })
-            .Select(typeof(NestedConfig));
-
-            NestedConfig.SubConfig.SubSetting.Verify().IsEqual("foo");
-            NestedConfig.SubConfig.SubSubConfig1.SubSubSetting.Verify().IsEqual("bar");
-        }
-
-        [TestMethod]
-        public void LoadWithConfigNameAsNamespace()
-        {
-            Configuration.Load.From(new MemoryStore
-            {
-                new Setting{ Name = (SettingPath)"Foo", Value = "Bar", ConfigName = "Quux"},
-                new Setting{ Name = (SettingPath)"Foo", Value = "Bax", ConfigName = "Baz"},
-            }).Select(typeof(ConfigNameAsNamespaceConfig));
-
-            ConfigNameAsNamespaceConfig.Foo.Verify().IsNotNullOrEmpty().IsEqual("Bax");
-        }
-
+        }        
+       
         // --- itemized tests
 
         [TestMethod]
@@ -210,6 +237,30 @@ namespace SmartConfig.Core.Tests.Integration.Configuration.Positive.TestConfigs
 
     [SmartConfig]
     public static class EmptyConfig { }
+
+    [SmartConfig]
+    public static class SelectorConfig1
+    {
+        public static string Foo { get; set; }
+    }
+
+    [SmartConfig]
+    public static class SelectorConfig2
+    {
+        public static string Foo { get; set; }
+    }
+
+    [SmartConfig("Bar")]
+    public static class SelectorConfig3
+    {
+        public static string Foo { get; set; }
+    }
+
+    [SmartConfig("Bar", NameOption = ConfigNameOption.AsNamespace)]
+    public static class SelectorConfig4
+    {
+        public static string Foo { get; set; }
+    }
 
     [SmartConfig]
     public static class TypesConfig
@@ -295,19 +346,7 @@ namespace SmartConfig.Core.Tests.Integration.Configuration.Positive.TestConfigs
     {
         [Itemized]
         public static int[] Numbers { get; set; }
-    }
-
-    [SmartConfig]
-    public static class NamespaceConfig
-    {
-        public static string Foo { get; set; }
-    }
-
-    [SmartConfig("Baz", NameOption = ConfigNameOption.AsNamespace)]
-    public static class ConfigNameAsNamespaceConfig
-    {
-        public static string Foo { get; set; }
-    }
+    }   
 }
 
 namespace SmartConfig.Core.Tests.Integration.Configuration.Negative

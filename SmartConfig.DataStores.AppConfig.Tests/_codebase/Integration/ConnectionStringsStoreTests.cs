@@ -18,13 +18,23 @@ namespace SmartConfig.DataStores.AppConfig.Tests.Integration.ConnectionStringsSt
     public class GetSettings
     {
         [TestMethod]
-        public void GetSettingsByKey()
+        public void GetSettingsSimple()
         {
-            Configuration.Load
-                .From(new ConnectionStringsStore())
-                .Select(typeof(TestConfig1));
+            Configuration.Load.From(new ConnectionStringsStore()).Select(typeof(FullConfig3));
 
-            TestConfig1.Foo.Verify().IsNotNullOrEmpty().IsEqual("baz");
+            FullConfig3.StringSetting.Verify().IsNotNullOrEmpty().IsEqual("Foox");
+            FullConfig3.NestedConfig.StringSetting.Verify().IsEqual("Barx");
+            FullConfig3.IgnoredConfig.StringSetting.Verify().IsEqual("Grault");
+        }
+
+        [TestMethod]
+        public void GetSettingsWithConfigNameAsPath()
+        {
+            Configuration.Load.From(new ConnectionStringsStore()).Select(typeof(FullConfig4));
+
+            FullConfig4.StringSetting.Verify().IsNotNullOrEmpty().IsEqual("Fooxy");
+            FullConfig4.NestedConfig.StringSetting.Verify().IsEqual("Barxy");
+            FullConfig4.IgnoredConfig.StringSetting.Verify().IsEqual("Grault");
         }
     }
     [TestClass]

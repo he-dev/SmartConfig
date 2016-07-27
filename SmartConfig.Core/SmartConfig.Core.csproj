@@ -97,7 +97,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="_codebase\DataAnnotations\SmartConfigAttribute.cs" />
     <Compile Include="_codebase\Data\IDataStore.cs" />
-    <Compile Include="_codebase\TypeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

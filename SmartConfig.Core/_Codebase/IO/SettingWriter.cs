@@ -12,7 +12,7 @@ namespace SmartConfig.IO
 {
     internal class SettingWriter
     {
-        private readonly Dictionary<SettingPath, object> _cache = new Dictionary<SettingPath, object>();
+        private readonly List<Setting> _cache = new List<Setting>();
 
         public SettingWriter(IDataStore dataStore, TypeConverter converter)
         {
@@ -22,11 +22,9 @@ namespace SmartConfig.IO
 
         public IDataStore DataStore { get; }
 
-        public TypeConverter Converter { get; set; }
+        public TypeConverter Converter { get; }
 
-        public Dictionary<string, object> Namespaces { get; } = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-
-        public int SaveSettings(IEnumerable<SettingInfo> settings)
+        public int SaveSettings(IReadOnlyCollection<SettingInfo> settings, IReadOnlyDictionary<string, object> namespaces)
         {
             _cache.Clear();
             var validationExceptions = new List<Exception>();
@@ -40,7 +38,7 @@ namespace SmartConfig.IO
                         var items = CollectionItemizer.ItemizeCollection(setting.Value, DataStore.MapDataType, Converter);
                         foreach (var item in items)
                         {
-                            _cache[new SettingPath(setting.SettingPath, item.Key)] = item.Value;
+                            _cache.Add(new Setting(item.Key == null ? setting.SettingPath : new SettingPath(item.Key), namespaces, item.Value));
                         }
                     }
                     else
@@ -49,7 +47,7 @@ namespace SmartConfig.IO
                         var value = dataType == setting.Type
                             ? setting.Value
                             : Converter.Convert(setting.Value, dataType, CultureInfo.InvariantCulture);
-                        _cache[setting.SettingPath] = value;
+                        _cache.Add(new Setting(setting.SettingPath, namespaces, value));
                     }
                 }
                 catch (Exception ex) { validationExceptions.Add(ex); }
@@ -61,7 +59,7 @@ namespace SmartConfig.IO
         {
             try
             {
-                var affectedSettings = DataStore.SaveSettings(_cache, Namespaces);
+                var affectedSettings = DataStore.SaveSettings(_cache);
                 return affectedSettings;
             }
             catch (Exception ex)

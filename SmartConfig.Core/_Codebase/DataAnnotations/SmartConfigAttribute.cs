@@ -16,7 +16,7 @@ namespace SmartConfig.DataAnnotations
             Name = name.Validate(nameof(name)).IsNotNullOrEmpty().Argument;
         }
 
-        public string Name { get; }
+        public string Name { get; internal set; }
 
         public ConfigNameOption NameOption { get; set; } = ConfigNameOption.AsPath;
     }

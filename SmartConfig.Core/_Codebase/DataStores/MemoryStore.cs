@@ -13,26 +13,27 @@ namespace SmartConfig.DataStores
     {
         public Type MapDataType(Type settingType) => typeof(string);
 
-        public List<Setting> GetSettings(SettingPath path, IReadOnlyDictionary<string, object> namespaces)
+        public List<Setting> GetSettings(Setting setting)
         {
             var settings =
                 (from x in Data
-                 where x.Name.IsMatch(path) && (namespaces == null || namespaces.All(n => x.NamespaceEquals(n.Key, n.Value)))
+                 //where x.Name.IsMatch(path) && (namespaces == null || namespaces.All(n => x.NamespaceEquals(n.Key, n.Value)))
+                 where x.IsLike(setting)
                  select x).ToList();
 
             return settings;
         }
 
-        public int SaveSetting(SettingPath path, IReadOnlyDictionary<string, object> namespaces, object value)
+        public int SaveSetting(Setting setting)
         {
-            return SaveSettings(new Dictionary<SettingPath, object> { { path, value } }, namespaces);
+            return SaveSettings(new [] {setting});
         }
 
-        public int SaveSettings(IReadOnlyDictionary<SettingPath, object> settings, IReadOnlyDictionary<string, object> namespaces)
+        public int SaveSettings(IReadOnlyCollection<Setting> settings)
         {
             foreach (var setting in settings)
             {
-                var removeSettings = GetSettings(setting.Key, namespaces);
+                var removeSettings = GetSettings(setting);
                 foreach (var removeSetting in removeSettings)
                 {
                     Data.Remove(removeSetting);
@@ -41,12 +42,11 @@ namespace SmartConfig.DataStores
 
             foreach (var setting in settings)
             {
-                Add(setting.Key, setting.Value);
+                Add(setting.Name.FullNameEx, setting.Value);
             }
 
             return settings.Count;
         }
-
 
         public List<Setting> Data { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = new List<Setting>();
 

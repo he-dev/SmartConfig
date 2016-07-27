@@ -27,33 +27,48 @@ namespace SmartConfig.DataStores.AppConfig
 
         public Type MapDataType(Type settingType) => typeof(string);
 
-        public List<Setting> GetSettings(SettingPath path, IReadOnlyDictionary<string, object> namespaces)
+        public List<Setting> GetSettings(Setting setting)
         {
-            var result = new List<Setting>
-            {
-                new Setting
+            var connectionStringSettings =
+                _connectionStringsSection.ConnectionStrings.Cast<ConnectionStringSettings>()
+                .Where(x => SettingPath.Parse(x.Name).IsLike(setting.Name) && !string.IsNullOrEmpty(x.ConnectionString))
+                .Select(x => new Setting
                 {
-                    Name = new SettingPath(path),
-                    Value = _connectionStringsSection.ConnectionStrings[path.ToString()]?.ConnectionString
-                }
-            };
-            return result;
+                    Name = x.Name,
+                    Value = x.ConnectionString
+                })
+                .ToList();
+            
+            return connectionStringSettings;
         }
 
-        public int SaveSetting(SettingPath path, IReadOnlyDictionary<string, object> namespaces, object value)
+        public int SaveSetting(Setting setting)
         {
-            return SaveSettings(new Dictionary<SettingPath, object> { [path] = value }, namespaces);
+            return SaveSettings(new[] { setting });
         }
 
-        public int SaveSettings(IReadOnlyDictionary<SettingPath, object> settings, IReadOnlyDictionary<string, object> namespaces)
+        public int SaveSettings(IReadOnlyCollection<Setting> settings)
         {
             var affectedSettings = 0;
+
+            // remove connection strings
+            var removeKeys = settings.Select(x => x.Name.FullName).Distinct().ToList();
+            var removeConfigurationStrings =
+                    _connectionStringsSection.ConnectionStrings.Cast<ConnectionStringSettings>()
+                        .Where(x => removeKeys.Contains(x.Name, StringComparer.OrdinalIgnoreCase))
+                        .ToList();
+
+            foreach (var item in removeConfigurationStrings)
+            {
+                _connectionStringsSection.ConnectionStrings.Remove(item.Name);
+            }
+
             foreach (var setting in settings)
             {
-                var connectionStringSettings = _connectionStringsSection.ConnectionStrings[setting.Key.ToString()];
+                var connectionStringSettings = _connectionStringsSection.ConnectionStrings[setting.Name.FullNameEx];
                 if (connectionStringSettings == null)
                 {
-                    connectionStringSettings = new ConnectionStringSettings(setting.Key.ToString(), (string)setting.Value);
+                    connectionStringSettings = new ConnectionStringSettings(setting.Name.FullNameEx, (string)setting.Value);
                     _connectionStringsSection.ConnectionStrings.Add(connectionStringSettings);
                 }
                 else
