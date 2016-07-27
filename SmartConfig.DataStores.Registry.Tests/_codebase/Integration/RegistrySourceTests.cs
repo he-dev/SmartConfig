@@ -18,31 +18,30 @@ namespace SmartConfig.DataStores.Registry.Tests.Integration.RegistryStore.Positi
     [TestClass]
     public class GetSettings
     {
+        private const string TestRegistryKey = @"Software\SmartConfig\Tests";
+
         [TestMethod]
-        public void GetSettingsByName()
+        public void GetSettingsSimple()
         {
-            Configuration.Load
-                .From(RegistryStore.CreateForCurrentUser(@"Software\SmartConfig\Tests"))
-                .Select(typeof(TestConfig));
+            Configuration.Load.From(RegistryStore.CreateForCurrentUser(TestRegistryKey)).Select(typeof(FullConfig1));
 
-            TestConfig.Foo.Verify().IsEqual("baz");
-            TestConfig.Bar.Verify().IsEqual(123);
-            TestConfig.Quux.Verify().IsEqual(TestEnum.TestValue2);
+            FullConfig1.StringSetting.Verify().IsNotNullOrEmpty().IsEqual("Foo");
+            FullConfig1.ArraySetting.Length.Verify().IsEqual(2);
+            FullConfig1.DictionarySetting.Count.Verify().IsEqual(2);
+            FullConfig1.NestedConfig.StringSetting.Verify().IsEqual("Bar");
+            FullConfig1.IgnoredConfig.StringSetting.Verify().IsEqual("Grault");
         }
 
-        [SmartConfig]
-        private static class TestConfig
+        [TestMethod]
+        public void GetSettingsWithConfigNameAsPath()
         {
-            public static string Foo { get; set; }
-            public static int Bar { get; set; }
-            public static TestEnum Quux { get; set; }
-        }
+            Configuration.Load.From(RegistryStore.CreateForCurrentUser(TestRegistryKey)).Select(typeof(FullConfig2));
 
-        public enum TestEnum
-        {
-            TestValue1,
-            TestValue2,
-            TestValue3
+            FullConfig2.StringSetting.Verify().IsNotNullOrEmpty().IsEqual("Foox");
+            FullConfig2.ArraySetting.Length.Verify().IsEqual(2);
+            FullConfig2.DictionarySetting.Count.Verify().IsEqual(2);
+            FullConfig2.NestedConfig.StringSetting.Verify().IsEqual("Barx");
+            FullConfig2.IgnoredConfig.StringSetting.Verify().IsEqual("Grault");
         }
     }
 

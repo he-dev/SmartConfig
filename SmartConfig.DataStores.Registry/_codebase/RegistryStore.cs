@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -16,7 +17,7 @@ namespace SmartConfig.DataStores.Registry
         private readonly RegistryKey _baseKey;
         private readonly string _baseSubKeyName;
 
-        private readonly IDictionary<Type, RegistryValueKind> _typeToRegistryValueKindMap = new Dictionary<Type, RegistryValueKind>
+        private readonly IReadOnlyDictionary<Type, RegistryValueKind> _registryValueKindMap = new Dictionary<Type, RegistryValueKind>
         {
             { typeof(string), RegistryValueKind.String },
             { typeof(int), RegistryValueKind.DWord },
@@ -39,56 +40,81 @@ namespace SmartConfig.DataStores.Registry
             return typeof(string);
         }
 
-        public List<Setting> GetSettings(SettingPath path, IReadOnlyDictionary<string, object> namespaces)
+        public List<Setting> GetSettings(Setting setting)
         {
-            path.Validate(nameof(path)).IsNotNull();
+            var registryPath = new RegistryPath(setting.Name);
 
-            path = new RegistryPath(path);
-
-            var subKeyName = Path.Combine(_baseSubKeyName, path.SettingNamespace);
+            var subKeyName = Path.Combine(_baseSubKeyName, registryPath.SettingNamespace);
             using (var subKey = _baseKey.OpenSubKey(subKeyName, false))
             {
-                var value = subKey?.GetValue(path.SettingNameWithValueKey);
-                return new List<Setting>
-                {
-                    new Setting
-                    {
-                        Name = path.ToString(),
-                        Value = value
-                    }
-                };
+                if (subKey == null) { return new List<Setting>(); }
+
+                var settings =
+                    subKey.GetValueNames()
+                        .Where(x => RegistryPath.Parse(x).IsLike(registryPath.FullName))
+                        .Select(x => new Setting
+                        {
+                            Name = x,
+                            Value = subKey.GetValue(x)
+                        })
+                        .ToList();
+
+                return settings;
             }
         }
 
-        public int SaveSetting(SettingPath path, IReadOnlyDictionary<string, object> namespaces, object value)
+        public int SaveSetting(Setting setting)
         {
-            path.Validate(nameof(path)).IsNotNull();
+            return SaveSettings(new[] { setting });
+        }
 
-            path = new RegistryPath(path);
+        public int SaveSettings(IReadOnlyCollection<Setting> settings)
+        {
+            // we need one setting to delete all subkeys like it in case it's a collection and to check its value type
+            var firstSetting = settings.FirstOrDefault();
+            if (string.IsNullOrEmpty(firstSetting?.Name.FullName))
+            {
+                return 0;
+            }
 
-            // check value type
             var registryValueKind = RegistryValueKind.None;
-            if (!_typeToRegistryValueKindMap.TryGetValue(value.GetType(), out registryValueKind))
+            if (!_registryValueKindMap.TryGetValue(firstSetting.Value.GetType(), out registryValueKind))
             {
                 throw new UnsupportedTypeException
                 {
-                    ValueType = value.GetType().Name,
-                    SettingName = path.ToString()
+                    SettingName = firstSetting.Name.FullNameEx,
+                    ValueType = firstSetting.Value.GetType().Name
                 };
             }
 
-            var subKeyName = Path.Combine(_baseSubKeyName, path.SettingNamespace);
+            var registryPath = new RegistryPath(firstSetting.Name.FullName);
+
+            var subKeyName = Path.Combine(_baseSubKeyName, registryPath.SettingNamespace);
             using (var subKey = _baseKey.OpenSubKey(subKeyName, true) ?? _baseKey.CreateSubKey(subKeyName))
             {
-                if (subKey == null) throw new RegistryKeyException($"Could not open/create sub key: '{subKeyName}'.");
-                subKey.SetValue(path.SettingName, value, registryValueKind);
-            }
-            return 1;
-        }
+                if (subKey == null)
+                {
+                    throw new RegistryKeyException($"Could not open/create sub key: '{subKeyName}'.");
+                }
 
-        public int SaveSettings(IReadOnlyDictionary<SettingPath, object> settings, IReadOnlyDictionary<string, object> namespaces)
-        {
-            return settings.Sum(setting => SaveSetting(setting.Key, namespaces, setting.Value));
+                var valueNames2Delete =
+                    subKey.GetValueNames()
+                        .Where(x => RegistryPath.Parse(x).IsLike(registryPath.FullName))
+                        .ToList();
+
+                foreach (var valueName in valueNames2Delete)
+                {
+                    subKey.DeleteValue(valueName);
+                }
+
+                foreach (var setting in settings)
+                {
+                    registryPath = new RegistryPath(setting.Name);
+                    subKey.SetValue(registryPath.FullNameEx, setting.Value, registryValueKind);
+                }
+            }
+
+            return settings.Count;
         }
 
         public static RegistryStore CreateForCurrentUser(string subRegistryKey)

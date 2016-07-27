@@ -72,6 +72,7 @@
     <Compile Include="_codebase\RegistryPathTests.cs" />
     <Compile Include="_codebase\RegistrySourceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="_codebase\TestConfigs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
