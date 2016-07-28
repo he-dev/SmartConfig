@@ -18,7 +18,7 @@ namespace SmartConfig.DataStores.SQLite.Tests.Integration.SQLiteStore.Positive
         public void GetSettingsSimple()
         {
             Configuration.Load
-                .From(new SQLiteStore("name=configdb1"))
+                .From(new SQLiteStore("name=configdb", builder => builder.TableName("Setting1")))
                 .Select(typeof(FullConfig1));
 
             FullConfig1.Utf8SettingDE.Verify().IsNotNullOrEmpty().IsEqual("äöüß");

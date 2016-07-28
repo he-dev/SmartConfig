@@ -15,6 +15,7 @@ using SmartUtilities.ValidationExtensions;
 
 namespace SmartConfig.DataStores.SQLite
 {
+    // ReSharper disable once InconsistentNaming
     public class SQLiteStore : IDataStore
     {
         public SQLiteStore(string nameOrConnectionString, Action<SettingTableProperties.Builder> buildSettingTableProperties = null)
@@ -42,6 +43,7 @@ namespace SmartConfig.DataStores.SQLite
 
         public SettingTableProperties SettingTableProperties { get; }
 
+        // ReSharper disable once InconsistentNaming
         public bool UTF8FixEnabled { get; set; } = true;
 
         public Type MapDataType(Type settingType) => typeof(string);
@@ -50,7 +52,7 @@ namespace SmartConfig.DataStores.SQLite
         {
             var commandFactory = new CommandFactory(SettingTableProperties);
 
-            using (var connection = new SQLiteConnection(ConnectionString)) // "Data Source=config.db;Version=3;"))
+            using (var connection = new SQLiteConnection(ConnectionString))
             using (var command = commandFactory.CreateSelectCommand(connection, setting))
             {
                 connection.Open();
@@ -97,7 +99,7 @@ namespace SmartConfig.DataStores.SQLite
 
             var firstSetting = settings.First();
 
-            using (var connection = new SQLiteConnection(ConnectionString)) // "Data Source=config.db;Version=3;"))
+            using (var connection = new SQLiteConnection(ConnectionString))
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())

@@ -84,9 +84,6 @@
     <None Include="config.db">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="config1.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Choose>
