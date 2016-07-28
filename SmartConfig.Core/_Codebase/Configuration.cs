@@ -186,7 +186,7 @@ namespace SmartConfig
 
                 if (smartConfigAttribute.NameOption == ConfigNameOption.AsNamespace)
                 {
-                    _namespaces.Add(nameof(Setting.ConfigName), smartConfigAttribute.Name);
+                    _namespaces.Add(nameof(Setting.Config), smartConfigAttribute.Name);
                 }
 
                 _configuration.Type = type;

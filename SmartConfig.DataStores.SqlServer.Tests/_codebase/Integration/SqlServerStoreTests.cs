@@ -22,57 +22,50 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
     public class GetSettings
     {
         [TestMethod]
-        public void GetSettingsByName()
+        public void GetSettingsSimple()
         {
-            var config = Configuration.Load
-                .From(new SqlServerStore("name=SmartConfigTest"))
-                .Select(typeof(TestConfig));
+            Configuration.Load
+                .From(new SqlServerStore("name=SmartConfigTest", builder => builder.TableName("Setting1")))
+                .Select(typeof(FullConfig1));
 
-            config.Settings.Count.Validate().IsEqual(1);
-            TestConfig.Foo.Verify("TestConfig.Foo").IsEqual("Baar");
+            FullConfig1.StringSetting.Verify().IsNotNullOrEmpty().IsEqual("Foo");
+            FullConfig1.ArraySetting.Length.Verify().IsEqual(2);
+            FullConfig1.DictionarySetting.Count.Verify().IsEqual(2);
+            FullConfig1.NestedConfig.StringSetting.Verify().IsEqual("Bar");
+            FullConfig1.IgnoredConfig.StringSetting.Verify().IsEqual("Grault");
         }
 
         [TestMethod]
-        public void GetSettingsByNameAndNamespace()
+        public void GetSettingsWithConfigAsPath()
         {
-            var config = Configuration.Load
-                .From(new SqlServerStore("name=SmartConfigTest"))
-                .Where("Environment", "Corge")
-                .Select(typeof(TestConfig2));
+            Configuration.Load
+                .From(new SqlServerStore("name=SmartConfigTest", builder => builder.TableName("Setting1")))
+                .Select(typeof(FullConfig2));
 
-            config.Settings.Count.Validate().IsEqual(1);
-            TestConfig2.Rox.Verify("TestConfig.Rox").IsNotNullOrEmpty().IsEqual("Quux");
+            FullConfig2.StringSetting.Verify().IsNotNullOrEmpty().IsEqual("Foox");
+            FullConfig2.ArraySetting.Length.Verify().IsEqual(2);
+            FullConfig2.DictionarySetting.Count.Verify().IsEqual(2);
+            FullConfig2.NestedConfig.StringSetting.Verify().IsEqual("Barx");
+            FullConfig2.IgnoredConfig.StringSetting.Verify().IsEqual("Grault");
         }
 
         [TestMethod]
-        public void GetItemizedDictionary()
+        public void GetSettingsWithConfigAsNamespace()
         {
-            var config = Configuration.Load
-                .From(new SqlServerStore("name=SmartConfigTest"))
-                .Where("Environment", "Itemized")
-                .Select(typeof(ItemizedDictionary));
+            Configuration.Load
+                .From(new SqlServerStore("name=SmartConfigTest", builder => builder.TableName("Setting2")))
+                .Where("corge", "waldo")
+                .Select(typeof(FullConfig3));
 
-            config.Settings.Count.Validate().IsEqual(1);
-            ItemizedDictionary.Numbers.Count.Verify("ItemizedDictionary.Numbers").IsEqual(2);
-        }
-
-        [SmartConfig]
-        private static class TestConfig
-        {
-            public static string Foo { get; set; }
-        }
-
-        [SmartConfig]
-        private static class TestConfig2
-        {
-            public static string Rox { get; set; }
-        }
-
-        [SmartConfig]
-        public static class ItemizedDictionary
-        {
-            [Itemized]
-            public static Dictionary<string, int> Numbers { get; set; }
+            FullConfig3.StringSetting.Verify().IsNotNullOrEmpty().IsEqual("Fooxy");
+            FullConfig3.ArraySetting.Length.Verify().IsEqual(2);
+            FullConfig3.ArraySetting[0].Verify().IsEqual(31);
+            FullConfig3.ArraySetting[1].Verify().IsEqual(71);
+            FullConfig3.DictionarySetting.Count.Verify().IsEqual(2);
+            FullConfig3.DictionarySetting["foo"].Verify().IsEqual(42);
+            FullConfig3.DictionarySetting["bar"].Verify().IsEqual(82);
+            FullConfig3.NestedConfig.StringSetting.Verify().IsEqual("Barxy");
+            FullConfig3.IgnoredConfig.StringSetting.Verify().IsEqual("Grault");
         }
     }
 
@@ -121,7 +114,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
                 .From(new SqlServerStore("name=SmartConfigTest"))
                 .Where("Environment", "Itemized")
                 .Select(typeof(ItemizedConfig));
-            
+
             ItemizedConfig.Numbers2 = new Dictionary<string, int>();
 
             // add few items

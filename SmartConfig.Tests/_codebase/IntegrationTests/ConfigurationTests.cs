@@ -90,13 +90,13 @@ namespace SmartConfig.Core.Tests.Integration.Configuration.Positive
         {
             var store = new TestStore(new MemoryStore
             {
-                new Setting { Name = "Foox", Value = "Quux", ["Corge"] = "Waldo", ConfigName = "Bar"},
-                new Setting { Name = "Foo", Value = "Qux", ["Corge"] = "Waldo", ConfigName = "Bar" },
+                new Setting { Name = "Foox", Value = "Quux", ["Corge"] = "Waldo", Config = "Bar"},
+                new Setting { Name = "Foo", Value = "Qux", ["Corge"] = "Waldo", Config = "Bar" },
             });
             Configuration.Load.From(store).Where("Corge", "Waldo").Select(typeof(SelectorConfig4));
 
             store.GetSettingsParameters.Count.Verify().IsEqual(1);
-            store.GetSettingsParameters[0].Verify().IsTrue(x => x.IsLike(new Setting { Name = "Foo", Value = "Qux", ["Corge"] = "Waldo", ConfigName = "Bar" }));
+            store.GetSettingsParameters[0].Verify().IsTrue(x => x.IsLike(new Setting { Name = "Foo", Value = "Qux", ["Corge"] = "Waldo", Config = "Bar" }));
             SelectorConfig4.Foo.Verify().IsEqual("Qux");
         }
 

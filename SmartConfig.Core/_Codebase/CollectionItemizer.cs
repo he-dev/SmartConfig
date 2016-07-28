@@ -39,7 +39,7 @@ namespace SmartConfig
 
             var result =
                 ((IEnumerable)settings).Cast<object>()
-                .Select(x => new KeyValuePair<string, object>(key: null, value: converter.Convert(x, dataType)))
+                .Select((x, i) => new KeyValuePair<string, object>(key: i.ToString(), value: converter.Convert(x, dataType)))
                 .ToArray();
 
             return result;
@@ -54,7 +54,7 @@ namespace SmartConfig
 
             var result =
                 ((IEnumerable)settings).Cast<object>()
-                .Select(x => new KeyValuePair<string, object>(key: null, value: converter.Convert(x, dataType)))
+                .Select((x, i) => new KeyValuePair<string, object>(key: i.ToString(), value: converter.Convert(x, dataType)))
                 .ToArray();
 
             return result;
@@ -69,7 +69,7 @@ namespace SmartConfig
 
             var result =
                 ((IEnumerable)settings).Cast<object>()
-                .Select(x => new KeyValuePair<string, object>(key: null, value: converter.Convert(x, dataType)))
+                .Select((x, i) => new KeyValuePair<string, object>(key: i.ToString(), value: converter.Convert(x, dataType)))
                 .ToArray();
 
             return result;

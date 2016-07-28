@@ -55,13 +55,13 @@ namespace SmartConfig.Data
             set { _values[nameof(Value)] = value; }
         }
 
-        public string ConfigName
+        public string Config
         {
             [DebuggerStepThrough]
-            get { return (string)_values[nameof(ConfigName)]; }
+            get { return (string)_values[nameof(Config)]; }
 
             [DebuggerStepThrough]
-            set { _values[nameof(ConfigName)] = value; }
+            set { _values[nameof(Config)] = value; }
         }
 
         public IReadOnlyDictionary<string, object> Namespaces
@@ -72,6 +72,8 @@ namespace SmartConfig.Data
                 return namespaces.ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
             }
         }
+
+        public IEnumerable<string> Names => _values.Keys;
 
         public bool NamespaceEquals(string key, object value)
         {

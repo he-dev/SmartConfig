@@ -38,7 +38,7 @@ namespace SmartConfig.IO
                         var items = CollectionItemizer.ItemizeCollection(setting.Value, DataStore.MapDataType, Converter);
                         foreach (var item in items)
                         {
-                            _cache.Add(new Setting(item.Key == null ? setting.SettingPath : new SettingPath(item.Key), namespaces, item.Value));
+                            _cache.Add(new Setting(new SettingPath(setting.SettingPath, item.Key), namespaces, item.Value));
                         }
                     }
                     else

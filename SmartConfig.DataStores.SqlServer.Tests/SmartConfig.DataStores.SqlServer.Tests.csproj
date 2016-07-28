@@ -68,6 +68,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="_codebase\TestConfig.cs" />
     <Compile Include="_codebase\Unit\SqlServerStoreTests.cs" />
     <Compile Include="_codebase\Integration\SqlServerStoreTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

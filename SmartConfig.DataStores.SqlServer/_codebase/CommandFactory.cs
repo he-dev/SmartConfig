@@ -19,7 +19,7 @@ namespace SmartConfig.DataStores.SqlServer
 
         public SettingTableProperties SettingTableProperties { get; }
 
-        public SqlCommand CreateSelectCommand(SqlConnection connection, SettingPath name, IReadOnlyDictionary<string, object> namespaces)
+        public SqlCommand CreateSelectCommand(SqlConnection connection, Setting setting)
         {
             var sql = new StringBuilder();
 
@@ -31,7 +31,7 @@ namespace SmartConfig.DataStores.SqlServer
 
                 sql.Append($"SELECT *").AppendLine();
                 sql.Append($"FROM {schemaName}.{tableName}").AppendLine();
-                sql.Append(namespaces.Aggregate(
+                sql.Append(setting.Namespaces.Aggregate(
                     $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} + N'[[]%]')",
                     (result, next) => $"{result} AND {commandBuilder.QuoteIdentifier(next.Key)} = @{next.Key}")
                 );
@@ -40,27 +40,27 @@ namespace SmartConfig.DataStores.SqlServer
             var command = connection.CreateCommand();
             command.CommandText = sql.ToString();
 
-            // --- add parameters
+            // --- add parameters & values
 
             command.Parameters.Add(
                     nameof(Setting.Name),
                     SettingTableProperties.GetSqlDbTypeOrDefault(nameof(Setting.Name)),
                     SettingTableProperties.GetColumnLengthOrDefault(nameof(Setting.Name))
-                ).Value = name.ToString();
+                ).Value = setting.Name.FullName;
 
-            foreach (var settingNamespace in namespaces)
+            foreach (var ns in setting.Namespaces)
             {
                 command.Parameters.Add(
-                    settingNamespace.Key,
-                    SettingTableProperties.GetSqlDbTypeOrDefault(settingNamespace.Key),
-                    SettingTableProperties.GetColumnLengthOrDefault(settingNamespace.Key)
-                ).Value = settingNamespace.Value;
+                    ns.Key,
+                    SettingTableProperties.GetSqlDbTypeOrDefault(ns.Key),
+                    SettingTableProperties.GetColumnLengthOrDefault(ns.Key)
+                ).Value = ns.Value;
             }
 
             return command;
         }
 
-        public SqlCommand CreateDeleteCommand(SqlConnection connection, IReadOnlyDictionary<string, object> namespaces)
+        public SqlCommand CreateDeleteCommand(SqlConnection connection, Setting setting)
         {
             /*
              
@@ -76,8 +76,8 @@ namespace SmartConfig.DataStores.SqlServer
                 var schemaName = commandBuilder.QuoteIdentifier(SettingTableProperties.SchemaName);
                 var tableName = commandBuilder.QuoteIdentifier(SettingTableProperties.TableName);
 
-                sql.Append($"DELETE FROM {schemaName}.{tableName}").AppendLine();                
-                sql.Append(namespaces.Keys.Aggregate(
+                sql.Append($"DELETE FROM {schemaName}.{tableName}").AppendLine();
+                sql.Append(setting.Namespaces.Keys.Aggregate(
                     //$"WHERE [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} + N'%'",
                     $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} + N'[[]%]')",
                     (result, next) => $"{result} AND {commandBuilder.QuoteIdentifier(next)} = @{next} ")
@@ -88,27 +88,27 @@ namespace SmartConfig.DataStores.SqlServer
             command.CommandType = CommandType.Text;
             command.CommandText = sql.ToString();
 
-            // --- add parameters
+            // --- add parameters & values
 
             command.Parameters.Add(
                 nameof(Setting.Name),
                 SettingTableProperties.GetSqlDbTypeOrDefault(nameof(Setting.Name)),
                 SettingTableProperties.GetColumnLengthOrDefault(nameof(Setting.Name))
-            );          
+            ).Value = setting.Name.FullName;
 
-            foreach (var settingNamespace in namespaces)
+            foreach (var ns in setting.Namespaces)
             {
                 command.Parameters.Add(
-                    settingNamespace.Key,
-                    SettingTableProperties.GetSqlDbTypeOrDefault(settingNamespace.Key),
-                    SettingTableProperties.GetColumnLengthOrDefault(settingNamespace.Key)
-                );
-            }
+                    ns.Key,
+                    SettingTableProperties.GetSqlDbTypeOrDefault(ns.Key),
+                    SettingTableProperties.GetColumnLengthOrDefault(ns.Key)
+                ).Value = ns.Value;
+            }            
 
             return command;
         }
 
-        public SqlCommand CreateInsertCommand(SqlConnection connection, IReadOnlyDictionary<string, object> namespaces)
+        public SqlCommand CreateInsertCommand(SqlConnection connection, Setting setting)
         {
             /*
              
@@ -132,7 +132,7 @@ namespace SmartConfig.DataStores.SqlServer
                 sql.Append($"UPDATE {schemaName}.{tableName}").AppendLine();
                 sql.Append($"SET [{nameof(Setting.Value)}] = @{nameof(Setting.Value)}").AppendLine();
 
-                sql.Append(namespaces.Keys.Aggregate(
+                sql.Append(setting.Namespaces.Keys.Aggregate(
                     //$"WHERE [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} + N'%'", 
                     $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} + N'[[]%]')",
                     (result, next) => $"{result} AND {commandBuilder.QuoteIdentifier(next)} = @{next} ")
@@ -140,13 +140,13 @@ namespace SmartConfig.DataStores.SqlServer
 
                 sql.Append($"IF @@ROWCOUNT = 0").AppendLine();
 
-                var quotedColumnNames = namespaces.Keys
+                var quotedColumnNames = setting.Names
                         .Select(columnName => commandBuilder.QuoteIdentifier(columnName))
                         .Aggregate($"[{nameof(Setting.Name)}], [{nameof(Setting.Value)}]", (result, next) => $"{result}, {next}");
 
                 sql.Append($"INSERT INTO {schemaName}.{tableName}({quotedColumnNames})").AppendLine();
 
-                var parameterNames = namespaces.Keys
+                var parameterNames = setting.Names
                     .Aggregate($"@{nameof(Setting.Name)}, @{nameof(Setting.Value)}", (result, next) => $"{result}, @{next}");
                 sql.Append($"VALUES ({parameterNames})");
             }
@@ -169,12 +169,12 @@ namespace SmartConfig.DataStores.SqlServer
                 SettingTableProperties.GetColumnLengthOrDefault(nameof(Setting.Value))
             );
 
-            foreach (var settingNamespace in namespaces)
+            foreach (var ns in setting.Namespaces)
             {
                 command.Parameters.Add(
-                    settingNamespace.Key,
-                    SettingTableProperties.GetSqlDbTypeOrDefault(settingNamespace.Key),
-                    SettingTableProperties.GetColumnLengthOrDefault(settingNamespace.Key)
+                    ns.Key,
+                    SettingTableProperties.GetSqlDbTypeOrDefault(ns.Key),
+                    SettingTableProperties.GetColumnLengthOrDefault(ns.Key)
                 );
             }
 

@@ -52,7 +52,7 @@ namespace SmartConfig.DataStores.SqlServer
             using (var connection = new SqlConnection(ConnectionString))
             {
                 var commandFactory = new CommandFactory(SettingTableProperties);
-                using (var command = commandFactory.CreateSelectCommand(connection, path, namespaces))
+                using (var command = commandFactory.CreateSelectCommand(connection, setting))
                 {
                     connection.Open();
                     command.Prepare();
@@ -63,16 +63,16 @@ namespace SmartConfig.DataStores.SqlServer
                         var settings = new List<Setting>();
                         while (settingReader.Read())
                         {
-                            var setting = new Setting
+                            var result = new Setting
                             {
                                 Name = new SettingPath((string)settingReader[nameof(Setting.Name)]),
                                 Value = settingReader[nameof(Setting.Value)]
                             };
-                            foreach (var property in namespaces)
+                            foreach (var property in setting.Namespaces)
                             {
-                                setting[property.Key] = settingReader[property.Key];
+                                result[property.Key] = settingReader[property.Key];
                             }
-                            settings.Add(setting);
+                            settings.Add(result);
                         }
                         return settings;
                     }
@@ -82,11 +82,16 @@ namespace SmartConfig.DataStores.SqlServer
 
         public int SaveSetting(Setting setting)
         {
-            return SaveSettings(new Dictionary<SettingPath, object> { [path] = value }, namespaces);
+            return SaveSettings(new[] { setting });
         }
 
         public int SaveSettings(IReadOnlyCollection<Setting> settings)
         {
+            if (!settings.Any())
+            {
+                return 0;
+            }
+
             using (var connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
@@ -99,38 +104,30 @@ namespace SmartConfig.DataStores.SqlServer
                         var rowsAffected = 0;
 
                         // delete old settings
-                        using (var deleteCommand = commandFactory.CreateDeleteCommand(connection, namespaces))
+                        var firstSetting = settings.First();
+
+                        using (var deleteCommand = commandFactory.CreateDeleteCommand(connection, firstSetting))
                         {
                             deleteCommand.Transaction = transaction;
                             deleteCommand.Prepare();
-
-                            foreach (var path in settings.Keys.Select(x => x.ToString()).Distinct())
-                            {
-                                deleteCommand.Parameters[nameof(Setting.Name)].Value = path;
-                            }
-
-                            foreach (var settingNamespace in namespaces)
-                            {
-                                deleteCommand.Parameters[settingNamespace.Key].Value = settingNamespace.Value;
-                            }
 
                             rowsAffected += deleteCommand.ExecuteNonQuery();
                         }
 
                         // insert new settings
-                        using (var insertCommand = commandFactory.CreateInsertCommand(connection, namespaces))
+                        using (var insertCommand = commandFactory.CreateInsertCommand(connection, firstSetting))
                         {
                             insertCommand.Transaction = transaction;
                             insertCommand.Prepare();
 
                             foreach (var setting in settings)
                             {
-                                insertCommand.Parameters[nameof(Setting.Name)].Value = setting.Key.SettingNameWithValueKey;
+                                insertCommand.Parameters[nameof(Setting.Name)].Value = setting.Name.FullNameEx;
                                 insertCommand.Parameters[nameof(Setting.Value)].Value = setting.Value;
 
-                                foreach (var settingNamespace in namespaces)
+                                foreach (var ns in setting.Namespaces)
                                 {
-                                    insertCommand.Parameters[settingNamespace.Key].Value = settingNamespace.Value;
+                                    insertCommand.Parameters[ns.Key].Value = ns.Value;
                                 }
 
                                 rowsAffected += insertCommand.ExecuteNonQuery();
