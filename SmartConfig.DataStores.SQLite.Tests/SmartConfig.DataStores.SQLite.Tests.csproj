@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="_codebase\Integration\SQLiteStoreTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="_codebase\TestConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SmartConfig.Core\SmartConfig.Core.csproj">
@@ -81,6 +82,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="config.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="config1.db">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />

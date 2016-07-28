@@ -15,6 +15,25 @@ namespace SmartConfig.DataStores.SQLite.Tests.Integration.SQLiteStore.Positive
     public class GetSettings
     {
         [TestMethod]
+        public void GetSettingsSimple()
+        {
+            Configuration.Load
+                .From(new SQLiteStore("name=configdb1"))
+                .Select(typeof(FullConfig1));
+
+            FullConfig1.Utf8SettingDE.Verify().IsNotNullOrEmpty().IsEqual("äöüß");
+            FullConfig1.Utf8SettingPL.Verify().IsNotNullOrEmpty().IsEqual("ąęśćżźó");
+            FullConfig1.ArraySetting.Length.Verify().IsEqual(2);
+            FullConfig1.ArraySetting[0].Verify().IsEqual(3);
+            FullConfig1.ArraySetting[1].Verify().IsEqual(7);
+            FullConfig1.DictionarySetting.Count.Verify().IsEqual(2);
+            FullConfig1.DictionarySetting["foo"].Verify().IsEqual(4);
+            FullConfig1.DictionarySetting["bar"].Verify().IsEqual(8);
+            FullConfig1.NestedConfig.StringSetting.Verify().IsEqual("Bar");
+            FullConfig1.IgnoredConfig.StringSetting.Verify().IsEqual("Grault");
+        }
+
+        [TestMethod]
         public void GetSettingsByName()
         {
             Configuration.Load
