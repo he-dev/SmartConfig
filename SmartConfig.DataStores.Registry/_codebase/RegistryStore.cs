@@ -1,11 +1,15 @@
-﻿using System;
+﻿#if DEBUG
+//#define DISABLE_DELETE_VALUE
+//#define DISABLE_SET_VALUE
+#endif
+using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using Microsoft.Win32;
-using SmartConfig.Collections;
 using SmartConfig.Data;
 using SmartUtilities;
 using SmartUtilities.ValidationExtensions;
@@ -70,47 +74,57 @@ namespace SmartConfig.DataStores.Registry
 
         public int SaveSettings(IReadOnlyCollection<Setting> settings)
         {
-            // we need one setting to delete all subkeys like it in case it's a collection and to check its value type
-            var firstSetting = settings.FirstOrDefault();
-            if (string.IsNullOrEmpty(firstSetting?.Name.FullName))
+            if (!settings.Any())
             {
                 return 0;
             }
 
-            var registryValueKind = RegistryValueKind.None;
-            if (!_registryValueKindMap.TryGetValue(firstSetting.Value.GetType(), out registryValueKind))
+            var settingGroups = settings.GroupBy(x => x.Name.FullName).ToList();
+
+            // Delete all settings first.
+            foreach (var sg in settingGroups)
             {
-                throw new UnsupportedTypeException
+                var s0 = sg.First();
+
+                var rp = new RegistryPath(s0.Name);
+
+                var subKeyName = Path.Combine(_baseSubKeyName, rp.SettingNamespace);
+                using (var subKey = _baseKey.OpenSubKey(subKeyName, true) ?? _baseKey.CreateSubKey(subKeyName))
                 {
-                    SettingName = firstSetting.Name.FullNameEx,
-                    ValueType = firstSetting.Value.GetType().Name
-                };
-            }
+                    if (subKey == null) { continue; }
 
-            var registryPath = new RegistryPath(firstSetting.Name.FullName);
-
-            var subKeyName = Path.Combine(_baseSubKeyName, registryPath.SettingNamespace);
-            using (var subKey = _baseKey.OpenSubKey(subKeyName, true) ?? _baseKey.CreateSubKey(subKeyName))
-            {
-                if (subKey == null)
-                {
-                    throw new RegistryKeyException($"Could not open/create sub key: '{subKeyName}'.");
-                }
-
-                var valueNames2Delete =
-                    subKey.GetValueNames()
-                        .Where(x => RegistryPath.Parse(x).IsLike(registryPath.FullName))
+                    var valueNames2Delete =
+                        subKey.GetValueNames()
+                        .Where(x => RegistryPath.Parse(x).IsLike(rp))
                         .ToList();
 
-                foreach (var valueName in valueNames2Delete)
-                {
-                    subKey.DeleteValue(valueName);
-                }
+                    foreach (var valueName in valueNames2Delete)
+                    {
+#if !DISABLE_DELETE_VALUE
+                        subKey.DeleteValue(valueName);
+#endif
+                    }
 
-                foreach (var setting in settings)
-                {
-                    registryPath = new RegistryPath(setting.Name);
-                    subKey.SetValue(registryPath.FullNameEx, setting.Value, registryValueKind);
+                    // Get registry value kind from the first setting.
+                    
+                    var registryValueKind = RegistryValueKind.None;
+                    if (!_registryValueKindMap.TryGetValue(s0.Value.GetType(), out registryValueKind))
+                    {
+                        throw new UnsupportedTypeException
+                        {
+                            SettingName = s0.Name.FullNameEx,
+                            ValueType = s0.Value.GetType().Name
+                        };
+                    }
+
+                    // Save all group settings.
+                    foreach (var s in sg)
+                    {
+                        var registryPath = new RegistryPath(s.Name);
+#if !DISABLE_SET_VALUE
+                        subKey.SetValue(registryPath.SettingNameEx, s.Value, registryValueKind);
+#endif
+                    }
                 }
             }
 

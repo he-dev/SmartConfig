@@ -56,7 +56,7 @@ namespace SmartConfig.DataStores.SqlServer
                     connection.Open();
                     command.Prepare();
 
-                    // execute query
+                    // Read settings.
                     using (var settingReader = command.ExecuteReader())
                     {
                         var settings = new List<Setting>();
@@ -102,7 +102,6 @@ namespace SmartConfig.DataStores.SqlServer
                     {
                         var rowsAffected = 0;
 
-                        // delete old settings
                         var setting0 = settings.First();
 
                         using (var deleteCommand = commandFactory.CreateDeleteCommand(connection, setting0))
