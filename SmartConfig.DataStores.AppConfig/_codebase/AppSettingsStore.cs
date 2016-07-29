@@ -53,18 +53,20 @@ namespace SmartConfig.DataStores.AppConfig
         {
             var affectedSettings = 0;
 
-            // remove settings
-            var removeKeys = settings.Select(x => x.Name.FullName).Distinct().ToList();
-            var removeConfigurationElements =
-                    _appSettingsSection.Settings.Cast<KeyValueConfigurationElement>()
-                        .Where(x => removeKeys.Contains(x.Key, StringComparer.OrdinalIgnoreCase))
-                        .ToList();
+            // If we are saving an itemized setting its keys might have changed.
+            // Since we don't know the old keys we need to delete all keys that are alike first.
 
-            foreach (var configurationElement in removeConfigurationElements)
+            var keys2Remove =
+                _appSettingsSection.Settings.AllKeys.Where(
+                    key => settings.Any(x => x.Name.IsLike(SettingPath.Parse(key)))
+                ).ToList();
+
+            foreach (var k in keys2Remove)
             {
-                _appSettingsSection.Settings.Remove(configurationElement.Key);
+                _appSettingsSection.Settings.Remove(k);
             }
 
+            // Now we can add the new settings.
             foreach (var setting in settings)
             {
                 var configurationElement = _appSettingsSection.Settings[setting.Name.FullNameEx];

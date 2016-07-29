@@ -94,7 +94,7 @@ namespace SmartConfig.DataStores.SqlServer
                 nameof(Setting.Name),
                 SettingTableProperties.GetSqlDbTypeOrDefault(nameof(Setting.Name)),
                 SettingTableProperties.GetColumnLengthOrDefault(nameof(Setting.Name))
-            ).Value = setting.Name.FullName;
+            );//.Value = setting.Name.FullName;
 
             foreach (var ns in setting.Namespaces)
             {
@@ -102,7 +102,7 @@ namespace SmartConfig.DataStores.SqlServer
                     ns.Key,
                     SettingTableProperties.GetSqlDbTypeOrDefault(ns.Key),
                     SettingTableProperties.GetColumnLengthOrDefault(ns.Key)
-                ).Value = ns.Value;
+                );//.Value = ns.Value;
             }            
 
             return command;
@@ -140,14 +140,17 @@ namespace SmartConfig.DataStores.SqlServer
 
                 sql.Append($"IF @@ROWCOUNT = 0").AppendLine();
 
-                var quotedColumnNames = setting.Names
-                        .Select(columnName => commandBuilder.QuoteIdentifier(columnName))
-                        .Aggregate($"[{nameof(Setting.Name)}], [{nameof(Setting.Value)}]", (result, next) => $"{result}, {next}");
+                var quotedColumnNames = setting.Namespaces.Keys
+                    .Select(columnName => commandBuilder.QuoteIdentifier(columnName)).Aggregate(
+                        $"[{nameof(Setting.Name)}], [{nameof(Setting.Value)}]", 
+                        (result, next) => $"{result}, {next}");
 
                 sql.Append($"INSERT INTO {schemaName}.{tableName}({quotedColumnNames})").AppendLine();
 
-                var parameterNames = setting.Names
-                    .Aggregate($"@{nameof(Setting.Name)}, @{nameof(Setting.Value)}", (result, next) => $"{result}, @{next}");
+                var parameterNames = setting.Namespaces.Keys.Aggregate(
+                    $"@{nameof(Setting.Name)}, @{nameof(Setting.Value)}", 
+                    (result, next) => $"{result}, @{next}");
+
                 sql.Append($"VALUES ({parameterNames})");
             }
 

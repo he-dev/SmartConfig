@@ -103,18 +103,28 @@ namespace SmartConfig.DataStores.SqlServer
                         var rowsAffected = 0;
 
                         // delete old settings
-                        var firstSetting = settings.First();
+                        var setting0 = settings.First();
 
-                        using (var deleteCommand = commandFactory.CreateDeleteCommand(connection, firstSetting))
+                        using (var deleteCommand = commandFactory.CreateDeleteCommand(connection, setting0))
                         {
                             deleteCommand.Transaction = transaction;
                             deleteCommand.Prepare();
 
-                            rowsAffected += deleteCommand.ExecuteNonQuery();
+                            foreach (var s in settings.Select(x => x.Name.FullName).Distinct(StringComparer.OrdinalIgnoreCase))
+                            {
+                                deleteCommand.Parameters[nameof(Setting.Name)].Value = s;
+
+                                foreach (var ns in setting0.Namespaces)
+                                {
+                                    deleteCommand.Parameters[ns.Key].Value = ns.Value;
+                                }
+
+                                rowsAffected += deleteCommand.ExecuteNonQuery();
+                            }
                         }
 
                         // insert new settings
-                        using (var insertCommand = commandFactory.CreateInsertCommand(connection, firstSetting))
+                        using (var insertCommand = commandFactory.CreateInsertCommand(connection, setting0))
                         {
                             insertCommand.Transaction = transaction;
                             insertCommand.Prepare();

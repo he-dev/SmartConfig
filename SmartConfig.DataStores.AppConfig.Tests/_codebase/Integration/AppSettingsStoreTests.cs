@@ -14,18 +14,39 @@ namespace SmartConfig.DataStores.AppConfig.Tests.Integration.AppSettingsStore.Po
     using AppConfig;
 
     [TestClass]
-    public class GetSettings
+    public class FullTests
     {
         [TestMethod]
-        public void GetSettingsSimple()
+        public void SimpleSetting()
         {
             Configuration.Load.From(new AppSettingsStore()).Select(typeof(FullConfig1));
 
             FullConfig1.StringSetting.Verify().IsNotNullOrEmpty().IsEqual("Foo");
-            FullConfig1.ArraySetting.Length.Verify().IsEqual(2);
-            FullConfig1.DictionarySetting.Count.Verify().IsEqual(2);
+            FullConfig1.ArraySetting.Length.Verify().IsBetweenOrEqual(2, 3);
+            FullConfig1.ArraySetting[0].Verify().IsEqual(5);
+            FullConfig1.ArraySetting[1].Verify().IsEqual(8);
+            if (FullConfig1.ArraySetting.Length == 3)
+            {
+                FullConfig1.ArraySetting[2].Verify().IsEqual(13);
+            }
+            FullConfig1.DictionarySetting.Count.Verify().IsBetweenOrEqual(2, 3);
+            FullConfig1.DictionarySetting["foo"].Verify().IsEqual(21);
+            FullConfig1.DictionarySetting["bar"].Verify().IsEqual(34);
+            if (FullConfig1.DictionarySetting.Count == 3)
+            {
+                FullConfig1.DictionarySetting["baz"].Verify().IsEqual(55);
+            }
             FullConfig1.NestedConfig.StringSetting.Verify().IsEqual("Bar");
             FullConfig1.IgnoredConfig.StringSetting.Verify().IsEqual("Grault");
+
+            if (FullConfig1.ArraySetting.Length == 2) FullConfig1.ArraySetting = new[] { 5, 8, 13 };
+            else if (FullConfig1.ArraySetting.Length == 3) FullConfig1.ArraySetting = new[] { 5, 8 };
+
+            if (FullConfig1.DictionarySetting.Count == 2) FullConfig1.DictionarySetting["baz"] = 55;
+            else if (FullConfig1.DictionarySetting.Count == 3) FullConfig1.DictionarySetting.Remove("baz");
+
+            Configuration.Save(typeof(FullConfig1));
+
         }
 
         [TestMethod]
@@ -41,53 +62,5 @@ namespace SmartConfig.DataStores.AppConfig.Tests.Integration.AppSettingsStore.Po
         }
     }
 
-    [TestClass]
-    public class SaveSetting
-    {
-        [TestMethod]
-        public void SaveSettingByName()
-        {
-            //var value = DateTime.UtcNow.ToFileTime().ToString();
-
-            //Configuration.Load
-            //    .From(new AppSettingsStore())
-            //    .Select(typeof(TestConfig2));
-
-            //TestConfig2.FileTime = value;
-            //Configuration.Save(typeof(TestConfig2));
-            //TestConfig2.FileTime = null;
-            //Configuration.Reload(typeof(TestConfig2));
-            //TestConfig2.FileTime.Verify().IsNotNullOrEmpty().IsEqual(value);
-        }
-    }
 }
 
-namespace SmartConfig.DataStores.AppConfig.Tests.Integration.AppSettingsStore.Positive.TestConfigs
-{
-    [SmartConfig]
-    internal static class GetSettingsByName
-    {
-        public static string Foo { get; set; }
-    }
-
-    [SmartConfig]
-    internal static class GetNestedSettingsByName
-    {
-        public static class Foo
-        {
-            public static string Bar { get; set; }
-        }
-    }
-
-    [SmartConfig]
-    internal static class TestConfig2
-    {
-        [Optional]
-        public static string FileTime { get; set; }
-    }
-}
-
-namespace SmartConfig.DataStores.AppConfig.Tests.Integration.AppSettingsStore.Negative
-{
-
-}

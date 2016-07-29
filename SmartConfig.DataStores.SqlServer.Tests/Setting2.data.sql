@@ -16,17 +16,17 @@ GO
 
 DELETE FROM [Setting2]
 
-EXEC #insertOrUpdateSetting2 'StringSetting', 'Foo', 'WALDO', 'thudy'
-EXEC #insertOrUpdateSetting2 'ArraySetting[0]', '3', 'WALDO', 'thudy'
-EXEC #insertOrUpdateSetting2 'ArraySetting[1]', '7', 'WALDO', 'thudy'
-EXEC #insertOrUpdateSetting2 'DictionarySetting[foo]', '4', 'WALDO', 'thudy'
-EXEC #insertOrUpdateSetting2 'DictionarySetting[bar]', '8', 'WALDO', 'thudy'
-EXEC #insertOrUpdateSetting2 'NestedConfig.StringSetting', 'Bar', 'WALDO', 'thudy'
-EXEC #insertOrUpdateSetting2 'IgnoredConfig.StringSetting', 'Qux', 'WALDO', 'thudy'
+EXEC #insertOrUpdateSetting2 'StringSetting', 'Fooxy', 'WALDO', 'thudy'
+EXEC #insertOrUpdateSetting2 'ArraySetting[0]', '31', 'WALDO', 'thudy'
+EXEC #insertOrUpdateSetting2 'ArraySetting[1]', '71', 'WALDO', 'thudy'
+EXEC #insertOrUpdateSetting2 'DictionarySetting[foo]', '42', 'WALDO', 'thudy'
+EXEC #insertOrUpdateSetting2 'DictionarySetting[bar]', '82', 'WALDO', 'thudy'
+EXEC #insertOrUpdateSetting2 'NestedConfig.StringSetting', 'Barxy', 'WALDO', 'thudy'
+EXEC #insertOrUpdateSetting2 'IgnoredConfig.StringSetting', 'Quxy', 'WALDO', 'thudy'
 
 GO
 
 SELECT * FROM [Setting2]
 
-DROP PROC #insertOrUpdateSetting
+DROP PROC #insertOrUpdateSetting2
 GO

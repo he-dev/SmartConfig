@@ -34,11 +34,11 @@ namespace SmartConfig
 
         public string SettingName => Names.Last();
 
-        public string SettingNameWithValueKey => string.IsNullOrEmpty(ValueKey) ? SettingName : $"{SettingName}[{ValueKey}]";
+        public string SettingNameEx => string.IsNullOrEmpty(ValueKey) ? SettingName : $"{SettingName}[{ValueKey}]";
 
         public string FullName => string.Join(Delimiter, Names);
 
-        public string FullNameEx => Names.Count > 1 ? $"{SettingNamespace}{Delimiter}{SettingNameWithValueKey}" : FullName;
+        public string FullNameEx =>  Names.Count > 1 ? $"{SettingNamespace}{Delimiter}{SettingNameEx}" : SettingNameEx;
 
         public string ValueKey { get; }
 

@@ -23,11 +23,27 @@ namespace SmartConfig.Core.Tests.Unit.SettingPath.Positive
 
             path.SettingNamespace.Verify().IsEqual("foo");
             path.SettingName.Verify().IsEqual("bar");
-            path.SettingNameWithValueKey.Verify().IsEqual("bar");
+            path.SettingNameEx.Verify().IsEqual("bar");
             path.ValueKey.Verify().IsNullOrEmpty();
 
             path.FullName.Verify().IsEqual("foo.bar");
             path.FullNameEx.Verify().IsEqual("foo.bar");
+        }
+
+        [TestMethod]
+        public void CreateSettingPathShallow()
+        {
+            var path = new SettingPath(new[] { "foo" }, "baz");
+
+            path.Count.Verify().IsEqual(1);
+
+            path.SettingNamespace.Verify().IsNullOrEmpty();
+            path.SettingName.Verify().IsEqual("foo");
+            path.SettingNameEx.Verify().IsEqual("foo[baz]");
+            path.ValueKey.Verify().IsEqual("baz");
+
+            path.FullName.Verify().IsEqual("foo");
+            path.FullNameEx.Verify().IsEqual("foo[baz]");
         }
 
         [TestMethod]
@@ -39,7 +55,7 @@ namespace SmartConfig.Core.Tests.Unit.SettingPath.Positive
 
             path.SettingNamespace.Verify().IsEqual("foo");
             path.SettingName.Verify().IsEqual("bar");
-            path.SettingNameWithValueKey.Verify().IsEqual("bar[baz]");
+            path.SettingNameEx.Verify().IsEqual("bar[baz]");
             path.ValueKey.Verify().IsEqual("baz");
 
             path.FullName.Verify().IsEqual("foo.bar");
@@ -59,7 +75,7 @@ namespace SmartConfig.Core.Tests.Unit.SettingPath.Positive
 
             path.SettingNamespace.Verify().IsEqual("foo");
             path.SettingName.Verify().IsEqual("bar");
-            path.SettingNameWithValueKey.Verify().IsEqual("bar");
+            path.SettingNameEx.Verify().IsEqual("bar");
             path.ValueKey.Verify().IsNullOrEmpty();
 
             path.FullName.Verify().IsEqual("foo.bar");
@@ -75,7 +91,7 @@ namespace SmartConfig.Core.Tests.Unit.SettingPath.Positive
 
             path.SettingNamespace.Verify().IsEqual("foo");
             path.SettingName.Verify().IsEqual("bar");
-            path.SettingNameWithValueKey.Verify().IsEqual("bar[baz]");
+            path.SettingNameEx.Verify().IsEqual("bar[baz]");
             path.ValueKey.Verify().IsEqual("baz");
 
             path.FullName.Verify().IsEqual("foo.bar");

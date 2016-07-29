@@ -34,7 +34,7 @@ namespace SmartConfig
         {
             if (!settings.GetType().IsArray) { return null; }
 
-            var valueType = settings.GetType().GetGenericArguments()[0];
+            var valueType = settings.GetType().GetElementType();
             var dataType = mapDataType(valueType);
 
             var result =
