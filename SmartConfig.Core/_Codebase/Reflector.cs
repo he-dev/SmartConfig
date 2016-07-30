@@ -34,12 +34,10 @@ namespace SmartConfig
                 type = type.DeclaringType;
             }
 
+            // This should never happen because the type is already checked.
             if (type == null)
             {
-                throw new SmartConfigAttributeNotFoundException
-                {
-                    Property = propertyInfo.Name
-                };
+                throw new SmartConfigAttributeNotFoundException(propertyInfo);
             }
 
             // add config name if available

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
+using SmartConfig.DataAnnotations;
 using SmartUtilities;
 using SmartUtilities.DataAnnotations;
 
@@ -14,28 +16,80 @@ namespace SmartConfig
         public Type DataStore { get; internal set; }
     }
 
-    public class TypeNotStaticException : FormattableException
+    public class ClassNotStaticException : FormattableException
     {
-        public string Type { get; internal set; }
+        internal ClassNotStaticException(Type type) : base()
+        {
+            Type = type;
+            Message = $"Type '{type.FullName}' must be a static class.";
+        }
+        public override string Message { get; }
+        public Type Type { get; }
     }
 
     public class SettingNotFoundException : FormattableException
     {
-        public override string Message => $"You need to either provide a value for '{SettingPath}' or mark it with the '{nameof(OptionalAttribute)}'.";
-        public Type ConfigurationType { get; internal set; }
-        public string SettingPath { get; internal set; }
+        internal SettingNotFoundException(SettingInfo setting)
+        {
+            SettingPath = setting.SettingPath.FullNameEx;
+            ConfigType = setting.ConfigType;
+            Message = $"Setting '{SettingPath}' not found. If it is opitonal mark it with the '{nameof(OptionalAttribute)}' otherwise you need to provide a value for it.";
+        }
+        public override string Message { get; }
+        public string SettingPath { get; set; }
+        public Type ConfigType { get; set; }
+    }
+
+    public class SingleSettingException:FormattableException
+    {
+        internal SingleSettingException(SettingInfo setting)
+        {
+            SettingPath = setting.SettingPath.FullNameEx;
+            ConfigType = setting.ConfigType;
+            Message = $"Setting '{SettingPath}' found more then once but its type '{setting.Type.Name}' is not a collection.";
+        }
+        public override string Message { get; }
+        public string SettingPath { get; set; }
+        public Type ConfigType { get; set; }
     }
 
     public class SmartConfigAttributeNotFoundException : FormattableException
     {
-        public string ConfigurationType { get; internal set; }
-        public string Property { get; internal set; }
+        internal SmartConfigAttributeNotFoundException(Type type)
+        {
+            ConfigType = type;
+            Message = $"Type '{type.FullName}' must be decorated with the '{nameof(SmartConfigAttribute)}'";
+        }
+
+        internal SmartConfigAttributeNotFoundException(PropertyInfo property)
+        {
+            Message = $"Property '{property.Name}' must be inside a static type that is decorated with the '{nameof(SmartConfigAttribute)}'";
+        }
+
+        public override string Message { get; }
+        public Type ConfigType { get; }
+    }
+
+    public class DataReadException : FormattableException
+    {
+        internal DataReadException(SettingInfo setting, Type dataStoreType, Exception innerException) : base(innerException)
+        {
+            SettingPath = setting.SettingPath.FullNameEx;
+            DataStoreType = dataStoreType;
+            Message = $"Could not read '{SettingPath}' from '{dataStoreType.Name}'. See the inner exception for details about that.";
+        }
+        public override string Message { get; }
+        public string SettingPath { get; }
+        public Type DataStoreType { get; }
     }
 
     public class ReadSettingException : FormattableException
     {
-        public ReadSettingException(Exception innerException) : base(innerException) { }
-        public override string Message => $"Could not load '{SettingPath}'.";
+        internal ReadSettingException(SettingInfo setting, Exception innerException) : base(innerException)
+        {
+            Message = $"Could not read '{setting.SettingPath.FullNameEx}'.";
+        }
+        public override string Message { get; }
         public Type DataStoreType { get; internal set; }
         public Type ConfigurationType { get; internal set; }
         public string SettingPath { get; internal set; }

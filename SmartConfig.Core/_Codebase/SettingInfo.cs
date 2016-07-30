@@ -17,7 +17,7 @@ namespace SmartConfig
     [DebuggerDisplay("Path = \"{SettingPath}\"")]
     internal class SettingInfo
     {
-        internal SettingInfo(PropertyInfo property)
+        internal SettingInfo(PropertyInfo property, Type configType)
         {
             Property = property;
             SettingPath = new SettingPath(Property.GetSettingPath().ToList());
@@ -31,6 +31,8 @@ namespace SmartConfig
         }
 
         public PropertyInfo Property { get; }
+
+        public Type ConfigType { get; }
 
         public bool IsEnumerable => Property.PropertyType.IsEnumerable();
 

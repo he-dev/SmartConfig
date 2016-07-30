@@ -12,8 +12,6 @@ namespace SmartConfig.IO
 {
     internal class SettingWriter
     {
-        private readonly List<Setting> _cache = new List<Setting>();
-
         public SettingWriter(IDataStore dataStore, TypeConverter converter)
         {
             DataStore = dataStore;
@@ -26,8 +24,8 @@ namespace SmartConfig.IO
 
         public int SaveSettings(IReadOnlyCollection<SettingInfo> settings, IReadOnlyDictionary<string, object> namespaces)
         {
-            _cache.Clear();
-            var validationExceptions = new List<Exception>();
+            var settingsCache = new List<Setting>();
+            var saveExceptions = new List<Exception>();
 
             foreach (var setting in settings)
             {
@@ -35,12 +33,10 @@ namespace SmartConfig.IO
                 {
                     if (setting.IsItemized)
                     {
-                        var items = CollectionItemizer.ItemizeCollection(setting.Value, DataStore.MapDataType, Converter);
-                        foreach (var item in items)
-                        {
-                            var s = new Setting(new SettingPath(setting.SettingPath, item.Key), namespaces, item.Value);
-                            _cache.Add(s);
-                        }
+                        var items =
+                            CollectionItemizer.ItemizeCollection(setting.Value, DataStore.MapDataType, Converter)
+                            .Select(x => new Setting(new SettingPath(setting.SettingPath, x.Key), namespaces, x.Value));
+                        settingsCache.AddRange(items);
                     }
                     else
                     {
@@ -48,28 +44,30 @@ namespace SmartConfig.IO
                         var value = dataType == setting.Type
                             ? setting.Value
                             : Converter.Convert(setting.Value, dataType, CultureInfo.InvariantCulture);
-                        _cache.Add(new Setting(setting.SettingPath, namespaces, value));
+                        settingsCache.Add(new Setting(setting.SettingPath, namespaces, value));
                     }
                 }
-                catch (Exception ex) { validationExceptions.Add(ex); }
+                catch (Exception ex) { saveExceptions.Add(ex); }
             }
-            return Commit();
+
+            if (saveExceptions.Any())
+            {
+                throw new AggregateException("Unable to prepare one or more settings for saving.", saveExceptions);
+            }
+
+            return Commit(settingsCache);
         }
 
-        private int Commit()
+        private int Commit(IReadOnlyCollection<Setting> settings)
         {
             try
             {
-                var affectedSettings = DataStore.SaveSettings(_cache);
+                var affectedSettings = DataStore.SaveSettings(settings);
                 return affectedSettings;
             }
             catch (Exception ex)
             {
                 throw new SaveSettingsException(ex) { DataStore = DataStore.GetType() };
-            }
-            finally
-            {
-                _cache.Clear();
             }
         }
     }

@@ -18,57 +18,69 @@ namespace SmartConfig
 {
     public class Configuration
     {
-        // cache for all loaded configurations
+        // Each loaded configuration is cached so that we don't have to run reflection mutliple times.
         private static readonly IDictionary<Type, Configuration> Cache = new Dictionary<Type, Configuration>();
 
-        public static Builder Load => new Builder();
-
+        // The user must not create a configuration directly.
         internal Configuration() { }
 
+        public static event EventHandler<ReloadFailedEventArgs> TryReloadFailed = delegate { };
+
+        // Initializes the fluent interface.
+        public static Builder Load => new Builder();
+
+        // This might be useful in future.
         internal Type Type { get; private set; }
 
+        // Stores info about each setting.
         internal IReadOnlyCollection<SettingInfo> Settings { get; private set; }
 
+        // Stores info about namespaces.
         internal IReadOnlyDictionary<string, object> Namespaces { get; private set; } = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
         internal SettingReader SettingReader { get; private set; }
 
         internal SettingWriter SettingWriter { get; private set; }
 
-        public static event EventHandler<ReloadFailedEventArgs> ReloadFailed = delegate { };      
-
-        private int _Load()
+        private int LoadInternal()
         {
             var affectedSettingCount = SettingReader.ReadSettings(Settings, Namespaces);
             Cache[Type] = this;
             return affectedSettingCount;
         }
 
-        private int _Save()
+        public int Save()
         {
             return SettingWriter.SaveSettings(Settings, Namespaces);
         }
 
-        public static void Reload(Type configurationType)
+        public static bool TryReload(Type configurationType)
         {
-            var configuration = (Configuration)null;
-            if (!Cache.TryGetValue(configurationType, out configuration))
-            {
-                throw new InvalidOperationException($"To reload a configuration you need to load it first. Configuration {configurationType.Name} isn't loaded yet.");
-            }
-
             try
             {
+                var configuration = (Configuration)null;
+                if (!Cache.TryGetValue(configurationType, out configuration))
+                {
+                    throw new InvalidOperationException($"Configuration {configurationType.Name} isn't loaded yet. To reload a configuration you need to load it first.");
+                }
+
                 configuration.SettingReader.ReadSettings(configuration.Settings, configuration.Namespaces);
+                return true;
             }
             catch (Exception ex)
             {
-                ReloadFailed(null, new ReloadFailedEventArgs
-                {
-                    Exception = ex,
-                    Configuration = configurationType.Name
-                });
+                OnReloadFailed(configurationType, ex);
+                return false;
             }
+        }
+
+        private static void OnReloadFailed(Type configurationType, Exception exception)
+        {
+            TryReloadFailed(null, new ReloadFailedEventArgs
+            {
+                ConfigurationType = configurationType,
+                Exception = exception,
+            });
         }
 
         public static int Save(Type configurationType)
@@ -79,7 +91,7 @@ namespace SmartConfig
                 throw new InvalidOperationException($"To save a configuration you need to load it first. Configuration {configurationType.Name} isn't loaded yet.");
             }
 
-            return configuration._Save();
+            return configuration.Save();
         }
 
         public class Builder
@@ -146,19 +158,16 @@ namespace SmartConfig
 
             public Builder From(IDataStore dataStore)
             {
-                _dataStore = dataStore.Validate(nameof(dataStore)).IsNotNull(ctx => "You need to specify a data store.").Argument;                
+                _dataStore = dataStore.Validate(nameof(dataStore)).IsNotNull(ctx => "You need to specify a data store.").Argument;
                 return this;
             }
 
             public Builder Where(string name, object value)
             {
-                name.Validate(nameof(name)).IsNotNullOrEmpty();
-                value.Validate(nameof(value)).IsNotNull();
-                //_configuration.DataStore.Validate().IsNotNull(ctx => "You need to first specify the data store by calling the 'From' method.");
-                //DataStore.SettingNamespaces[name] = value;
-
+                name.Validate(nameof(name)).IsNotNullOrEmpty(ctx => $"You need to specify the namespace.");
+                value.Validate(nameof(value)).IsNotNull(ctx => $"You need to specify the namespace value.");
+                _namespaces.ContainsKey(name).Validate().IsFalse(ctx => $"Namespace with this name '{name}' already exists.");
                 _namespaces.Add(name, value);
-
                 return this;
             }
 
@@ -171,9 +180,15 @@ namespace SmartConfig
             public Configuration Select(Type type, string name = null, ConfigNameOption nameOption = ConfigNameOption.AsPath)
             {
                 type.Validate(nameof(type))
-                    .IsNotNull(ctx => "You need to specify a configuration type.")
-                    .IsTrue(x => x.IsStatic(), ctx => $"Type '{type.FullName}' must be a static class.")
-                    .IsTrue(x => x.HasAttribute<SmartConfigAttribute>(), ctx => $"Type '{type.FullName}' must be decorated with the '{nameof(SmartConfigAttribute)}'");
+                    .IsNotNull(ctx => "You need to specify the configuration type.");
+
+                type.Validate(nameof(type))
+                    .OnFailure(ctx => new ClassNotStaticException(ctx.Argument))
+                    .IsTrue(x => x.IsStatic());
+
+                type.Validate(nameof(type))
+                    .OnFailure(ctx => new SmartConfigAttributeNotFoundException(ctx.Argument))
+                    .IsTrue(x => x.HasAttribute<SmartConfigAttribute>());
 
                 var smartConfigAttribute = type.GetCustomAttribute<SmartConfigAttribute>();
 
@@ -195,7 +210,7 @@ namespace SmartConfig
                 _configuration.SettingReader = new SettingReader(_dataStore, _converter);
                 _configuration.SettingWriter = new SettingWriter(_dataStore, _converter);
 
-                _configuration._Load();
+                _configuration.LoadInternal();
 
                 return ToConfiguration();
             }

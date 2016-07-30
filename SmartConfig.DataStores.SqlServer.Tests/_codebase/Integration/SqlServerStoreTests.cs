@@ -105,7 +105,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
 
             Configuration.Save(typeof(TestConfig1));
             TestConfig1.Roxy = string.Empty;
-            Configuration.Reload(typeof(TestConfig1));
+            Configuration.TryReload(typeof(TestConfig1));
             TestConfig1.Roxy.Verify().IsNotNullOrEmpty().IsEqual(newValue);
         }
 
@@ -123,7 +123,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
 
             Configuration.Save(typeof(TestConfig2));
             TestConfig2.Bar = string.Empty;
-            Configuration.Reload(typeof(TestConfig2));
+            Configuration.TryReload(typeof(TestConfig2));
             TestConfig2.Bar.Verify().IsNotNullOrEmpty().IsEqual(newValue);
         }
 
@@ -147,7 +147,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
 
             ItemizedConfig.Numbers2.Remove(ItemizedConfig.Numbers2.ElementAt(1).Key);
             Configuration.Save(typeof(ItemizedConfig));
-            Configuration.Reload(typeof(ItemizedConfig));
+            Configuration.TryReload(typeof(ItemizedConfig));
 
             ItemizedConfig.Numbers2.Count.Verify().IsEqual(2);
         }

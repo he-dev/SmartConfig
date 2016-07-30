@@ -15,15 +15,15 @@ namespace SmartConfig.Collections
     {
         private SettingCollection(IList<SettingInfo> list) : base(list) { }
 
-        internal static SettingCollection From(Type configurationType)
+        internal static SettingCollection From(Type configType)
         {
-            var types = configurationType.NestedTypes(type => !type.HasAttribute<IgnoreAttribute>());
+            var types = configType.NestedTypes(type => !type.HasAttribute<IgnoreAttribute>());
 
             var settings =
                 types.Select(type => type.GetProperties(BindingFlags.Public | BindingFlags.Static))
                 .SelectMany(properties => properties)
                 .Where(property => !property.HasAttribute<IgnoreAttribute>())
-                .Select(property => new SettingInfo(property))
+                .Select(property => new SettingInfo(property, configType))
                 .ToList();
 
             return new SettingCollection(settings);

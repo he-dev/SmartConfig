@@ -8,17 +8,17 @@ using SmartConfig.DataAnnotations;
 using SmartUtilities.DataAnnotations;
 using SmartUtilities.ValidationExtensions;
 using SmartUtilities.ValidationExtensions.Testing;
+// ReSharper disable CheckNamespace
 
 namespace SmartConfig.DataStores.AppConfig.Tests.Integration.ConnectionStringsStore.Positive
 {
     using AppConfig;
-    using TestConfigs;
 
     [TestClass]
-    public class GetSettings
+    public class FullTests
     {
         [TestMethod]
-        public void GetSettingsSimple()
+        public void SimpleConfig()
         {
             Configuration.Load.From(new ConnectionStringsStore()).Select(typeof(FullConfig3));
 
@@ -28,7 +28,7 @@ namespace SmartConfig.DataStores.AppConfig.Tests.Integration.ConnectionStringsSt
         }
 
         [TestMethod]
-        public void GetSettingsWithConfigNameAsPath()
+        public void ConfigWithNameAsPath()
         {
             Configuration.Load.From(new ConnectionStringsStore()).Select(typeof(FullConfig4));
 
@@ -36,45 +36,5 @@ namespace SmartConfig.DataStores.AppConfig.Tests.Integration.ConnectionStringsSt
             FullConfig4.NestedConfig.StringSetting.Verify().IsEqual("Barxy");
             FullConfig4.IgnoredConfig.StringSetting.Verify().IsEqual("Grault");
         }
-    }
-    [TestClass]
-    public class SaveSetting
-    {
-        [TestMethod]
-        public void SaveSettingByKey()
-        {
-            var value = DateTime.UtcNow.ToFileTime().ToString();
-
-            Configuration.Load
-                .From(new ConnectionStringsStore())
-                .Select(typeof(TestConfig2));
-
-            TestConfig2.FileTime = value;
-            Configuration.Save(typeof(TestConfig2));
-            TestConfig2.FileTime = null;
-            Configuration.Reload(typeof(TestConfig2));
-            TestConfig2.FileTime.Verify().IsNotNullOrEmpty().IsEqual(value);
-        }
-    }
-}
-
-namespace SmartConfig.DataStores.AppConfig.Tests.Integration.ConnectionStringsStore.Positive.TestConfigs
-{
-    [SmartConfig("Bar")]
-    internal static class TestConfig1
-    {
-        public static string Foo { get; set; }
-    }
-
-    [SmartConfig]
-    internal static class TestConfig2
-    {
-        [Optional]
-        public static string FileTime { get; set; }
-    }
-}
-
-namespace SmartConfig.DataStores.AppConfig.Tests.Integration.AppSettingsStore.Negative
-{
-    
+    }    
 }

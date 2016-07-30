@@ -4,7 +4,7 @@ namespace SmartConfig
 {
     public class ReloadFailedEventArgs : EventArgs
     {
-        public string Configuration { get; set; }
+        public Type ConfigurationType { get; internal set; }
         public Exception Exception { get; internal set; }
     }
 }

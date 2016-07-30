@@ -15,10 +15,10 @@ GO
 DELETE FROM [Setting1]
 
 EXEC #insertOrUpdateSetting 'StringSetting', 'Foo'
-EXEC #insertOrUpdateSetting 'ArraySetting[0]', '3'
-EXEC #insertOrUpdateSetting 'ArraySetting[1]', '7'
-EXEC #insertOrUpdateSetting 'DictionarySetting[foo]', '4'
-EXEC #insertOrUpdateSetting 'DictionarySetting[bar]', '8'
+EXEC #insertOrUpdateSetting 'ArraySetting[0]', '5'
+EXEC #insertOrUpdateSetting 'ArraySetting[1]', '8'
+EXEC #insertOrUpdateSetting 'DictionarySetting[foo]', '21'
+EXEC #insertOrUpdateSetting 'DictionarySetting[bar]', '34'
 EXEC #insertOrUpdateSetting 'NestedConfig.StringSetting', 'Bar'
 EXEC #insertOrUpdateSetting 'IgnoredConfig.StringSetting', 'Qux'
 
@@ -32,7 +32,7 @@ EXEC #insertOrUpdateSetting 'thud.IgnoredConfig.StringSetting', 'Quxx'
 
 GO
 
-SELECT * FROM [Setting1]
+SELECT * FROM [Setting1] ORDER BY [Name]
 
 DROP PROC #insertOrUpdateSetting
 GO

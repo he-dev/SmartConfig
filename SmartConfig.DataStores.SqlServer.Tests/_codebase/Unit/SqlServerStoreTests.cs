@@ -7,10 +7,9 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartUtilities.ValidationExtensions;
 using SmartUtilities.ValidationExtensions.Testing;
-
 // ReSharper disable InconsistentNaming
 
-// ReSharper disable once CheckNamespace
+
 namespace SmartConfig.DataStores.SqlServer.Tests.Unit.SqlServerStore.Positive
 {
     using SqlServer;
@@ -63,19 +62,32 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Unit.SqlServerStore.Negative
         [TestMethod]
         public void ConnectionStringNull()
         {
-            new Action(() => new SqlServerStore(null)).Validate().Throws<ValidationException>();
+            new Action(() =>
+            {
+                new SqlServerStore(null);
+            })
+            .Verify().Throws<ValidationException>();
         }
 
         [TestMethod]
         public void ConnectionStringEmpty()
         {
-            new Action(() => new SqlServerStore(null)).Validate().Throws<ValidationException>();
+            new Action(() =>
+            {
+                new SqlServerStore(null);
+            })
+            .Verify().Throws<ValidationException>();
         }
 
         [TestMethod]
         public void ConnectionStringNotFound()
         {
-            new Action(() => new SqlServerStore("name=bar")).Validate().Throws<ValidationException>();
+            new Action(() =>
+            {
+                new SqlServerStore("name=bar");
+                
+            })
+            .Verify().Throws<ValidationException>();
         }
     }
 }

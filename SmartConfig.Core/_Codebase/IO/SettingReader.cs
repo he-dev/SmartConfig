@@ -11,11 +11,9 @@ using SmartUtilities.ValidationExtensions;
 
 namespace SmartConfig.IO
 {
-    // this class knows how to read settings
+    // This class knows how to read settings from the store and convert them to objects.
     internal class SettingReader
     {
-        private readonly IDictionary<SettingInfo, object> _cache = new Dictionary<SettingInfo, object>();
-
         public SettingReader(IDataStore dataStore, TypeConverter converter)
         {
             DataStore = dataStore;
@@ -28,35 +26,61 @@ namespace SmartConfig.IO
 
         public int ReadSettings(IReadOnlyCollection<SettingInfo> settings, IReadOnlyDictionary<string, object> namespaces)
         {
-            _cache.Clear();
-            var validationExceptions = new List<Exception>();
+            var valuesCache = new Dictionary<SettingInfo, object>();
+            var readExceptions = new List<Exception>();
 
             foreach (var setting in settings)
             {
+                // Data read exceptions abort reading.
+                var rows = ReadData(setting, namespaces);
+
+                // Deserialization exceptions are collected and rethrown aggregated.
                 try
                 {
-                    ReadSetting(setting, namespaces);
+                    valuesCache[setting] = DeserializeSetting(setting, rows);
                 }
                 catch (Exception ex)
                 {
-                    validationExceptions.Add(ex);
+                    readExceptions.Add(ex);
                 }
             }
 
-            if (validationExceptions.Any())
+            if (readExceptions.Any())
             {
-                throw new AggregateException("Unable to read one or more settings.", validationExceptions);
+                throw new AggregateException(
+                    $"Unable to deserialize {readExceptions.Count} setting{(readExceptions.Count == 1 ? string.Empty : "s")}.", 
+                    readExceptions);
             }
 
-            return Commit();
+            return Commit(valuesCache);
         }
 
-        private void ReadSetting(SettingInfo setting, IReadOnlyDictionary<string, object> namespaces)
+        private List<Setting> ReadData(SettingInfo setting, IReadOnlyDictionary<string, object> namespaces)
+        {
+            // This method wraps the original exception to provide additional information for the user.
+            try
+            {
+                return DataStore.GetSettings(new Setting(setting.SettingPath, namespaces));
+            }
+            catch (Exception innerException)
+            {
+                throw new DataReadException(setting, DataStore.GetType(), innerException);
+            }
+        }
+
+        private object DeserializeSetting(SettingInfo setting, IReadOnlyCollection<Setting> rows)
         {
             var culture = CultureInfo.InvariantCulture;
 
-            // data store exeptions shouldn't be cought
-            var settingRows = DataStore.GetSettings(new Setting(setting.SettingPath, namespaces));
+            if (!rows.Any() && !setting.IsOptional)
+            {
+                throw new SettingNotFoundException(setting);
+            }
+
+            if (!rows.Any() && setting.IsOptional)
+            {
+                return null;
+            }
 
             if (setting.IsItemized)
             {
@@ -64,58 +88,51 @@ namespace SmartConfig.IO
 
                 if (setting.Type.IsArray)
                 {
-                    data = settingRows.Select(x => x.Value);
+                    data = rows.Select(x => x.Value);
                 }
 
                 if (setting.Type.IsList())
                 {
-                    data = settingRows.Select(x => x.Value);
+                    data = rows.Select(x => x.Value);
                 }
 
                 if (setting.Type.IsHashSet())
                 {
-                    data = settingRows.Select(x => x.Value);
+                    data = rows.Select(x => x.Value);
                 }
 
                 if (setting.Type.IsDictionary())
                 {
-                    data = settingRows.ToDictionary(x => x.Name.ValueKey, x => x.Value);
+                    data = rows.ToDictionary(x => x.Name.ValueKey, x => x.Value);
                 }
 
                 var value = Converter.Convert(data, setting.Type, culture);
-                _cache[setting] = value;
+                return value;
             }
             else
             {
-                settingRows.Count.Validate().IsTrue(x => x <= 1, ctx => $"'{setting.SettingPath.FullName}' found more then once.");
-                var settingRow = settingRows.SingleOrDefault();
-
-                if (settingRow == null)
+                if (rows.Count > 1)
                 {
-                    if (setting.IsOptional)
-                    {
-                        return;
-                    }
-                    throw new SettingNotFoundException { SettingPath = setting.SettingPath.FullNameEx };
+                    throw new SingleSettingException(setting);
                 }
 
-                var value =
-                    settingRow.Value.GetType() == setting.Type
-                        ? settingRow.Value
-                        : Converter.Convert(settingRow.Value, setting.Type, culture);
-                _cache[setting] = value;
+                var row0 = rows.Single();
+                var dataHasTargetType = row0.Value.GetType() == setting.Type;
+                var value = dataHasTargetType ? row0.Value : Converter.Convert(row0.Value, setting.Type, culture);
+                return value;
             }
         }
 
-        private int Commit()
+        private int Commit(IReadOnlyDictionary<SettingInfo, object> values)
         {
             var affectedSettingCount = 0;
-            foreach (var setting in _cache.Where(x => x.Value != null))
+            
+            // Optional settings might be null so we ignore them.
+            foreach (var setting in values.Where(x => x.Value != null))
             {
                 setting.Key.Value = setting.Value;
                 affectedSettingCount++;
             }
-            _cache.Clear();
             return affectedSettingCount;
         }
     }

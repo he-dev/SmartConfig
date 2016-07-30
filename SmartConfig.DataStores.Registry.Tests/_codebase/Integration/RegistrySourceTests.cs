@@ -10,6 +10,7 @@ using SmartUtilities.TypeFramework;
 using SmartUtilities.TypeFramework.Converters;
 using SmartUtilities.ValidationExtensions;
 using SmartUtilities.ValidationExtensions.Testing;
+// ReSharper disable CheckNamespace
 
 namespace SmartConfig.DataStores.Registry.Tests.Integration.RegistryStore.Positive
 {
@@ -21,7 +22,7 @@ namespace SmartConfig.DataStores.Registry.Tests.Integration.RegistryStore.Positi
         private const string TestRegistryKey = @"Software\SmartConfig\Tests";
 
         [TestMethod]
-        public void SimpleSetting()
+        public void SimpleConfig()
         {
             Configuration.Load
                 .From(RegistryStore.CreateForCurrentUser(TestRegistryKey))
@@ -55,7 +56,7 @@ namespace SmartConfig.DataStores.Registry.Tests.Integration.RegistryStore.Positi
         }
 
         [TestMethod]
-        public void GetSettingsWithConfigNameAsPath()
+        public void ConfigWithNameAsPath()
         {
             Configuration.Load.From(RegistryStore.CreateForCurrentUser(TestRegistryKey)).Select(typeof(FullConfig2));
 
@@ -64,34 +65,6 @@ namespace SmartConfig.DataStores.Registry.Tests.Integration.RegistryStore.Positi
             FullConfig2.DictionarySetting.Count.Verify().IsEqual(2);
             FullConfig2.NestedConfig.StringSetting.Verify().IsEqual("Barx");
             FullConfig2.IgnoredConfig.StringSetting.Verify().IsEqual("Grault");
-        }
-    }
-
-    [TestClass]
-    public class SaveSettings
-    {
-        [TestMethod]
-        public void SaveSettingsByName()
-        {
-            Configuration.Load
-                .From(RegistryStore.CreateForCurrentUser(@"Software\SmartConfig\Tests"))
-                .Select(typeof(TestConfig));
-
-            var now = DateTime.Now;
-            TestConfig.Qux = now;
-            Configuration.Save(typeof(TestConfig));
-
-            // change the last value that should be overwritten on reload
-            TestConfig.Qux = DateTime.MinValue;
-            Configuration.Reload(typeof(TestConfig));
-            Assert.AreEqual(now.ToLongDateString(), TestConfig.Qux.ToLongDateString());
-        }
-
-        [SmartConfig]
-        private static class TestConfig
-        {
-            [Optional]
-            public static DateTime Qux { get; set; }
         }
     }
 }

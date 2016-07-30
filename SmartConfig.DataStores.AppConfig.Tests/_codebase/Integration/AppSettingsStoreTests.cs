@@ -8,6 +8,7 @@ using SmartConfig.DataAnnotations;
 using SmartUtilities.DataAnnotations;
 using SmartUtilities.ValidationExtensions;
 using SmartUtilities.ValidationExtensions.Testing;
+// ReSharper disable CheckNamespace
 
 namespace SmartConfig.DataStores.AppConfig.Tests.Integration.AppSettingsStore.Positive
 {
@@ -17,7 +18,7 @@ namespace SmartConfig.DataStores.AppConfig.Tests.Integration.AppSettingsStore.Po
     public class FullTests
     {
         [TestMethod]
-        public void SimpleSetting()
+        public void SimpleConfig()
         {
             Configuration.Load.From(new AppSettingsStore()).Select(typeof(FullConfig1));
 
@@ -50,7 +51,7 @@ namespace SmartConfig.DataStores.AppConfig.Tests.Integration.AppSettingsStore.Po
         }
 
         [TestMethod]
-        public void GetSettingsWithConfigNameAsPath()
+        public void ConfigWithNameAsPath()
         {
             Configuration.Load.From(new AppSettingsStore()).Select(typeof(FullConfig2));
 
