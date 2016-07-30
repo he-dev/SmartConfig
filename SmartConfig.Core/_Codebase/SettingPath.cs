@@ -57,13 +57,7 @@ namespace SmartConfig
             var valueKey = lastNameMatch.Groups["key"].Value;
 
             return new SettingPath(names, valueKey);
-        }
-
-        //public bool IsMatch(string path)
-        //{
-        //    var isMatch = Regex.IsMatch(path, $"^{FullName}(\\[.+\\])?$", RegexOptions.IgnoreCase);
-        //    return isMatch;
-        //}
+        }      
 
         public bool IsLike(SettingPath path)
         {

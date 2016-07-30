@@ -81,11 +81,23 @@ namespace SmartConfig.DataStores.Registry
 
             var settingGroups = settings.GroupBy(x => x.Name.FullName).ToList();
 
+            // Before starting to delete/set keys check if all settings have valid types.
+            var unsupportedSettings =
+                settingGroups.Where(sg => !_registryValueKindMap.ContainsKey(sg.First().Value.GetType()))
+                .ToList();
+
+            if (unsupportedSettings.Any())
+            {
+                throw new UnsupportedTypeException(
+                    unsupportedSettings.Select(x => x.First().Name.FullName),
+                    _registryValueKindMap.Select(x => x.Key));
+            }
+
             // Delete all settings first.
             foreach (var sg in settingGroups)
             {
+                // We the first element to delete other elements that are alike and to get the setting type.
                 var s0 = sg.First();
-
                 var rp = new RegistryPath(s0.Name);
 
                 var subKeyName = Path.Combine(_baseSubKeyName, rp.SettingNamespace);
@@ -106,16 +118,7 @@ namespace SmartConfig.DataStores.Registry
                     }
 
                     // Get registry value kind from the first setting.
-                    
-                    var registryValueKind = RegistryValueKind.None;
-                    if (!_registryValueKindMap.TryGetValue(s0.Value.GetType(), out registryValueKind))
-                    {
-                        throw new UnsupportedTypeException
-                        {
-                            SettingName = s0.Name.FullNameEx,
-                            ValueType = s0.Value.GetType().Name
-                        };
-                    }
+                    var registryValueKind = _registryValueKindMap[s0.Value.GetType()];
 
                     // Save all group settings.
                     foreach (var s in sg)
@@ -155,18 +158,5 @@ namespace SmartConfig.DataStores.Registry
         {
             return new RegistryStore(Microsoft.Win32.Registry.Users, subRegistryKey);
         }
-    }
-
-    public class UnsupportedTypeException : FormattableException
-    {
-        public string ValueType { get; internal set; }
-        public string SettingName { get; internal set; }
-    }
-
-    public class RegistryKeyException : FormattableException
-    {
-        public RegistryKeyException(string message) : base(message) { }
-        //public string ValueType { get; internal set; }
-        //public string SettingName { get; internal set; }
     }
 }

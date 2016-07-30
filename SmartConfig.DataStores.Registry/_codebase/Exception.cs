@@ -1,0 +1,21 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using SmartUtilities;
+
+namespace SmartConfig.DataStores.Registry
+{
+    public class UnsupportedTypeException : FormattableException
+    {
+        internal UnsupportedTypeException(IEnumerable<string> settingNames, IEnumerable<Type> allowedTypes)
+        {
+            Message = 
+                $"There are some setting with unsupported types: [{string.Join(", ", settingNames)}]. " +
+                $"Allowed types are: [{string.Join(", ", allowedTypes.Select(x => x.Name))}].";
+        }
+
+        public override string Message { get; }
+    }    
+}

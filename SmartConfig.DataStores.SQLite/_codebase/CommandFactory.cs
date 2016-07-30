@@ -32,13 +32,11 @@ namespace SmartConfig.DataStores.SQLite
             {
                 var tableName = commandBuilder.QuoteIdentifier(SettingTableProperties.TableName);
 
-                sql.Append($"SELECT *").AppendLine();
-                sql.Append($"FROM {tableName}").AppendLine();
-
-                var where = setting.Namespaces.Aggregate(
+                sql.Append($"SELECT * FROM {tableName}").AppendLine();
+                sql.Append(setting.Namespaces.Keys.Aggregate(
                     $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} || '[%]')",
-                    (result, next) => $"{result} AND {commandBuilder.QuoteIdentifier(next.Key)} = @{next.Key}");
-                sql.Append(where);
+                    (result, key) => $"{result} AND {commandBuilder.QuoteIdentifier(key)} = @{key}")
+                );
             }
 
             var command = connection.CreateCommand();
@@ -65,53 +63,52 @@ namespace SmartConfig.DataStores.SQLite
             return command;
         }
 
-        //public SQLiteCommand CreateDeleteCommand(SQLiteConnection connection, Setting setting)
-        //{
-        //    /*
+        public SQLiteCommand CreateDeleteCommand(SQLiteConnection connection, Setting setting)
+        {
+            /*
              
-        //    DELETE FROM [dbo].[Setting] WHERE [Name] LIKE 'baz%' AND [Environment] = 'boz'
+            DELETE FROM [dbo].[Setting] WHERE [Name] LIKE 'baz%' AND [Environment] = 'boz'
 
-        //    */
+            */
 
-        //    var sql = new StringBuilder();
+            var sql = new StringBuilder();
 
-        //    var dbProviderFactory = DbProviderFactories.GetFactory(connection);
-        //    using (var commandBuilder = dbProviderFactory.CreateCommandBuilder())
-        //    {
-        //        //var schemaName = commandBuilder.QuoteIdentifier(SettingTableProperties.SchemaName);
-        //        var tableName = commandBuilder.QuoteIdentifier(SettingTableProperties.TableName);
+            var dbProviderFactory = DbProviderFactories.GetFactory(connection);
+            using (var commandBuilder = dbProviderFactory.CreateCommandBuilder())
+            {
+                //var schemaName = commandBuilder.QuoteIdentifier(SettingTableProperties.SchemaName);
+                var tableName = commandBuilder.QuoteIdentifier(SettingTableProperties.TableName);
 
-        //        sql.Append($"DELETE FROM {tableName}").AppendLine();
-        //        sql.Append(setting.Namespaces.Keys.Aggregate(
-        //            //$"WHERE [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} + N'%'",
-        //            $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} + N'[[]%]')",
-        //            (result, next) => $"{result} AND {commandBuilder.QuoteIdentifier(next)} = @{next} ")
-        //        );
-        //    }
+                sql.Append($"DELETE FROM {tableName}").AppendLine();
+                sql.Append(setting.Namespaces.Keys.Aggregate(
+                    $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} || '[%]')",
+                    (result, key) => $"{result} AND {commandBuilder.QuoteIdentifier(key)} = @{key} ")
+                );
+            }
 
-        //    var command = connection.CreateCommand();
-        //    command.CommandType = CommandType.Text;
-        //    command.CommandText = sql.ToString();
+            var command = connection.CreateCommand();
+            command.CommandType = CommandType.Text;
+            command.CommandText = sql.ToString();
 
-        //    // --- add parameters & values
+            // --- add parameters & values
 
-        //    command.Parameters.Add(
-        //        nameof(Setting.Name),
-        //        SettingTableProperties.GetSqlDbTypeOrDefault(nameof(Setting.Name)),
-        //        SettingTableProperties.GetColumnLengthOrDefault(nameof(Setting.Name))
-        //    ).Value = setting.Name.FullName;
+            command.Parameters.Add(
+                nameof(Setting.Name),
+                SettingTableProperties.GetDbTypeOrDefault(nameof(Setting.Name)),
+                SettingTableProperties.GetColumnLengthOrDefault(nameof(Setting.Name))
+            );
 
-        //    foreach (var ns in setting.Namespaces)
-        //    {
-        //        command.Parameters.Add(
-        //            ns.Key,
-        //            SettingTableProperties.GetSqlDbTypeOrDefault(ns.Key),
-        //            SettingTableProperties.GetColumnLengthOrDefault(ns.Key)
-        //        ).Value = ns.Value;
-        //    }
+            foreach (var ns in setting.Namespaces)
+            {
+                command.Parameters.Add(
+                    ns.Key,
+                    SettingTableProperties.GetDbTypeOrDefault(ns.Key),
+                    SettingTableProperties.GetColumnLengthOrDefault(ns.Key)
+                );
+            }
 
-        //    return command;
-        //}
+            return command;
+        }
 
         public SQLiteCommand CreateInsertCommand(SQLiteConnection connection, Setting setting)
         {

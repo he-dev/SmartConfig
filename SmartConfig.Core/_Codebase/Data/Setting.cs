@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmartConfig.Data
 {
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Setting
     {
         // We store all names and values in a not-case sensitive dictionary.
@@ -76,7 +77,10 @@ namespace SmartConfig.Data
 
         public IEnumerable<string> Names => _values.Keys;
 
-        //private string DebuggerDisplay { }
+        private string DebuggerDisplay
+        {
+            get { return $"{Name.FullNameEx} = {Value} in [{string.Join(",", Namespaces.Select(x => x.Value))}]"; }
+        }
 
         public bool NamespaceEquals(string key, object value)
         {
