@@ -7,7 +7,7 @@ using SmartUtilities;
 
 namespace SmartConfig.DataStores.Registry
 {
-    public class UnsupportedTypeException : FormattableException
+    public class UnsupportedTypeException : Exception
     {
         internal UnsupportedTypeException(IEnumerable<string> settingNames, IEnumerable<Type> allowedTypes)
         {
@@ -17,5 +17,7 @@ namespace SmartConfig.DataStores.Registry
         }
 
         public override string Message { get; }
+
+        public override string ToString() => this.ToJson();
     }    
 }

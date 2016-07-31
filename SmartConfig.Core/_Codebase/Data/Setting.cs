@@ -77,10 +77,7 @@ namespace SmartConfig.Data
 
         public IEnumerable<string> Names => _values.Keys;
 
-        private string DebuggerDisplay
-        {
-            get { return $"{Name.FullNameEx} = {Value} in [{string.Join(",", Namespaces.Select(x => x.Value))}]"; }
-        }
+        private string DebuggerDisplay => ToString();
 
         public bool NamespaceEquals(string key, object value)
         {
@@ -94,6 +91,11 @@ namespace SmartConfig.Data
             return
                 Name.IsLike(setting.Name) &&
                 Namespaces.All(ns => setting.NamespaceEquals(ns.Key, ns.Value));
+        }
+
+        public override string ToString()
+        {
+            return $"{Name.FullNameEx} = '{Value}' in [{string.Join(",", Namespaces.Select(x => x.Value))}]";
         }
 
         //public static bool operator ==(Setting x, Setting y)

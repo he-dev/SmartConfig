@@ -20,6 +20,7 @@ namespace SmartConfig
         internal SettingInfo(PropertyInfo property, Type configType)
         {
             Property = property;
+            ConfigType = configType;
             SettingPath = new SettingPath(Property.GetSettingPath().ToList());
             //ValidationAttributes = Property.GetCustomAttributes<ValidationAttribute>();
 
@@ -61,6 +62,12 @@ namespace SmartConfig
         public override int GetHashCode()
         {
             return Property.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            // FullConfig2.Foo.Bar[baz] (required) System.Collections.Generic.List < int >
+            return $"{ConfigType.Name}.{SettingPath.FullNameEx} {(IsOptional ? "optional" : "required")} {Type.ToShortString()}";
         }
     }
 }

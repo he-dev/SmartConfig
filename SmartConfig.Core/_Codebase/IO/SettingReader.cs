@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using SmartConfig.Data;
 using SmartUtilities;
+using SmartUtilities.TypeConversion;
 using SmartUtilities.TypeFramework;
 using SmartUtilities.ValidationExtensions;
 
@@ -27,7 +28,7 @@ namespace SmartConfig.IO
         public int ReadSettings(IReadOnlyCollection<SettingInfo> settings, IReadOnlyDictionary<string, object> namespaces)
         {
             var valuesCache = new Dictionary<SettingInfo, object>();
-            var readExceptions = new List<Exception>();
+            var deserializationExceptions = new List<Exception>();
 
             foreach (var setting in settings)
             {
@@ -41,23 +42,24 @@ namespace SmartConfig.IO
                 }
                 catch (Exception ex)
                 {
-                    readExceptions.Add(ex);
+                    deserializationExceptions.Add(ex);
                 }
             }
 
-            if (readExceptions.Any())
+            if (deserializationExceptions.Any())
             {
                 throw new AggregateException(
-                    $"Unable to deserialize {readExceptions.Count} setting{(readExceptions.Count == 1 ? string.Empty : "s")}.", 
-                    readExceptions);
+                    $"Unable to deserialize {deserializationExceptions.Count} setting{(deserializationExceptions.Count == 1 ? string.Empty : "s")}.",
+                    deserializationExceptions);
             }
 
+            // If everything went fine commit the values to the config.
             return Commit(valuesCache);
         }
 
         private List<Setting> ReadData(SettingInfo setting, IReadOnlyDictionary<string, object> namespaces)
         {
-            // This method wraps the original exception to provide additional information for the user.
+            // This method decorated the original exception to provide additional information for the user.
             try
             {
                 return DataStore.GetSettings(new Setting(setting.SettingPath, namespaces));
@@ -105,9 +107,15 @@ namespace SmartConfig.IO
                 {
                     data = rows.ToDictionary(x => x.Name.ValueKey, x => x.Value);
                 }
-
-                var value = Converter.Convert(data, setting.Type, culture);
-                return value;
+                try
+                {
+                    var value = Converter.Convert(data, setting.Type, culture);
+                    return value;
+                }
+                catch (Exception innerException)
+                {
+                    throw new DeserializationException(setting, innerException);
+                }
             }
             else
             {
@@ -117,16 +125,27 @@ namespace SmartConfig.IO
                 }
 
                 var row0 = rows.Single();
-                var dataHasTargetType = row0.Value.GetType() == setting.Type;
-                var value = dataHasTargetType ? row0.Value : Converter.Convert(row0.Value, setting.Type, culture);
-                return value;
+                if (row0.Value.GetType() == setting.Type)
+                {
+                    return row0.Value;
+                }
+
+                try
+                {
+                    var value = Converter.Convert(row0.Value, setting.Type, culture);
+                    return value;
+                }
+                catch (Exception innerException)
+                {
+                    throw new DeserializationException(setting, innerException);
+                }
             }
         }
 
-        private int Commit(IReadOnlyDictionary<SettingInfo, object> values)
+        private static int Commit(IReadOnlyDictionary<SettingInfo, object> values)
         {
             var affectedSettingCount = 0;
-            
+
             // Optional settings might be null so we ignore them.
             foreach (var setting in values.Where(x => x.Value != null))
             {

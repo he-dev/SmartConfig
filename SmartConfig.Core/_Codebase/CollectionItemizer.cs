@@ -8,13 +8,14 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using SmartConfig.Data;
 using SmartUtilities;
+using SmartUtilities.TypeConversion;
 using SmartUtilities.TypeFramework;
 
 namespace SmartConfig
 {
     internal class CollectionItemizer
     {
-        private static readonly Func<object, Func<Type, Type>, TypeConverter, KeyValuePair<string, object>[]>[] Factories =
+        private static readonly Func<object, Func<Type, Type>, TypeConverter, IEnumerable<KeyValuePair<string, object>>>[] Factories =
         {
             ItemizeArray,
             ItemizeList,
@@ -22,7 +23,7 @@ namespace SmartConfig
             ItemizeDictionary,
         };
 
-        public static KeyValuePair<string, object>[] ItemizeCollection(object settings, Func<Type, Type> mapDataType, TypeConverter converter)
+        public static IEnumerable<KeyValuePair<string, object>> ItemizeCollection(object settings, Func<Type, Type> mapDataType, TypeConverter converter)
         {
             return
                 Factories
@@ -30,52 +31,58 @@ namespace SmartConfig
                     .FirstOrDefault(collection => collection != null);
         }
 
-        public static KeyValuePair<string, object>[] ItemizeArray(object settings, Func<Type, Type> mapDataType, TypeConverter converter)
+        public static IEnumerable<KeyValuePair<string, object>> ItemizeArray(object settings, Func<Type, Type> mapDataType, TypeConverter converter)
         {
             if (!settings.GetType().IsArray) { return null; }
 
-            var valueType = settings.GetType().GetElementType();
-            var dataType = mapDataType(valueType);
+            var elementType = settings.GetType().GetElementType();
+            var dataType = mapDataType(elementType);
 
             var result =
                 ((IEnumerable)settings).Cast<object>()
-                .Select((x, i) => new KeyValuePair<string, object>(key: i.ToString(), value: converter.Convert(x, dataType)))
-                .ToArray();
+                .Select((x, i) => new KeyValuePair<string, object>(
+                    key: i.ToString(), 
+                    value: converter.Convert(x, dataType)
+                ));
 
             return result;
         }
 
-        public static KeyValuePair<string, object>[] ItemizeList(object settings, Func<Type, Type> mapDataType, TypeConverter converter)
+        public static IEnumerable<KeyValuePair<string, object>> ItemizeList(object settings, Func<Type, Type> mapDataType, TypeConverter converter)
         {
             if (!settings.GetType().IsList()) { return null; }
 
-            var valueType = settings.GetType().GetGenericArguments()[0];
-            var dataType = mapDataType(valueType);
+            var elementType = settings.GetType().GetGenericArguments()[0];
+            var dataType = mapDataType(elementType);
 
             var result =
                 ((IEnumerable)settings).Cast<object>()
-                .Select((x, i) => new KeyValuePair<string, object>(key: i.ToString(), value: converter.Convert(x, dataType)))
-                .ToArray();
+                .Select((x, i) => new KeyValuePair<string, object>(
+                    key: i.ToString(), 
+                    value: converter.Convert(x, dataType)
+                ));
 
             return result;
         }
 
-        public static KeyValuePair<string, object>[] ItemizeHashSet(object settings, Func<Type, Type> mapDataType, TypeConverter converter)
+        public static IEnumerable<KeyValuePair<string, object>> ItemizeHashSet(object settings, Func<Type, Type> mapDataType, TypeConverter converter)
         {
             if (!settings.GetType().IsHashSet()) { return null; }
 
-            var valueType = settings.GetType().GetGenericArguments()[0];
-            var dataType = mapDataType(valueType);
+            var elementType = settings.GetType().GetGenericArguments()[0];
+            var dataType = mapDataType(elementType);
 
             var result =
                 ((IEnumerable)settings).Cast<object>()
-                .Select((x, i) => new KeyValuePair<string, object>(key: i.ToString(), value: converter.Convert(x, dataType)))
-                .ToArray();
+                .Select((x, i) => new KeyValuePair<string, object>(
+                    key: i.ToString(), 
+                    value: converter.Convert(x, dataType)
+                ));
 
             return result;
         }
 
-        public static KeyValuePair<string, object>[] ItemizeDictionary(object settings, Func<Type, Type> mapDataType, TypeConverter converter)
+        public static IEnumerable<KeyValuePair<string, object>> ItemizeDictionary(object settings, Func<Type, Type> mapDataType, TypeConverter converter)
         {
             if (!settings.GetType().IsDictionary()) { return null; }
 
@@ -88,7 +95,7 @@ namespace SmartConfig
                 key => new KeyValuePair<string, object>(
                     key: (string)converter.Convert(key, typeof(string)),
                     value: converter.Convert(dictionary[key], dataType)
-            )).ToArray();
+            ));
 
             return result;
         }

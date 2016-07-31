@@ -10,6 +10,7 @@ using SmartConfig.Data;
 using SmartConfig.DataAnnotations;
 using SmartConfig.IO;
 using SmartUtilities;
+using SmartUtilities.TypeConversion;
 using SmartUtilities.TypeFramework;
 using SmartUtilities.TypeFramework.Converters;
 using SmartUtilities.ValidationExtensions;

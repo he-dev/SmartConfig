@@ -8,39 +8,35 @@ using SmartUtilities.DataAnnotations;
 
 namespace SmartConfig
 {
-    // occurs when setting update did not work
-    public class SaveSettingsException : FormattableException
+    public class ClassNotStaticException : Exception
     {
-        public SaveSettingsException(Exception innerException) : base(innerException) { }
-        public override string Message => $"Could not save settings to '{DataStore.FullName}'.";
-        public Type DataStore { get; internal set; }
-    }
-
-    public class ClassNotStaticException : FormattableException
-    {
-        internal ClassNotStaticException(Type type) : base()
+        internal ClassNotStaticException(Type type)
         {
             Type = type;
-            Message = $"Type '{type.FullName}' must be a static class.";
+            Message = $"Type '{type.Name}' must be a static class.";
         }
         public override string Message { get; }
         public Type Type { get; }
+
+        public override string ToString() => this.ToJson();
     }
 
-    public class SettingNotFoundException : FormattableException
+    public class SettingNotFoundException : Exception
     {
         internal SettingNotFoundException(SettingInfo setting)
         {
             SettingPath = setting.SettingPath.FullNameEx;
             ConfigType = setting.ConfigType;
-            Message = $"Setting '{SettingPath}' not found. If it is opitonal mark it with the '{nameof(OptionalAttribute)}' otherwise you need to provide a value for it.";
+            Message = $"Setting '{setting}' not found. If it is opitonal mark it with the '{nameof(OptionalAttribute)}' otherwise you need to provide a value for it.";
         }
         public override string Message { get; }
         public string SettingPath { get; set; }
         public Type ConfigType { get; set; }
+
+        public override string ToString() => this.ToJson();
     }
 
-    public class SingleSettingException:FormattableException
+    public class SingleSettingException : Exception
     {
         internal SingleSettingException(SettingInfo setting)
         {
@@ -51,9 +47,11 @@ namespace SmartConfig
         public override string Message { get; }
         public string SettingPath { get; set; }
         public Type ConfigType { get; set; }
+
+        public override string ToString() => this.ToJson();
     }
 
-    public class SmartConfigAttributeNotFoundException : FormattableException
+    public class SmartConfigAttributeNotFoundException : Exception
     {
         internal SmartConfigAttributeNotFoundException(Type type)
         {
@@ -68,11 +66,13 @@ namespace SmartConfig
 
         public override string Message { get; }
         public Type ConfigType { get; }
+
+        public override string ToString() => this.ToJson();
     }
 
-    public class DataReadException : FormattableException
+    public class DataReadException : Exception
     {
-        internal DataReadException(SettingInfo setting, Type dataStoreType, Exception innerException) : base(innerException)
+        internal DataReadException(SettingInfo setting, Type dataStoreType, Exception innerException) : base(null, innerException)
         {
             SettingPath = setting.SettingPath.FullNameEx;
             DataStoreType = dataStoreType;
@@ -81,36 +81,46 @@ namespace SmartConfig
         public override string Message { get; }
         public string SettingPath { get; }
         public Type DataStoreType { get; }
+
+        public override string ToString() => this.ToJson();
     }
 
-    public class ReadSettingException : FormattableException
+    public class DataWriteException : Exception
     {
-        internal ReadSettingException(SettingInfo setting, Exception innerException) : base(innerException)
+        public DataWriteException(Type dataStoreType, Exception innerException) : base(null, innerException)
         {
-            Message = $"Could not read '{setting.SettingPath.FullNameEx}'.";
+            DataStore = dataStoreType;
+            Message = $"Could not save settings to '{DataStore.FullName}'.";
         }
         public override string Message { get; }
-        public Type DataStoreType { get; internal set; }
-        public Type ConfigurationType { get; internal set; }
-        public string SettingPath { get; internal set; }
+        public Type DataStore { get; }
+
+        public override string ToString() => this.ToJson();
     }
 
-    public class InvalidPropertyNameException : FormattableException
+    public class DeserializationException : Exception
     {
-        public string PropertyName { get; internal set; }
-        public string SettingType { get; internal set; }
+        internal DeserializationException(SettingInfo setting, Exception innerException) : base(null, innerException)
+        {
+            SettingPath = setting.SettingPath.FullNameEx;
+            Message = $"Could not convert '{SettingPath}' to '{setting.Type.Name}'. See the inner exception for details about that.";
+        }
+        public override string Message { get; }
+        public string SettingPath { get; }
+
+        public override string ToString() => this.ToJson();
     }
 
-    public class FilterAttributeMissingException : FormattableException
+    public class SerializationException : Exception
     {
-        public string SettingType { get; internal set; }
-        public string Property { get; internal set; }
-    }
+        internal SerializationException(SettingInfo setting, Exception innerException) : base(null, innerException)
+        {
+            SettingPath = setting.SettingPath.FullNameEx;
+            Message = $"Could not convert '{SettingPath}' to '{setting.Type.Name}'. See the inner exception for details about that.";
+        }
+        public override string Message { get; }
+        public string SettingPath { get; }
 
-    public class CustomKeyNullException : FormattableException
-    {
-        public override string Message => $"Custom keys '{string.Join(", ", NullKeys)}' must not be null.";
-        public string SettingType { get; internal set; }
-        public IList<string> NullKeys { get; internal set; }
+        public override string ToString() => this.ToJson();
     }
 }
