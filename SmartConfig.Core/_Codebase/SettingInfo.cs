@@ -8,7 +8,6 @@ using SmartConfig.Data;
 using SmartConfig.DataAnnotations;
 using SmartUtilities;
 using SmartUtilities.DataAnnotations;
-using SmartUtilities.TypeFramework;
 using SmartUtilities.ValidationExtensions;
 
 namespace SmartConfig

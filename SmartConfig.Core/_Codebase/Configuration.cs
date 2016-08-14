@@ -11,8 +11,7 @@ using SmartConfig.DataAnnotations;
 using SmartConfig.IO;
 using SmartUtilities;
 using SmartUtilities.TypeConversion;
-using SmartUtilities.TypeFramework;
-using SmartUtilities.TypeFramework.Converters;
+using SmartUtilities.TypeConversion.Converters;
 using SmartUtilities.ValidationExtensions;
 
 namespace SmartConfig
@@ -109,7 +108,7 @@ namespace SmartConfig
 
             private static TypeConverter CreateDefaultConverter()
             {
-                return TypeConverter.Default.Register(new TypeConverter[]
+                return TypeConverter.Default.Add(new TypeConverter[]
                 {
                     new StringToSByteConverter(),
                     new StringToByteConverter(),
@@ -170,13 +169,7 @@ namespace SmartConfig
                 _namespaces.ContainsKey(name).Validate().IsFalse(ctx => $"Namespace with this name '{name}' already exists.");
                 _namespaces.Add(name, value);
                 return this;
-            }
-
-            public Builder Register<TConverter>() where TConverter : TypeConverter, new()
-            {
-                _converter = _converter.Register<TConverter>();
-                return this;
-            }
+            }            
 
             public Configuration Select(Type type, string name = null, ConfigNameOption nameOption = ConfigNameOption.AsPath)
             {
@@ -203,6 +196,11 @@ namespace SmartConfig
                 if (smartConfigAttribute.NameOption == ConfigNameOption.AsNamespace)
                 {
                     _namespaces.Add(nameof(Setting.Config), smartConfigAttribute.Name);
+                }
+
+                foreach (var customConverter in type.GetCustomAttribute<ConvertersAttribute>() ?? Enumerable.Empty<Type>())
+                {
+                    _converter = _converter.Add(customConverter);
                 }
 
                 _configuration.Type = type;

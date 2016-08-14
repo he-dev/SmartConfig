@@ -6,8 +6,6 @@ using Microsoft.Win32;
 using SmartConfig.Data;
 using SmartConfig.DataAnnotations;
 using SmartUtilities.DataAnnotations;
-using SmartUtilities.TypeFramework;
-using SmartUtilities.TypeFramework.Converters;
 using SmartUtilities.ValidationExtensions;
 using SmartUtilities.ValidationExtensions.Testing;
 // ReSharper disable CheckNamespace

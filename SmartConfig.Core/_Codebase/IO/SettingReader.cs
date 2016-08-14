@@ -7,7 +7,6 @@ using System.Linq;
 using SmartConfig.Data;
 using SmartUtilities;
 using SmartUtilities.TypeConversion;
-using SmartUtilities.TypeFramework;
 using SmartUtilities.ValidationExtensions;
 
 namespace SmartConfig.IO

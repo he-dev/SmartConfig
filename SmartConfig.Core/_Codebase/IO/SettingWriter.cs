@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 using SmartConfig.Data;
 using SmartUtilities;
 using SmartUtilities.TypeConversion;
-using SmartUtilities.TypeFramework;
 // ReSharper disable RedundantIfElseBlock
 
 namespace SmartConfig.IO

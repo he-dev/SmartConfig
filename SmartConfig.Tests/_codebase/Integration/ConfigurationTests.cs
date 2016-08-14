@@ -8,13 +8,13 @@ using SmartConfig.Data;
 using SmartConfig.DataAnnotations;
 using SmartUtilities.Collections;
 using SmartUtilities.DataAnnotations;
-using SmartUtilities.TypeFramework;
-using SmartUtilities.TypeFramework.Converters;
 using SmartUtilities.ValidationExtensions;
 using SmartUtilities.ValidationExtensions.Testing;
 using SmartConfig.Core.Tests;
 using SmartConfig.Core.Tests.DataStores;
 using SmartConfig.DataStores;
+using SmartUtilities.TypeConversion.Converters;
+
 // ReSharper disable BuiltInTypeReferenceStyle
 
 // ReSharper disable InconsistentNaming
@@ -87,7 +87,7 @@ namespace SmartConfig.Core.Tests.Integration.Configuration.Positive
                 //new Setting { Name = nameof(TypesConfig.XDocument), Value = @"<?xml version=""1.0""?><testXml></testXml>" },
                 //new Setting { Name = nameof(TypesConfig.XElement), Value = @"<testXml></testXml>" },
             })
-            .Register<JsonToObjectConverter<List<Int32>>>()
+            //.With<JsonToObjectConverter<List<Int32>>>()
             .Select(typeof(FullConfig));
 
             FullConfig.SByte.Verify().IsEqual(SByte.MaxValue);
@@ -136,6 +136,7 @@ namespace SmartConfig.Core.Tests.Integration.Configuration.Positive.TestConfigs
     public static class EmptyConfig { }
 
     [SmartConfig]
+    [Converters(typeof(JsonToObjectConverter<List<Int32>>))]
     public static class FullConfig
     {
         public static SByte SByte { get; set; }

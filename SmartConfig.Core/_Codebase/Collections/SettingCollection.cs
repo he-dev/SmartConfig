@@ -6,7 +6,6 @@ using System.Reflection;
 using SmartConfig.Data;
 using SmartUtilities;
 using SmartUtilities.DataAnnotations;
-using SmartUtilities.TypeFramework;
 using SmartUtilities.ValidationExtensions;
 
 namespace SmartConfig.Collections

@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using SmartConfig.Data;
 using SmartUtilities;
 using SmartUtilities.TypeConversion;
-using SmartUtilities.TypeFramework;
 
 namespace SmartConfig
 {
