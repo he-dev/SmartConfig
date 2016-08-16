@@ -2,6 +2,9 @@
 
 SmartConfig is a configuration framework that makes writing configurations very easy.
 
+NuGet: `Install-Package SmartConfig -Pre`  
+and `Install-Package SmartConfig.DataStores.SQLite -Pre`
+
 ## Quick Start
 
 To create a configuration you need to define a static class and decorate it with the `[SmartConfig]` attribute. It can contain any number of **static** properties and nested classes.
