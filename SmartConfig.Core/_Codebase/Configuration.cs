@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using SmartConfig.Collections;
@@ -169,7 +170,18 @@ namespace SmartConfig
                 _namespaces.ContainsKey(name).Validate().IsFalse(ctx => $"Namespace with this name '{name}' already exists.");
                 _namespaces.Add(name, value);
                 return this;
-            }            
+            }
+
+            public Builder Where<T, TProperty>(Expression<Func<T, TProperty>> propertyExpression, object value) where T : Setting
+            {
+                //name.Validate(nameof(name)).IsNotNullOrEmpty(ctx => $"You need to specify the namespace.");
+                //value.Validate(nameof(value)).IsNotNull(ctx => $"You need to specify the namespace value.");
+                //_namespaces.ContainsKey(name).Validate().IsFalse(ctx => $"Namespace with this name '{name}' already exists.");
+                //_namespaces.Add(name, value);
+
+
+                return this;
+            }
 
             public Configuration Select(Type type, string name = null, ConfigNameOption nameOption = ConfigNameOption.AsPath)
             {

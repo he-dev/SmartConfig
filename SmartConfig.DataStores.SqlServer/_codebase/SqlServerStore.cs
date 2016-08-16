@@ -154,5 +154,14 @@ namespace SmartConfig.DataStores.SqlServer
             }
         }
     }
+
+    public class DbConfiguration<T>
+    {
+    }
+
+    public class ColumnConfiguration
+    {
+        
+    }
 }
 
