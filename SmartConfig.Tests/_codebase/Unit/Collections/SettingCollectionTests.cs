@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SmartConfig.Collections;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.DataAnnotations;
-using SmartUtilities.ValidationExtensions;
-using SmartUtilities.ValidationExtensions.Testing;
+using SmartUtilities.Frameworks.InlineValidation;
 
 // ReSharper disable once CheckNamespace
 namespace SmartConfig.Core.Tests.Collections.SettingCollection.Positive

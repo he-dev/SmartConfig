@@ -1,10 +1,8 @@
-﻿using System;
+﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SmartConfig.Data;
-using SmartConfig.DataAnnotations;
-using SmartUtilities.DataAnnotations;
-using SmartUtilities.ValidationExtensions;
-using SmartUtilities.ValidationExtensions.Testing;
+using SmartUtilities.Frameworks.InlineValidation;
+using SmartUtilities.Frameworks.InlineValidation.Testing;
+
 // ReSharper disable CheckNamespace
 // ReSharper disable ConvertIfStatementToSwitchStatement
 
@@ -27,9 +25,10 @@ namespace SmartConfig.DataStores.SQLite.Tests.Integration.SQLiteStore.Positive
             FullConfig1.Utf8SettingDE.Verify().IsNotNullOrEmpty().IsEqual("äöüß");
             FullConfig1.Utf8SettingPL.Verify().IsNotNullOrEmpty().IsEqual("ąęśćżźó");
             FullConfig1.ArraySetting.Length.Verify().IsBetweenOrEqual(2, 3);
-            FullConfig1.ArraySetting[0].Verify().IsEqual(5);
-            FullConfig1.ArraySetting[1].Verify().IsEqual(8);
-            if (FullConfig1.ArraySetting.Length == 3) { FullConfig1.ArraySetting[2].Verify().IsEqual(13); }
+            FullConfig1.ArraySetting.Length.Verify().IsBetweenOrEqual(2, 3);
+            FullConfig1.ArraySetting.Contains(5).Verify().IsTrue();
+            FullConfig1.ArraySetting.Contains(8).Verify().IsTrue();
+            if (FullConfig1.ArraySetting.Length == 3) { FullConfig1.ArraySetting.Contains(13).Verify().IsTrue(); }
             FullConfig1.DictionarySetting.Count.Verify().IsBetweenOrEqual(2, 3);
             FullConfig1.DictionarySetting["foo"].Verify().IsEqual(21);
             FullConfig1.DictionarySetting["bar"].Verify().IsEqual(34);

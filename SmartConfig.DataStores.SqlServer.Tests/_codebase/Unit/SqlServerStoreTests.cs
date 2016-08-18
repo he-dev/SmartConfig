@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Configuration;
 using System.Data;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SmartUtilities.ValidationExtensions;
-using SmartUtilities.ValidationExtensions.Testing;
+using SmartUtilities.Frameworks.InlineValidation;
+using SmartUtilities.Frameworks.InlineValidation.Testing;
+
 // ReSharper disable InconsistentNaming
 
 
@@ -23,7 +20,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Unit.SqlServerStore.Positive
             var store = new SqlServerStore("foo");
             store.ConnectionString.Validate().IsNotNullOrEmpty();
             store.ConnectionString.Validate().IsEqual("foo");
-            store.SettingTableProperties.Validate().IsNotNull();
+            store.SettingTableConfiguration.Validate().IsNotNull();
         }
 
         [TestMethod]
@@ -32,22 +29,23 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Unit.SqlServerStore.Positive
             var store = new SqlServerStore("name=foo");
             store.ConnectionString.Validate().IsNotNullOrEmpty();
             store.ConnectionString.Validate().IsEqual("bar");
-            store.SettingTableProperties.Validate().IsNotNull();
+            store.SettingTableConfiguration.Validate().IsNotNull();
         }
 
         [TestMethod]
         public void CreateWithCustomSettingTableProperties()
         {
-            var store = new SqlServerStore("foo", builder => builder
+            var store = new SqlServerStore("foo", configure => configure
                 .TableName("qux")
                 .SchemaName("baz")
-                .ColumnProperties("corge", SqlDbType.Bit));
+                .Column("corge", SqlDbType.Bit, 1)
+            );
             store.ConnectionString.Validate().IsNotNullOrEmpty();
             store.ConnectionString.Validate().IsEqual("foo");
-            store.SettingTableProperties.Validate().IsNotNull();
-            store.SettingTableProperties.SchemaName.Validate().IsEqual("baz");
-            store.SettingTableProperties.TableName.Validate().IsEqual("qux");
-            store.SettingTableProperties.SqlDbTypes["corge"].Validate().IsEqual(SqlDbType.Bit);
+            store.SettingTableConfiguration.Validate().IsNotNull();
+            store.SettingTableConfiguration.SchemaName.Validate().IsEqual("baz");
+            store.SettingTableConfiguration.TableName.Validate().IsEqual("qux");
+            store.SettingTableConfiguration.Columns["corge"].DbType.Validate().IsEqual(SqlDbType.Bit);
         }
     }
 }

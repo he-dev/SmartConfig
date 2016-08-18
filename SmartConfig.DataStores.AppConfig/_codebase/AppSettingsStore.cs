@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Configuration;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Security.Cryptography.Xml;
-using SmartConfig.Collections;
 using SmartConfig.Data;
 
 namespace SmartConfig.DataStores.AppConfig

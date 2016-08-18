@@ -5,19 +5,18 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using SmartConfig.Data;
 
 namespace SmartConfig.DataStores.SqlServer
 {
     internal class CommandFactory
     {
-        public CommandFactory(SettingTableProperties settingTableProperties)
+        public CommandFactory(SettingTableConfiguration settingTableConfiguration)
         {
-            SettingTableProperties = settingTableProperties;
+            SettingTableConfiguration = settingTableConfiguration;
         }
 
-        public SettingTableProperties SettingTableProperties { get; }
+        public SettingTableConfiguration SettingTableConfiguration { get; }
 
         public SqlCommand CreateSelectCommand(SqlConnection connection, Setting setting)
         {
@@ -26,14 +25,15 @@ namespace SmartConfig.DataStores.SqlServer
             var dbProviderFactory = DbProviderFactories.GetFactory(connection);
             using (var commandBuilder = dbProviderFactory.CreateCommandBuilder())
             {
-                var schemaName = commandBuilder.QuoteIdentifier(SettingTableProperties.SchemaName);
-                var tableName = commandBuilder.QuoteIdentifier(SettingTableProperties.TableName);
+                var quote = new Func<string, string>(identifier => commandBuilder.QuoteIdentifier(identifier));
+
+                var table = $"{quote(SettingTableConfiguration.SchemaName)}.{quote(SettingTableConfiguration.TableName)}";
 
                 sql.Append($"SELECT *").AppendLine();
-                sql.Append($"FROM {schemaName}.{tableName}").AppendLine();
+                sql.Append($"FROM {table}").AppendLine();
                 sql.Append(setting.Namespaces.Aggregate(
                     $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} + N'[[]%]')",
-                    (result, next) => $"{result} AND {commandBuilder.QuoteIdentifier(next.Key)} = @{next.Key}")
+                    (result, next) => $"{result} AND {quote(next.Key)} = @{next.Key}")
                 );
             }
 
@@ -42,21 +42,9 @@ namespace SmartConfig.DataStores.SqlServer
 
             // --- add parameters & values
 
-            command.Parameters.Add(
-                    nameof(Setting.Name),
-                    SettingTableProperties.GetSqlDbTypeOrDefault(nameof(Setting.Name)),
-                    SettingTableProperties.GetColumnLengthOrDefault(nameof(Setting.Name))
-                ).Value = setting.Name.FullName;
-
-            foreach (var ns in setting.Namespaces)
-            {
-                command.Parameters.Add(
-                    ns.Key,
-                    SettingTableProperties.GetSqlDbTypeOrDefault(ns.Key),
-                    SettingTableProperties.GetColumnLengthOrDefault(ns.Key)
-                ).Value = ns.Value;
-            }
-
+            AddParameter(command, nameof(Setting.Name), setting.Name.FullName);
+            AddParameters(command, setting.Namespaces);
+            
             return command;
         }
 
@@ -73,14 +61,14 @@ namespace SmartConfig.DataStores.SqlServer
             var dbProviderFactory = DbProviderFactories.GetFactory(connection);
             using (var commandBuilder = dbProviderFactory.CreateCommandBuilder())
             {
-                var schemaName = commandBuilder.QuoteIdentifier(SettingTableProperties.SchemaName);
-                var tableName = commandBuilder.QuoteIdentifier(SettingTableProperties.TableName);
+                var quote = new Func<string, string>(identifier => commandBuilder.QuoteIdentifier(identifier));
 
-                sql.Append($"DELETE FROM {schemaName}.{tableName}").AppendLine();
+                var table = $"{quote(SettingTableConfiguration.SchemaName)}.{quote(SettingTableConfiguration.TableName)}";
+
+                sql.Append($"DELETE FROM {table}").AppendLine();
                 sql.Append(setting.Namespaces.Keys.Aggregate(
-                    //$"WHERE [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} + N'%'",
                     $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} + N'[[]%]')",
-                    (result, next) => $"{result} AND {commandBuilder.QuoteIdentifier(next)} = @{next} ")
+                    (result, next) => $"{result} AND {quote(next)} = @{next} ")
                 );
             }
 
@@ -90,20 +78,8 @@ namespace SmartConfig.DataStores.SqlServer
 
             // --- add parameters & values
 
-            command.Parameters.Add(
-                nameof(Setting.Name),
-                SettingTableProperties.GetSqlDbTypeOrDefault(nameof(Setting.Name)),
-                SettingTableProperties.GetColumnLengthOrDefault(nameof(Setting.Name))
-            );//.Value = setting.Name.FullName;
-
-            foreach (var ns in setting.Namespaces)
-            {
-                command.Parameters.Add(
-                    ns.Key,
-                    SettingTableProperties.GetSqlDbTypeOrDefault(ns.Key),
-                    SettingTableProperties.GetColumnLengthOrDefault(ns.Key)
-                );//.Value = ns.Value;
-            }            
+            AddParameter(command, nameof(Setting.Name), setting.Name.FullName);
+            AddParameters(command, setting.Namespaces);
 
             return command;
         }
@@ -126,30 +102,31 @@ namespace SmartConfig.DataStores.SqlServer
             var dbProviderFactory = DbProviderFactories.GetFactory(connection);
             using (var commandBuilder = dbProviderFactory.CreateCommandBuilder())
             {
-                var schemaName = commandBuilder.QuoteIdentifier(SettingTableProperties.SchemaName);
-                var tableName = commandBuilder.QuoteIdentifier(SettingTableProperties.TableName);
+                var quote = new Func<string, string>(identifier => commandBuilder.QuoteIdentifier(identifier));
 
-                sql.Append($"UPDATE {schemaName}.{tableName}").AppendLine();
+                var table = $"{quote(SettingTableConfiguration.SchemaName)}.{quote(SettingTableConfiguration.TableName)}";
+
+                sql.Append($"UPDATE {table}").AppendLine();
                 sql.Append($"SET [{nameof(Setting.Value)}] = @{nameof(Setting.Value)}").AppendLine();
 
                 sql.Append(setting.Namespaces.Keys.Aggregate(
-                    //$"WHERE [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} + N'%'", 
                     $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} + N'[[]%]')",
-                    (result, next) => $"{result} AND {commandBuilder.QuoteIdentifier(next)} = @{next} ")
+                    (result, next) => $"{result} AND {quote(next)} = @{next} ")
                 ).AppendLine();
 
                 sql.Append($"IF @@ROWCOUNT = 0").AppendLine();
 
-                var quotedColumnNames = setting.Namespaces.Keys
-                    .Select(columnName => commandBuilder.QuoteIdentifier(columnName)).Aggregate(
-                        $"[{nameof(Setting.Name)}], [{nameof(Setting.Value)}]", 
-                        (result, next) => $"{result}, {next}");
+                var columns = setting.Namespaces.Keys.Select(columnName => quote(columnName)).Aggregate(
+                        $"[{nameof(Setting.Name)}], [{nameof(Setting.Value)}]",
+                        (result, next) => $"{result}, {next}"
+                );
 
-                sql.Append($"INSERT INTO {schemaName}.{tableName}({quotedColumnNames})").AppendLine();
+                sql.Append($"INSERT INTO {table}({columns})").AppendLine();
 
                 var parameterNames = setting.Namespaces.Keys.Aggregate(
-                    $"@{nameof(Setting.Name)}, @{nameof(Setting.Value)}", 
-                    (result, next) => $"{result}, @{next}");
+                    $"@{nameof(Setting.Name)}, @{nameof(Setting.Value)}",
+                    (result, next) => $"{result}, @{next}"
+                );
 
                 sql.Append($"VALUES ({parameterNames})");
             }
@@ -160,29 +137,33 @@ namespace SmartConfig.DataStores.SqlServer
 
             // --- add parameters
 
-            command.Parameters.Add(
-                nameof(Setting.Name),
-                SettingTableProperties.GetSqlDbTypeOrDefault(nameof(Setting.Name)),
-                SettingTableProperties.GetColumnLengthOrDefault(nameof(Setting.Name))
-            );
-
-            command.Parameters.Add(
-                nameof(Setting.Value),
-                SettingTableProperties.GetSqlDbTypeOrDefault(nameof(Setting.Value)),
-                SettingTableProperties.GetColumnLengthOrDefault(nameof(Setting.Value))
-            );
-
-            foreach (var ns in setting.Namespaces)
-            {
-                command.Parameters.Add(
-                    ns.Key,
-                    SettingTableProperties.GetSqlDbTypeOrDefault(ns.Key),
-                    SettingTableProperties.GetColumnLengthOrDefault(ns.Key)
-                );
-            }
+            AddParameter(command, nameof(Setting.Name), setting.Name.FullNameEx);
+            AddParameter(command, nameof(Setting.Value), setting.Value);
+            AddParameters(command, setting.Namespaces);            
 
             return command;
         }
 
+        private void AddParameter(SqlCommand command, string name, object value = null)
+        {
+            var parameter = command.Parameters.Add(
+                name,
+                SettingTableConfiguration.Columns[name].DbType,
+                SettingTableConfiguration.Columns[name].Length
+            );
+
+            if (value != null)
+            {
+                parameter.Value = value;
+            }
+        }
+
+        private void AddParameters(SqlCommand command, IEnumerable<KeyValuePair<string, object>> parameters)
+        {
+            foreach (var parameter in parameters)
+            {
+                AddParameter(command, parameter.Key, parameter.Value);
+            }
+        }
     }
 }

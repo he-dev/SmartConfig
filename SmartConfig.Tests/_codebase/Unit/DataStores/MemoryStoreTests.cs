@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartConfig.Data;
-using SmartUtilities.ValidationExtensions;
-using SmartUtilities.ValidationExtensions.Testing;
+using SmartUtilities.Frameworks.InlineValidation;
+using SmartUtilities.Frameworks.InlineValidation.Testing;
 
 namespace SmartConfig.Core.Tests.Unit.DataStores.MemoryStore.Positive
 {

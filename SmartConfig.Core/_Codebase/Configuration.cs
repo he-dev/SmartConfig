@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Configuration;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using SmartConfig.Collections;
 using SmartConfig.Data;
 using SmartConfig.DataAnnotations;
 using SmartConfig.IO;
 using SmartUtilities;
-using SmartUtilities.TypeConversion;
-using SmartUtilities.TypeConversion.Converters;
-using SmartUtilities.ValidationExtensions;
+using SmartUtilities.Frameworks.InfiniteConversion;
+using SmartUtilities.Frameworks.InfiniteConversion.Converters;
+using SmartUtilities.Frameworks.InlineValidation;
 
 namespace SmartConfig
 {

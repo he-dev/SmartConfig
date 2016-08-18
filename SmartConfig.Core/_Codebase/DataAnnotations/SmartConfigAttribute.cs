@@ -1,5 +1,5 @@
 ﻿using System;
-using SmartUtilities.ValidationExtensions;
+using SmartUtilities.Frameworks.InlineValidation;
 
 namespace SmartConfig.DataAnnotations
 {

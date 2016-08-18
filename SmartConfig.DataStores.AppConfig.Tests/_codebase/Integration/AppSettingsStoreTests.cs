@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SmartConfig.DataAnnotations;
-using SmartUtilities.DataAnnotations;
-using SmartUtilities.ValidationExtensions;
-using SmartUtilities.ValidationExtensions.Testing;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SmartUtilities.Frameworks.InlineValidation;
+using SmartUtilities.Frameworks.InlineValidation.Testing;
+
 // ReSharper disable CheckNamespace
 
 namespace SmartConfig.DataStores.AppConfig.Tests.Integration.AppSettingsStore.Positive

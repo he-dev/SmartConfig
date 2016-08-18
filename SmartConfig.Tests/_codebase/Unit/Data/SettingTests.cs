@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SmartUtilities.ValidationExtensions;
-using SmartUtilities.ValidationExtensions.Testing;
+using SmartUtilities.Frameworks.InlineValidation;
+using SmartUtilities.Frameworks.InlineValidation.Testing;
 
 namespace SmartConfig.Core.Tests.Unit.Data.Setting.Positive
 {

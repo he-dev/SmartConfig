@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Configuration;
+using System.Data;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SmartConfig.Collections;
-using SmartConfig.Data;
 using SmartConfig.DataAnnotations;
 using SmartUtilities.DataAnnotations;
-using SmartUtilities.ValidationExtensions;
-using SmartUtilities.ValidationExtensions.Testing;
+using SmartUtilities.Frameworks.InlineValidation;
+using SmartUtilities.Frameworks.InlineValidation.Testing;
 
 // ReSharper disable InconsistentNaming
 
@@ -25,16 +22,16 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
         public void SimpleSetting()
         {
             Configuration.Load
-                .From(new SqlServerStore("name=SmartConfigTest", builder => builder.TableName("Setting1")))
+                .FromSqlServer("name=SmartConfigTest", configure => configure.TableName("Setting1"))
                 .Select(typeof(FullConfig1));
 
             FullConfig1.StringSetting.Verify().IsNotNullOrEmpty().IsEqual("Foo");
             FullConfig1.ArraySetting.Length.Verify().IsBetweenOrEqual(2, 3);
-            FullConfig1.ArraySetting[0].Verify().IsEqual(5);
-            FullConfig1.ArraySetting[1].Verify().IsEqual(8);
+            FullConfig1.ArraySetting.Contains(5).Verify().IsTrue();
+            FullConfig1.ArraySetting.Contains(8).Verify().IsTrue();
             if (FullConfig1.ArraySetting.Length == 3)
             {
-                FullConfig1.ArraySetting[2].Verify().IsEqual(13);
+                FullConfig1.ArraySetting.Contains(13).Verify().IsTrue();
             }
             FullConfig1.DictionarySetting.Count.Verify().IsBetweenOrEqual(2, 3);
             FullConfig1.DictionarySetting["foo"].Verify().IsEqual(21);
@@ -59,7 +56,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
         public void GetSettingsWithConfigAsPath()
         {
             Configuration.Load
-                .From(new SqlServerStore("name=SmartConfigTest", builder => builder.TableName("Setting1")))
+                .FromSqlServer("name=SmartConfigTest", configure => configure.TableName("Setting1"))
                 .Select(typeof(FullConfig2));
 
             FullConfig2.StringSetting.Verify().IsNotNullOrEmpty().IsEqual("Foox");
@@ -73,7 +70,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
         public void GetSettingsWithConfigAsNamespace()
         {
             Configuration.Load
-                .From(new SqlServerStore("name=SmartConfigTest", builder => builder.TableName("Setting2")))
+                .FromSqlServer("name=SmartConfigTest", configure => configure.TableName("Setting2").Column("Corge", SqlDbType.NVarChar, 200))
                 .Where("corge", "waldo")
                 .Select(typeof(FullConfig3));
 
@@ -113,7 +110,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
         public void SaveSettingByNameAndNamespace()
         {
             Configuration.Load
-                .From(new SqlServerStore("name=SmartConfigTest"))
+                .FromSqlServer("name=SmartConfigTest", configure => configure.Column("Environment", SqlDbType.NVarChar, 200))
                 .Where("Environment", "Qux")
                 .Select(typeof(TestConfig2));
 
@@ -131,7 +128,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
         public void SaveItemizedSettings()
         {
             Configuration.Load
-                .From(new SqlServerStore("name=SmartConfigTest"))
+                .FromSqlServer("name=SmartConfigTest", configure => configure.Column("Environment", SqlDbType.NVarChar, 300))
                 .Where("Environment", "Itemized")
                 .Select(typeof(ItemizedConfig));
 

@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using SmartConfig.Data;
 using SmartUtilities;
-using SmartUtilities.TypeConversion;
+using SmartUtilities.Frameworks.InfiniteConversion;
 
 namespace SmartConfig
 {

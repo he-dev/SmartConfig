@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data.Common;
 using System.Data.SQLite;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using SmartConfig.Collections;
 using SmartConfig.Data;
 using SmartUtilities;
-using SmartUtilities.ValidationExtensions;
+using SmartUtilities.Frameworks.InlineValidation;
 
 namespace SmartConfig.DataStores.SQLite
 {
@@ -21,7 +15,7 @@ namespace SmartConfig.DataStores.SQLite
         private Encoding _dataEncoding = Encoding.Default;
         private Encoding _settingEncoding = Encoding.UTF8;
 
-        public SQLiteStore(string nameOrConnectionString, Action<SettingTableProperties.Builder> buildSettingTableProperties = null)
+        public SQLiteStore(string nameOrConnectionString, Action<SettingTableConfiguration.Builder> configure = null)
         {
             nameOrConnectionString.Validate(nameof(nameOrConnectionString)).IsNotNullOrEmpty();
 
@@ -35,16 +29,16 @@ namespace SmartConfig.DataStores.SQLite
 
             ConnectionString.Validate(nameof(nameOrConnectionString)).IsNotNullOrEmpty();
 
-            var settingTablePropertiesBuilder = new SettingTableProperties.Builder();
-            buildSettingTableProperties?.Invoke(settingTablePropertiesBuilder);
-            SettingTableProperties = settingTablePropertiesBuilder.ToSettingTableProperties();
+            var settingTablePropertiesBuilder = new SettingTableConfiguration.Builder();
+            configure?.Invoke(settingTablePropertiesBuilder);
+            SettingTableConfiguration = settingTablePropertiesBuilder.Build();
         }
 
         internal AppConfigRepository AppConfigRepository { get; } = new AppConfigRepository();
 
         public string ConnectionString { get; }
 
-        public SettingTableProperties SettingTableProperties { get; }
+        public SettingTableConfiguration SettingTableConfiguration { get; }
 
         // ReSharper disable once InconsistentNaming
         public bool RecodeDataEnabled { get; set; } = true;
@@ -65,7 +59,7 @@ namespace SmartConfig.DataStores.SQLite
 
         public List<Setting> GetSettings(Setting setting)
         {
-            var commandFactory = new CommandFactory(SettingTableProperties);
+            var commandFactory = new CommandFactory(SettingTableConfiguration);
 
             using (var connection = new SQLiteConnection(ConnectionString))
             using (var command = commandFactory.CreateSelectCommand(connection, setting))
@@ -110,7 +104,7 @@ namespace SmartConfig.DataStores.SQLite
                 return 0;
             }
 
-            var commandFactory = new CommandFactory(SettingTableProperties);
+            var commandFactory = new CommandFactory(SettingTableConfiguration);
 
             var settingGroups = settings.GroupBy(x => x.Name.FullName).ToList();
 
@@ -150,8 +144,8 @@ namespace SmartConfig.DataStores.SQLite
                                 insertCommand.Parameters[nameof(Setting.Name)].Value = s.Name.FullNameEx;
                                 insertCommand.Parameters[nameof(Setting.Value)].Value =
                                     RecodeDataEnabled && s.Value is string
-                                    ? ((string)s.Value).Recode(SettingEncoding, DataEncoding)
-                                    : s.Value;
+                                        ? ((string)s.Value).Recode(SettingEncoding, DataEncoding)
+                                        : s.Value;
 
                                 foreach (var ns in s.Namespaces) { insertCommand.Parameters[ns.Key].Value = ns.Value; }
                                 affectedSettings += insertCommand.ExecuteNonQuery();
@@ -168,6 +162,18 @@ namespace SmartConfig.DataStores.SQLite
                     }
                 }
             }
+        }
+    }
+
+    public static class ConfigurationBuilderExtensions
+    {
+        public static Configuration.Builder FromSQLite(
+            this Configuration.Builder configurationBuilder,
+            string nameOrConnectionString,
+            Action<SettingTableConfiguration.Builder> configure = null
+        )
+        {
+            return configurationBuilder.From(new SQLiteStore(nameOrConnectionString, configure));
         }
     }
 }

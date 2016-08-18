@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
-using System.Runtime.InteropServices;
 using SmartConfig.Data;
-using SmartUtilities;
-using SmartUtilities.TypeConversion;
+using SmartUtilities.Frameworks.InfiniteConversion;
+
 // ReSharper disable RedundantIfElseBlock
 
 namespace SmartConfig.IO

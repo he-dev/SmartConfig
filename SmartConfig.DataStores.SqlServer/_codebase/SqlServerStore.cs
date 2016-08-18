@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data.Common;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using SmartConfig.Collections;
 using SmartConfig.Data;
 using SmartUtilities;
-using SmartUtilities.ValidationExtensions;
+using SmartUtilities.Frameworks.InlineValidation;
 
 namespace SmartConfig.DataStores.SqlServer
 {
@@ -19,7 +13,7 @@ namespace SmartConfig.DataStores.SqlServer
     /// </summary>
     public class SqlServerStore : IDataStore
     {
-        public SqlServerStore(string nameOrConnectionString, Action<SettingTableProperties.Builder> buildSettingTableProperties = null)
+        public SqlServerStore(string nameOrConnectionString, Action<SettingTableConfiguration.Builder> configure = null)
         {
             nameOrConnectionString.Validate(nameof(nameOrConnectionString)).IsNotNullOrEmpty();
 
@@ -33,16 +27,16 @@ namespace SmartConfig.DataStores.SqlServer
 
             ConnectionString.Validate(nameof(nameOrConnectionString)).IsNotNullOrEmpty();
 
-            var settingTablePropertiesBuilder = new SettingTableProperties.Builder();
-            buildSettingTableProperties?.Invoke(settingTablePropertiesBuilder);
-            SettingTableProperties = settingTablePropertiesBuilder.ToSettingTableProperties();
+            var settingTablePropertiesBuilder = new SettingTableConfiguration.Builder();
+            configure?.Invoke(settingTablePropertiesBuilder);
+            SettingTableConfiguration = settingTablePropertiesBuilder.Build();
         }
 
         internal AppConfigRepository AppConfigRepository { get; } = new AppConfigRepository();
 
         public string ConnectionString { get; }
 
-        public SettingTableProperties SettingTableProperties { get; }
+        public SettingTableConfiguration SettingTableConfiguration { get; }
 
         public Type MapDataType(Type settingType) => typeof(string);
 
@@ -50,7 +44,7 @@ namespace SmartConfig.DataStores.SqlServer
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
-                var commandFactory = new CommandFactory(SettingTableProperties);
+                var commandFactory = new CommandFactory(SettingTableConfiguration);
                 using (var command = commandFactory.CreateSelectCommand(connection, setting))
                 {
                     connection.Open();
@@ -94,7 +88,7 @@ namespace SmartConfig.DataStores.SqlServer
             using (var connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
-                var commandFactory = new CommandFactory(SettingTableProperties);
+                var commandFactory = new CommandFactory(SettingTableConfiguration);
 
                 using (var transaction = connection.BeginTransaction())
                 {
@@ -155,13 +149,16 @@ namespace SmartConfig.DataStores.SqlServer
         }
     }
 
-    public class DbConfiguration<T>
+    public static class ConfigurationBuilderExtensions
     {
-    }
-
-    public class ColumnConfiguration
-    {
-        
+        public static Configuration.Builder FromSqlServer(
+            this Configuration.Builder configurationBuilder,
+            string nameOrConnectionString,
+            Action<SettingTableConfiguration.Builder> configure = null
+        )
+        {
+            return configurationBuilder.From(new SqlServerStore(nameOrConnectionString, configure));
+        }
     }
 }
 

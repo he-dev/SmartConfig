@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using SmartConfig.Data;
 using SmartConfig.DataAnnotations;
 using SmartUtilities;
 using SmartUtilities.DataAnnotations;
-using SmartUtilities.ValidationExtensions;
+using SmartUtilities.Frameworks.InlineValidation;
 
 namespace SmartConfig
 {

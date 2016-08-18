@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Linq;
-using System.Web.ApplicationServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Win32;
-using SmartConfig.Data;
-using SmartConfig.DataAnnotations;
-using SmartUtilities.DataAnnotations;
-using SmartUtilities.ValidationExtensions;
-using SmartUtilities.ValidationExtensions.Testing;
+using SmartUtilities.Frameworks.InlineValidation;
+using SmartUtilities.Frameworks.InlineValidation.Testing;
+
 // ReSharper disable CheckNamespace
 
 namespace SmartConfig.DataStores.Registry.Tests.Unit.RegistryStore.Negative
@@ -34,7 +29,7 @@ namespace SmartConfig.DataStores.Registry.Tests.Unit.RegistryStore.Negative
             {
                 new RegistryStore(Microsoft.Win32.Registry.CurrentUser, null);
             })
-            .Verify().Throws<ArgumentNullException>();
+            .Verify().Throws<ValidationException>();
         }
     }    
 }

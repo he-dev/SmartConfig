@@ -5,19 +5,18 @@ using System.Data.Common;
 using System.Data.SQLite;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using SmartConfig.Data;
 
 namespace SmartConfig.DataStores.SQLite
 {
     internal class CommandFactory
     {
-        public CommandFactory(SettingTableProperties settingTableProperties)
+        public CommandFactory(SettingTableConfiguration settingTableConfiguration)
         {
-            SettingTableProperties = settingTableProperties;
+            SettingTableConfiguration = settingTableConfiguration;
         }
 
-        public SettingTableProperties SettingTableProperties { get; }
+        public SettingTableConfiguration SettingTableConfiguration { get; }
 
         public SQLiteCommand CreateSelectCommand(SQLiteConnection connection, Setting setting)
         {
@@ -30,12 +29,14 @@ namespace SmartConfig.DataStores.SQLite
             var dbProviderFactory = DbProviderFactories.GetFactory(connection);
             using (var commandBuilder = dbProviderFactory.CreateCommandBuilder())
             {
-                var tableName = commandBuilder.QuoteIdentifier(SettingTableProperties.TableName);
+                var quote = new Func<string, string>(identifier => commandBuilder.QuoteIdentifier(identifier));
 
-                sql.Append($"SELECT * FROM {tableName}").AppendLine();
+                var table = $"{quote(SettingTableConfiguration.TableName)}";
+
+                sql.Append($"SELECT * FROM {table}").AppendLine();
                 sql.Append(setting.Namespaces.Keys.Aggregate(
                     $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} || '[%]')",
-                    (result, key) => $"{result} AND {commandBuilder.QuoteIdentifier(key)} = @{key}")
+                    (result, key) => $"{result} AND {quote(key)} = @{key}")
                 );
             }
 
@@ -45,20 +46,8 @@ namespace SmartConfig.DataStores.SQLite
 
             // --- add parameters
 
-            command.Parameters.Add(
-                nameof(Setting.Name),
-                SettingTableProperties.GetDbTypeOrDefault(nameof(Setting.Name)),
-                SettingTableProperties.GetColumnLengthOrDefault(nameof(Setting.Name))
-                ).Value = setting.Name.FullName;
-
-            foreach (var ns in setting.Namespaces)
-            {
-                command.Parameters.Add(
-                    ns.Key,
-                    SettingTableProperties.GetDbTypeOrDefault(ns.Key),
-                    SettingTableProperties.GetColumnLengthOrDefault(ns.Key)
-                    ).Value = ns.Value;
-            }
+            AddParameter(command, nameof(Setting.Name), setting.Name.FullName);
+            AddParameters(command, setting.Namespaces);
 
             return command;
         }
@@ -76,13 +65,14 @@ namespace SmartConfig.DataStores.SQLite
             var dbProviderFactory = DbProviderFactories.GetFactory(connection);
             using (var commandBuilder = dbProviderFactory.CreateCommandBuilder())
             {
-                //var schemaName = commandBuilder.QuoteIdentifier(SettingTableProperties.SchemaName);
-                var tableName = commandBuilder.QuoteIdentifier(SettingTableProperties.TableName);
+                var quote = new Func<string, string>(identifier => commandBuilder.QuoteIdentifier(identifier));
 
-                sql.Append($"DELETE FROM {tableName}").AppendLine();
+                var table = $"{quote(SettingTableConfiguration.TableName)}";
+
+                sql.Append($"DELETE FROM {table}").AppendLine();
                 sql.Append(setting.Namespaces.Keys.Aggregate(
                     $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} || '[%]')",
-                    (result, key) => $"{result} AND {commandBuilder.QuoteIdentifier(key)} = @{key} ")
+                    (result, key) => $"{result} AND {quote(key)} = @{key} ")
                 );
             }
 
@@ -92,20 +82,8 @@ namespace SmartConfig.DataStores.SQLite
 
             // --- add parameters & values
 
-            command.Parameters.Add(
-                nameof(Setting.Name),
-                SettingTableProperties.GetDbTypeOrDefault(nameof(Setting.Name)),
-                SettingTableProperties.GetColumnLengthOrDefault(nameof(Setting.Name))
-            );
-
-            foreach (var ns in setting.Namespaces)
-            {
-                command.Parameters.Add(
-                    ns.Key,
-                    SettingTableProperties.GetDbTypeOrDefault(ns.Key),
-                    SettingTableProperties.GetColumnLengthOrDefault(ns.Key)
-                );
-            }
+            AddParameter(command, nameof(Setting.Name), setting.Name.FullName);
+            AddParameters(command, setting.Namespaces);
 
             return command;
         }
@@ -114,7 +92,7 @@ namespace SmartConfig.DataStores.SQLite
         {
             /*
                 INSERT OR REPLACE INTO Setting([Name], [Value])
-                VALUES('{key.Main.Value}', '{value}')
+                VALUES('{setting.Name.FullNameEx}', '{setting.Value}')
             */
 
             // --- build sql
@@ -124,19 +102,21 @@ namespace SmartConfig.DataStores.SQLite
             var dbProviderFactory = DbProviderFactories.GetFactory(connection);
             using (var commandBuilder = dbProviderFactory.CreateCommandBuilder())
             {
-                var tableName = commandBuilder.QuoteIdentifier(SettingTableProperties.TableName);
+                var quote = new Func<string, string>(identifier => commandBuilder.QuoteIdentifier(identifier));
 
-                var quotedColumnNames = setting.Namespaces.Keys
-                        .Select(columnName => commandBuilder.QuoteIdentifier(columnName))
-                        .Aggregate(
-                            $"[{nameof(Setting.Name)}], [{nameof(Setting.Value)}]", 
-                            (result, next) => $"{result}, {next}");
+                var table = $"{quote(SettingTableConfiguration.TableName)}";
 
-                sql.Append($"INSERT OR REPLACE INTO {tableName}({quotedColumnNames})").AppendLine();
+                var columns = setting.Namespaces.Keys.Select(columnName => quote(columnName)).Aggregate(
+                    $"[{nameof(Setting.Name)}], [{nameof(Setting.Value)}]",
+                    (result, next) => $"{result}, {next}"
+                );
+
+                sql.Append($"INSERT OR REPLACE INTO {table}({columns})").AppendLine();
 
                 var parameterNames = setting.Namespaces.Keys.Aggregate(
-                        $"@{nameof(Setting.Name)}, @{nameof(Setting.Value)}", 
-                        (result, next) => $"{result}, @{next}");
+                        $"@{nameof(Setting.Name)}, @{nameof(Setting.Value)}",
+                        (result, next) => $"{result}, @{next}"
+                );
 
                 sql.Append($"VALUES ({parameterNames})").AppendLine();
             }
@@ -147,28 +127,33 @@ namespace SmartConfig.DataStores.SQLite
 
             // --- add parameters
 
-            command.Parameters.Add(
-                nameof(Setting.Name),
-                SettingTableProperties.GetDbTypeOrDefault(nameof(Setting.Name)),
-                SettingTableProperties.GetColumnLengthOrDefault(nameof(Setting.Name))
-            );
-
-            command.Parameters.Add(
-                nameof(Setting.Value),
-                SettingTableProperties.GetDbTypeOrDefault(nameof(Setting.Value)),
-                SettingTableProperties.GetColumnLengthOrDefault(nameof(Setting.Value))
-            );
-
-            foreach (var ns in setting.Namespaces)
-            {
-                command.Parameters.Add(
-                    ns.Key,
-                    SettingTableProperties.GetDbTypeOrDefault(ns.Key),
-                    SettingTableProperties.GetColumnLengthOrDefault(ns.Key)
-                );
-            }
+            AddParameter(command, nameof(Setting.Name), setting.Name.FullNameEx);
+            AddParameter(command, nameof(Setting.Value), setting.Value);
+            AddParameters(command, setting.Namespaces);
 
             return command;
+        }
+
+        private void AddParameter(SQLiteCommand command, string name, object value = null)
+        {
+            var parameter = command.Parameters.Add(
+                name,
+                SettingTableConfiguration.Columns[name].DbType,
+                SettingTableConfiguration.Columns[name].Length
+            );
+
+            if (value != null)
+            {
+                parameter.Value = value;
+            }
+        }
+
+        private void AddParameters(SQLiteCommand command, IEnumerable<KeyValuePair<string, object>> parameters)
+        {
+            foreach (var parameter in parameters)
+            {
+                AddParameter(command, parameter.Key, parameter.Value);
+            }
         }
     }
 }

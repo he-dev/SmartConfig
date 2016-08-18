@@ -3,16 +3,12 @@
 //#define DISABLE_SET_VALUE
 #endif
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using Microsoft.Win32;
 using SmartConfig.Data;
-using SmartUtilities;
-using SmartUtilities.ValidationExtensions;
+using SmartUtilities.Frameworks.InlineValidation;
 
 namespace SmartConfig.DataStores.Registry
 {

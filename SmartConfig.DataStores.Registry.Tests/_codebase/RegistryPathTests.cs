@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SmartUtilities.ValidationExtensions.Testing;
-using SmartUtilities.ValidationExtensions;
+using SmartUtilities.Frameworks.InlineValidation;
+using SmartUtilities.Frameworks.InlineValidation.Testing;
+
 // ReSharper disable CheckNamespace
 
 namespace SmartConfig.DataStores.Registry.Tests.Unit.RegistryPath.Positive

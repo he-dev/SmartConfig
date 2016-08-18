@@ -4,16 +4,13 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SmartConfig.Data;
 using SmartConfig.DataAnnotations;
-using SmartUtilities.Collections;
 using SmartUtilities.DataAnnotations;
-using SmartUtilities.ValidationExtensions;
-using SmartUtilities.ValidationExtensions.Testing;
-using SmartConfig.Core.Tests;
 using SmartConfig.Core.Tests.DataStores;
 using SmartConfig.DataStores;
-using SmartUtilities.TypeConversion.Converters;
+using SmartUtilities.Frameworks.InfiniteConversion.Converters;
+using SmartUtilities.Frameworks.InlineValidation;
+using SmartUtilities.Frameworks.InlineValidation.Testing;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 
