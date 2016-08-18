@@ -9,7 +9,7 @@ and `Install-Package SmartConfig.DataStores.SQLite -Pre`
 
 To create a configuration you need to define a static class and decorate it with the `[SmartConfig]` attribute. It can contain any number of **static** properties and nested classes.
 
-The below example contains all setting types that are supported by SmartConfig.
+The below example contains all setting types that are supported by SmartConfig. Among the simple types there are also arrays and dictionaries. To use them you need to mark the setting with the `[Itemized]` attribute. Arrays are required to have additional `[index]` but the number actually doesn't matter. The names just have to be unique. Dictionary keys can be of any type supported by the converters (int, string, enum etc.).
 
 ```cs
 [SmartConfig]
@@ -114,12 +114,12 @@ The config class itself does not change at all. You add the namespaces when load
 
 ```cs
  Configuration.Load
-    .From(new SqlServerStore("name=SmartConfigTest"))
+    .From(new SqlServerStore("name=SmartConfigTest").Column("Environment", SqlDbType.NVarChar, 200))
     .Where("Environment", "Qux")
     .Select(typeof(FullConfig));
 ```
 
-Here we've added the `Where` to set the _Environment_.
+Here we've added the `Where` to set the _Environment_ and we configured the _Environment_ column by setting its data-type and length.
 
 The respecitve table is:
 
@@ -148,7 +148,7 @@ In most cases for complex data structures we would want to use json. To be able 
 [Converters(typeof(JsonToObjectConverter<List<Int32>>))]
 public static class FullConfig
 {
-    public static List<int> JsonArray { get; set; }
+    public static List<int> JsonArray { get; set; } // "[1, 2, 3]"
 }
 ```
 
