@@ -1,4 +1,4 @@
-# SmartConfig v7.0.1-beta
+# SmartConfig v7.0.3
 
 SmartConfig is a configuration framework that makes writing configurations very easy.
 

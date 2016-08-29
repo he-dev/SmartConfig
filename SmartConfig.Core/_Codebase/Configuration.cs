@@ -8,6 +8,7 @@ using SmartConfig.Data;
 using SmartConfig.DataAnnotations;
 using SmartConfig.IO;
 using SmartUtilities;
+using SmartUtilities.DataAnnotations;
 using SmartUtilities.Frameworks.InfiniteConversion;
 using SmartUtilities.Frameworks.InfiniteConversion.Converters;
 using SmartUtilities.Frameworks.InlineValidation;
