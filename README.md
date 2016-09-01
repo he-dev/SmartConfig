@@ -2,8 +2,13 @@
 
 SmartConfig is a configuration framework that makes writing configurations very easy.
 
-NuGet: `Install-Package SmartConfig -Pre`  
-and `Install-Package SmartConfig.DataStores.SQLite -Pre`
+The core package on NuGet: `Install-Package SmartConfig` contains:
+- AppSettingsStore
+- ConnectionStringsStore
+- SqlServerStore
+- RegistryStore
+
+You can get the `SQLiteStore` extension with `Install-Package SmartConfig.DataStores.SQLite`
 
 ## Quick Start
 
