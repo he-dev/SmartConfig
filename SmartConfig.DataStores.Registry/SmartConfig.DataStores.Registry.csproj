@@ -62,8 +62,16 @@
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SmartUtilities, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SmartUtilities.4.0.36\lib\net452\SmartUtilities.dll</HintPath>
+    <Reference Include="Reusable.Extensions, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Reusable.Extensions.1.0.7\lib\net452\Reusable.Extensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Reusable.FluentValidation, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Reusable.FluentValidation.1.0.7\lib\net452\Reusable.FluentValidation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Reusable.Formatter, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Reusable.Formatter.1.0.7\lib\net452\Reusable.Formatter.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

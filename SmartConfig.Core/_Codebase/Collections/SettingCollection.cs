@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
-using SmartUtilities;
-using SmartUtilities.DataAnnotations;
+using Reusable.Data.DataAnnotations;
+using Reusable.Extensions;
 
 namespace SmartConfig.Collections
 {

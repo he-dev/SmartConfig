@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Reusable;
+using Reusable.Converters;
+using Reusable.DataAnnotations;
+using Reusable.Extensions;
+using Reusable.Validations;
 using SmartConfig.Collections;
 using SmartConfig.Data;
 using SmartConfig.DataAnnotations;
 using SmartConfig.IO;
-using SmartUtilities;
-using SmartUtilities.DataAnnotations;
-using SmartUtilities.Frameworks.InfiniteConversion;
-using SmartUtilities.Frameworks.InfiniteConversion.Converters;
-using SmartUtilities.Frameworks.InlineValidation;
 
 namespace SmartConfig
 {
@@ -107,7 +106,7 @@ namespace SmartConfig
 
             private static TypeConverter CreateDefaultConverter()
             {
-                return TypeConverter.Default.Add(new TypeConverter[]
+                return TypeConverter.Empty.Add(new TypeConverter[]
                 {
                     new StringToSByteConverter(),
                     new StringToByteConverter(),
@@ -157,15 +156,15 @@ namespace SmartConfig
 
             public Builder From(IDataStore dataStore)
             {
-                _dataStore = dataStore.Validate(nameof(dataStore)).IsNotNull(ctx => "You need to specify a data store.").Argument;
+                _dataStore = dataStore.Validate(nameof(dataStore)).IsNotNull("You need to specify a data store.").Value;
                 return this;
             }
 
             public Builder Where(string name, object value)
             {
-                name.Validate(nameof(name)).IsNotNullOrEmpty(ctx => $"You need to specify the namespace.");
-                value.Validate(nameof(value)).IsNotNull(ctx => $"You need to specify the namespace value.");
-                _namespaces.ContainsKey(name).Validate().IsFalse(ctx => $"Namespace with this name '{name}' already exists.");
+                name.Validate(nameof(name)).IsNotNullOrEmpty("You need to specify the namespace.");
+                value.Validate(nameof(value)).IsNotNull("You need to specify the namespace value.");
+                _namespaces.ContainsKey(name).Validate().IsFalse($"Namespace with this name '{name}' already exists.");
                 _namespaces.Add(name, value);
                 return this;
             }
@@ -184,15 +183,13 @@ namespace SmartConfig
             public Configuration Select(Type type, string name = null, ConfigNameOption nameOption = ConfigNameOption.AsPath)
             {
                 type.Validate(nameof(type))
-                    .IsNotNull(ctx => "You need to specify the configuration type.");
+                    .IsNotNull("You need to specify the configuration type.");
 
-                type.Validate(nameof(type))
-                    .OnFailure(ctx => new ClassNotStaticException(ctx.Argument))
-                    .IsTrue(x => x.IsStatic());
+                type.Validate(nameof(type)).IsTrue(x => x.IsStatic(), $"Type {type.Name} must be static.");
 
-                type.Validate(nameof(type))
-                    .OnFailure(ctx => new SmartConfigAttributeNotFoundException(ctx.Argument))
-                    .IsTrue(x => x.HasAttribute<SmartConfigAttribute>());
+                type.Validate(nameof(type)).IsTrue(
+                    x => x.HasAttribute<SmartConfigAttribute>(), 
+                    $"Type {type.FullName} muss be decorated with the {nameof(SmartConfigAttribute)}.");
 
                 var smartConfigAttribute = type.GetCustomAttribute<SmartConfigAttribute>();
 
@@ -208,9 +205,9 @@ namespace SmartConfig
                     _namespaces.Add(nameof(Setting.Config), smartConfigAttribute.Name);
                 }
 
-                foreach (var customConverter in type.GetCustomAttribute<ConvertersAttribute>() ?? Enumerable.Empty<Type>())
+                foreach (var typeConverterAttribute in type.GetCustomAttributes<TypeConverterAttribute>())
                 {
-                    _converter = _converter.Add(customConverter);
+                    _converter = _converter.Add(typeConverterAttribute.Type);
                 }
 
                 _configuration.Type = type;

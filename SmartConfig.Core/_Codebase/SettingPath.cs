@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using SmartUtilities.Frameworks.InlineValidation;
+using Reusable;
+using Reusable.Validations;
 
 namespace SmartConfig
 {
@@ -15,7 +16,7 @@ namespace SmartConfig
 
         public SettingPath(IList<string> names, string valueKey = null)
         {
-            Names = new List<string>(names.Validate(nameof(names)).IsNotNull().IsTrue(x => x.Any()).Argument);
+            Names = new List<string>(names.Validate(nameof(names)).IsNotNull().IsTrue(x => x.Any()).Value);
             ValueKey = valueKey;
         }
 

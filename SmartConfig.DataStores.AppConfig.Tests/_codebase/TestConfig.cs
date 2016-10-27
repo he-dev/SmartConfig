@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Reusable.Data.DataAnnotations;
 using SmartConfig.DataAnnotations;
-using SmartUtilities.DataAnnotations;
+
 // ReSharper disable MemberHidesStaticFromOuterClass
 
 namespace SmartConfig.DataStores.AppConfig.Tests

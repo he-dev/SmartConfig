@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Linq;
 using System.Text;
+using Reusable;
+using Reusable.Data;
+using Reusable.Extensions;
+using Reusable.Validations;
 using SmartConfig.Data;
-using SmartUtilities;
-using SmartUtilities.Frameworks.InlineValidation;
 
 namespace SmartConfig.DataStores.SQLite
 {
@@ -21,8 +23,8 @@ namespace SmartConfig.DataStores.SQLite
 
             ConnectionString = nameOrConnectionString;
 
-            string connectionStringName;
-            if (nameOrConnectionString.TryGetConnectionStringName(out connectionStringName))
+            var connectionStringName = nameOrConnectionString.ToConnectionStringName();
+            if (!string.IsNullOrEmpty(connectionStringName))
             {
                 ConnectionString = AppConfigRepository.GetConnectionString(connectionStringName);
             }
@@ -46,13 +48,13 @@ namespace SmartConfig.DataStores.SQLite
         public Encoding DataEncoding
         {
             get { return _dataEncoding; }
-            set { _dataEncoding = value.Validate(nameof(DataEncoding)).IsNotNull().Argument; }
+            set { _dataEncoding = value.Validate(nameof(DataEncoding)).IsNotNull().Value; }
         }
 
         public Encoding SettingEncoding
         {
             get { return _settingEncoding; }
-            set { _settingEncoding = value.Validate(nameof(SettingEncoding)).IsNotNull().Argument; }
+            set { _settingEncoding = value.Validate(nameof(SettingEncoding)).IsNotNull().Value; }
         }
 
         public Type MapDataType(Type settingType) => typeof(string);

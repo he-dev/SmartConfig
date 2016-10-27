@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Reusable;
+using Reusable.Validations;
 using SmartConfig.DataAnnotations;
-using SmartUtilities.Frameworks.InlineValidation;
 
 // ReSharper disable once CheckNamespace
 namespace SmartConfig.Core.Tests.Collections.SettingCollection.Positive
@@ -27,11 +28,11 @@ namespace SmartConfig.Core.Tests.Collections.SettingCollection.Positive
             {
                 public static string Baz1 { get; set; }
 
-                [SmartUtilities.DataAnnotations.Ignore]
+                [Reusable.Data.DataAnnotations.Ignore]
                 public static string Baz2 { get; set; }
             }
 
-            [SmartUtilities.DataAnnotations.Ignore]
+            [Reusable.Data.DataAnnotations.Ignore]
             public static class SubBaz
             {
                 public static string Quux { get; set; }

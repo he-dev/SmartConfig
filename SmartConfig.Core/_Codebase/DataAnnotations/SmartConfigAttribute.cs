@@ -1,5 +1,6 @@
 ﻿using System;
-using SmartUtilities.Frameworks.InlineValidation;
+using Reusable;
+using Reusable.Validations;
 
 namespace SmartConfig.DataAnnotations
 {
@@ -13,7 +14,7 @@ namespace SmartConfig.DataAnnotations
 
         public SmartConfigAttribute(string name)
         {
-            Name = name.Validate(nameof(name)).IsNotNullOrEmpty().Argument;
+            Name = name.Validate(nameof(name)).IsNotNullOrEmpty().Value;
         }
 
         public string Name { get; internal set; }

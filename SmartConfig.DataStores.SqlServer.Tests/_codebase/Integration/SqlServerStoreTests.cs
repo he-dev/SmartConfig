@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Reusable.Data.DataAnnotations;
+using Reusable.Testing;
+using Reusable.Validations;
 using SmartConfig.DataAnnotations;
-using SmartUtilities.DataAnnotations;
-using SmartUtilities.Frameworks.InlineValidation;
-using SmartUtilities.Frameworks.InlineValidation.Testing;
 
 // ReSharper disable InconsistentNaming
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SmartUtilities.Frameworks.InlineValidation;
-using SmartUtilities.Frameworks.InlineValidation.Testing;
+using Reusable.Testing;
+using Reusable.Validations;
 
 // ReSharper disable CheckNamespace
 

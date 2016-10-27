@@ -1,8 +1,9 @@
 ﻿using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Reusable;
+using Reusable.Validations;
 using SmartConfig.DataAnnotations;
-using SmartUtilities.Frameworks.InlineValidation;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable once CheckNamespace

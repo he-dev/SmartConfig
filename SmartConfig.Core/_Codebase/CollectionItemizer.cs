@@ -2,8 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using SmartUtilities;
-using SmartUtilities.Frameworks.InfiniteConversion;
+using Reusable;
+using Reusable.Extensions;
 
 namespace SmartConfig
 {

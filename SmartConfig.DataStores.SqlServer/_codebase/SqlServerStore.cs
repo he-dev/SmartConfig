@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using Reusable;
+using Reusable.Data;
+using Reusable.Extensions;
+using Reusable.Validations;
 using SmartConfig.Data;
-using SmartUtilities;
-using SmartUtilities.Frameworks.InlineValidation;
 
 namespace SmartConfig.DataStores.SqlServer
 {
@@ -19,8 +21,8 @@ namespace SmartConfig.DataStores.SqlServer
 
             ConnectionString = nameOrConnectionString;
 
-            string connectionStringName;
-            if (nameOrConnectionString.TryGetConnectionStringName(out connectionStringName))
+            var connectionStringName = nameOrConnectionString.ToConnectionStringName();
+            if (!string.IsNullOrEmpty(connectionStringName))
             {
                 ConnectionString = AppConfigRepository.GetConnectionString(connectionStringName);
             }

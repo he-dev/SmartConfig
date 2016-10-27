@@ -2,10 +2,11 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using Reusable;
+using Reusable.Data.DataAnnotations;
+using Reusable.Extensions;
+using Reusable.Validations;
 using SmartConfig.DataAnnotations;
-using SmartUtilities;
-using SmartUtilities.DataAnnotations;
-using SmartUtilities.Frameworks.InlineValidation;
 
 namespace SmartConfig
 {

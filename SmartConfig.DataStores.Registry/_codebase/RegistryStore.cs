@@ -7,8 +7,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Win32;
+using Reusable;
+using Reusable.Validations;
 using SmartConfig.Data;
-using SmartUtilities.Frameworks.InlineValidation;
 
 namespace SmartConfig.DataStores.Registry
 {

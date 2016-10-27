@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SmartUtilities.Frameworks.InlineValidation;
-using SmartUtilities.Frameworks.InlineValidation.Testing;
+using Reusable.Testing;
+using Reusable.Validations;
 
 namespace SmartConfig.Core.Tests.Unit.Data.Setting.Positive
 {

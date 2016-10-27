@@ -4,13 +4,15 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Reusable;
+using Reusable.Converters;
+using Reusable.DataAnnotations;
+using Reusable.Testing;
+using Reusable.Testing.Validations;
+using Reusable.Validations;
 using SmartConfig.DataAnnotations;
-using SmartUtilities.DataAnnotations;
 using SmartConfig.Core.Tests.DataStores;
 using SmartConfig.DataStores;
-using SmartUtilities.Frameworks.InfiniteConversion.Converters;
-using SmartUtilities.Frameworks.InlineValidation;
-using SmartUtilities.Frameworks.InlineValidation.Testing;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 
@@ -133,7 +135,7 @@ namespace SmartConfig.Core.Tests.Integration.Configuration.Positive.TestConfigs
     public static class EmptyConfig { }
 
     [SmartConfig]
-    [Converters(typeof(JsonToObjectConverter<List<Int32>>))]
+    [TypeConverter(typeof(JsonToObjectConverter<List<Int32>>))]
     public static class FullConfig
     {
         public static SByte SByte { get; set; }
@@ -161,7 +163,7 @@ namespace SmartConfig.Core.Tests.Integration.Configuration.Positive.TestConfigs
 
         public static List<int> JsonArray { get; set; }
 
-        [Optional]
+        [Reusable.Data.DataAnnotations.Optional]
         public static string Optional { get; set; } = "Waldo";
 
         [Itemized]
@@ -175,7 +177,7 @@ namespace SmartConfig.Core.Tests.Integration.Configuration.Positive.TestConfigs
             public static string NestedString { get; set; }
         }
 
-        [SmartUtilities.DataAnnotations.Ignore]
+        [Reusable.Data.DataAnnotations.Ignore]
         public static class IgnoredConfig
         {
             public static string IgnoredString { get; set; } = "Grault";
@@ -205,7 +207,7 @@ namespace SmartConfig.Core.Tests.Integration.Configuration.Negative
             {
                 Configuration.Load.From(new MemoryStore()).Select(typeof(NonStaticConfig));
             })
-            .Verify().Throws<ClassNotStaticException>();
+            .Verify().Throws<ValidationException>();
         }
 
         [TestMethod]
@@ -215,7 +217,7 @@ namespace SmartConfig.Core.Tests.Integration.Configuration.Negative
             {
                 Configuration.Load.From(new MemoryStore()).Select(typeof(ConfigNotDecorated));
             })
-            .Verify().Throws<SmartConfigAttributeNotFoundException>();
+            .Verify().Throws<ValidationException>();
         }
 
         [TestMethod]

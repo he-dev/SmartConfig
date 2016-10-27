@@ -1,24 +1,11 @@
 ﻿using System;
 using System.Reflection;
+using Reusable.Data.DataAnnotations;
+using Reusable.Extensions;
 using SmartConfig.DataAnnotations;
-using SmartUtilities;
-using SmartUtilities.DataAnnotations;
 
 namespace SmartConfig
 {
-    public class ClassNotStaticException : Exception
-    {
-        internal ClassNotStaticException(Type type)
-        {
-            Type = type;
-            Message = $"Type '{type.Name}' must be a static class.";
-        }
-        public override string Message { get; }
-        public Type Type { get; }
-
-        public override string ToString() => this.ToJson();
-    }
-
     public class SettingNotFoundException : Exception
     {
         internal SettingNotFoundException(SettingInfo setting)

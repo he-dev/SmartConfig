@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Reusable;
+using Reusable.Validations;
 using SmartConfig.DataAnnotations;
-using SmartUtilities.Frameworks.InlineValidation;
 
 namespace SmartConfig
 {
