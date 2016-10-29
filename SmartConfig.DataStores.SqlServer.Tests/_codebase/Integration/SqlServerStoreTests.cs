@@ -83,7 +83,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
             FullConfig3.DictionarySetting["bar"].Verify().IsEqual(82);
             FullConfig3.NestedConfig.StringSetting.Verify().IsEqual("Barxy");
             FullConfig3.IgnoredConfig.StringSetting.Verify().IsEqual("Grault");
-        }
+        }        
     }
 
     [TestClass]
@@ -107,10 +107,10 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
         }
 
         [TestMethod]
-        public void SaveSettingByNameAndNamespace()
+        public void SaveSettingByNameAndNamespaceFromExpression()
         {
             Configuration.Load
-                .FromSqlServer("name=SmartConfigTest", configure => configure.Column("Environment", SqlDbType.NVarChar, 200))
+                .FromSqlServer("name=SmartConfigTest", configure => configure.Column(() => BaseConfig.Environment))
                 .Where("Environment", "Qux")
                 .Select(typeof(TestConfig2));
 
@@ -147,6 +147,11 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
             Configuration.TryReload(typeof(ItemizedConfig));
 
             ItemizedConfig.Numbers2.Count.Verify().IsEqual(2);
+        }
+
+        private static class BaseConfig
+        {
+            public static string Environment => "Itemized";
         }
 
         [SmartConfig]

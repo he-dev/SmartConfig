@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq.Expressions;
+using Reusable;
+using Reusable.Validations;
 using SmartConfig.Data;
 
 namespace SmartConfig.DataStores.SqlServer
@@ -55,7 +58,7 @@ namespace SmartConfig.DataStores.SqlServer
                 return this;
             }
 
-            public Builder Column(string columnName, SqlDbType sqlDbType, int length)
+            public Builder Column(string columnName, SqlDbType sqlDbType = SqlDbType.NVarChar, int length = 50)
             {
                 _settingTableConfiguration.Columns[columnName] = new ColumnConfiguration
                 {
@@ -63,6 +66,13 @@ namespace SmartConfig.DataStores.SqlServer
                     Length = length
                 };
                 return this;
+            }
+
+            public Builder Column<T>(Expression<Func<T>> expression, SqlDbType sqlDbType = SqlDbType.NVarChar, int length = 50)
+            {
+                expression.Validate(nameof(expression)).IsNotNull();
+                var memberExpression = (expression.Body as MemberExpression).Validate().IsNotNull($"The expression must be a {nameof(MemberExpression)}.").Value;
+                return Column(memberExpression.Member.Name, sqlDbType, length);
             }
 
             internal SettingTableConfiguration Build()

@@ -51,7 +51,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\Release\net45\</OutputPath>
+    <OutputPath>..\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -63,19 +63,19 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Reusable.Data, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.Data.1.0.7\lib\net452\Reusable.Data.dll</HintPath>
+      <HintPath>..\packages\Reusable.Data.1.0.8\lib\net452\Reusable.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Reusable.Extensions, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.Extensions.1.0.7\lib\net452\Reusable.Extensions.dll</HintPath>
+      <HintPath>..\packages\Reusable.Extensions.1.0.8\lib\net452\Reusable.Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Reusable.FluentValidation, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.FluentValidation.1.0.7\lib\net452\Reusable.FluentValidation.dll</HintPath>
+      <HintPath>..\packages\Reusable.FluentValidation.1.0.8\lib\net452\Reusable.FluentValidation.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Reusable.Formatter, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.Formatter.1.0.7\lib\net452\Reusable.Formatter.dll</HintPath>
+      <HintPath>..\packages\Reusable.Formatter.1.0.8\lib\net452\Reusable.Formatter.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

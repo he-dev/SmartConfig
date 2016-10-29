@@ -164,20 +164,16 @@ namespace SmartConfig
             {
                 name.Validate(nameof(name)).IsNotNullOrEmpty("You need to specify the namespace.");
                 value.Validate(nameof(value)).IsNotNull("You need to specify the namespace value.");
-                _namespaces.ContainsKey(name).Validate().IsFalse($"Namespace with this name '{name}' already exists.");
+                _namespaces.ContainsKey(name).Validate().IsFalse($"Namespace '{name}' already exists.");
                 _namespaces.Add(name, value);
                 return this;
             }
 
-            public Builder Where<T, TProperty>(Expression<Func<T, TProperty>> propertyExpression, object value) where T : Setting
+            public Builder Where<T>(Expression<Func<T>> expression)
             {
-                //name.Validate(nameof(name)).IsNotNullOrEmpty(ctx => $"You need to specify the namespace.");
-                //value.Validate(nameof(value)).IsNotNull(ctx => $"You need to specify the namespace value.");
-                //_namespaces.ContainsKey(name).Validate().IsFalse(ctx => $"Namespace with this name '{name}' already exists.");
-                //_namespaces.Add(name, value);
-
-
-                return this;
+                expression.Validate(nameof(expression)).IsNotNull();
+                var memberExpression = (expression.Body as MemberExpression).Validate().IsNotNull($"The expression must be a {nameof(MemberExpression)}.").Value;
+                return Where(memberExpression.Member.Name, expression.Compile()());
             }
 
             public Configuration Select(Type type, string name = null, ConfigNameOption nameOption = ConfigNameOption.AsPath)

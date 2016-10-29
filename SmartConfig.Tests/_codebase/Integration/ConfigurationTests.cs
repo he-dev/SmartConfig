@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reusable;
 using Reusable.Converters;
+using Reusable.Data.DataAnnotations;
 using Reusable.DataAnnotations;
 using Reusable.Testing;
 using Reusable.Testing.Validations;
@@ -126,7 +127,7 @@ namespace SmartConfig.Core.Tests.Integration.Configuration.Positive
 
             FullConfig.NestedConfig.NestedString.Verify().IsEqual("Quux");
         }
-    }    
+    }
 }
 
 namespace SmartConfig.Core.Tests.Integration.Configuration.Positive.TestConfigs
@@ -227,7 +228,7 @@ namespace SmartConfig.Core.Tests.Integration.Configuration.Negative
             {
                 Configuration.Load.From(new MemoryStore()).Select(typeof(RequiredSettings));
             })
-            .Validate().Throws<AggregateException>();
+            .Verify().Throws<AggregateException>();
         }
 
         [TestMethod]
@@ -237,19 +238,37 @@ namespace SmartConfig.Core.Tests.Integration.Configuration.Negative
             {
                 Configuration.Load.From(new MemoryStore()).Where(null, null);
             })
-            .Validate().Throws<ValidationException>();
+            .Verify().Throws<ValidationException>();
 
             new Action(() =>
             {
                 Configuration.Load.From(new MemoryStore()).Where(string.Empty, null);
             })
-            .Validate().Throws<ValidationException>();
+            .Verify().Throws<ValidationException>();
+        }
+
+        [TestMethod]
+        public void Where_FromExpression()
+        {
+            var config = Configuration.Load
+                .From(new MemoryStore())
+                .Where(() => TestConfig.Foo)
+                .Select(typeof(TestConfig));
+
+            config.Namespaces["Foo"].Verify().IsTrue(x => x.ToString() == "Bar");
         }
 
         [TestMethod]
         public void ValueNull()
         {
-            new Action(() => Configuration.Load.From(new MemoryStore()).Where("foo", null)).Validate().Throws<ValidationException>();
+            new Action(() => Configuration.Load.From(new MemoryStore()).Where("foo", null)).Verify().Throws<ValidationException>();
+        }
+
+        [SmartConfig]
+        private static class TestConfig
+        {
+            [Optional]
+            public static string Foo { get; set; } = "Bar";
         }
     }
 }

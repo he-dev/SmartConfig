@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>SmartConfig.DataStores.SQLite</id>
+    <version>7.1.0</version>
+    <title>SmartConfig.DataStores.SQLite</title>
+    <authors>he-dev</authors>
+    <owners>he-dev</owners>
+    <licenseUrl>https://github.com/he-dev/SmartConfig/blob/master/SmartConfig/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/he-dev/SmartConfig</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/he-dev/SmartConfig/master/NuGet/icon.png</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>SmartConfig is an easy to use, strongly typed and powerful configuration framework. This package adds the SQLite data store.</description>
+    <releaseNotes>Next realease.</releaseNotes>
+    <copyright>Copyright 2016 he-dev</copyright>
+    <tags>.NET C# Config Configuration Settings Framework Tool Utility</tags>
+    <dependencies>
+      <dependency id="Newtonsoft.Json" version="9.0.1" />
+      <dependency id="Reusable.Data" version="1.0.8" />
+      <dependency id="Reusable.Extensions" version="1.0.8" />
+      <dependency id="Reusable.FluentValidation" version="1.0.8" />
+      <dependency id="Reusable.Formatter" version="1.0.8" />
+      <dependency id="System.Data.SQLite.Core" version="1.0.102.0" />
+      <dependency id="SmartConfig.Core" version="7.1.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\bin\Release\SmartConfig.DataStores.SQLite.dll" target="lib\net452" />
+    <file src="..\bin\Release\SmartConfig.DataStores.SQLite.dll.config" target="lib\net452" />
+    <file src="..\bin\Release\SmartConfig.DataStores.SQLite.pdb" target="lib\net452" />
+  </files>
+</package>
