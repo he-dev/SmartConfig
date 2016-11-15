@@ -1,6 +1,15 @@
-# SmartConfig v7.0.3
+# SmartConfig v8.0.0
 
-SmartConfig is a configuration framework that makes writing configurations very easy.
+With SmartConfig you can setup a strongly typed configuration within a few minutes.
+
+---
+
+## Changelog
+
+- Updated references to `Reusable`
+- `Where` now allows you to specify an expression for the column name
+
+---
 
 The core package on NuGet: `Install-Package SmartConfig` contains:
 - AppSettingsStore
