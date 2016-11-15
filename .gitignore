@@ -188,8 +188,10 @@ GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
 
-# NuGet folder
+# My folders
 .nuget
+SmartNuGetPackager
+
 
 # R#
 *.DotSettings
