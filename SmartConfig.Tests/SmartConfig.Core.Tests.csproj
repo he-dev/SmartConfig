@@ -88,11 +88,11 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="_codebase\Integration\ConfigurationTests.cs" />
-    <Compile Include="_codebase\Integration\TestStore.cs" />
+    <Compile Include="_codebase\Integration\ConfigurationTest.cs" />
+    <Compile Include="_codebase\TestStore.cs" />
     <Compile Include="_codebase\Unit\DataStores\MemoryStoreTests.cs" />
-    <Compile Include="_codebase\Unit\Collections\SettingCollectionTests.cs" />
-    <Compile Include="_codebase\Unit\Data\SettingTests.cs" />
+    <Compile Include="_codebase\Unit\ConfigurationReflectionTest.cs" />
+    <Compile Include="_codebase\Unit\Data\SettingTest.cs" />
     <Compile Include="_codebase\Unit\ReflectorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="_codebase\Unit\SettingUrnTest.cs" />

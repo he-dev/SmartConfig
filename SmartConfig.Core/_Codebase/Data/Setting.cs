@@ -17,6 +17,10 @@ namespace SmartConfig.Data
             set { _values[key] = value; }
         }
 
+        public string WeakId => $"{Name.WeakFullName}/{Attributes.OrderBy(x => x.Key).Select(x => x.Value).Join("/")}";
+
+        public string StrongId => $"{Name.StrongFullName}/{Attributes.OrderBy(x => x.Key).Select(x => x.Value).Join("/")}";
+
         public SettingUrn Name
         {
             [DebuggerStepThrough]
@@ -57,40 +61,11 @@ namespace SmartConfig.Data
             }
         }
 
-        public IEnumerable<string> Names => _values.Keys;
-
-        private string DebuggerDisplay => ToString();
-
-        public bool NamespaceEquals(string key, object value)
-        {
-            var temp = (object)null;
-            return Attributes.TryGetValue(key, out temp) && temp.Equals(value);
-        }
-
-        // Two settings are alike if their Name.FullNames are same and all namespaces and their values.
-        //public bool IsLike(Setting setting)
-        //{
-        //    return
-        //        Name.IsLike(setting.Name) &&
-        //        Attributes.All(ns => setting.NamespaceEquals(ns.Key, ns.Value));
-        //}
+        private string DebuggerDisplay => ToString();       
 
         public override string ToString()
         {
-            return $"{Name.FullNameWithKey} = '{Value}' in [{string.Join(",", Attributes.Select(x => x.Value))}]";
-        }
-
-        //public static bool operator ==(Setting x, Setting y)
-        //{
-        //    if (ReferenceEquals(x, null) || ReferenceEquals(y, null)) return false;
-
-        //    return 
-        //        x.na;
-        //}
-
-        //public static bool operator !=(Setting x, Setting y)
-        //{
-        //    return !(x == y);
-        //}
+            return $"{Name.StrongFullName} = '{Value}' in [{string.Join(",", Attributes.Select(x => x.Value))}]";
+        }        
     }
 }

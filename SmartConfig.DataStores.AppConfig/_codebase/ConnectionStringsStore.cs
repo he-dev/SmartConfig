@@ -42,7 +42,7 @@ namespace SmartConfig.DataStores.AppConfig
             var affectedSettings = 0;
 
             // remove connection strings
-            var removeKeys = settings.Select(x => x.Name.FullName).Distinct().ToList();
+            var removeKeys = settings.Select(x => x.Name.WeakFullName).Distinct().ToList();
             var removeConfigurationStrings =
                     _connectionStringsSection.ConnectionStrings.Cast<ConnectionStringSettings>()
                         .Where(x => removeKeys.Contains(x.Name, StringComparer.OrdinalIgnoreCase))
@@ -55,10 +55,10 @@ namespace SmartConfig.DataStores.AppConfig
 
             foreach (var setting in settings)
             {
-                var connectionStringSettings = _connectionStringsSection.ConnectionStrings[setting.Name.FullNameWithKey];
+                var connectionStringSettings = _connectionStringsSection.ConnectionStrings[setting.Name.StrongFullName];
                 if (connectionStringSettings == null)
                 {
-                    connectionStringSettings = new ConnectionStringSettings(setting.Name.FullNameWithKey, (string)setting.Value);
+                    connectionStringSettings = new ConnectionStringSettings(setting.Name.StrongFullName, (string)setting.Value);
                     _connectionStringsSection.ConnectionStrings.Add(connectionStringSettings);
                 }
                 else

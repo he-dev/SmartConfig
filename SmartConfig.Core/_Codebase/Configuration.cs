@@ -24,16 +24,13 @@ namespace SmartConfig
         // Initializes the fluent interface.
         public static ConfigurationBuilder Load => new ConfigurationBuilder();
 
-        // This might be useful in future.
         internal Type Type { get; }
 
         internal DataStore DataStore { get; }
 
-        // Stores info about each setting.
         internal IEnumerable<SettingProperty> SettingProperties { get; private set; }
 
-        // Stores info about namespaces.
-        internal IReadOnlyDictionary<string, object> Attributes { get; private set; } = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+        internal IReadOnlyDictionary<string, object> Attributes { get; }
 
         internal TypeConverter Converter { get; }
 
@@ -69,22 +66,30 @@ namespace SmartConfig
 
         public int Save()
         {
-            // SettingWriter.SaveSettings(SettingProperties, Attributes);
-
-
-            return 0; 
+            var settingSerializer = new SettingSerializer(Converter);
+            var allSettings = settingSerializer.SerializeSettings(SettingProperties, DataStore.SupportedTypes);
+            foreach (var item in allSettings)
+            {
+                var settings = item.Value;
+                foreach (var setting in settings)
+                {
+                    setting.Attributes = Attributes;
+                }
+                DataStore.SaveSettings(settings);
+            }
+            return allSettings.Count;
         }
 
         public static bool Reload(Type configurationType, Action<Type, Exception> onException = null)
         {
+            var configuration = (Configuration)null;
+            if (!Cache.TryGetValue(configurationType, out configuration))
+            {
+                throw new InvalidOperationException($"Configuration {configurationType.Name} isn't loaded yet. To reload a configuration you need to load it first.");
+            }
+
             try
             {
-                var configuration = (Configuration)null;
-                if (!Cache.TryGetValue(configurationType, out configuration))
-                {
-                    throw new InvalidOperationException($"Configuration {configurationType.Name} isn't loaded yet. To reload a configuration you need to load it first.");
-                }
-
                 configuration.Reload();
                 return true;
             }
@@ -93,7 +98,7 @@ namespace SmartConfig
                 onException?.Invoke(configurationType, ex);
                 return false;
             }
-        }       
+        }
 
         public static int Save(Type configurationType)
         {

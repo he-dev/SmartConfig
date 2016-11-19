@@ -52,8 +52,8 @@ namespace SmartConfig.Services
             if (deserializationExceptions.Any())
             {
                 throw new AggregateException(
-                    $"Unable to deserialize {deserializationExceptions.Count} setting{(deserializationExceptions.Count == 1 ? string.Empty : "s")}.",
-                    deserializationExceptions);
+                    message: $"Unable to deserialize {deserializationExceptions.Count} setting{(deserializationExceptions.Count == 1 ? string.Empty : "s")}.",
+                    innerExceptions: deserializationExceptions);
             }
 
             return settingValues;
@@ -73,7 +73,7 @@ namespace SmartConfig.Services
 
             if (isItemized)
             {
-                var data = (object)null;
+                var data = (object)null;                
 
                 if (settingType.IsArray)
                 {
@@ -101,7 +101,7 @@ namespace SmartConfig.Services
             {
                 if (values.Count > 1)
                 {
-                    throw new MultipleSettingException();
+                    throw new MultipleSettingsFoundException();
                 }
 
                 return convert(values.Single().Value, settingType);

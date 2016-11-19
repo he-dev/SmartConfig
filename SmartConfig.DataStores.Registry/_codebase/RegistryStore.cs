@@ -51,7 +51,7 @@ namespace SmartConfig.DataStores.Registry
 
                 var settings =
                     subKey.GetValueNames()
-                        .Where(x => RegistryPath.Parse(x).IsLike(registryPath.FullName))
+                        .Where(x => RegistryPath.Parse(x).IsLike(registryPath.WeakFullName))
                         .Select(x => new Setting
                         {
                             Name = x,
@@ -65,7 +65,7 @@ namespace SmartConfig.DataStores.Registry
 
         public override int SaveSettings(IEnumerable<Setting> settings)
         {
-            var settingGroups = settings.GroupBy(x => x.Name.FullName).ToList();
+            var settingGroups = settings.GroupBy(x => x.Name.WeakFullName).ToList();
 
             // Before starting to delete/set keys check if all settings have valid types.
             var unsupportedSettings =
@@ -75,7 +75,7 @@ namespace SmartConfig.DataStores.Registry
             if (unsupportedSettings.Any())
             {
                 throw new UnsupportedTypeException(
-                    unsupportedSettings.Select(x => x.First().Name.FullName),
+                    unsupportedSettings.Select(x => x.First().Name.WeakFullName),
                     _registryValueKindMap.Select(x => x.Key));
             }
 
@@ -111,7 +111,7 @@ namespace SmartConfig.DataStores.Registry
                     {
                         var registryPath = new RegistryPath(s.Name);
 #if !DISABLE_SET_VALUE
-                        subKey.SetValue(registryPath.NameWithKey, s.Value, registryValueKind);
+                        subKey.SetValue(registryPath.StrongName, s.Value, registryValueKind);
 #endif
                     }
                 }

@@ -95,7 +95,7 @@ namespace SmartConfig.DataStores.SQLite
         {           
             var commandFactory = new CommandFactory(SettingTableConfiguration);
 
-            var settingGroups = settings.GroupBy(x => x.Name.FullName).ToList();
+            var settingGroups = settings.GroupBy(x => x.Name.WeakFullName).ToList();
 
             // All settings have the same columns so we can use the first setting to create commands.
             var setting0 = settings.First();
@@ -124,13 +124,13 @@ namespace SmartConfig.DataStores.SQLite
                             var s0 = sg.First();
 
                             // Delete all settings for this group.
-                            deleteCommand.Parameters[nameof(Setting.Name)].Value = s0.Name.FullName;
+                            deleteCommand.Parameters[nameof(Setting.Name)].Value = s0.Name.WeakFullName;
                             foreach (var ns in s0.Attributes) { deleteCommand.Parameters[ns.Key].Value = ns.Value; }
                             affectedSettings += deleteCommand.ExecuteNonQuery();
 
                             foreach (var s in sg)
                             {
-                                insertCommand.Parameters[nameof(Setting.Name)].Value = s.Name.FullNameWithKey;
+                                insertCommand.Parameters[nameof(Setting.Name)].Value = s.Name.StrongFullName;
                                 insertCommand.Parameters[nameof(Setting.Value)].Value =
                                     RecodeDataEnabled && s.Value is string
                                         ? ((string)s.Value).Recode(SettingEncoding, DataEncoding)

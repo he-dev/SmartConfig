@@ -70,7 +70,7 @@ namespace SmartConfig.DataStores.SqlServer
                     }
                 }
             }
-        }
+        }       
 
         public override int SaveSettings(IEnumerable<Setting> settings)
         {
@@ -83,35 +83,50 @@ namespace SmartConfig.DataStores.SqlServer
                 {
                     var groups = settings.GroupBy(x => x.WeakId);
 
-                    var rowsAffected = 0;
                     try
                     {
-                        foreach (var group in groups)
+                        var rowsAffected = 0;
+
+                        var setting0 = settings.First();
+
+                        using (var deleteCommand = commandFactory.CreateDeleteCommand(connection, setting0))
                         {
-                            var deleted = false;
-                            foreach (var setting in group)
+                            deleteCommand.Transaction = transaction;
+                            deleteCommand.Prepare();
+
+                            foreach (var s in settings.Select(x => x.Name.WeakFullName).Distinct(StringComparer.OrdinalIgnoreCase))
                             {
-                                // Before adding this group of settings delete the old ones first.
-                                if (!deleted)
+                                deleteCommand.Parameters[nameof(Setting.Name)].Value = s;
+
+                                foreach (var ns in setting0.Attributes)
                                 {
-                                    using (var deleteCommand = commandFactory.CreateDeleteCommand(connection, setting))
-                                    {
-                                        deleteCommand.Transaction = transaction;
-                                        deleteCommand.Prepare();
-                                        rowsAffected += deleteCommand.ExecuteNonQuery();
-                                    }
-                                    deleted = true;
+                                    deleteCommand.Parameters[ns.Key].Value = ns.Value;
                                 }
 
-                                // insert new setting
-                                using (var insertCommand = commandFactory.CreateInsertCommand(connection, setting))
-                                {
-                                    insertCommand.Transaction = transaction;
-                                    insertCommand.Prepare();
-                                    rowsAffected += insertCommand.ExecuteNonQuery();
-                                }
+                                rowsAffected += deleteCommand.ExecuteNonQuery();
                             }
                         }
+
+                        // insert new settings
+                        using (var insertCommand = commandFactory.CreateInsertCommand(connection, setting0))
+                        {
+                            insertCommand.Transaction = transaction;
+                            insertCommand.Prepare();
+
+                            foreach (var setting in settings)
+                            {
+                                insertCommand.Parameters[nameof(Setting.Name)].Value = setting.Name.StrongFullName;
+                                insertCommand.Parameters[nameof(Setting.Value)].Value = setting.Value;
+
+                                foreach (var ns in setting.Attributes)
+                                {
+                                    insertCommand.Parameters[ns.Key].Value = ns.Value;
+                                }
+
+                                rowsAffected += insertCommand.ExecuteNonQuery();
+                            }
+                        }
+
                         transaction.Commit();
                         return rowsAffected;
                     }

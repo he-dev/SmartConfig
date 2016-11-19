@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SmartConfig.Data;
 
-namespace SmartConfig.Core.Tests.Integration
+namespace SmartConfig.Core.Tests
 {
     public class TestStore : DataStore
     {

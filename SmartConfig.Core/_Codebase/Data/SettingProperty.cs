@@ -47,7 +47,7 @@ namespace SmartConfig.Data
             set { Property.SetValue(null, value); }
         }
 
-        private string DebuggerDispaly => $"Urn = \"{Path.FullNameWithKey}\"";
+        private string DebuggerDispaly => $"Urn = \"{Path.StrongFullName}\"";
 
         public override bool Equals(object obj)
         {
@@ -63,7 +63,7 @@ namespace SmartConfig.Data
         public override string ToString()
         {
             // FullConfig2.Foo.Bar[baz] (required) System.Collections.Generic.List < int >
-            return $"{ConfigType.Name}.{Path.FullNameWithKey} {(IsOptional ? "optional" : "required")} {Type.ToShortString()}";
+            return $"{ConfigType.Name}.{Path.StrongFullName} {(IsOptional ? "optional" : "required")} {Type.ToShortString()}";
         }
     }    
 }

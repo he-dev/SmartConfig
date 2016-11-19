@@ -46,7 +46,7 @@ namespace SmartConfig.DataStores.SQLite
 
             // --- add parameters
 
-            AddParameter(command, nameof(Setting.Name), setting.Name.FullName);
+            AddParameter(command, nameof(Setting.Name), setting.Name.WeakFullName);
             AddParameters(command, setting.Attributes);
 
             return command;
@@ -82,7 +82,7 @@ namespace SmartConfig.DataStores.SQLite
 
             // --- add parameters & values
 
-            AddParameter(command, nameof(Setting.Name), setting.Name.FullName);
+            AddParameter(command, nameof(Setting.Name), setting.Name.WeakFullName);
             AddParameters(command, setting.Attributes);
 
             return command;
@@ -127,7 +127,7 @@ namespace SmartConfig.DataStores.SQLite
 
             // --- add parameters
 
-            AddParameter(command, nameof(Setting.Name), setting.Name.FullNameWithKey);
+            AddParameter(command, nameof(Setting.Name), setting.Name.StrongFullName);
             AddParameter(command, nameof(Setting.Value), setting.Value);
             AddParameters(command, setting.Attributes);
 

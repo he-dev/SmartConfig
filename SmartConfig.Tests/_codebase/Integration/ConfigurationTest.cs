@@ -21,11 +21,13 @@ namespace SmartConfig.Core.Tests.Integration
     // ReSharper disable InconsistentNaming
     // ReSharper disable CheckNamespace
 
+    using Configs;
+
     [TestClass]
-    public class FullTests
+    public class ConfigurationTest
     {
         [TestMethod]
-        public void LoadEmptyConfig()
+        public void Load_EmptyConfig()
         {
             var testStore = new TestStore();
             var configuration = Configuration.Load.From(new TestStore()).Select(typeof(EmptyConfig));
@@ -38,53 +40,53 @@ namespace SmartConfig.Core.Tests.Integration
         }
 
         [TestMethod]
-        public void SimpleConfig()
+        public void Load_FullConfig()
         {
             var culture = CultureInfo.InvariantCulture;
 
             var config = Configuration.Load.From(new MemoryStore
-                {
-                    { nameof(FullConfig.SByte), SByte.MaxValue.ToString() },
-                    { nameof(FullConfig.Byte), Byte.MaxValue.ToString() },
-                    { nameof(FullConfig.Char), Char.MaxValue.ToString() },
-                    { nameof(FullConfig.Int16), Int16.MaxValue.ToString() },
-                    { nameof(FullConfig.Int32), Int32.MaxValue.ToString() },
-                    { nameof(FullConfig.Int64), Int64.MaxValue.ToString() },
-                    { nameof(FullConfig.UInt16), UInt16.MaxValue.ToString() },
-                    { nameof(FullConfig.UInt32), UInt32.MaxValue.ToString() },
-                    { nameof(FullConfig.UInt64), UInt64.MaxValue.ToString() },
-                    { nameof(FullConfig.Single), Single.MaxValue.ToString("R", culture) },
-                    { nameof(FullConfig.Double), Double.MaxValue.ToString("R", culture) },
-                    { nameof(FullConfig.Decimal), Decimal.MaxValue.ToString(culture) },
+            {
+                {nameof(FullConfig.SByte), SByte.MaxValue.ToString()},
+                {nameof(FullConfig.Byte), Byte.MaxValue.ToString()},
+                {nameof(FullConfig.Char), Char.MaxValue.ToString()},
+                {nameof(FullConfig.Int16), Int16.MaxValue.ToString()},
+                {nameof(FullConfig.Int32), Int32.MaxValue.ToString()},
+                {nameof(FullConfig.Int64), Int64.MaxValue.ToString()},
+                {nameof(FullConfig.UInt16), UInt16.MaxValue.ToString()},
+                {nameof(FullConfig.UInt32), UInt32.MaxValue.ToString()},
+                {nameof(FullConfig.UInt64), UInt64.MaxValue.ToString()},
+                {nameof(FullConfig.Single), Single.MaxValue.ToString("R", culture)},
+                {nameof(FullConfig.Double), Double.MaxValue.ToString("R", culture)},
+                {nameof(FullConfig.Decimal), Decimal.MaxValue.ToString(culture)},
 
-                    { nameof(FullConfig.String), "foo" },
-                    { nameof(FullConfig.False), bool.FalseString },
-                    { nameof(FullConfig.True), bool.TrueString },
-                    { nameof(FullConfig.DateTime), new DateTime(2016, 7, 30).ToString(culture) },
-                    { nameof(FullConfig.Enum), TestEnum.TestValue2.ToString() },
+                {nameof(FullConfig.String), "foo"},
+                {nameof(FullConfig.False), bool.FalseString},
+                {nameof(FullConfig.True), bool.TrueString},
+                {nameof(FullConfig.DateTime), new DateTime(2016, 7, 30).ToString(culture)},
+                {nameof(FullConfig.Enum), TestEnum.TestValue2.ToString()},
 
-                    { nameof(FullConfig.ColorName), Color.DarkRed.Name },
-                    { nameof(FullConfig.ColorDec), $"{Color.Plum.R},{Color.Plum.G},{Color.Plum.B}" },
-                    { nameof(FullConfig.ColorHex), Color.Beige.ToArgb().ToString("X") },
+                {nameof(FullConfig.ColorName), Color.DarkRed.Name},
+                {nameof(FullConfig.ColorDec), $"{Color.Plum.R},{Color.Plum.G},{Color.Plum.B}"},
+                {nameof(FullConfig.ColorHex), Color.Beige.ToArgb().ToString("X")},
 
-                    { nameof(FullConfig.JsonArray), "[5, 8, 13]" },
+                {nameof(FullConfig.JsonArray), "[5, 8, 13]"},
 
-                    //{ nameof(FullConfig.Optional), "Fox" },
+                //{ nameof(FullConfig.Optional), "Fox" },
 
-                    { nameof(FullConfig.ItemizedArray) + "[0]", "5" },
-                    { nameof(FullConfig.ItemizedArray) + "[1]", "8" },
+                {nameof(FullConfig.ItemizedArray) + "[0]", "5"},
+                {nameof(FullConfig.ItemizedArray) + "[1]", "8"},
 
-                    { nameof(FullConfig.ItemizedDictionary) + "[foo]", "21" },
-                    { nameof(FullConfig.ItemizedDictionary) + "[bar]", "34" },
+                {nameof(FullConfig.ItemizedDictionary) + "[foo]", "21"},
+                {nameof(FullConfig.ItemizedDictionary) + "[bar]", "34"},
 
-                    { nameof(FullConfig.NestedConfig) + "." + nameof(FullConfig.NestedConfig.NestedString), "Quux" },
-                
-                    //new Setting { Name = nameof(TypesConfig.Uri), Value = bool.TrueString },
-                    //new Setting { Name = nameof(TypesConfig.XDocument), Value = @"<?xml version=""1.0""?><testXml></testXml>" },
-                    //new Setting { Name = nameof(TypesConfig.XElement), Value = @"<testXml></testXml>" },
-                })
-                //.With<JsonToObjectConverter<List<Int32>>>()
-                .Select(typeof(FullConfig));
+                {nameof(FullConfig.NestedConfig) + "." + nameof(FullConfig.NestedConfig.NestedString), "Quux"},
+
+                //new Setting { Name = nameof(TypesConfig.Uri), Value = bool.TrueString },
+                //new Setting { Name = nameof(TypesConfig.XDocument), Value = @"<?xml version=""1.0""?><testXml></testXml>" },
+                //new Setting { Name = nameof(TypesConfig.XElement), Value = @"<testXml></testXml>" },
+            })
+            //.With<JsonToObjectConverter<List<Int32>>>()
+            .Select(typeof(FullConfig));
 
             config.SettingProperties.Count().Verify().IsEqual(25);
 
@@ -126,6 +128,10 @@ namespace SmartConfig.Core.Tests.Integration
             FullConfig.NestedConfig.NestedString.Verify().IsEqual("Quux");
         }
     }
+}
+
+namespace SmartConfig.Core.Tests.Integration.Configs
+{
 
     [SmartConfig]
     public static class EmptyConfig { }

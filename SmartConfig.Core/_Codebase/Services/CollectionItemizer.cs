@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Reusable.Extensions;
 
-namespace SmartConfig.Services
+namespace SmartConfig
 {
     internal static class ObjectExtension
     {
@@ -32,8 +32,16 @@ namespace SmartConfig.Services
 
             return null;
         }
-    }
 
+        public static string Join<T>(this IEnumerable<T> values, string separator)
+        {
+            return string.Join(separator, values);
+        }
+    }
+}
+namespace SmartConfig.Services
+{
+   
     internal class CollectionItemizer
     {
         private static readonly Func<object, IEnumerable<KeyValuePair<object, object>>>[] Itemizers =
@@ -99,6 +107,6 @@ namespace SmartConfig.Services
                 .Select(key => new KeyValuePair<object, object>(key: key, value: dictionary[key]));
 
             return result;
-        }
+        }      
     }
 }

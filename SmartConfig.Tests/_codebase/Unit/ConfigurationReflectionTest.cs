@@ -7,10 +7,10 @@ using SmartConfig.DataAnnotations;
 namespace SmartConfig.Core.Tests.Collections.SettingCollection.Positive
 {
     [TestClass]
-    public class From
+    public class ConfigurationReflectionTest
     {
         [TestMethod]
-        public void CreateSettingCollection()
+        public void GetSettingProperties_FromNestedWithIgnore()
         {
             var settings = typeof(Foo).GetSettingProperties();
             settings.Count.Validate().IsEqual(3);

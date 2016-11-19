@@ -18,7 +18,7 @@ namespace SmartConfig.DataStores.Registry.Tests.Unit.RegistryPath.Positive
             var registryPath = new RegistryPath(new SettingUrn(new[] { "Foo" }));
 
             registryPath.Namespace.Verify().IsNullOrEmpty();
-            registryPath.Name.Verify().IsEqual(@"Foo");
+            registryPath.WeakName.Verify().IsEqual(@"Foo");
         }
 
         [TestMethod]
@@ -27,7 +27,7 @@ namespace SmartConfig.DataStores.Registry.Tests.Unit.RegistryPath.Positive
             var registryPath = new RegistryPath(new SettingUrn(new[] { "qux", "Foo", "Bar", "Baz" }));
 
             registryPath.Namespace.Verify().IsEqual(@"qux\Foo\Bar");
-            registryPath.Name.Verify().IsEqual(@"Baz");
+            registryPath.WeakName.Verify().IsEqual(@"Baz");
         }
     }
 }

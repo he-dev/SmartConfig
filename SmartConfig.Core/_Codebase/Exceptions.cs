@@ -11,7 +11,7 @@ namespace SmartConfig
     {
         internal SettingNotFoundException(SettingProperty setting)
         {
-            SettingPath = setting.Path.FullNameWithKey;
+            SettingPath = setting.Path.StrongFullName;
             ConfigType = setting.ConfigType;
             Message = $"Setting '{setting}' not found. If it is opitonal mark it with the '{nameof(OptionalAttribute)}' otherwise you need to provide a value for it.";
         }
@@ -22,7 +22,7 @@ namespace SmartConfig
         public override string ToString() => this.ToJson();
     }
 
-    public class MultipleSettingException : Exception
+    public class MultipleSettingsFoundException : Exception
     {
         public override string Message => "Setting found more then once but it is not a collection.";
 
@@ -52,7 +52,7 @@ namespace SmartConfig
     {
         internal DataReadException(SettingProperty setting, Type dataStoreType, Exception innerException) : base(null, innerException)
         {
-            SettingPath = setting.Path.FullNameWithKey;
+            SettingPath = setting.Path.StrongFullName;
             DataStoreType = dataStoreType;
             Message = $"Could not read '{SettingPath}' from '{dataStoreType.Name}'. See the inner exception for details about that.";
         }
@@ -80,7 +80,7 @@ namespace SmartConfig
     {
         internal DeserializationException(SettingProperty setting, Exception innerException) : base(null, innerException)
         {
-            SettingPath = setting.Path.FullNameWithKey;
+            SettingPath = setting.Path.StrongFullName;
             Message = $"Could not convert '{SettingPath}' to '{setting.Type.Name}'. See the inner exception for details about that.";
         }
         public override string Message { get; }
@@ -93,7 +93,7 @@ namespace SmartConfig
     {
         internal SerializationException(SettingProperty setting, Exception innerException) : base(null, innerException)
         {
-            SettingPath = setting.Path.FullNameWithKey;
+            SettingPath = setting.Path.StrongFullName;
             Message = $"Could not convert '{SettingPath}' to '{setting.Type.Name}'. See the inner exception for details about that.";
         }
         public override string Message { get; }

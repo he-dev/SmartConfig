@@ -20,7 +20,7 @@ namespace SmartConfig.DataStores.Registry
 
         public bool IsLike(RegistryPath path)
         {
-            return Name.Equals(path.Name, StringComparison.OrdinalIgnoreCase);
+            return WeakName.Equals(path.WeakName, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

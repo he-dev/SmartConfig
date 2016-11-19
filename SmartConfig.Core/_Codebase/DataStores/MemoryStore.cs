@@ -35,7 +35,7 @@ namespace SmartConfig.DataStores
 
             foreach (var setting in settings)
             {
-                Add(setting.Name.FullNameWithKey, setting.Value);
+                Add(setting.Name.StrongFullName, setting.Value);
             }
 
             return settings.Count();

@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reusable;
 using Reusable.Testing;
 using Reusable.Validations;
@@ -17,12 +17,12 @@ namespace SmartConfig.Core.Tests
             path.Count.Verify().IsEqual(2);
 
             path.Namespace.Verify().IsEqual("foo");
-            path.Name.Verify().IsEqual("bar");
-            path.NameWithKey.Verify().IsEqual("bar");
+            path.WeakName.Verify().IsEqual("bar");
+            path.StrongName.Verify().IsEqual("bar");
             path.Key.Verify().IsNullOrEmpty();
 
-            path.FullName.Verify().IsEqual("foo.bar");
-            path.FullNameWithKey.Verify().IsEqual("foo.bar");
+            path.WeakFullName.Verify().IsEqual("foo.bar");
+            path.StrongFullName.Verify().IsEqual("foo.bar");
         }
 
         [TestMethod]
@@ -33,12 +33,12 @@ namespace SmartConfig.Core.Tests
             path.Count.Verify().IsEqual(1);
 
             path.Namespace.Verify().IsNullOrEmpty();
-            path.Name.Verify().IsEqual("foo");
-            path.NameWithKey.Verify().IsEqual("foo[baz]");
+            path.WeakName.Verify().IsEqual("foo");
+            path.StrongName.Verify().IsEqual("foo[baz]");
             path.Key.Verify().IsEqual("baz");
 
-            path.FullName.Verify().IsEqual("foo");
-            path.FullNameWithKey.Verify().IsEqual("foo[baz]");
+            path.WeakFullName.Verify().IsEqual("foo");
+            path.StrongFullName.Verify().IsEqual("foo[baz]");
         }
 
         [TestMethod]
@@ -49,12 +49,12 @@ namespace SmartConfig.Core.Tests
             path.Count.Verify().IsEqual(2);
 
             path.Namespace.Verify().IsEqual("foo");
-            path.Name.Verify().IsEqual("bar");
-            path.NameWithKey.Verify().IsEqual("bar[baz]");
+            path.WeakName.Verify().IsEqual("bar");
+            path.StrongName.Verify().IsEqual("bar[baz]");
             path.Key.Verify().IsEqual("baz");
 
-            path.FullName.Verify().IsEqual("foo.bar");
-            path.FullNameWithKey.Verify().IsEqual("foo.bar[baz]");
+            path.WeakFullName.Verify().IsEqual("foo.bar");
+            path.StrongFullName.Verify().IsEqual("foo.bar[baz]");
         }
     
         [TestMethod]
@@ -65,12 +65,12 @@ namespace SmartConfig.Core.Tests
             path.Count.Verify().IsEqual(2);
 
             path.Namespace.Verify().IsEqual("foo");
-            path.Name.Verify().IsEqual("bar");
-            path.NameWithKey.Verify().IsEqual("bar");
+            path.WeakName.Verify().IsEqual("bar");
+            path.StrongName.Verify().IsEqual("bar");
             path.Key.Verify().IsNullOrEmpty();
 
-            path.FullName.Verify().IsEqual("foo.bar");
-            path.FullNameWithKey.Verify().IsEqual("foo.bar");
+            path.WeakFullName.Verify().IsEqual("foo.bar");
+            path.StrongFullName.Verify().IsEqual("foo.bar");
         }
 
         [TestMethod]
@@ -81,12 +81,12 @@ namespace SmartConfig.Core.Tests
             path.Count.Verify().IsEqual(2);
 
             path.Namespace.Verify().IsEqual("foo");
-            path.Name.Verify().IsEqual("bar");
-            path.NameWithKey.Verify().IsEqual("bar[baz]");
+            path.WeakName.Verify().IsEqual("bar");
+            path.StrongName.Verify().IsEqual("bar[baz]");
             path.Key.Verify().IsEqual("baz");
 
-            path.FullName.Verify().IsEqual("foo.bar");
-            path.FullNameWithKey.Verify().IsEqual("foo.bar[baz]");
+            path.WeakFullName.Verify().IsEqual("foo.bar");
+            path.StrongFullName.Verify().IsEqual("foo.bar[baz]");
         }
            
         [TestMethod]

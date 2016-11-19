@@ -59,10 +59,10 @@ namespace SmartConfig.DataStores.AppConfig
             // Now we can add the new settings.
             foreach (var setting in settings)
             {
-                var configurationElement = _appSettingsSection.Settings[setting.Name.FullNameWithKey];
+                var configurationElement = _appSettingsSection.Settings[setting.Name.StrongFullName];
                 if (configurationElement == null)
                 {
-                    _appSettingsSection.Settings.Add(setting.Name.FullNameWithKey, (string)setting.Value);
+                    _appSettingsSection.Settings.Add(setting.Name.StrongFullName, (string)setting.Value);
                 }
                 else
                 {

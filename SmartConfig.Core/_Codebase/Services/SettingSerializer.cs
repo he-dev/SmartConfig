@@ -70,7 +70,7 @@ namespace SmartConfig.Services
 
                 var settings = items.Select(x => new Setting
                 {
-                    Name = (SettingUrn)convert(x.Key, typeof(string)),
+                    Name = new SettingUrn(setting.Path, (string)convert(x.Key, typeof(string))),
                     Value = convert(x.Value, settingType)
                 })
                 .ToList();

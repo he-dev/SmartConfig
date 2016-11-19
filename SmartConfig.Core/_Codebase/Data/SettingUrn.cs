@@ -30,17 +30,17 @@ namespace SmartConfig.Data
 
         public string Namespace => string.Join(Delimiter, Names.Take(Count - 1));
 
-        public string Name => Names.Last();
+        public string WeakName => Names.Last();
 
-        public string NameWithKey => string.IsNullOrEmpty(Key) ? Name : $"{Name}[{Key}]";
+        public string WeakFullName => string.Join(Delimiter, Names);
 
-        public string FullName => string.Join(Delimiter, Names);
+        public string StrongName => string.IsNullOrEmpty(Key) ? WeakName : $"{WeakName}[{Key}]";
 
-        public string FullNameWithKey => Names.Count > 1 ? $"{Namespace}{Delimiter}{NameWithKey}" : NameWithKey;
+        public string StrongFullName => Names.Count > 1 ? $"{Namespace}{Delimiter}{StrongName}" : StrongName;
 
         public string Key { get; }
 
-        private string DebuggerDisplay => FullNameWithKey;
+        private string DebuggerDisplay => StrongFullName;
 
         public int Count => Names.Count;
 
@@ -59,25 +59,25 @@ namespace SmartConfig.Data
 
         public bool IsLike(SettingUrn path)
         {
-            return FullName.Equals(path.FullName, StringComparison.OrdinalIgnoreCase);
+            return WeakFullName.Equals(path.WeakFullName, StringComparison.OrdinalIgnoreCase);
         }
 
 
 #if DEBUG
         public override string ToString()
         {
-            throw new InvalidOperationException($"Use {FullName} instead.");
+            throw new InvalidOperationException($"Use {WeakFullName} instead.");
         }
 #endif
 
-        public static explicit operator string(SettingUrn settingPath) => settingPath.FullNameWithKey;
+        public static explicit operator string(SettingUrn settingPath) => settingPath.StrongFullName;
 
         public static bool operator ==(SettingUrn left, SettingUrn right)
         {
             return
                 !ReferenceEquals(left, null) &&
                 !ReferenceEquals(right, null) &&
-                left.FullNameWithKey.Equals(right.FullNameWithKey, StringComparison.OrdinalIgnoreCase);
+                left.StrongFullName.Equals(right.StrongFullName, StringComparison.OrdinalIgnoreCase);
         }
 
         public static bool operator !=(SettingUrn x, SettingUrn y)
@@ -103,7 +103,7 @@ namespace SmartConfig.Data
             return Equals((SettingUrn)obj);
         }
 
-        public override int GetHashCode() => FullNameWithKey.GetHashCode();
+        public override int GetHashCode() => StrongFullName.GetHashCode();
 
         public IEnumerator<string> GetEnumerator() => Names.GetEnumerator();
 
