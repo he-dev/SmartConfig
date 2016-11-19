@@ -1,41 +1,37 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SmartConfig.Data;
 
-namespace SmartConfig.Core.Tests.DataStores
+namespace SmartConfig.Core.Tests.Integration
 {
-    public class TestStore : IDataStore
+    public class TestStore : DataStore
     {
         private readonly List<Setting> _getSettingsArguments = new List<Setting>();
 
         private readonly List<Setting> _saveSettingsArguments = new List<Setting>();
 
-        private readonly IDataStore _store;
+        private readonly DataStore _store;
 
-        public TestStore() { }
+        public TestStore() : base(new[] { typeof(string) }) { }
 
-        public TestStore(IDataStore store)
+        public TestStore(DataStore store) : this()
         {
             _store = store;
         }
 
         public Type MapDataType(Type settingType) => typeof(string);
 
-        public List<Setting> GetSettings(Setting setting)
+        public override IEnumerable<Setting> GetSettings(Setting setting)
         {
             _getSettingsArguments.Add(setting);
             return _store?.GetSettings(setting) ?? new List<Setting>();
-        }
+        }       
 
-        public int SaveSetting(Setting setting)
-        {
-            return SaveSettings(new[] { setting });
-        }
-
-        public int SaveSettings(IReadOnlyCollection<Setting> settings)
+        public override int SaveSettings(IEnumerable<Setting> settings)
         {
             _saveSettingsArguments.AddRange(settings);
-            return _store?.SaveSettings(settings) ?? settings.Count;
+            return _store?.SaveSettings(settings) ?? settings.Count();
         }
 
         // ---

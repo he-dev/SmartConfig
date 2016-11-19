@@ -100,23 +100,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="_codebase\CollectionItemizer.cs" />
-    <Compile Include="_codebase\Collections\SettingCollection.cs" />
+    <Compile Include="_codebase\Services\CollectionItemizer.cs" />
+    <Compile Include="_codebase\ConfigurationBuilder.cs" />
     <Compile Include="_codebase\DataAnnotations\ItemizedAttribute.cs" />
     <Compile Include="_codebase\DataStores\MemoryStore.cs" />
     <Compile Include="_codebase\Data\Setting.cs" />
-    <Compile Include="_codebase\IO\SettingReader.cs" />
-    <Compile Include="_codebase\IO\SettingWriter.cs" />
+    <Compile Include="_codebase\Services\SettingDeserializer.cs" />
+    <Compile Include="_codebase\ConfigurationReflection.cs" />
+    <Compile Include="_codebase\Services\SettingSerializer.cs" />
     <Compile Include="_codebase\Exceptions.cs" />
-    <Compile Include="_codebase\ReloadFailedEventArgs.cs" />
-    <Compile Include="_codebase\SettingInfo.cs" />
+    <Compile Include="_codebase\Data\SettingProperty.cs" />
     <Compile Include="_codebase\DataAnnotations\RenameAttribute.cs" />
-    <Compile Include="_codebase\Reflector.cs" />
     <Compile Include="_codebase\Configuration.cs" />
-    <Compile Include="_codebase\SettingPath.cs" />
+    <Compile Include="_codebase\Data\SettingUrn.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="_codebase\DataAnnotations\SmartConfigAttribute.cs" />
-    <Compile Include="_codebase\Data\IDataStore.cs" />
+    <Compile Include="_codebase\Data\DataStore.cs" />
+    <Compile Include="_codebase\Data\SettingTag.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

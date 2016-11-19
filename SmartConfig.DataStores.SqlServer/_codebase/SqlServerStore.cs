@@ -13,9 +13,9 @@ namespace SmartConfig.DataStores.SqlServer
     /// <summary>
     /// Implements sql server data source.
     /// </summary>
-    public class SqlServerStore : IDataStore
+    public class SqlServerStore : DataStore
     {
-        public SqlServerStore(string nameOrConnectionString, Action<SettingTableConfiguration.Builder> configure = null)
+        public SqlServerStore(string nameOrConnectionString, Action<SettingTableConfiguration.Builder> configure = null) : base(new[] { typeof(string) })
         {
             nameOrConnectionString.Validate(nameof(nameOrConnectionString)).IsNotNullOrEmpty();
 
@@ -42,7 +42,7 @@ namespace SmartConfig.DataStores.SqlServer
 
         public Type MapDataType(Type settingType) => typeof(string);
 
-        public List<Setting> GetSettings(Setting setting)
+        public override IEnumerable<Setting> GetSettings(Setting setting)
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
@@ -55,38 +55,26 @@ namespace SmartConfig.DataStores.SqlServer
                     // Read settings.
                     using (var settingReader = command.ExecuteReader())
                     {
-                        var settings = new List<Setting>();
                         while (settingReader.Read())
                         {
                             var result = new Setting
                             {
-                                Name = new SettingPath((string)settingReader[nameof(Setting.Name)]),
+                                Name = new SettingUrn((string)settingReader[nameof(Setting.Name)]),
                                 Value = settingReader[nameof(Setting.Value)]
                             };
-                            foreach (var property in setting.Namespaces)
+                            foreach (var property in setting.Attributes)
                             {
                                 result[property.Key] = settingReader[property.Key];
                             }
-                            settings.Add(result);
+                            yield return result;
                         }
-                        return settings;
                     }
                 }
             }
-        }
+        }       
 
-        public int SaveSetting(Setting setting)
+        public override int SaveSettings(IEnumerable<Setting> settings)
         {
-            return SaveSettings(new[] { setting });
-        }
-
-        public int SaveSettings(IReadOnlyCollection<Setting> settings)
-        {
-            if (!settings.Any())
-            {
-                return 0;
-            }
-
             using (var connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
@@ -109,7 +97,7 @@ namespace SmartConfig.DataStores.SqlServer
                             {
                                 deleteCommand.Parameters[nameof(Setting.Name)].Value = s;
 
-                                foreach (var ns in setting0.Namespaces)
+                                foreach (var ns in setting0.Attributes)
                                 {
                                     deleteCommand.Parameters[ns.Key].Value = ns.Value;
                                 }
@@ -126,10 +114,10 @@ namespace SmartConfig.DataStores.SqlServer
 
                             foreach (var setting in settings)
                             {
-                                insertCommand.Parameters[nameof(Setting.Name)].Value = setting.Name.FullNameEx;
+                                insertCommand.Parameters[nameof(Setting.Name)].Value = setting.Name.FullNameWithKey;
                                 insertCommand.Parameters[nameof(Setting.Value)].Value = setting.Value;
 
-                                foreach (var ns in setting.Namespaces)
+                                foreach (var ns in setting.Attributes)
                                 {
                                     insertCommand.Parameters[ns.Key].Value = ns.Value;
                                 }
@@ -153,8 +141,8 @@ namespace SmartConfig.DataStores.SqlServer
 
     public static class ConfigurationBuilderExtensions
     {
-        public static Configuration.Builder FromSqlServer(
-            this Configuration.Builder configurationBuilder,
+        public static Configuration.ConfigurationBuilder FromSqlServer(
+            this Configuration.ConfigurationBuilder configurationBuilder,
             string nameOrConnectionString,
             Action<SettingTableConfiguration.Builder> configure = null
         )

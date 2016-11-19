@@ -23,7 +23,7 @@ namespace SmartConfig.DataStores.SQLite
                     DbType = DbType.String,
                     Length = StringMax
                 },
-                [nameof(Setting.Config)] = new ColumnConfiguration
+                [nameof(SettingTag.Config)] = new ColumnConfiguration
                 {
                     DbType = DbType.String,
                     Length = 300
@@ -68,5 +68,5 @@ namespace SmartConfig.DataStores.SQLite
     {
         public DbType DbType { get; set; }
         public int Length { get; set; }
-    }    
+    }
 }

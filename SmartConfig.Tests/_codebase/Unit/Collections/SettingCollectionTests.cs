@@ -6,15 +6,13 @@ using SmartConfig.DataAnnotations;
 // ReSharper disable once CheckNamespace
 namespace SmartConfig.Core.Tests.Collections.SettingCollection.Positive
 {
-    using SmartConfig.Collections;
-
     [TestClass]
     public class From
     {
         [TestMethod]
         public void CreateSettingCollection()
         {
-            var settings = SettingCollection.From(typeof(Foo));
+            var settings = typeof(Foo).GetSettingProperties();
             settings.Count.Validate().IsEqual(3);
         }
 

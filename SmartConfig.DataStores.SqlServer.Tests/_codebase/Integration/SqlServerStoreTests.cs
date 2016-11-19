@@ -7,14 +7,12 @@ using Reusable.Data.DataAnnotations;
 using Reusable.Testing;
 using Reusable.Validations;
 using SmartConfig.DataAnnotations;
+using SmartConfig.DataStores.SqlServer;
 
-// ReSharper disable InconsistentNaming
+namespace SmartConfig.DataStores.SqlServer.Tests.Integration
+{ // ReSharper disable InconsistentNaming
 
 // ReSharper disable once CheckNamespace
-namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Positive
-{
-    using SqlServer;
-
     [TestClass]
     public class FullTests
     {
@@ -102,7 +100,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
 
             Configuration.Save(typeof(TestConfig1));
             TestConfig1.Roxy = string.Empty;
-            Configuration.TryReload(typeof(TestConfig1));
+            Configuration.Reload(typeof(TestConfig1));
             TestConfig1.Roxy.Verify().IsNotNullOrEmpty().IsEqual(newValue);
         }
 
@@ -120,7 +118,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
 
             Configuration.Save(typeof(TestConfig2));
             TestConfig2.Bar = string.Empty;
-            Configuration.TryReload(typeof(TestConfig2));
+            Configuration.Reload(typeof(TestConfig2));
             TestConfig2.Bar.Verify().IsNotNullOrEmpty().IsEqual(newValue);
         }
 
@@ -144,7 +142,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
 
             ItemizedConfig.Numbers2.Remove(ItemizedConfig.Numbers2.ElementAt(1).Key);
             Configuration.Save(typeof(ItemizedConfig));
-            Configuration.TryReload(typeof(ItemizedConfig));
+            Configuration.Reload(typeof(ItemizedConfig));
 
             ItemizedConfig.Numbers2.Count.Verify().IsEqual(2);
         }
@@ -175,8 +173,4 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Posi
             public static Dictionary<string, int> Numbers2 { get; set; }
         }
     }
-}
-
-namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerStore.Negative
-{
 }

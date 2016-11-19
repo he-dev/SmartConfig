@@ -2,25 +2,43 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 using Reusable;
+using Reusable.Data.DataAnnotations;
+using Reusable.Extensions;
 using Reusable.Validations;
+using SmartConfig.Data;
 using SmartConfig.DataAnnotations;
 
 namespace SmartConfig
 {
-    internal static class Reflector
+    internal static class ConfigurationReflection
     {
-        // gets either custom or default member name
-        public static string GetCustomNameOrDefault(this MemberInfo member)
+        internal static List<SettingProperty> GetSettingProperties(this Type configType)
         {
-            member.Validate(nameof(member)).IsNotNull();
-            return member.GetCustomAttribute<RenameAttribute>()?.Name ?? member.Name;
+            var types = configType.NestedTypes(type => !type.HasAttribute<IgnoreAttribute>());
+
+            var settingProperties =
+                types.Select(type => type.GetProperties(BindingFlags.Public | BindingFlags.Static))
+                .SelectMany(properties => properties)
+                .Where(property => !property.HasAttribute<IgnoreAttribute>())
+                .Select(property => new SettingProperty(property, configType))
+                .ToList();
+
+            return settingProperties;
         }
 
         public static bool HasAttribute<T>(this MemberInfo memberInfo) where T : Attribute
         {
             return memberInfo.GetCustomAttributes<T>(false).Any();
         }
+
+        public static string GetCustomNameOrDefault(this MemberInfo member)
+        {
+            member.Validate(nameof(member)).IsNotNull();
+            return member.GetCustomAttribute<RenameAttribute>()?.Name ?? member.Name;
+        }       
 
         public static IEnumerable<string> GetSettingPath(this PropertyInfo propertyInfo)
         {
@@ -50,7 +68,7 @@ namespace SmartConfig
                     path.AddFirst(smartConfigAttribute.Name);
                 }
             }
-            
+
             return path;
         }
     }

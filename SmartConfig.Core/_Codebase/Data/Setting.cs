@@ -11,36 +11,16 @@ namespace SmartConfig.Data
         // We store all names and values in a not-case sensitive dictionary.
         private readonly Dictionary<string, object> _values = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
-        public Setting() { }
-
-        public Setting(SettingPath path, IReadOnlyDictionary<string, object> namespaces)
-        {
-            Name = path;
-            if (namespaces != null)
-            {
-                foreach (var ns in namespaces)
-                {
-                    _values.Add(ns.Key, ns.Value);
-                }
-            }
-        }
-
-        public Setting(SettingPath path, IReadOnlyDictionary<string, object> namespaces, object value)
-            : this(path, namespaces)
-        {
-            Value = value;
-        }
-
         public object this[string key]
         {
             get { return _values[key]; }
             set { _values[key] = value; }
         }
 
-        public SettingPath Name
+        public SettingUrn Name
         {
             [DebuggerStepThrough]
-            get { return (SettingPath)_values[nameof(Name)]; }
+            get { return (SettingUrn)_values[nameof(Name)]; }
 
             [DebuggerStepThrough]
             set { _values[nameof(Name)] = value; }
@@ -55,21 +35,25 @@ namespace SmartConfig.Data
             set { _values[nameof(Value)] = value; }
         }
 
-        public string Config
-        {
-            [DebuggerStepThrough]
-            get { return (string)_values[nameof(Config)]; }
-
-            [DebuggerStepThrough]
-            set { _values[nameof(Config)] = value; }
-        }
-
-        public IReadOnlyDictionary<string, object> Namespaces
+        public IReadOnlyDictionary<string, object> Attributes
         {
             get
             {
-                var namespaces = _values.Where(x => !x.Key.Equals(nameof(Name)) && !x.Key.Equals(nameof(Value)));
+                var defaultPropertyNames = new[] { nameof(Name), nameof(Value) };
+                var namespaces = _values.Where(x => !defaultPropertyNames.Contains(x.Key));
                 return namespaces.ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
+            }
+            set
+            {
+                var attributes = Attributes.ToDictionary(x => x.Key, x => x.Value);
+                foreach (var item in attributes)
+                {
+                    _values.Remove(item.Key);
+                }
+                foreach (var item in value)
+                {
+                    _values.Add(item.Key, item.Value);
+                }
             }
         }
 
@@ -80,20 +64,20 @@ namespace SmartConfig.Data
         public bool NamespaceEquals(string key, object value)
         {
             var temp = (object)null;
-            return Namespaces.TryGetValue(key, out temp) && temp.Equals(value);
+            return Attributes.TryGetValue(key, out temp) && temp.Equals(value);
         }
 
         // Two settings are alike if their Name.FullNames are same and all namespaces and their values.
-        public bool IsLike(Setting setting)
-        {
-            return
-                Name.IsLike(setting.Name) &&
-                Namespaces.All(ns => setting.NamespaceEquals(ns.Key, ns.Value));
-        }
+        //public bool IsLike(Setting setting)
+        //{
+        //    return
+        //        Name.IsLike(setting.Name) &&
+        //        Attributes.All(ns => setting.NamespaceEquals(ns.Key, ns.Value));
+        //}
 
         public override string ToString()
         {
-            return $"{Name.FullNameEx} = '{Value}' in [{string.Join(",", Namespaces.Select(x => x.Value))}]";
+            return $"{Name.FullNameWithKey} = '{Value}' in [{string.Join(",", Attributes.Select(x => x.Value))}]";
         }
 
         //public static bool operator ==(Setting x, Setting y)

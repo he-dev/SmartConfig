@@ -3,12 +3,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reusable.Testing;
 using Reusable.Validations;
 using SmartConfig.Data;
+using SmartConfig.DataStores;
 
-namespace SmartConfig.Core.Tests.Unit.DataStores.MemoryStore.Positive
+namespace SmartConfig.Core.Tests.DataStores
 {
-    using SmartConfig;
-    using SmartConfig.DataStores;
-
     [TestClass]
     public class Add_String_Object
     {
@@ -33,8 +31,8 @@ namespace SmartConfig.Core.Tests.Unit.DataStores.MemoryStore.Positive
         {
             var store = new MemoryStore();
 
-            var settings = store.GetSettings(new Setting { Name = new SettingPath("baz") });
-            settings.Count.Verify().IsEqual(0);
+            var settings = store.GetSettings(new Setting { Name = new SettingUrn("baz") });
+            settings.Count().Verify().IsEqual(0);
         }
 
         [TestMethod]
@@ -47,7 +45,7 @@ namespace SmartConfig.Core.Tests.Unit.DataStores.MemoryStore.Positive
             };
 
             var settings = store.GetSettings(new Setting { Name = "baz" });
-            settings.Count.Verify().IsEqual(1);
+            settings.Count().Verify().IsEqual(1);
             settings.First().Value.ToString().Verify().IsEqual("qux");
         }
 
@@ -62,7 +60,7 @@ namespace SmartConfig.Core.Tests.Unit.DataStores.MemoryStore.Positive
             };
 
             var settings = store.GetSettings(new Setting { Name = "foo" });
-            settings.Count.Verify().IsEqual(2);
+            settings.Count().Verify().IsEqual(2);
             //settings.First().Value.ToString().Verify().IsEqual("qux");
         }
     }

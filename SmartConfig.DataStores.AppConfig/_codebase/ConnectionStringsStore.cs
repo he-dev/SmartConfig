@@ -9,12 +9,12 @@ namespace SmartConfig.DataStores.AppConfig
     /// <summary>
     /// Implements the app.configuration as data source.
     /// </summary>
-    public class ConnectionStringsStore : IDataStore
+    public class ConnectionStringsStore : DataStore
     {
         private readonly System.Configuration.Configuration _exeConfiguration;
         private readonly ConnectionStringsSection _connectionStringsSection;
 
-        public ConnectionStringsStore()
+        public ConnectionStringsStore() : base(new[] { typeof(string) })
         {
             _exeConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             _connectionStringsSection = _exeConfiguration.ConnectionStrings;
@@ -22,11 +22,11 @@ namespace SmartConfig.DataStores.AppConfig
 
         public Type MapDataType(Type settingType) => typeof(string);
 
-        public List<Setting> GetSettings(Setting setting)
+        public override IEnumerable<Setting> GetSettings(Setting setting)
         {
             var connectionStringSettings =
                 _connectionStringsSection.ConnectionStrings.Cast<ConnectionStringSettings>()
-                .Where(x => SettingPath.Parse(x.Name).IsLike(setting.Name) && !string.IsNullOrEmpty(x.ConnectionString))
+                .Where(x => SettingUrn.Parse(x.Name).IsLike(setting.Name) && !string.IsNullOrEmpty(x.ConnectionString))
                 .Select(x => new Setting
                 {
                     Name = x.Name,
@@ -35,14 +35,9 @@ namespace SmartConfig.DataStores.AppConfig
                 .ToList();
             
             return connectionStringSettings;
-        }
+        }      
 
-        public int SaveSetting(Setting setting)
-        {
-            return SaveSettings(new[] { setting });
-        }
-
-        public int SaveSettings(IReadOnlyCollection<Setting> settings)
+        public override int SaveSettings(IEnumerable<Setting> settings)
         {
             var affectedSettings = 0;
 
@@ -60,10 +55,10 @@ namespace SmartConfig.DataStores.AppConfig
 
             foreach (var setting in settings)
             {
-                var connectionStringSettings = _connectionStringsSection.ConnectionStrings[setting.Name.FullNameEx];
+                var connectionStringSettings = _connectionStringsSection.ConnectionStrings[setting.Name.FullNameWithKey];
                 if (connectionStringSettings == null)
                 {
-                    connectionStringSettings = new ConnectionStringSettings(setting.Name.FullNameEx, (string)setting.Value);
+                    connectionStringSettings = new ConnectionStringSettings(setting.Name.FullNameWithKey, (string)setting.Value);
                     _connectionStringsSection.ConnectionStrings.Add(connectionStringSettings);
                 }
                 else

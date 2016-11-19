@@ -95,7 +95,7 @@
     <Compile Include="_codebase\Unit\Data\SettingTests.cs" />
     <Compile Include="_codebase\Unit\ReflectorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="_codebase\Unit\SettingPathTests.cs" />
+    <Compile Include="_codebase\Unit\SettingUrnTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

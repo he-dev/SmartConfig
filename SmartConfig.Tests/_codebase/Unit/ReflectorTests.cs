@@ -5,12 +5,9 @@ using Reusable;
 using Reusable.Validations;
 using SmartConfig.DataAnnotations;
 
-// ReSharper disable InconsistentNaming
+namespace SmartConfig.Core.Tests
+{ // ReSharper disable InconsistentNaming
 // ReSharper disable once CheckNamespace
-
-namespace SmartConfig.Core.Tests.Unit.Reflector.Positive
-{
-    using TestConfigs;
 
     [TestClass]
     public class GetCustomNameOrDefault
@@ -59,7 +56,7 @@ namespace SmartConfig.Core.Tests.Unit.Reflector.Positive
         {
             var barProperty =
                 typeof(Baz.SubBaz.SubSubBaz.SubSubSubBaz)
-                .GetProperty(nameof(Baz.SubBaz.SubSubBaz.SubSubSubBaz.Bar), BindingFlags.Public | BindingFlags.Static);
+                    .GetProperty(nameof(Baz.SubBaz.SubSubBaz.SubSubSubBaz.Bar), BindingFlags.Public | BindingFlags.Static);
             CollectionAssert.AreEqual(
                 new[]
                 {
@@ -77,14 +74,11 @@ namespace SmartConfig.Core.Tests.Unit.Reflector.Positive
         {
             var barProperty =
                 typeof(Bar.SubBar)
-                .GetProperty(nameof(Bar.SubBar.Baz), BindingFlags.Public | BindingFlags.Static)
-                .GetSettingPath();
+                    .GetProperty(nameof(Bar.SubBar.Baz), BindingFlags.Public | BindingFlags.Static)
+                    .GetSettingPath();
         }        
     }
-}
 
-namespace SmartConfig.Core.Tests.Unit.Reflector.Positive.TestConfigs
-{
     internal static class Foo
     {
         public static string Bar { get; set; }
@@ -115,10 +109,6 @@ namespace SmartConfig.Core.Tests.Unit.Reflector.Positive.TestConfigs
             public static string Baz { get; set; }
         }
     }
-}
-
-namespace SmartConfig.Core.Tests.Unit.Reflector.Negative
-{
 
     [TestClass]
     public class GetCustomNameOrDefault_ErrorHandling
@@ -130,6 +120,4 @@ namespace SmartConfig.Core.Tests.Unit.Reflector.Negative
             ((MemberInfo)null).GetCustomNameOrDefault();
         }
     }
-
-    
 }

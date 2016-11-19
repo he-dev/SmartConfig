@@ -7,27 +7,22 @@ using SmartConfig.Data;
 
 namespace SmartConfig.DataStores
 {
-    public class MemoryStore : IDataStore, IEnumerable<Setting>
+    public class MemoryStore : DataStore, IEnumerable<Setting>
     {
-        public Type MapDataType(Type settingType) => typeof(string);
+        public MemoryStore() : base(new[] { typeof(string) }) { }
 
-        public List<Setting> GetSettings(Setting setting)
+        public override IEnumerable<Setting> GetSettings(Setting setting)
         {
             var settings =
                 (from x in Data
-                 //where x.Name.IsMatch(path) && (namespaces == null || namespaces.All(n => x.NamespaceEquals(n.Key, n.Value)))
-                 where x.IsLike(setting)
+                     //where x.Name.IsMatch(path) && (namespaces == null || namespaces.All(n => x.NamespaceEquals(n.Key, n.Value)))
+                 where x.Name.IsLike(setting.Name)
                  select x).ToList();
 
             return settings;
         }
 
-        public int SaveSetting(Setting setting)
-        {
-            return SaveSettings(new [] {setting});
-        }
-
-        public int SaveSettings(IReadOnlyCollection<Setting> settings)
+        public override int SaveSettings(IEnumerable<Setting> settings)
         {
             foreach (var setting in settings)
             {
@@ -40,10 +35,10 @@ namespace SmartConfig.DataStores
 
             foreach (var setting in settings)
             {
-                Add(setting.Name.FullNameEx, setting.Value);
+                Add(setting.Name.FullNameWithKey, setting.Value);
             }
 
-            return settings.Count;
+            return settings.Count();
         }
 
         public List<Setting> Data { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = new List<Setting>();

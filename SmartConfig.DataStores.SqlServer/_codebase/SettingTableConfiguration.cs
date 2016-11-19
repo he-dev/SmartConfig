@@ -26,7 +26,7 @@ namespace SmartConfig.DataStores.SqlServer
                     DbType = SqlDbType.NVarChar,
                     Length = NVarCharMax
                 },
-                [nameof(Setting.Config)] = new ColumnConfiguration
+                [nameof(SettingTag.Config)] = new ColumnConfiguration
                 {
                     DbType = SqlDbType.NVarChar,
                     Length = 300

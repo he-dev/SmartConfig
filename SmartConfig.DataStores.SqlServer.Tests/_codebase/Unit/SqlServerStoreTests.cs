@@ -5,16 +5,15 @@ using Reusable;
 using Reusable.Testing;
 using Reusable.Testing.Validations;
 using Reusable.Validations;
-
-// ReSharper disable InconsistentNaming
-
-
-namespace SmartConfig.DataStores.SqlServer.Tests.Unit.SqlServerStore.Positive
+using SmartConfig.DataStores.SqlServer;
+using SmartConfig.DataStores.SqlServer;
+namespace SmartConfig.DataStores.SqlServer.Tests.Unit
 {
-    using SqlServer;
+    // ReSharper disable InconsistentNaming
+
 
     [TestClass]
-    public class ctor
+    public class ctor_2
     {
         [TestMethod]
         public void CreateWithConnectionString()
@@ -38,9 +37,9 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Unit.SqlServerStore.Positive
         public void CreateWithCustomSettingTableProperties()
         {
             var store = new SqlServerStore("foo", configure => configure
-                .TableName("qux")
-                .SchemaName("baz")
-                .Column("corge", SqlDbType.Bit, 1)
+                    .TableName("qux")
+                    .SchemaName("baz")
+                    .Column("corge", SqlDbType.Bit, 1)
             );
             store.ConnectionString.Validate().IsNotNullOrEmpty();
             store.ConnectionString.Validate().IsEqual("foo");
@@ -50,11 +49,6 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Unit.SqlServerStore.Positive
             store.SettingTableConfiguration.Columns["corge"].DbType.Validate().IsEqual(SqlDbType.Bit);
         }
     }
-}
-
-namespace SmartConfig.DataStores.SqlServer.Tests.Unit.SqlServerStore.Negative
-{
-    using SqlServer;
 
     [TestClass]
     public class ctor
@@ -63,31 +57,31 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Unit.SqlServerStore.Negative
         public void ConnectionStringNull()
         {
             new Action(() =>
-            {
-                new SqlServerStore(null);
-            })
-            .Verify().Throws<ValidationException>();
+                {
+                    new SqlServerStore(null);
+                })
+                .Verify().Throws<ValidationException>();
         }
 
         [TestMethod]
         public void ConnectionStringEmpty()
         {
             new Action(() =>
-            {
-                new SqlServerStore(null);
-            })
-            .Verify().Throws<ValidationException>();
+                {
+                    new SqlServerStore(null);
+                })
+                .Verify().Throws<ValidationException>();
         }
 
         [TestMethod]
         public void ConnectionStringNotFound()
         {
             new Action(() =>
-            {
-                new SqlServerStore("name=bar");
-                
-            })
-            .Verify().Throws<ValidationException>();
+                {
+                    new SqlServerStore("name=bar");
+
+                })
+                .Verify().Throws<ValidationException>();
         }
     }
 }

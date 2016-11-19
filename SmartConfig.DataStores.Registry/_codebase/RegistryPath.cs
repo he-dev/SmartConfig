@@ -1,25 +1,26 @@
 ﻿using System;
+using SmartConfig.Data;
 
 namespace SmartConfig.DataStores.Registry
 {
-    public class RegistryPath : SettingPath
+    public class RegistryPath : SettingUrn
     {
         public static readonly string DefaultDelimiter = @"\";
 
-        public RegistryPath(SettingPath path) : base(path)
+        public RegistryPath(SettingUrn urn) : base(urn)
         {
             Delimiter = DefaultDelimiter;
         }
 
         public static RegistryPath Parse(string value)
         {
-            var settingPath = SettingPath.Parse(value, DefaultDelimiter);
+            var settingPath = SettingUrn.Parse(value, DefaultDelimiter);
             return new RegistryPath(settingPath);
         }
 
         public bool IsLike(RegistryPath path)
         {
-            return SettingName.Equals(path.SettingName, StringComparison.OrdinalIgnoreCase);
+            return Name.Equals(path.Name, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

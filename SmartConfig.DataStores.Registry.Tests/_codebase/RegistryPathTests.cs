@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reusable.Testing;
 using Reusable.Validations;
+using SmartConfig.Data;
 
 // ReSharper disable CheckNamespace
 
@@ -14,19 +15,19 @@ namespace SmartConfig.DataStores.Registry.Tests.Unit.RegistryPath.Positive
         [TestMethod]
         public void CreateFromName()
         {
-            var registryPath = new RegistryPath(new SettingPath(new[] { "Foo" }));
+            var registryPath = new RegistryPath(new SettingUrn(new[] { "Foo" }));
 
-            registryPath.SettingNamespace.Verify().IsNullOrEmpty();
-            registryPath.SettingName.Verify().IsEqual(@"Foo");
+            registryPath.Namespace.Verify().IsNullOrEmpty();
+            registryPath.Name.Verify().IsEqual(@"Foo");
         }
 
         [TestMethod]
         public void CreateFromNameAndNamespace()
         {
-            var registryPath = new RegistryPath(new SettingPath(new[] { "qux", "Foo", "Bar", "Baz" }));
+            var registryPath = new RegistryPath(new SettingUrn(new[] { "qux", "Foo", "Bar", "Baz" }));
 
-            registryPath.SettingNamespace.Verify().IsEqual(@"qux\Foo\Bar");
-            registryPath.SettingName.Verify().IsEqual(@"Baz");
+            registryPath.Namespace.Verify().IsEqual(@"qux\Foo\Bar");
+            registryPath.Name.Verify().IsEqual(@"Baz");
         }
     }
 }

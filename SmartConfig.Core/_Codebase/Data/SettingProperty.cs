@@ -8,18 +8,17 @@ using Reusable.Extensions;
 using Reusable.Validations;
 using SmartConfig.DataAnnotations;
 
-namespace SmartConfig
+namespace SmartConfig.Data
 {
     // stores information about a single setting
-    [DebuggerDisplay("Path = \"{SettingPath}\"")]
-    internal class SettingInfo
+    [DebuggerDisplay("{DebuggerDispaly,nq}")]
+    internal class SettingProperty
     {
-        internal SettingInfo(PropertyInfo property, Type configType)
+        internal SettingProperty(PropertyInfo property, Type configType)
         {
             Property = property;
             ConfigType = configType;
-            SettingPath = new SettingPath(Property.GetSettingPath().ToList());
-            //ValidationAttributes = Property.GetCustomAttributes<ValidationAttribute>();
+            Path = new SettingUrn(Property.GetSettingPath());
 
             // an itemzed setting must be an enumerable
             if (IsItemized)
@@ -28,7 +27,7 @@ namespace SmartConfig
             }
         }
 
-        public PropertyInfo Property { get; }
+        private PropertyInfo Property { get; }
 
         public Type ConfigType { get; }
 
@@ -38,9 +37,7 @@ namespace SmartConfig
 
         public Type Type => Property.PropertyType;
 
-        public SettingPath SettingPath { get; }
-
-        //public IEnumerable<ValidationAttribute> ValidationAttributes { get; }
+        public SettingUrn Path { get; }
 
         public bool IsOptional => Property.GetCustomAttribute<OptionalAttribute>() != null;
 
@@ -50,9 +47,11 @@ namespace SmartConfig
             set { Property.SetValue(null, value); }
         }
 
+        private string DebuggerDispaly => $"Urn = \"{Path.FullNameWithKey}\"";
+
         public override bool Equals(object obj)
         {
-            var other = obj as SettingInfo;
+            var other = obj as SettingProperty;
             return other != null && other.Property == Property;
         }
 
@@ -64,7 +63,7 @@ namespace SmartConfig
         public override string ToString()
         {
             // FullConfig2.Foo.Bar[baz] (required) System.Collections.Generic.List < int >
-            return $"{ConfigType.Name}.{SettingPath.FullNameEx} {(IsOptional ? "optional" : "required")} {Type.ToShortString()}";
+            return $"{ConfigType.Name}.{Path.FullNameWithKey} {(IsOptional ? "optional" : "required")} {Type.ToShortString()}";
         }
-    }
+    }    
 }

@@ -9,12 +9,12 @@ namespace SmartConfig.DataStores.AppConfig
     /// <summary>
     /// Implements the app.configuration as data source.
     /// </summary>
-    public class AppSettingsStore : IDataStore
+    public class AppSettingsStore : DataStore
     {
         private readonly System.Configuration.Configuration _exeConfiguration;
         private readonly AppSettingsSection _appSettingsSection;
 
-        public AppSettingsStore()
+        public AppSettingsStore() : base(new[] { typeof(string) })
         {
             _exeConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             _appSettingsSection = _exeConfiguration.AppSettings;
@@ -22,11 +22,11 @@ namespace SmartConfig.DataStores.AppConfig
 
         public Type MapDataType(Type settingType) => typeof(string);
 
-        public List<Setting> GetSettings(Setting setting)
+        public override IEnumerable<Setting> GetSettings(Setting setting)
         {
             var keys =
                 _appSettingsSection.Settings.AllKeys
-                .Where(k => SettingPath.Parse(k).IsLike(setting.Name))
+                .Where(k => SettingUrn.Parse(k).IsLike(setting.Name))
                 .ToArray();
 
             var settings = keys.Select(k => new Setting
@@ -39,12 +39,7 @@ namespace SmartConfig.DataStores.AppConfig
             return settings;
         }
 
-        public int SaveSetting(Setting setting)
-        {
-            return SaveSettings(new[] { setting });
-        }
-
-        public int SaveSettings(IReadOnlyCollection<Setting> settings)
+        public override int SaveSettings(IEnumerable<Setting> settings)
         {
             var affectedSettings = 0;
 
@@ -53,7 +48,7 @@ namespace SmartConfig.DataStores.AppConfig
 
             var keys2Remove =
                 _appSettingsSection.Settings.AllKeys.Where(
-                    key => settings.Any(x => x.Name.IsLike(SettingPath.Parse(key)))
+                    key => settings.Any(x => x.Name.IsLike(SettingUrn.Parse(key)))
                 ).ToList();
 
             foreach (var k in keys2Remove)
@@ -64,10 +59,10 @@ namespace SmartConfig.DataStores.AppConfig
             // Now we can add the new settings.
             foreach (var setting in settings)
             {
-                var configurationElement = _appSettingsSection.Settings[setting.Name.FullNameEx];
+                var configurationElement = _appSettingsSection.Settings[setting.Name.FullNameWithKey];
                 if (configurationElement == null)
                 {
-                    _appSettingsSection.Settings.Add(setting.Name.FullNameEx, (string)setting.Value);
+                    _appSettingsSection.Settings.Add(setting.Name.FullNameWithKey, (string)setting.Value);
                 }
                 else
                 {

@@ -2,15 +2,16 @@
 using System.Reflection;
 using Reusable.Data.DataAnnotations;
 using Reusable.Extensions;
+using SmartConfig.Data;
 using SmartConfig.DataAnnotations;
 
 namespace SmartConfig
 {
     public class SettingNotFoundException : Exception
     {
-        internal SettingNotFoundException(SettingInfo setting)
+        internal SettingNotFoundException(SettingProperty setting)
         {
-            SettingPath = setting.SettingPath.FullNameEx;
+            SettingPath = setting.Path.FullNameWithKey;
             ConfigType = setting.ConfigType;
             Message = $"Setting '{setting}' not found. If it is opitonal mark it with the '{nameof(OptionalAttribute)}' otherwise you need to provide a value for it.";
         }
@@ -21,17 +22,9 @@ namespace SmartConfig
         public override string ToString() => this.ToJson();
     }
 
-    public class SingleSettingException : Exception
+    public class MultipleSettingException : Exception
     {
-        internal SingleSettingException(SettingInfo setting)
-        {
-            SettingPath = setting.SettingPath.FullNameEx;
-            ConfigType = setting.ConfigType;
-            Message = $"Setting '{SettingPath}' found more then once but its type '{setting.Type.Name}' is not a collection.";
-        }
-        public override string Message { get; }
-        public string SettingPath { get; set; }
-        public Type ConfigType { get; set; }
+        public override string Message => "Setting found more then once but it is not a collection.";
 
         public override string ToString() => this.ToJson();
     }
@@ -57,9 +50,9 @@ namespace SmartConfig
 
     public class DataReadException : Exception
     {
-        internal DataReadException(SettingInfo setting, Type dataStoreType, Exception innerException) : base(null, innerException)
+        internal DataReadException(SettingProperty setting, Type dataStoreType, Exception innerException) : base(null, innerException)
         {
-            SettingPath = setting.SettingPath.FullNameEx;
+            SettingPath = setting.Path.FullNameWithKey;
             DataStoreType = dataStoreType;
             Message = $"Could not read '{SettingPath}' from '{dataStoreType.Name}'. See the inner exception for details about that.";
         }
@@ -85,9 +78,9 @@ namespace SmartConfig
 
     public class DeserializationException : Exception
     {
-        internal DeserializationException(SettingInfo setting, Exception innerException) : base(null, innerException)
+        internal DeserializationException(SettingProperty setting, Exception innerException) : base(null, innerException)
         {
-            SettingPath = setting.SettingPath.FullNameEx;
+            SettingPath = setting.Path.FullNameWithKey;
             Message = $"Could not convert '{SettingPath}' to '{setting.Type.Name}'. See the inner exception for details about that.";
         }
         public override string Message { get; }
@@ -98,9 +91,9 @@ namespace SmartConfig
 
     public class SerializationException : Exception
     {
-        internal SerializationException(SettingInfo setting, Exception innerException) : base(null, innerException)
+        internal SerializationException(SettingProperty setting, Exception innerException) : base(null, innerException)
         {
-            SettingPath = setting.SettingPath.FullNameEx;
+            SettingPath = setting.Path.FullNameWithKey;
             Message = $"Could not convert '{SettingPath}' to '{setting.Type.Name}'. See the inner exception for details about that.";
         }
         public override string Message { get; }

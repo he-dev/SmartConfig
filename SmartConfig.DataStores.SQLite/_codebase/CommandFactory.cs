@@ -34,7 +34,7 @@ namespace SmartConfig.DataStores.SQLite
                 var table = $"{quote(SettingTableConfiguration.TableName)}";
 
                 sql.Append($"SELECT * FROM {table}").AppendLine();
-                sql.Append(setting.Namespaces.Keys.Aggregate(
+                sql.Append(setting.Attributes.Keys.Aggregate(
                     $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} || '[%]')",
                     (result, key) => $"{result} AND {quote(key)} = @{key}")
                 );
@@ -47,7 +47,7 @@ namespace SmartConfig.DataStores.SQLite
             // --- add parameters
 
             AddParameter(command, nameof(Setting.Name), setting.Name.FullName);
-            AddParameters(command, setting.Namespaces);
+            AddParameters(command, setting.Attributes);
 
             return command;
         }
@@ -70,7 +70,7 @@ namespace SmartConfig.DataStores.SQLite
                 var table = $"{quote(SettingTableConfiguration.TableName)}";
 
                 sql.Append($"DELETE FROM {table}").AppendLine();
-                sql.Append(setting.Namespaces.Keys.Aggregate(
+                sql.Append(setting.Attributes.Keys.Aggregate(
                     $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} || '[%]')",
                     (result, key) => $"{result} AND {quote(key)} = @{key} ")
                 );
@@ -83,7 +83,7 @@ namespace SmartConfig.DataStores.SQLite
             // --- add parameters & values
 
             AddParameter(command, nameof(Setting.Name), setting.Name.FullName);
-            AddParameters(command, setting.Namespaces);
+            AddParameters(command, setting.Attributes);
 
             return command;
         }
@@ -106,14 +106,14 @@ namespace SmartConfig.DataStores.SQLite
 
                 var table = $"{quote(SettingTableConfiguration.TableName)}";
 
-                var columns = setting.Namespaces.Keys.Select(columnName => quote(columnName)).Aggregate(
+                var columns = setting.Attributes.Keys.Select(columnName => quote(columnName)).Aggregate(
                     $"[{nameof(Setting.Name)}], [{nameof(Setting.Value)}]",
                     (result, next) => $"{result}, {next}"
                 );
 
                 sql.Append($"INSERT OR REPLACE INTO {table}({columns})").AppendLine();
 
-                var parameterNames = setting.Namespaces.Keys.Aggregate(
+                var parameterNames = setting.Attributes.Keys.Aggregate(
                         $"@{nameof(Setting.Name)}, @{nameof(Setting.Value)}",
                         (result, next) => $"{result}, @{next}"
                 );
@@ -127,9 +127,9 @@ namespace SmartConfig.DataStores.SQLite
 
             // --- add parameters
 
-            AddParameter(command, nameof(Setting.Name), setting.Name.FullNameEx);
+            AddParameter(command, nameof(Setting.Name), setting.Name.FullNameWithKey);
             AddParameter(command, nameof(Setting.Value), setting.Value);
-            AddParameters(command, setting.Namespaces);
+            AddParameters(command, setting.Attributes);
 
             return command;
         }

@@ -13,7 +13,7 @@ using SmartConfig.Data;
 
 namespace SmartConfig.DataStores.Registry
 {
-    public class RegistryStore : IDataStore
+    public class RegistryStore : DataStore
     {
         private readonly RegistryKey _baseKey;
         private readonly string _baseSubKeyName;
@@ -25,27 +25,26 @@ namespace SmartConfig.DataStores.Registry
             { typeof(byte[]), RegistryValueKind.Binary },
         };
 
-        public RegistryStore(RegistryKey baseKey, string subKey)
+        public RegistryStore(RegistryKey baseKey, string subKey) 
+            : base(new[]
+            {
+                typeof(int),
+                typeof(byte[]),
+                typeof(string)
+            })
         {
             baseKey.Validate(nameof(baseKey)).IsNotNull();
             subKey.Validate(nameof(subKey)).IsNotNullOrEmpty();
 
             _baseKey = baseKey;
             _baseSubKeyName = subKey;
-        }
+        }       
 
-        public Type MapDataType(Type settingType)
-        {
-            if (settingType == typeof(int)) return typeof(int);
-            if (settingType == typeof(byte[])) return typeof(byte[]);
-            return typeof(string);
-        }
-
-        public List<Setting> GetSettings(Setting setting)
+        public override IEnumerable<Setting> GetSettings(Setting setting)
         {
             var registryPath = new RegistryPath(setting.Name);
 
-            var subKeyName = Path.Combine(_baseSubKeyName, registryPath.SettingNamespace);
+            var subKeyName = Path.Combine(_baseSubKeyName, registryPath.Namespace);
             using (var subKey = _baseKey.OpenSubKey(subKeyName, false))
             {
                 if (subKey == null) { return new List<Setting>(); }
@@ -62,20 +61,10 @@ namespace SmartConfig.DataStores.Registry
 
                 return settings;
             }
-        }
+        }        
 
-        public int SaveSetting(Setting setting)
+        public override int SaveSettings(IEnumerable<Setting> settings)
         {
-            return SaveSettings(new[] { setting });
-        }
-
-        public int SaveSettings(IReadOnlyCollection<Setting> settings)
-        {
-            if (!settings.Any())
-            {
-                return 0;
-            }
-
             var settingGroups = settings.GroupBy(x => x.Name.FullName).ToList();
 
             // Before starting to delete/set keys check if all settings have valid types.
@@ -97,7 +86,7 @@ namespace SmartConfig.DataStores.Registry
                 var s0 = sg.First();
                 var rp = new RegistryPath(s0.Name);
 
-                var subKeyName = Path.Combine(_baseSubKeyName, rp.SettingNamespace);
+                var subKeyName = Path.Combine(_baseSubKeyName, rp.Namespace);
                 using (var subKey = _baseKey.OpenSubKey(subKeyName, true) ?? _baseKey.CreateSubKey(subKeyName))
                 {
                     if (subKey == null) { continue; }
@@ -122,13 +111,13 @@ namespace SmartConfig.DataStores.Registry
                     {
                         var registryPath = new RegistryPath(s.Name);
 #if !DISABLE_SET_VALUE
-                        subKey.SetValue(registryPath.SettingNameEx, s.Value, registryValueKind);
+                        subKey.SetValue(registryPath.NameWithKey, s.Value, registryValueKind);
 #endif
                     }
                 }
             }
 
-            return settings.Count;
+            return settings.Count();
         }
 
         public static RegistryStore CreateForCurrentUser(string subRegistryKey)

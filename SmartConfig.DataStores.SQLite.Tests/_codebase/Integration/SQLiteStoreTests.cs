@@ -45,7 +45,7 @@ namespace SmartConfig.DataStores.SQLite.Tests.Integration.SQLiteStore.Positive
             else if (FullConfig1.DictionarySetting.Count == 3) { FullConfig1.DictionarySetting.Remove("baz"); }
 
             Configuration.Save(typeof(FullConfig1));
-            Configuration.TryReload(typeof(FullConfig1));
+            Configuration.Reload(typeof(FullConfig1));
 
             // Verfiy FullConfig1 values agian.
 
