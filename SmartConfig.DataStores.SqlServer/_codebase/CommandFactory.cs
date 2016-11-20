@@ -11,12 +11,12 @@ namespace SmartConfig.DataStores.SqlServer
 {
     internal class CommandFactory
     {
-        public CommandFactory(SettingTableConfiguration settingTableConfiguration)
+        public CommandFactory(TableConfiguration tableConfiguration)
         {
-            SettingTableConfiguration = settingTableConfiguration;
+            TableConfiguration = tableConfiguration;
         }
 
-        public SettingTableConfiguration SettingTableConfiguration { get; }
+        public TableConfiguration TableConfiguration { get; }
 
         public SqlCommand CreateSelectCommand(SqlConnection connection, Setting setting)
         {
@@ -27,7 +27,7 @@ namespace SmartConfig.DataStores.SqlServer
             {
                 var quote = new Func<string, string>(identifier => commandBuilder.QuoteIdentifier(identifier));
 
-                var table = $"{quote(SettingTableConfiguration.SchemaName)}.{quote(SettingTableConfiguration.TableName)}";
+                var table = $"{quote(TableConfiguration.SchemaName)}.{quote(TableConfiguration.TableName)}";
 
                 sql.Append($"SELECT *").AppendLine();
                 sql.Append($"FROM {table}").AppendLine();
@@ -63,7 +63,7 @@ namespace SmartConfig.DataStores.SqlServer
             {
                 var quote = new Func<string, string>(identifier => commandBuilder.QuoteIdentifier(identifier));
 
-                var table = $"{quote(SettingTableConfiguration.SchemaName)}.{quote(SettingTableConfiguration.TableName)}";
+                var table = $"{quote(TableConfiguration.SchemaName)}.{quote(TableConfiguration.TableName)}";
 
                 sql.Append($"DELETE FROM {table}").AppendLine();
                 sql.Append(setting.Attributes.Keys.Aggregate(
@@ -104,7 +104,7 @@ namespace SmartConfig.DataStores.SqlServer
             {
                 var quote = new Func<string, string>(identifier => commandBuilder.QuoteIdentifier(identifier));
 
-                var table = $"{quote(SettingTableConfiguration.SchemaName)}.{quote(SettingTableConfiguration.TableName)}";
+                var table = $"{quote(TableConfiguration.SchemaName)}.{quote(TableConfiguration.TableName)}";
 
                 sql.Append($"UPDATE {table}").AppendLine();
                 sql.Append($"SET [{nameof(Setting.Value)}] = @{nameof(Setting.Value)}").AppendLine();
@@ -148,8 +148,8 @@ namespace SmartConfig.DataStores.SqlServer
         {
             var parameter = command.Parameters.Add(
                 name,
-                SettingTableConfiguration.Columns[name].DbType,
-                SettingTableConfiguration.Columns[name].Length
+                TableConfiguration.Columns[name].DbType,
+                TableConfiguration.Columns[name].Length
             );
 
             if (value != null)

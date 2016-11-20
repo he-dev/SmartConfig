@@ -4,41 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Reusable.Extensions;
 
-namespace SmartConfig
-{
-    internal static class ObjectExtension
-    {
-        public static Type GetElemenType(this object obj)
-        {
-            if (obj.GetType().IsArray)
-            {
-                return obj.GetType().GetElementType(); ;
-            }
-
-            if (obj.GetType().IsList())
-            {
-                return obj.GetType().GetGenericArguments()[0];
-            }
-
-            if (obj.GetType().IsHashSet())
-            {
-                return obj.GetType().GetGenericArguments()[0];
-            }
-
-            if (obj.GetType().IsDictionary())
-            {
-                return obj.GetType().GetGenericArguments()[1];
-            }
-
-            return null;
-        }
-
-        public static string Join<T>(this IEnumerable<T> values, string separator)
-        {
-            return string.Join(separator, values);
-        }
-    }
-}
 namespace SmartConfig.Services
 {
    

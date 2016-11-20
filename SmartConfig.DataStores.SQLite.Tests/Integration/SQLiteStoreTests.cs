@@ -2,19 +2,20 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reusable.Testing;
 using Reusable.Validations;
+// ReSharper disable InconsistentNaming
 
 // ReSharper disable CheckNamespace
 // ReSharper disable ConvertIfStatementToSwitchStatement
 
-namespace SmartConfig.DataStores.SQLite.Tests.Integration.SQLiteStore.Positive
+namespace SmartConfig.DataStores.SQLite.Tests.Integration
 {
     using SQLite;
 
     [TestClass]
-    public class FullTests
+    public class SQLiteStoreTest
     {
         [TestMethod]
-        public void GetSettingsSimple()
+        public void GetSettings_Simple()
         {
             Configuration.Load
                 .From(new SQLiteStore("name=configdb", builder => builder.TableName("Setting1")))

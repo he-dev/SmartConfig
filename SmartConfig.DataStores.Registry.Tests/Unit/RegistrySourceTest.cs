@@ -6,15 +6,15 @@ using Reusable.Testing.Validations;
 
 // ReSharper disable CheckNamespace
 
-namespace SmartConfig.DataStores.Registry.Tests.Unit.RegistryStore.Negative
+namespace SmartConfig.DataStores.Registry.Tests.Unit
 {
     using Registry;
 
     [TestClass]
-    public class ctor
+    public class RegistrySourceTest
     {
         [TestMethod]
-        public void BaseKeyNull()
+        public void ctor_Argument0_null()
         {
             new Action(() =>
             {
@@ -24,7 +24,7 @@ namespace SmartConfig.DataStores.Registry.Tests.Unit.RegistryStore.Negative
         }
 
         [TestMethod]
-        public void SubKeyNull()
+        public void ctor_Argument1_null()
         {
             new Action(() =>
             {

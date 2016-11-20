@@ -2,19 +2,15 @@
 using Reusable.Testing;
 using Reusable.Validations;
 
-// ReSharper disable CheckNamespace
-
-namespace SmartConfig.DataStores.Registry.Tests.Integration.RegistryStore.Positive
+namespace SmartConfig.DataStores.Registry.Tests.Integration
 {
-    using Registry;
-
     [TestClass]
-    public class FullTests
+    public class RegistrySourceTest
     {
         private const string TestRegistryKey = @"Software\SmartConfig\Tests";
 
         [TestMethod]
-        public void SimpleConfig()
+        public void Load_SimpleConfig()
         {
             Configuration.Load
                 .From(RegistryStore.CreateForCurrentUser(TestRegistryKey))
@@ -48,7 +44,7 @@ namespace SmartConfig.DataStores.Registry.Tests.Integration.RegistryStore.Positi
         }
 
         [TestMethod]
-        public void ConfigWithNameAsPath()
+        public void Load_ConfigWithNameAsPath()
         {
             Configuration.Load.From(RegistryStore.CreateForCurrentUser(TestRegistryKey)).Select(typeof(FullConfig2));
 

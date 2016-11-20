@@ -35,13 +35,18 @@ namespace SmartConfig.Services
                     {
                         if (!setting.IsOptional)
                         {
-                            throw new SettingNotFoundException(setting);
+                            throw new SettingNotFoundException(setting.Path.WeakFullName);
                         }
                         // Don't do anything. Just ignore optional settings.
                         continue;
                     }
 
-                    settingValues[setting] = DeserializeSetting(values, setting.Type, setting.IsItemized);
+                    if (!setting.IsItemized && values.Count > 1)
+                    {
+                        throw new MultipleSettingsFoundException(setting.Path.WeakFullName, values.Count);
+                    }
+
+                    settingValues[setting] = DeserializeSetting(values, setting.IsItemized, setting.Type);
                 }
                 catch (Exception ex)
                 {
@@ -59,7 +64,7 @@ namespace SmartConfig.Services
             return settingValues;
         }
 
-        private object DeserializeSetting(ICollection<Setting> values, Type settingType, bool isItemized)
+        private object DeserializeSetting(ICollection<Setting> values, bool isItemized, Type settingType)
         {
             var convert = new Func<object, Type, object>((obj, type) =>
             {
@@ -99,11 +104,6 @@ namespace SmartConfig.Services
             }
             else
             {
-                if (values.Count > 1)
-                {
-                    throw new MultipleSettingsFoundException();
-                }
-
                 return convert(values.Single().Value, settingType);
             }
         }       

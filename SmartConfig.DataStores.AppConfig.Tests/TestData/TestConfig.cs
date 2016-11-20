@@ -4,7 +4,7 @@ using SmartConfig.DataAnnotations;
 
 // ReSharper disable MemberHidesStaticFromOuterClass
 
-namespace SmartConfig.DataStores.AppConfig.Tests
+namespace SmartConfig.DataStores.AppConfig.Tests.TestData
 {
     [SmartConfig]
     public static class FullConfig1

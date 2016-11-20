@@ -7,13 +7,14 @@ using SmartConfig.Services;
 
 namespace SmartConfig
 {
-    public partial class Configuration
+    public class Configuration
     {
         // Each loaded configuration is cached so that we don't have to run reflection mutliple times.
         private static readonly IDictionary<Type, Configuration> Cache = new Dictionary<Type, Configuration>();
 
         // The user must not create a configuration directly.
-        internal Configuration(Type configType, DataStore dataStore, IReadOnlyDictionary<string, object> attributes, TypeConverter converter)
+        internal Configuration(Type configType, DataStore dataStore, IReadOnlyDictionary<string, object> attributes,
+            TypeConverter converter)
         {
             Type = configType;
             DataStore = dataStore;
@@ -38,49 +39,62 @@ namespace SmartConfig
         {
             SettingProperties = Type.GetSettingProperties();
 
-            // Load all settings.
-            var settings = SettingProperties.Select(x => new
+            try
             {
-                Key = x,
-                Value = DataStore.GetSettings(new Setting
+                // Load all settings.
+                var settings = SettingProperties.Select(x => new
                 {
-                    Name = x.Path,
-                    Attributes = Attributes
-                }).ToList()
-            }).ToDictionary(x => x.Key, x => x.Value);
+                    Key = x,
+                    Value = DataStore.GetSettings(new Setting
+                    {
+                        Name = x.Path,
+                        Attributes = Attributes
+                    }).ToList()
+                }).ToDictionary(x => x.Key, x => x.Value);
 
-            var settingDeserializer = new SettingDeserializer(Converter);
-            var deserializedSettings = settingDeserializer.DeserializeSettings(settings);
+                var settingDeserializer = new SettingDeserializer(Converter);
+                var deserializedSettings = settingDeserializer.DeserializeSettings(settings);
 
-            // Commit settings.
-            foreach (var item in deserializedSettings)
-            {
-                var settingProperty = item.Key;
-                settingProperty.Value = item.Value;
+                // Commit settings.
+                foreach (var item in deserializedSettings)
+                {
+                    var settingProperty = item.Key;
+                    settingProperty.Value = item.Value;
+                }
+
+                Cache[Type] = this;
+                return deserializedSettings.Count;
             }
-
-            Cache[Type] = this;
-
-            return deserializedSettings.Count;
+            catch (Exception innerException)
+            {
+                throw new ConfigurationLoadException(Type, DataStore.GetType(), innerException);
+            }
         }
 
         public int Save()
         {
-            var settingSerializer = new SettingSerializer(Converter);
-            var allSettings = settingSerializer.SerializeSettings(SettingProperties, DataStore.SupportedTypes);
-            foreach (var item in allSettings)
+            try
             {
-                var settings = item.Value;
-                foreach (var setting in settings)
+                var settingSerializer = new SettingSerializer(Converter);
+                var allSettings = settingSerializer.SerializeSettings(SettingProperties, DataStore.SupportedTypes);
+                foreach (var item in allSettings)
                 {
-                    setting.Attributes = Attributes;
+                    var settings = item.Value;
+                    foreach (var setting in settings)
+                    {
+                        setting.Attributes = Attributes;
+                    }
+                    DataStore.SaveSettings(settings);
                 }
-                DataStore.SaveSettings(settings);
+                return allSettings.Count;
             }
-            return allSettings.Count;
+            catch (Exception innerException)
+            {
+                throw new ConfigurationSaveException(Type, DataStore.GetType(), innerException);
+            }
         }
 
-        public static bool Reload(Type configurationType, Action<Type, Exception> onException = null)
+        public static int Reload(Type configurationType)
         {
             var configuration = (Configuration)null;
             if (!Cache.TryGetValue(configurationType, out configuration))
@@ -88,16 +102,7 @@ namespace SmartConfig
                 throw new InvalidOperationException($"Configuration {configurationType.Name} isn't loaded yet. To reload a configuration you need to load it first.");
             }
 
-            try
-            {
-                configuration.Reload();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                onException?.Invoke(configurationType, ex);
-                return false;
-            }
+            return configuration.Reload();
         }
 
         public static int Save(Type configurationType)

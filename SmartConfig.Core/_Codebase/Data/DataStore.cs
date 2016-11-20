@@ -17,6 +17,6 @@ namespace SmartConfig.Data
 
         public abstract int SaveSettings(IEnumerable<Setting> settings);
 
-        public int SaveSetting(Setting setting) => SaveSettings(new[] { setting });
+        //public int SaveSetting(Setting setting) => SaveSettings(new[] { setting });
     }
 }

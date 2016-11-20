@@ -12,24 +12,22 @@ using SmartConfig.DataAnnotations;
 
 namespace SmartConfig
 {
-    public partial class Configuration
+    public class ConfigurationBuilder
     {
-        public class ConfigurationBuilder
+        private DataStore _dataStore;
+
+        private TypeConverter _converter = CreateDefaultConverter();
+
+        private Dictionary<string, object> _attributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
+        private Type _configType;
+
+        internal ConfigurationBuilder() { }
+
+        private static TypeConverter CreateDefaultConverter()
         {
-            private DataStore _dataStore;
-
-            private TypeConverter _converter = CreateDefaultConverter();
-
-            private Dictionary<string, object> _attributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-
-            private Type _configType;
-
-            internal ConfigurationBuilder() { }
-
-            private static TypeConverter CreateDefaultConverter()
+            return TypeConverter.Empty.Add(new TypeConverter[]
             {
-                return TypeConverter.Empty.Add(new TypeConverter[]
-                {
                     new StringToSByteConverter(),
                     new StringToByteConverter(),
                     new StringToCharConverter(),
@@ -73,72 +71,71 @@ namespace SmartConfig
                     new EnumerableObjectToListStringConverter(),
                     new EnumerableObjectToHashSetStringConverter(),
                     new DictionaryObjectObjectToDictionaryStringStringConverter(),
-                });
-            }
+            });
+        }
 
-            public ConfigurationBuilder From(DataStore dataStore)
+        public ConfigurationBuilder From(DataStore dataStore)
+        {
+            _dataStore = dataStore.Validate(nameof(dataStore)).IsNotNull("You need to specify a data store.").Value;
+            return this;
+        }
+
+        public ConfigurationBuilder Where(string name, object value)
+        {
+            name.Validate(nameof(name)).IsNotNullOrEmpty("You need to specify the namespace.");
+            value.Validate(nameof(value)).IsNotNull("You need to specify the namespace value.");
+            _attributes.ContainsKey(name).Validate().IsFalse($"Namespace '{name}' already exists.");
+            _attributes.Add(name, value);
+            return this;
+        }
+
+        public ConfigurationBuilder Where<T>(Expression<Func<T>> expression)
+        {
+            expression.Validate(nameof(expression)).IsNotNull();
+            var memberExpression = (expression.Body as MemberExpression).Validate().IsNotNull($"The expression must be a {nameof(MemberExpression)}.").Value;
+            return Where(memberExpression.Member.Name, expression.Compile()());
+        }
+
+        public Configuration Select(Type configType, string name = null, ConfigNameOption nameOption = ConfigNameOption.AsPath)
+        {
+            _configType = configType.Validate(nameof(configType)).IsNotNull("You need to specify the configuration type.").Value;
+
+            configType.Validate(nameof(configType)).IsTrue(x => x.IsStatic(), $"Type {configType.Name} must be static.");
+
+            configType.Validate(nameof(configType)).IsTrue(
+                x => x.HasAttribute<SmartConfigAttribute>(),
+                $"Type {configType.FullName} muss be decorated with the {nameof(SmartConfigAttribute)}.");
+
+            var smartConfigAttribute = configType.GetCustomAttribute<SmartConfigAttribute>();
+
+            // override attribute settings
+            if (!string.IsNullOrEmpty(name))
             {
-                _dataStore = dataStore.Validate(nameof(dataStore)).IsNotNull("You need to specify a data store.").Value;
-                return this;
+                smartConfigAttribute.Name = name;
+                smartConfigAttribute.NameOption = nameOption;
             }
 
-            public ConfigurationBuilder Where(string name, object value)
+            if (smartConfigAttribute.NameOption == ConfigNameOption.AsNamespace)
             {
-                name.Validate(nameof(name)).IsNotNullOrEmpty("You need to specify the namespace.");
-                value.Validate(nameof(value)).IsNotNull("You need to specify the namespace value.");
-                _attributes.ContainsKey(name).Validate().IsFalse($"Namespace '{name}' already exists.");
-                _attributes.Add(name, value);
-                return this;
+                _attributes.Add(nameof(SettingAttribute.Config), smartConfigAttribute.Name);
             }
 
-            public ConfigurationBuilder Where<T>(Expression<Func<T>> expression)
+            foreach (var typeConverterAttribute in configType.GetCustomAttributes<TypeConverterAttribute>())
             {
-                expression.Validate(nameof(expression)).IsNotNull();
-                var memberExpression = (expression.Body as MemberExpression).Validate().IsNotNull($"The expression must be a {nameof(MemberExpression)}.").Value;
-                return Where(memberExpression.Member.Name, expression.Compile()());
+                _converter = _converter.Add(typeConverterAttribute.Type);
             }
 
-            public Configuration Select(Type configType, string name = null, ConfigNameOption nameOption = ConfigNameOption.AsPath)
-            {
-                _configType = configType.Validate(nameof(configType)).IsNotNull("You need to specify the configuration type.").Value;
+            return ToConfiguration();
+        }
 
-                configType.Validate(nameof(configType)).IsTrue(x => x.IsStatic(), $"Type {configType.Name} must be static.");
+        private Configuration ToConfiguration()
+        {
+            var configuration = new Configuration(_configType, _dataStore, _attributes, _converter);
+            configuration.Reload();
 
-                configType.Validate(nameof(configType)).IsTrue(
-                    x => x.HasAttribute<SmartConfigAttribute>(),
-                    $"Type {configType.FullName} muss be decorated with the {nameof(SmartConfigAttribute)}.");
-
-                var smartConfigAttribute = configType.GetCustomAttribute<SmartConfigAttribute>();
-
-                // override attribute settings
-                if (!string.IsNullOrEmpty(name))
-                {
-                    smartConfigAttribute.Name = name;
-                    smartConfigAttribute.NameOption = nameOption;
-                }
-
-                if (smartConfigAttribute.NameOption == ConfigNameOption.AsNamespace)
-                {
-                    _attributes.Add(nameof(SettingTag.Config), smartConfigAttribute.Name);
-                }
-
-                foreach (var typeConverterAttribute in configType.GetCustomAttributes<TypeConverterAttribute>())
-                {
-                    _converter = _converter.Add(typeConverterAttribute.Type);
-                }
-
-                return ToConfiguration();
-            }
-
-            private Configuration ToConfiguration()
-            {
-                var configuration = new Configuration(_configType, _dataStore, _attributes, _converter);
-                configuration.Reload();
-
-                var temp = configuration;
-                configuration = null;
-                return temp;
-            }
+            var temp = configuration;
+            configuration = null;
+            return temp;
         }
     }
 }

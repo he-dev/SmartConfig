@@ -5,36 +5,34 @@ using Reusable;
 using Reusable.Testing;
 using Reusable.Testing.Validations;
 using Reusable.Validations;
-using SmartConfig.DataStores.SqlServer;
-using SmartConfig.DataStores.SqlServer;
 namespace SmartConfig.DataStores.SqlServer.Tests.Unit
 {
     // ReSharper disable InconsistentNaming
 
 
     [TestClass]
-    public class ctor_2
+    public class SqlServerStoreTest
     {
         [TestMethod]
-        public void CreateWithConnectionString()
+        public void ctor_CreateWithConnectionString()
         {
             var store = new SqlServerStore("foo");
             store.ConnectionString.Validate().IsNotNullOrEmpty();
             store.ConnectionString.Validate().IsEqual("foo");
-            store.SettingTableConfiguration.Validate().IsNotNull();
+            store.TableConfiguration.Validate().IsNotNull();
         }
 
         [TestMethod]
-        public void CreateWithConnectionStringName()
+        public void ctor_CreateWithConnectionStringName()
         {
             var store = new SqlServerStore("name=foo");
             store.ConnectionString.Validate().IsNotNullOrEmpty();
             store.ConnectionString.Validate().IsEqual("bar");
-            store.SettingTableConfiguration.Validate().IsNotNull();
+            store.TableConfiguration.Validate().IsNotNull();
         }
 
         [TestMethod]
-        public void CreateWithCustomSettingTableProperties()
+        public void ctor_CreateWithCustomSettingTableProperties()
         {
             var store = new SqlServerStore("foo", configure => configure
                     .TableName("qux")
@@ -43,18 +41,14 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Unit
             );
             store.ConnectionString.Validate().IsNotNullOrEmpty();
             store.ConnectionString.Validate().IsEqual("foo");
-            store.SettingTableConfiguration.Validate().IsNotNull();
-            store.SettingTableConfiguration.SchemaName.Validate().IsEqual("baz");
-            store.SettingTableConfiguration.TableName.Validate().IsEqual("qux");
-            store.SettingTableConfiguration.Columns["corge"].DbType.Validate().IsEqual(SqlDbType.Bit);
+            store.TableConfiguration.Validate().IsNotNull();
+            store.TableConfiguration.SchemaName.Validate().IsEqual("baz");
+            store.TableConfiguration.TableName.Validate().IsEqual("qux");
+            store.TableConfiguration.Columns["corge"].DbType.Validate().IsEqual(SqlDbType.Bit);
         }
-    }
 
-    [TestClass]
-    public class ctor
-    {
         [TestMethod]
-        public void ConnectionStringNull()
+        public void ctor_ConnectionStringNull()
         {
             new Action(() =>
                 {
@@ -64,7 +58,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Unit
         }
 
         [TestMethod]
-        public void ConnectionStringEmpty()
+        public void ctor_ConnectionStringEmpty()
         {
             new Action(() =>
                 {
@@ -74,7 +68,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Unit
         }
 
         [TestMethod]
-        public void ConnectionStringNotFound()
+        public void ctor_ConnectionStringNotFound()
         {
             new Action(() =>
                 {

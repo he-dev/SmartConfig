@@ -40,7 +40,7 @@ namespace SmartConfig.Data
 
         public string Key { get; }
 
-        private string DebuggerDisplay => StrongFullName;
+        private string DebuggerDisplay => $"StrongFullName = \"{StrongFullName}\"";
 
         public int Count => Names.Count;
 

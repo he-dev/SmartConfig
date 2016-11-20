@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Reusable.Extensions;
 
 namespace SmartConfig.Data
 {
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Setting
     {
-        // We store all names and values in a not-case sensitive dictionary.
+        // We store all names and values in a non-case sensitive dictionary.
         private readonly Dictionary<string, object> _values = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
         public object this[string key]

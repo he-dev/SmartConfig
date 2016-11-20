@@ -41,37 +41,53 @@ namespace SmartConfig.DataStores.AppConfig
 
         public override int SaveSettings(IEnumerable<Setting> settings)
         {
-            var affectedSettings = 0;
+            var rowsAffected = 0;
 
             // If we are saving an itemized setting its keys might have changed.
             // Since we don't know the old keys we need to delete all keys that are alike first.
 
-            var keys2Remove =
-                _appSettingsSection.Settings.AllKeys.Where(
-                    key => settings.Any(x => x.Name.IsLike(SettingUrn.Parse(key)))
-                ).ToList();
-
-            foreach (var k in keys2Remove)
+            var groups = settings.GroupBy(x => x.WeakId).ToList();
+            if (!groups.Any())
             {
-                _appSettingsSection.Settings.Remove(k);
+                return rowsAffected;
             }
 
-            // Now we can add the new settings.
-            foreach (var setting in settings)
+            foreach (var group in groups)
             {
-                var configurationElement = _appSettingsSection.Settings[setting.Name.StrongFullName];
-                if (configurationElement == null)
+                var groupDeleted = false;
+
+                foreach (var setting in group)
                 {
+                    if (!groupDeleted)
+                    {
+                        // Get weak keys for this setting group to delete.
+                        var keys = _appSettingsSection.Settings.AllKeys.Where(key => SettingUrn.Parse(key).IsLike(setting.Name)).ToList();
+                        foreach (var key in keys)
+                        {
+                            _appSettingsSection.Settings.Remove(key);
+                        }
+                        groupDeleted = true;
+                    }
+
+                    // There shouldn't any key with this strong name any more so it's save to add it.
                     _appSettingsSection.Settings.Add(setting.Name.StrongFullName, (string)setting.Value);
+
+                    rowsAffected++;
+
                 }
-                else
-                {
-                    configurationElement.Value = (string)setting.Value;
-                }
-                affectedSettings++;
             }
             _exeConfiguration.Save(ConfigurationSaveMode.Minimal);
-            return affectedSettings;
+            return rowsAffected;
         }
     }
+
+    //var configurationElement = _appSettingsSection.Settings[setting.Name.StrongFullName];
+    //                if (configurationElement == null)
+    //                {
+    //                    _appSettingsSection.Settings.Add(setting.Name.StrongFullName, (string)setting.Value);
+    //                }
+    //                else
+    //                {
+    //                    configurationElement.Value = (string)setting.Value;
+    //                }
 }

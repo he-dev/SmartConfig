@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SQLite;
 using System.Linq;
 using System.Text;
@@ -17,32 +18,33 @@ namespace SmartConfig.DataStores.SQLite
         private Encoding _dataEncoding = Encoding.Default;
         private Encoding _settingEncoding = Encoding.UTF8;
 
-        public SQLiteStore(string nameOrConnectionString, Action<SettingTableConfiguration.Builder> configure = null) : base(new[] { typeof(string) })
+        public SQLiteStore(string nameOrConnectionString, Action<TableConfigurationBuilder> tableConfigBuilder = null) : base(new[] { typeof(string) })
         {
             nameOrConnectionString.Validate(nameof(nameOrConnectionString)).IsNotNullOrEmpty();
 
             ConnectionString = nameOrConnectionString;
 
-            var connectionStringName = nameOrConnectionString.ToConnectionStringName();
+            var connectionStringName = nameOrConnectionString.GetConnectionStringName();
             if (!string.IsNullOrEmpty(connectionStringName))
             {
-                ConnectionString = AppConfigRepository.GetConnectionString(connectionStringName);
+                ConnectionString = new AppConfigRepository().GetConnectionString(connectionStringName);
             }
 
             ConnectionString.Validate(nameof(nameOrConnectionString)).IsNotNullOrEmpty();
 
-            var settingTablePropertiesBuilder = new SettingTableConfiguration.Builder();
-            configure?.Invoke(settingTablePropertiesBuilder);
-            SettingTableConfiguration = settingTablePropertiesBuilder.Build();
-        }
+            var settingTableConfigBuilder = new TableConfigurationBuilder()
+                .TableName(nameof(Setting))
+                .Column(nameof(Setting.Name), DbType.String, 300)
+                .Column(nameof(Setting.Value), DbType.String, ColumnConfiguration.MaxLength);
 
-        internal AppConfigRepository AppConfigRepository { get; } = new AppConfigRepository();
+            tableConfigBuilder?.Invoke(settingTableConfigBuilder);
+            SettingTableConfiguration = settingTableConfigBuilder.Build();
+        }
 
         public string ConnectionString { get; }
 
-        public SettingTableConfiguration SettingTableConfiguration { get; }
+        public TableConfiguration SettingTableConfiguration { get; }
 
-        // ReSharper disable once InconsistentNaming
         public bool RecodeDataEnabled { get; set; } = true;
 
         public Encoding DataEncoding
@@ -56,8 +58,6 @@ namespace SmartConfig.DataStores.SQLite
             get { return _settingEncoding; }
             set { _settingEncoding = value.Validate(nameof(SettingEncoding)).IsNotNull().Value; }
         }
-
-        public Type MapDataType(Type settingType) => typeof(string);
 
         public override IEnumerable<Setting> GetSettings(Setting setting)
         {
@@ -89,60 +89,59 @@ namespace SmartConfig.DataStores.SQLite
                     }
                 }
             }
-        }      
+        }
 
         public override int SaveSettings(IEnumerable<Setting> settings)
-        {           
+        {
+            var groups = settings.GroupBy(x => x.Name.WeakFullName).ToList();
+            if (!groups.Any())
+            {
+                return 0;
+            }
+
             var commandFactory = new CommandFactory(SettingTableConfiguration);
-
-            var settingGroups = settings.GroupBy(x => x.Name.WeakFullName).ToList();
-
-            // All settings have the same columns so we can use the first setting to create commands.
-            var setting0 = settings.First();
+            var rowsAffected = 0;
 
             using (var connection = new SQLiteConnection(ConnectionString))
             {
                 connection.Open();
+
                 using (var transaction = connection.BeginTransaction())
-                using (var insertCommand = commandFactory.CreateInsertCommand(connection, setting0))
-                using (var deleteCommand = commandFactory.CreateDeleteCommand(connection, setting0))
                 {
-                    deleteCommand.Transaction = transaction;
-                    deleteCommand.Prepare();
-
-                    insertCommand.Transaction = transaction;
-                    insertCommand.Prepare();
-
                     try
                     {
-                        var affectedSettings = 0;
-
-                        // delete
-
-                        foreach (var sg in settingGroups)
+                        foreach (var group in groups)
                         {
-                            var s0 = sg.First();
-
-                            // Delete all settings for this group.
-                            deleteCommand.Parameters[nameof(Setting.Name)].Value = s0.Name.WeakFullName;
-                            foreach (var ns in s0.Attributes) { deleteCommand.Parameters[ns.Key].Value = ns.Value; }
-                            affectedSettings += deleteCommand.ExecuteNonQuery();
-
-                            foreach (var s in sg)
+                            var deleted = false;
+                            foreach (var setting in group)
                             {
-                                insertCommand.Parameters[nameof(Setting.Name)].Value = s.Name.StrongFullName;
-                                insertCommand.Parameters[nameof(Setting.Value)].Value =
-                                    RecodeDataEnabled && s.Value is string
-                                        ? ((string)s.Value).Recode(SettingEncoding, DataEncoding)
-                                        : s.Value;
+                                if (!deleted)
+                                {
+                                    using (var deleteCommand = commandFactory.CreateDeleteCommand(connection, setting))
+                                    {
+                                        deleteCommand.Transaction = transaction;
+                                        deleteCommand.Prepare();
+                                        rowsAffected += deleteCommand.ExecuteNonQuery();
+                                    }
+                                    deleted = true;
+                                }
 
-                                foreach (var ns in s.Attributes) { insertCommand.Parameters[ns.Key].Value = ns.Value; }
-                                affectedSettings += insertCommand.ExecuteNonQuery();
+                                if (RecodeDataEnabled && setting.Value is string)
+                                {
+                                    setting.Value = ((string)setting.Value).Recode(SettingEncoding, DataEncoding);
+                                }
+
+                                using (var insertCommand = commandFactory.CreateInsertCommand(connection, setting))
+                                {
+                                    insertCommand.Transaction = transaction;
+                                    insertCommand.Prepare();
+                                    rowsAffected += insertCommand.ExecuteNonQuery();
+                                }
                             }
                         }
 
                         transaction.Commit();
-                        return affectedSettings;
+                        return rowsAffected;
                     }
                     catch (Exception)
                     {
@@ -156,10 +155,11 @@ namespace SmartConfig.DataStores.SQLite
 
     public static class ConfigurationBuilderExtensions
     {
-        public static Configuration.ConfigurationBuilder FromSQLite(
-            this Configuration.ConfigurationBuilder configurationBuilder,
+        // ReSharper disable once InconsistentNaming
+        public static ConfigurationBuilder FromSQLite(
+            this ConfigurationBuilder configurationBuilder,
             string nameOrConnectionString,
-            Action<SettingTableConfiguration.Builder> configure = null
+            Action<TableConfigurationBuilder> configure = null
         )
         {
             return configurationBuilder.From(new SQLiteStore(nameOrConnectionString, configure));

@@ -18,14 +18,14 @@ namespace SmartConfig.DataStores.Registry
         private readonly RegistryKey _baseKey;
         private readonly string _baseSubKeyName;
 
-        private readonly IReadOnlyDictionary<Type, RegistryValueKind> _registryValueKindMap = new Dictionary<Type, RegistryValueKind>
+        private readonly IReadOnlyDictionary<Type, RegistryValueKind> _registryValueKinds = new Dictionary<Type, RegistryValueKind>
         {
             { typeof(string), RegistryValueKind.String },
             { typeof(int), RegistryValueKind.DWord },
             { typeof(byte[]), RegistryValueKind.Binary },
         };
 
-        public RegistryStore(RegistryKey baseKey, string subKey) 
+        public RegistryStore(RegistryKey baseKey, string subKey)
             : base(new[]
             {
                 typeof(int),
@@ -38,20 +38,23 @@ namespace SmartConfig.DataStores.Registry
 
             _baseKey = baseKey;
             _baseSubKeyName = subKey;
-        }       
+        }
 
         public override IEnumerable<Setting> GetSettings(Setting setting)
         {
-            var registryPath = new RegistryPath(setting.Name);
+            var registryPath = new RegistryUrn(setting.Name);
 
             var subKeyName = Path.Combine(_baseSubKeyName, registryPath.Namespace);
             using (var subKey = _baseKey.OpenSubKey(subKeyName, false))
             {
-                if (subKey == null) { return new List<Setting>(); }
+                if (subKey == null)
+                {
+                    throw new OpenOrCreateSubKeyException(_baseKey.Name, _baseSubKeyName, subKeyName);
+                }
 
                 var settings =
                     subKey.GetValueNames()
-                        .Where(x => RegistryPath.Parse(x).IsLike(registryPath.WeakFullName))
+                        .Where(x => RegistryUrn.Parse(x).IsLike(registryPath.WeakFullName))
                         .Select(x => new Setting
                         {
                             Name = x,
@@ -61,63 +64,58 @@ namespace SmartConfig.DataStores.Registry
 
                 return settings;
             }
-        }        
+        }
 
         public override int SaveSettings(IEnumerable<Setting> settings)
         {
-            var settingGroups = settings.GroupBy(x => x.Name.WeakFullName).ToList();
+            var groups = settings.GroupBy(x => x.Name.WeakFullName).ToList();
 
-            // Before starting to delete/set keys check if all settings have valid types.
-            var unsupportedSettings =
-                settingGroups.Where(sg => !_registryValueKindMap.ContainsKey(sg.First().Value.GetType()))
-                .ToList();
-
-            if (unsupportedSettings.Any())
+            foreach (var group in groups)
             {
-                throw new UnsupportedTypeException(
-                    unsupportedSettings.Select(x => x.First().Name.WeakFullName),
-                    _registryValueKindMap.Select(x => x.Key));
-            }
-
-            // Delete all settings first.
-            foreach (var sg in settingGroups)
-            {
-                // We the first element to delete other elements that are alike and to get the setting type.
-                var s0 = sg.First();
-                var rp = new RegistryPath(s0.Name);
-
-                var subKeyName = Path.Combine(_baseSubKeyName, rp.Namespace);
-                using (var subKey = _baseKey.OpenSubKey(subKeyName, true) ?? _baseKey.CreateSubKey(subKeyName))
+                var groupDeleted = false;
+                foreach (var setting in group)
                 {
-                    if (subKey == null) { continue; }
-
-                    var valueNames2Delete =
-                        subKey.GetValueNames()
-                        .Where(x => RegistryPath.Parse(x).IsLike(rp))
-                        .ToList();
-
-                    foreach (var valueName in valueNames2Delete)
+                    var registryValueKind = RegistryValueKind.None;
+                    if (!_registryValueKinds.TryGetValue(setting.Value.GetType(), out registryValueKind))
                     {
-#if !DISABLE_DELETE_VALUE
-                        subKey.DeleteValue(valueName);
-#endif
+                        throw new InvalidTypeException(setting.Value.GetType(), SupportedTypes);
                     }
 
-                    // Get registry value kind from the first setting.
-                    var registryValueKind = _registryValueKindMap[s0.Value.GetType()];
-
-                    // Save all group settings.
-                    foreach (var s in sg)
+                    var subKeyName = Path.Combine(_baseSubKeyName, setting.Name.Namespace);
+                    using (var subKey = _baseKey.OpenSubKey(subKeyName, true) ?? _baseKey.CreateSubKey(subKeyName))
                     {
-                        var registryPath = new RegistryPath(s.Name);
+                        if (subKey == null)
+                        {
+                            throw new OpenOrCreateSubKeyException(_baseKey.Name, _baseSubKeyName, subKeyName);
+                        }
+
+                        if (!groupDeleted)
+                        {
+                            var valueNames = subKey
+                                .GetValueNames()
+                                .Where(x => RegistryUrn.Parse(x).IsLike(setting.Name))
+                                .ToList();
+
+                            foreach (var valueName in valueNames)
+                            {
+#if !DISABLE_DELETE_VALUE
+                                subKey.DeleteValue(valueName);
+#endif
+                            }
+
+                            groupDeleted = true;
+                        }
+
+                        var registryUrn = new RegistryUrn(setting.Name);
 #if !DISABLE_SET_VALUE
-                        subKey.SetValue(registryPath.StrongName, s.Value, registryValueKind);
+                        subKey.SetValue(registryUrn.StrongName, setting.Value, registryValueKind);
 #endif
                     }
                 }
+
             }
 
-            return settings.Count();
+            return groups.Sum(x => x.Count());
         }
 
         public static RegistryStore CreateForCurrentUser(string subRegistryKey)

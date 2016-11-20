@@ -11,12 +11,12 @@ namespace SmartConfig.DataStores.SQLite
 {
     internal class CommandFactory
     {
-        public CommandFactory(SettingTableConfiguration settingTableConfiguration)
+        public CommandFactory(TableConfiguration settingTableConfiguration)
         {
             SettingTableConfiguration = settingTableConfiguration;
         }
 
-        public SettingTableConfiguration SettingTableConfiguration { get; }
+        public TableConfiguration SettingTableConfiguration { get; }
 
         public SQLiteCommand CreateSelectCommand(SQLiteConnection connection, Setting setting)
         {

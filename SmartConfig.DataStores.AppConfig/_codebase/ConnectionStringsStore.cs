@@ -20,8 +20,6 @@ namespace SmartConfig.DataStores.AppConfig
             _connectionStringsSection = _exeConfiguration.ConnectionStrings;
         }
 
-        public Type MapDataType(Type settingType) => typeof(string);
-
         public override IEnumerable<Setting> GetSettings(Setting setting)
         {
             var connectionStringSettings =
@@ -33,42 +31,58 @@ namespace SmartConfig.DataStores.AppConfig
                     Value = x.ConnectionString
                 })
                 .ToList();
-            
+
             return connectionStringSettings;
-        }      
+        }
 
         public override int SaveSettings(IEnumerable<Setting> settings)
         {
-            var affectedSettings = 0;
+            var rowsAffected = 0;
 
-            // remove connection strings
-            var removeKeys = settings.Select(x => x.Name.WeakFullName).Distinct().ToList();
-            var removeConfigurationStrings =
-                    _connectionStringsSection.ConnectionStrings.Cast<ConnectionStringSettings>()
-                        .Where(x => removeKeys.Contains(x.Name, StringComparer.OrdinalIgnoreCase))
-                        .ToList();
-
-            foreach (var item in removeConfigurationStrings)
+            var groups = settings.GroupBy(x => x.WeakId).ToList();
+            if (!groups.Any())
             {
-                _connectionStringsSection.ConnectionStrings.Remove(item.Name);
+                return rowsAffected;
             }
 
-            foreach (var setting in settings)
+            foreach (var group in groups)
             {
-                var connectionStringSettings = _connectionStringsSection.ConnectionStrings[setting.Name.StrongFullName];
-                if (connectionStringSettings == null)
+                var groupDeleted = false;
+                foreach (var setting in group)
                 {
-                    connectionStringSettings = new ConnectionStringSettings(setting.Name.StrongFullName, (string)setting.Value);
+                    if (!groupDeleted)
+                    {
+                        var names =
+                            _connectionStringsSection.ConnectionStrings
+                                .Cast<ConnectionStringSettings>()
+                                .Where(x => SettingUrn.Parse(x.Name).IsLike(setting.Name));
+
+                        foreach (var item in names)
+                        {
+                            _connectionStringsSection.ConnectionStrings.Remove(item.Name);
+                        }
+                        groupDeleted = true;
+                    }
+
+                    var connectionStringSettings = new ConnectionStringSettings(setting.Name.StrongFullName, (string)setting.Value);
                     _connectionStringsSection.ConnectionStrings.Add(connectionStringSettings);
+                    rowsAffected++;
                 }
-                else
-                {
-                    connectionStringSettings.ConnectionString = (string)setting.Value;
-                }
-                affectedSettings++;
             }
+            
             _exeConfiguration.Save(ConfigurationSaveMode.Minimal);
-            return affectedSettings;
+            return rowsAffected;
         }
     }
+
+    //var connectionStringSettings = _connectionStringsSection.ConnectionStrings[setting.Name.StrongFullName];
+    //            if (connectionStringSettings == null)
+    //            {
+    //                connectionStringSettings = new ConnectionStringSettings(setting.Name.StrongFullName, (string)setting.Value);
+    //                _connectionStringsSection.ConnectionStrings.Add(connectionStringSettings);
+    //            }
+    //            else
+    //            {
+    //                connectionStringSettings.ConnectionString = (string)setting.Value;
+    //            }
 }

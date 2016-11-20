@@ -21,7 +21,7 @@ namespace SmartConfig.Core.Tests.Integration
     // ReSharper disable InconsistentNaming
     // ReSharper disable CheckNamespace
 
-    using Configs;
+    using ConfigurationTestConfigs;
 
     [TestClass]
     public class ConfigurationTest
@@ -127,12 +127,91 @@ namespace SmartConfig.Core.Tests.Integration
 
             FullConfig.NestedConfig.NestedString.Verify().IsEqual("Quux");
         }
+
+        [TestMethod]
+        public void Load_Throws_SettingNotFoundException()
+        {
+            new Action(() =>
+            {
+                Configuration.Load.From(new TestStore()).Select(typeof(SettingNotFoundConfig));
+            })
+            .Verify().Throws<ConfigurationLoadException>(exception =>
+            {
+                exception.InnerException.Verify().IsInstanceOfType(typeof(AggregateException));
+                (exception.InnerException as AggregateException).InnerExceptions.OfType<SettingNotFoundException>()
+                    .Count()
+                    .Verify()
+                    .IsEqual(1);
+            });
+        }
+
+        [TestMethod]
+        public void Load_NonStaticConfigType()
+        {
+            new Action(() =>
+            {
+                Configuration.Load.From(new MemoryStore()).Select(typeof(NonStaticConfig));
+            })
+                .Verify().Throws<ValidationException>();
+        }
+
+        [TestMethod]
+        public void Load_ConfigNotDecorated()
+        {
+            new Action(() =>
+            {
+                Configuration.Load.From(new MemoryStore()).Select(typeof(ConfigNotDecorated));
+            })
+                .Verify().Throws<ValidationException>();
+        }
+
+        [TestMethod]
+        public void Load_RequiredSettingNotFound()
+        {
+            new Action(() =>
+            {
+                Configuration.Load.From(new MemoryStore()).Select(typeof(RequiredSettings));
+            })
+                .Verify().Throws<AggregateException>();
+        }
+
+        [TestMethod]
+        public void Load_PropertyNameNullOrEmpty()
+        {
+            new Action(() =>
+            {
+                Configuration.Load.From(new MemoryStore()).Where(null, null);
+            })
+                .Verify().Throws<ValidationException>();
+
+            new Action(() =>
+            {
+                Configuration.Load.From(new MemoryStore()).Where(string.Empty, null);
+            })
+                .Verify().Throws<ValidationException>();
+        }
+
+        [TestMethod]
+        public void Load_Where_FromExpression()
+        {
+            var config = Configuration.Load
+                .From(new MemoryStore())
+                .Where(() => TestConfig.Foo)
+                .Select(typeof(TestConfig));
+
+            config.Attributes["Foo"].Verify().IsTrue(x => x.ToString() == "Bar");
+        }
+
+        [TestMethod]
+        public void Load_ValueNull()
+        {
+            new Action(() => Configuration.Load.From(new MemoryStore()).Where("foo", null)).Verify().Throws<ValidationException>();
+        }
     }
 }
 
-namespace SmartConfig.Core.Tests.Integration.Configs
+namespace SmartConfig.Core.Tests.Integration.ConfigurationTestConfigs
 {
-
     [SmartConfig]
     public static class EmptyConfig { }
 
@@ -186,6 +265,12 @@ namespace SmartConfig.Core.Tests.Integration.Configs
         }
     }
 
+    [SmartConfig]
+    public static class SettingNotFoundConfig
+    {
+        public static string MissingSetting { get; set; }
+    }
+
     public enum TestEnum
     {
         TestValue1,
@@ -193,79 +278,7 @@ namespace SmartConfig.Core.Tests.Integration.Configs
         TestValue3
     }
 
-    [TestClass]
-    public class Load
-    {
-        [TestMethod]
-        public void NonStaticConfigType()
-        {
-            new Action(() =>
-                {
-                    Configuration.Load.From(new MemoryStore()).Select(typeof(NonStaticConfig));
-                })
-                .Verify().Throws<ValidationException>();
-        }
 
-        [TestMethod]
-        public void ConfigNotDecorated()
-        {
-            new Action(() =>
-                {
-                    Configuration.Load.From(new MemoryStore()).Select(typeof(ConfigNotDecorated));
-                })
-                .Verify().Throws<ValidationException>();
-        }
-
-        [TestMethod]
-        public void RequiredSettingNotFound()
-        {
-            new Action(() =>
-                {
-                    Configuration.Load.From(new MemoryStore()).Select(typeof(RequiredSettings));
-                })
-                .Verify().Throws<AggregateException>();
-        }
-
-        [TestMethod]
-        public void PropertyNameNullOrEmpty()
-        {
-            new Action(() =>
-                {
-                    Configuration.Load.From(new MemoryStore()).Where(null, null);
-                })
-                .Verify().Throws<ValidationException>();
-
-            new Action(() =>
-                {
-                    Configuration.Load.From(new MemoryStore()).Where(string.Empty, null);
-                })
-                .Verify().Throws<ValidationException>();
-        }
-
-        [TestMethod]
-        public void Where_FromExpression()
-        {
-            var config = Configuration.Load
-                .From(new MemoryStore())
-                .Where(() => TestConfig.Foo)
-                .Select(typeof(TestConfig));
-
-            config.Attributes["Foo"].Verify().IsTrue(x => x.ToString() == "Bar");
-        }
-
-        [TestMethod]
-        public void ValueNull()
-        {
-            new Action(() => Configuration.Load.From(new MemoryStore()).Where("foo", null)).Verify().Throws<ValidationException>();
-        }
-
-        [SmartConfig]
-        private static class TestConfig
-        {
-            [Optional]
-            public static string Foo { get; set; } = "Bar";
-        }
-    }
 
     [SmartConfig]
     public class NonStaticConfig { }
@@ -276,5 +289,12 @@ namespace SmartConfig.Core.Tests.Integration.Configs
     public static class RequiredSettings
     {
         public static int Int32Setting { get; set; }
+    }
+
+    [SmartConfig]
+    internal static class TestConfig
+    {
+        [Optional]
+        public static string Foo { get; set; } = "Bar";
     }
 }

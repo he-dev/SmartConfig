@@ -84,7 +84,14 @@ namespace SmartConfig.Services
                     supportedTypes.FirstOrDefault(t => t == typeof(string));
 
                 var value = convert(setting.Value, settingType);
-                var settings = new[] { new Setting { Name = setting.Path, Value = value } };
+                var settings = new[]
+                {
+                    new Setting
+                    {
+                        Name = setting.Path,
+                        Value = value
+                    }
+                };
                 return settings;
             }
         }

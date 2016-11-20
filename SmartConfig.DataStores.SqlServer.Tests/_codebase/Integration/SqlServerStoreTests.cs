@@ -10,14 +10,17 @@ using SmartConfig.DataAnnotations;
 using SmartConfig.DataStores.SqlServer;
 
 namespace SmartConfig.DataStores.SqlServer.Tests.Integration
-{ // ReSharper disable InconsistentNaming
+{
+    // ReSharper disable InconsistentNaming
+    // ReSharper disable once CheckNamespace
 
-// ReSharper disable once CheckNamespace
+    using SqlServerTestConfigs;
+
     [TestClass]
-    public class FullTests
+    public class SqlServerTest
     {
         [TestMethod]
-        public void SimpleSetting()
+        public void GetSettings_SimpleSetting()
         {
             Configuration.Load
                 .FromSqlServer("name=SmartConfigTest", configure => configure.TableName("Setting1"))
@@ -51,7 +54,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
         }
 
         [TestMethod]
-        public void GetSettingsWithConfigAsPath()
+        public void GetSettings_WithConfigAsPath()
         {
             Configuration.Load
                 .FromSqlServer("name=SmartConfigTest", configure => configure.TableName("Setting1"))
@@ -65,7 +68,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
         }
 
         [TestMethod]
-        public void GetSettingsWithConfigAsNamespace()
+        public void GetSettings_WithConfigAsNamespace()
         {
             Configuration.Load
                 .FromSqlServer("name=SmartConfigTest", configure => configure.TableName("Setting2").Column("Corge", SqlDbType.NVarChar, 200))
@@ -81,14 +84,10 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
             FullConfig3.DictionarySetting["bar"].Verify().IsEqual(82);
             FullConfig3.NestedConfig.StringSetting.Verify().IsEqual("Barxy");
             FullConfig3.IgnoredConfig.StringSetting.Verify().IsEqual("Grault");
-        }        
-    }
+        }
 
-    [TestClass]
-    public class SaveSetting
-    {
         [TestMethod]
-        public void SaveSettingByName()
+        public void SaveSetting_ByName()
         {
             Configuration.Load
                 .From(new SqlServerStore("name=SmartConfigTest"))
@@ -105,7 +104,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
         }
 
         [TestMethod]
-        public void SaveSettingByNameAndNamespaceFromExpression()
+        public void SaveSettings_ByNameAndNamespaceFromExpression()
         {
             Configuration.Load
                 .FromSqlServer("name=SmartConfigTest", configure => configure.Column(() => BaseConfig.Environment))
@@ -123,7 +122,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
         }
 
         [TestMethod]
-        public void SaveItemizedSettings()
+        public void SaveSettings_Itemized()
         {
             Configuration.Load
                 .FromSqlServer("name=SmartConfigTest", configure => configure.Column("Environment", SqlDbType.NVarChar, 300))
@@ -146,31 +145,34 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
 
             ItemizedConfig.Numbers2.Count.Verify().IsEqual(2);
         }
+    }
+}
 
-        private static class BaseConfig
-        {
-            public static string Environment => "Itemized";
-        }
+namespace SmartConfig.DataStores.SqlServer.Tests.Integration.SqlServerTestConfigs
+{
+    internal static class BaseConfig
+    {
+        public static string Environment => "Itemized";
+    }
 
-        [SmartConfig]
-        private static class TestConfig1
-        {
-            public static string Roxy { get; set; }
-        }
+    [SmartConfig]
+    internal static class TestConfig1
+    {
+        public static string Roxy { get; set; }
+    }
 
-        [SmartConfig]
-        private static class TestConfig2
-        {
-            [Optional]
-            public static string Bar { get; set; }
-        }
+    [SmartConfig]
+    internal static class TestConfig2
+    {
+        [Optional]
+        public static string Bar { get; set; }
+    }
 
-        [SmartConfig]
-        private static class ItemizedConfig
-        {
-            [Itemized]
-            [Optional]
-            public static Dictionary<string, int> Numbers2 { get; set; }
-        }
+    [SmartConfig]
+    internal static class ItemizedConfig
+    {
+        [Itemized]
+        [Optional]
+        public static Dictionary<string, int> Numbers2 { get; set; }
     }
 }

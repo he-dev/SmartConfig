@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using Reusable;
@@ -15,30 +16,33 @@ namespace SmartConfig.DataStores.SqlServer
     /// </summary>
     public class SqlServerStore : DataStore
     {
-        public SqlServerStore(string nameOrConnectionString, Action<SettingTableConfiguration.Builder> configure = null) : base(new[] { typeof(string) })
+        public SqlServerStore(string nameOrConnectionString, Action<TableConfigurationBuilder> buildTableConfiguration = null) : base(new[] { typeof(string) })
         {
             nameOrConnectionString.Validate(nameof(nameOrConnectionString)).IsNotNullOrEmpty();
 
             ConnectionString = nameOrConnectionString;
 
-            var connectionStringName = nameOrConnectionString.ToConnectionStringName();
+            var connectionStringName = nameOrConnectionString.GetConnectionStringName();
             if (!string.IsNullOrEmpty(connectionStringName))
             {
-                ConnectionString = AppConfigRepository.GetConnectionString(connectionStringName);
+                ConnectionString = new AppConfigRepository().GetConnectionString(connectionStringName);
             }
 
             ConnectionString.Validate(nameof(nameOrConnectionString)).IsNotNullOrEmpty();
 
-            var settingTablePropertiesBuilder = new SettingTableConfiguration.Builder();
-            configure?.Invoke(settingTablePropertiesBuilder);
-            SettingTableConfiguration = settingTablePropertiesBuilder.Build();
-        }
+            var settingTableConfigurationBuilder = new TableConfigurationBuilder()
+                .SchemaName("dbo")
+                .TableName(nameof(Setting))
+                .Column(nameof(Setting.Name), SqlDbType.NVarChar, 300)
+                .Column(nameof(Setting.Value), SqlDbType.NVarChar, ColumnConfiguration.MaxLength);
 
-        internal AppConfigRepository AppConfigRepository { get; } = new AppConfigRepository();
+            buildTableConfiguration?.Invoke(settingTableConfigurationBuilder);
+            TableConfiguration = settingTableConfigurationBuilder.Build();
+        }
 
         public string ConnectionString { get; }
 
-        public SettingTableConfiguration SettingTableConfiguration { get; }
+        public TableConfiguration TableConfiguration { get; }
 
         public Type MapDataType(Type settingType) => typeof(string);
 
@@ -46,7 +50,7 @@ namespace SmartConfig.DataStores.SqlServer
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
-                var commandFactory = new CommandFactory(SettingTableConfiguration);
+                var commandFactory = new CommandFactory(TableConfiguration);
                 using (var command = commandFactory.CreateSelectCommand(connection, setting))
                 {
                     connection.Open();
@@ -74,16 +78,21 @@ namespace SmartConfig.DataStores.SqlServer
 
         public override int SaveSettings(IEnumerable<Setting> settings)
         {
+            var groups = settings.GroupBy(x => x.WeakId).ToList();
+            if (!groups.Any())
+            {
+                return 0;
+            }
+
+            var commandFactory = new CommandFactory(TableConfiguration);
+            var rowsAffected = 0;
+
             using (var connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
-                var commandFactory = new CommandFactory(SettingTableConfiguration);
 
                 using (var transaction = connection.BeginTransaction())
                 {
-                    var groups = settings.GroupBy(x => x.WeakId);
-
-                    var rowsAffected = 0;
                     try
                     {
                         foreach (var group in groups)
@@ -103,7 +112,6 @@ namespace SmartConfig.DataStores.SqlServer
                                     deleted = true;
                                 }
 
-                                // insert new setting
                                 using (var insertCommand = commandFactory.CreateInsertCommand(connection, setting))
                                 {
                                     insertCommand.Transaction = transaction;
@@ -127,10 +135,10 @@ namespace SmartConfig.DataStores.SqlServer
 
     public static class ConfigurationBuilderExtensions
     {
-        public static Configuration.ConfigurationBuilder FromSqlServer(
-            this Configuration.ConfigurationBuilder configurationBuilder,
+        public static ConfigurationBuilder FromSqlServer(
+            this ConfigurationBuilder configurationBuilder,
             string nameOrConnectionString,
-            Action<SettingTableConfiguration.Builder> configure = null
+            Action<TableConfigurationBuilder> configure = null
         )
         {
             return configurationBuilder.From(new SqlServerStore(nameOrConnectionString, configure));

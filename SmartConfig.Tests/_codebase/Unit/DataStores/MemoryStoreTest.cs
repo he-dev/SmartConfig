@@ -5,13 +5,13 @@ using Reusable.Validations;
 using SmartConfig.Data;
 using SmartConfig.DataStores;
 
-namespace SmartConfig.Core.Tests.DataStores
+namespace SmartConfig.Core.Tests.Unit.DataStores
 {
     [TestClass]
-    public class Add_String_Object
+    public class MemoryStoreTest
     {
         [TestMethod]
-        public void AddSettings()
+        public void Add_ObjectInitializer()
         {
             var store = new MemoryStore
             {
@@ -21,13 +21,9 @@ namespace SmartConfig.Core.Tests.DataStores
 
             store.Count().Verify().IsEqual(2);
         }
-    }
 
-    [TestClass]
-    public class GetSettings
-    {
         [TestMethod]
-        public void GetEmptySettingsByName()
+        public void GetSettings_ByName0()
         {
             var store = new MemoryStore();
 
@@ -36,7 +32,7 @@ namespace SmartConfig.Core.Tests.DataStores
         }
 
         [TestMethod]
-        public void GetSettingsByName()
+        public void GetSettings_ByName2()
         {
             var store = new MemoryStore
             {
@@ -50,7 +46,7 @@ namespace SmartConfig.Core.Tests.DataStores
         }
 
         [TestMethod]
-        public void GetSettingsByNameAndKey()
+        public void GetSettings_ByNameAndKey()
         {
             var store = new MemoryStore
             {
@@ -63,11 +59,5 @@ namespace SmartConfig.Core.Tests.DataStores
             settings.Count().Verify().IsEqual(2);
             //settings.First().Value.ToString().Verify().IsEqual("qux");
         }
-    }
-
-    [TestClass]
-    public class SaveSetting
-    {
-
     }
 }

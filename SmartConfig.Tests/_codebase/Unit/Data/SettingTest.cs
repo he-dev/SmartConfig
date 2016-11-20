@@ -4,7 +4,7 @@ using Reusable.Testing;
 using Reusable.Validations;
 using SmartConfig.Data;
 
-namespace SmartConfig.Core.Tests.Data
+namespace SmartConfig.Core.Tests.Unit.Data
 {
     [TestClass]
     public class SettingTest

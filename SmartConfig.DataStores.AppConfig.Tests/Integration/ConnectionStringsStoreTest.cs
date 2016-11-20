@@ -1,18 +1,15 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reusable.Testing;
 using Reusable.Validations;
+using SmartConfig.DataStores.AppConfig.Tests.TestData;
 
-// ReSharper disable CheckNamespace
-
-namespace SmartConfig.DataStores.AppConfig.Tests.Integration.ConnectionStringsStore.Positive
+namespace SmartConfig.DataStores.AppConfig.Tests.Integration
 {
-    using AppConfig;
-
     [TestClass]
-    public class FullTests
+    public class ConnectionStringsStoreTest
     {
         [TestMethod]
-        public void SimpleConfig()
+        public void Load_SimpleConfig()
         {
             Configuration.Load.From(new ConnectionStringsStore()).Select(typeof(FullConfig3));
 
@@ -22,7 +19,7 @@ namespace SmartConfig.DataStores.AppConfig.Tests.Integration.ConnectionStringsSt
         }
 
         [TestMethod]
-        public void ConfigWithNameAsPath()
+        public void Load_ConfigWithNameAsPath()
         {
             Configuration.Load.From(new ConnectionStringsStore()).Select(typeof(FullConfig4));
 

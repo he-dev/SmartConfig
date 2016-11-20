@@ -7,24 +7,62 @@ using SmartConfig.DataAnnotations;
 
 namespace SmartConfig
 {
+    public class ConfigurationLoadException : Exception
+    {
+        internal ConfigurationLoadException(Type configType, Type dataSourceType, Exception innerException) : base(null, innerException)
+        {
+            ConfigType = configType;
+            DataSourceType = dataSourceType;
+        }
+
+        public Type ConfigType { get; set; }
+
+        public Type DataSourceType { get; set; }
+
+        public override string Message => $"Could not load \"{ConfigType.Name}\" from {DataSourceType.Name}.";
+    }
+
+    public class ConfigurationSaveException : Exception
+    {
+        internal ConfigurationSaveException(Type configType, Type dataSourceType, Exception innerException) : base(null, innerException)
+        {
+            ConfigType = configType;
+            DataSourceType = dataSourceType;
+        }
+
+        public Type ConfigType { get; set; }
+
+        public Type DataSourceType { get; set; }
+
+        public override string Message => $"Could not save \"{ConfigType.Name}\" into {DataSourceType.Name}.";
+    }
+
     public class SettingNotFoundException : Exception
     {
-        internal SettingNotFoundException(SettingProperty setting)
+        internal SettingNotFoundException(string weakFullName)
         {
-            SettingPath = setting.Path.StrongFullName;
-            ConfigType = setting.ConfigType;
-            Message = $"Setting '{setting}' not found. If it is opitonal mark it with the '{nameof(OptionalAttribute)}' otherwise you need to provide a value for it.";
+            WeakFullName = weakFullName;
         }
-        public override string Message { get; }
-        public string SettingPath { get; set; }
-        public Type ConfigType { get; set; }
+
+        public string WeakFullName { get; }
+
+        public override string Message => $"Setting \"{WeakFullName}\" not found. You need to provide a value for it or decorate it with \"{nameof(OptionalAttribute)}\".";
 
         public override string ToString() => this.ToJson();
     }
 
+
     public class MultipleSettingsFoundException : Exception
     {
-        public override string Message => "Setting found more then once but it is not a collection.";
+        internal MultipleSettingsFoundException(string weakFullName, int count)
+        {
+            WeakFullName = weakFullName;
+            Count = count;
+        }
+
+        public string WeakFullName { get; }
+        public int Count { get; }
+        public override string Message => $"Setting \"{WeakFullName}\" found {Count} times. You need to remove the other settings or decorate it with the \"{nameof(ItemizedAttribute)}\".";
 
         public override string ToString() => this.ToJson();
     }

@@ -20,8 +20,6 @@ namespace SmartConfig.Core.Tests
             _store = store;
         }
 
-        public Type MapDataType(Type settingType) => typeof(string);
-
         public override IEnumerable<Setting> GetSettings(Setting setting)
         {
             _getSettingsArguments.Add(setting);
@@ -39,6 +37,5 @@ namespace SmartConfig.Core.Tests
         public IReadOnlyList<Setting> GetSettingsParameters => _getSettingsArguments;
 
         public IReadOnlyList<Setting> SaveSettingsParameters => _saveSettingsArguments;
-
     }
 }
