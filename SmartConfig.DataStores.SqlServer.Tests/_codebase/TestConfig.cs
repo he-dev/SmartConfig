@@ -58,7 +58,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests
         }
     }
 
-    [SmartConfig("thudy", NameOption = ConfigNameOption.AsNamespace)]
+    [SmartConfig("thudy", ConfigurationNameTarget.Attribute)]
     public static class FullConfig3
     {
         public static string StringSetting { get; set; }

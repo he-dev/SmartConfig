@@ -100,6 +100,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="_codebase\ConfigurationNameTarget.cs" />
     <Compile Include="_codebase\Services\CollectionItemizer.cs" />
     <Compile Include="_codebase\ConfigurationBuilder.cs" />
     <Compile Include="_codebase\DataAnnotations\ItemizedAttribute.cs" />

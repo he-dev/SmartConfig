@@ -11,12 +11,12 @@ namespace SmartConfig.DataStores.SQLite
 {
     internal class CommandFactory
     {
-        public CommandFactory(TableConfiguration settingTableConfiguration)
+        public CommandFactory(TableConfiguration tableConfiguration)
         {
-            SettingTableConfiguration = settingTableConfiguration;
+            TableConfiguration = tableConfiguration;
         }
 
-        public TableConfiguration SettingTableConfiguration { get; }
+        public TableConfiguration TableConfiguration { get; }
 
         public SQLiteCommand CreateSelectCommand(SQLiteConnection connection, Setting setting)
         {
@@ -31,7 +31,7 @@ namespace SmartConfig.DataStores.SQLite
             {
                 var quote = new Func<string, string>(identifier => commandBuilder.QuoteIdentifier(identifier));
 
-                var table = $"{quote(SettingTableConfiguration.TableName)}";
+                var table = $"{quote(TableConfiguration.TableName)}";
 
                 sql.Append($"SELECT * FROM {table}").AppendLine();
                 sql.Append(setting.Attributes.Keys.Aggregate(
@@ -67,7 +67,7 @@ namespace SmartConfig.DataStores.SQLite
             {
                 var quote = new Func<string, string>(identifier => commandBuilder.QuoteIdentifier(identifier));
 
-                var table = $"{quote(SettingTableConfiguration.TableName)}";
+                var table = $"{quote(TableConfiguration.TableName)}";
 
                 sql.Append($"DELETE FROM {table}").AppendLine();
                 sql.Append(setting.Attributes.Keys.Aggregate(
@@ -104,7 +104,7 @@ namespace SmartConfig.DataStores.SQLite
             {
                 var quote = new Func<string, string>(identifier => commandBuilder.QuoteIdentifier(identifier));
 
-                var table = $"{quote(SettingTableConfiguration.TableName)}";
+                var table = $"{quote(TableConfiguration.TableName)}";
 
                 var columns = setting.Attributes.Keys.Select(columnName => quote(columnName)).Aggregate(
                     $"[{nameof(Setting.Name)}], [{nameof(Setting.Value)}]",
@@ -136,11 +136,13 @@ namespace SmartConfig.DataStores.SQLite
 
         private void AddParameter(SQLiteCommand command, string name, object value = null)
         {
-            var parameter = command.Parameters.Add(
-                name,
-                SettingTableConfiguration.Columns[name].DbType,
-                SettingTableConfiguration.Columns[name].Length
-            );
+            var column = (ColumnConfiguration)null;
+            if (!TableConfiguration.Columns.TryGetValue(name, out column))
+            {
+                throw new ColumnConfigurationNotFoundException(name);
+            }
+
+            var parameter = command.Parameters.Add(name, column.DbType, column.Length);
 
             if (value != null)
             {
@@ -155,5 +157,17 @@ namespace SmartConfig.DataStores.SQLite
                 AddParameter(command, parameter.Key, parameter.Value);
             }
         }
+    }
+
+    public class ColumnConfigurationNotFoundException : Exception
+    {
+        internal ColumnConfigurationNotFoundException(string column)
+        {
+            Column = column;
+        }
+
+        public string Column { get; set; }
+
+        public override string Message => $"\"{Column}\" column configuration not found. Ensure that it is set via the \"{nameof(SQLiteStore)}\" builder.";
     }
 }

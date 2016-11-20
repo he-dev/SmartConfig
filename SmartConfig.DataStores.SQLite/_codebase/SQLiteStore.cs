@@ -35,7 +35,8 @@ namespace SmartConfig.DataStores.SQLite
             var settingTableConfigBuilder = new TableConfigurationBuilder()
                 .TableName(nameof(Setting))
                 .Column(nameof(Setting.Name), DbType.String, 300)
-                .Column(nameof(Setting.Value), DbType.String, ColumnConfiguration.MaxLength);
+                .Column(nameof(Setting.Value), DbType.String, ColumnConfiguration.MaxLength)
+                .Column(SettingAttribute.Config);
 
             tableConfigBuilder?.Invoke(settingTableConfigBuilder);
             SettingTableConfiguration = settingTableConfigBuilder.Build();
@@ -77,7 +78,7 @@ namespace SmartConfig.DataStores.SQLite
 
                         var result = new Setting
                         {
-                            Name = (string)settingReader[nameof(Setting.Name)],
+                            Name = SettingUrn.Parse((string)settingReader[nameof(Setting.Name)]),
                             Value = RecodeDataEnabled ? value.Recode(DataEncoding, SettingEncoding) : value
                         };
 

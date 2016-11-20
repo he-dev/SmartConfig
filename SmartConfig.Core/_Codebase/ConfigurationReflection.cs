@@ -23,7 +23,7 @@ namespace SmartConfig
                 types.Select(type => type.GetProperties(BindingFlags.Public | BindingFlags.Static))
                 .SelectMany(properties => properties)
                 .Where(property => !property.HasAttribute<IgnoreAttribute>())
-                .Select(property => new SettingProperty(property, configType))
+                .Select(property => new SettingProperty(property))
                 .ToList();
 
             return settingProperties;
@@ -36,37 +36,28 @@ namespace SmartConfig
 
         public static string GetCustomNameOrDefault(this MemberInfo member)
         {
-            member.Validate(nameof(member)).IsNotNull();
-            return member.GetCustomAttribute<RenameAttribute>()?.Name ?? member.Name;
-        }       
+            return member.Validate(nameof(member)).IsNotNull().Value.GetCustomAttribute<RenameAttribute>()?.Name ?? member.Name;
+        }
 
         public static IEnumerable<string> GetSettingPath(this PropertyInfo propertyInfo)
         {
             var path = new LinkedList<string>();
-            path.AddFirst(propertyInfo.GetCustomNameOrDefault());
 
-            var type = propertyInfo.DeclaringType;
-
-            while (type != null && !type.HasAttribute<SmartConfigAttribute>())
+            var member = (MemberInfo)propertyInfo;
+            var smartConfigAttribute = (SmartConfigAttribute)null;
+            do
             {
-                path.AddFirst(type.GetCustomNameOrDefault());
-                type = type.DeclaringType;
-            }
+                path.AddFirst(member.GetCustomNameOrDefault());
+                member = member.DeclaringType;
+            } while (member != null && (smartConfigAttribute = member.GetCustomAttribute<SmartConfigAttribute>()) == null);
 
             // This should never happen because the type is already checked.
-            if (type == null)
-            {
-                throw new SmartConfigAttributeNotFoundException(propertyInfo);
-            }
+            if (smartConfigAttribute == null) { throw new SmartConfigAttributeNotFoundException(propertyInfo); }
 
-            // add config name if available
-            var smartConfigAttribute = type.GetCustomAttribute<SmartConfigAttribute>();
-            if (smartConfigAttribute.NameOption == ConfigNameOption.AsPath)
+            // Add config name if available.
+            if (!string.IsNullOrEmpty(smartConfigAttribute.Name) && smartConfigAttribute.NameTarget == ConfigurationNameTarget.Path)
             {
-                if (!string.IsNullOrEmpty(smartConfigAttribute.Name))
-                {
-                    path.AddFirst(smartConfigAttribute.Name);
-                }
+                path.AddFirst(smartConfigAttribute.Name);
             }
 
             return path;

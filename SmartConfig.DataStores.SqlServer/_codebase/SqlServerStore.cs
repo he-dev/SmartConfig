@@ -34,7 +34,8 @@ namespace SmartConfig.DataStores.SqlServer
                 .SchemaName("dbo")
                 .TableName(nameof(Setting))
                 .Column(nameof(Setting.Name), SqlDbType.NVarChar, 300)
-                .Column(nameof(Setting.Value), SqlDbType.NVarChar, ColumnConfiguration.MaxLength);
+                .Column(nameof(Setting.Value), SqlDbType.NVarChar, ColumnConfiguration.MaxLength)
+                .Column(SettingAttribute.Config);
 
             buildTableConfiguration?.Invoke(settingTableConfigurationBuilder);
             TableConfiguration = settingTableConfigurationBuilder.Build();

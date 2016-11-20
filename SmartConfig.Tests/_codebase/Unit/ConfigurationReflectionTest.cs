@@ -23,14 +23,14 @@ namespace SmartConfig.Core.Tests.Unit
         [TestMethod]
         public void GetCustomNameOrDefault_Custom()
         {
-            var property = typeof(Foo).GetProperty(nameof(Foo2.Bar), BindingFlags.Public | BindingFlags.Static);
+            var property = typeof(Foo2).GetProperty(nameof(Foo2.Bar), BindingFlags.Public | BindingFlags.Static);
             property.GetCustomNameOrDefault().Validate().IsEqual("Bar");
         }
 
         [TestMethod]
         public void GetCustomNameOrDefault_Default()
         {
-            var property = typeof(Foo).GetProperty(nameof(Foo2.Baz), BindingFlags.Public | BindingFlags.Static);
+            var property = typeof(Foo2).GetProperty(nameof(Foo2.Baz), BindingFlags.Public | BindingFlags.Static);
             property.GetCustomNameOrDefault().Validate().IsEqual("Qux");
         }
 

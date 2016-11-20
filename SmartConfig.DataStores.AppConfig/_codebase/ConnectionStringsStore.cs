@@ -27,7 +27,7 @@ namespace SmartConfig.DataStores.AppConfig
                 .Where(x => SettingUrn.Parse(x.Name).IsLike(setting.Name) && !string.IsNullOrEmpty(x.ConnectionString))
                 .Select(x => new Setting
                 {
-                    Name = x.Name,
+                    Name = SettingUrn.Parse(x.Name),
                     Value = x.ConnectionString
                 })
                 .ToList();

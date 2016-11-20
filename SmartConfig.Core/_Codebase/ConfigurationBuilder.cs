@@ -96,26 +96,16 @@ namespace SmartConfig
             return Where(memberExpression.Member.Name, expression.Compile()());
         }
 
-        public Configuration Select(Type configType, string name = null, ConfigNameOption nameOption = ConfigNameOption.AsPath)
+        public Configuration Select(Type configType)
         {
-            _configType = configType.Validate(nameof(configType)).IsNotNull("You need to specify the configuration type.").Value;
-
-            configType.Validate(nameof(configType)).IsTrue(x => x.IsStatic(), $"Type {configType.Name} must be static.");
-
-            configType.Validate(nameof(configType)).IsTrue(
-                x => x.HasAttribute<SmartConfigAttribute>(),
-                $"Type {configType.FullName} muss be decorated with the {nameof(SmartConfigAttribute)}.");
+            _configType = configType.Validate(nameof(configType))
+                .IsNotNull($"You need to specify the \"{nameof(configType)}\".")
+                .IsTrue(x => x.IsStatic(), $"Config type \"{configType.FullName}\" must be static.")
+                .IsTrue(x => x.HasAttribute<SmartConfigAttribute>(), $"Config type \"{configType.FullName}\" muss be decorated with the {nameof(SmartConfigAttribute)}.")
+                .Value;
 
             var smartConfigAttribute = configType.GetCustomAttribute<SmartConfigAttribute>();
-
-            // override attribute settings
-            if (!string.IsNullOrEmpty(name))
-            {
-                smartConfigAttribute.Name = name;
-                smartConfigAttribute.NameOption = nameOption;
-            }
-
-            if (smartConfigAttribute.NameOption == ConfigNameOption.AsNamespace)
+            if (smartConfigAttribute.NameTarget == ConfigurationNameTarget.Attribute)
             {
                 _attributes.Add(nameof(SettingAttribute.Config), smartConfigAttribute.Name);
             }

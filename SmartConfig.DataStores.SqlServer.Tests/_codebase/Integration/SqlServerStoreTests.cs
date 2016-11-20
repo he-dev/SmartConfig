@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reusable.Data.DataAnnotations;
 using Reusable.Testing;
+using Reusable.Testing.Validations;
 using Reusable.Validations;
 using SmartConfig.DataAnnotations;
 using SmartConfig.DataStores.SqlServer;
@@ -71,8 +72,8 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
         public void GetSettings_WithConfigAsNamespace()
         {
             Configuration.Load
-                .FromSqlServer("name=SmartConfigTest", configure => configure.TableName("Setting2").Column("Corge", SqlDbType.NVarChar, 200))
-                .Where("corge", "waldo")
+                .FromSqlServer("name=SmartConfigTest", builder => builder.TableName("Setting2").Column("Corge"))
+                .Where("Corge", "waldo")
                 .Select(typeof(FullConfig3));
 
             FullConfig3.StringSetting.Verify().IsNotNullOrEmpty().IsEqual("Fooxy");
@@ -84,6 +85,23 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
             FullConfig3.DictionarySetting["bar"].Verify().IsEqual(82);
             FullConfig3.NestedConfig.StringSetting.Verify().IsEqual("Barxy");
             FullConfig3.IgnoredConfig.StringSetting.Verify().IsEqual("Grault");
+        }
+
+        [TestMethod]
+        public void GetSettings_Throws_ColumnConfigurationNotFoundException()
+        {
+            new Action(() =>
+            {
+                Configuration.Load
+                    .FromSqlServer("name=SmartConfigTest", builder => builder.TableName("Setting2"))
+                    .Where("Corge", "waldo")
+                    .Select(typeof(FullConfig3));
+            })
+            .Verify()
+            .Throws<ConfigurationLoadException>(ex =>
+            {
+                ex.InnerException.Verify().IsInstanceOfType(typeof(ColumnConfigurationNotFoundException));
+            });
         }
 
         [TestMethod]

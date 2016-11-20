@@ -172,7 +172,7 @@ namespace SmartConfig.Core.Tests.Integration
             {
                 Configuration.Load.From(new MemoryStore()).Select(typeof(RequiredSettings));
             })
-                .Verify().Throws<AggregateException>();
+            .Verify().Throws<ConfigurationLoadException>();
         }
 
         [TestMethod]

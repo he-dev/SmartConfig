@@ -19,7 +19,7 @@ namespace SmartConfig
 
         public Type DataSourceType { get; set; }
 
-        public override string Message => $"Could not load \"{ConfigType.Name}\" from {DataSourceType.Name}.";
+        public override string Message => $"Could not load \"{ConfigType.Name}\" from \"{DataSourceType.Name}\".";
     }
 
     public class ConfigurationSaveException : Exception

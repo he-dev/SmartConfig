@@ -54,11 +54,11 @@ namespace SmartConfig.DataStores.Registry
 
                 var settings =
                     subKey.GetValueNames()
-                        .Where(x => RegistryUrn.Parse(x).IsLike(registryPath.WeakFullName))
-                        .Select(x => new Setting
+                        .Where(valueName => RegistryUrn.Parse(valueName).IsLike(registryPath.WeakFullName))
+                        .Select(valueName => new Setting
                         {
-                            Name = x,
-                            Value = subKey.GetValue(x)
+                            Name = SettingUrn.Parse(valueName),
+                            Value = subKey.GetValue(valueName)
                         })
                         .ToList();
 

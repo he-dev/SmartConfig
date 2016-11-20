@@ -60,7 +60,7 @@ namespace SmartConfig.DataStores.SQLite.Tests
         }
     }
 
-    [SmartConfig("thudy", NameOption = ConfigNameOption.AsNamespace)]
+    [SmartConfig("thudy", ConfigurationNameTarget.Attribute)]
     public static class FullConfig3
     {
         public static string StringSetting { get; set; }

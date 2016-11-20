@@ -60,7 +60,7 @@ namespace SmartConfig.Core.Tests.Unit
         [TestMethod]
         public void ctor_CreateFromStringWithoutKey()
         {
-            var path = new SettingUrn("foo.bar");
+            var path = SettingUrn.Parse("foo.bar");
 
             path.Count.Verify().IsEqual(2);
 
@@ -76,7 +76,7 @@ namespace SmartConfig.Core.Tests.Unit
         [TestMethod]
         public void ctor_CreateFromStringWithKey()
         {
-            var path = new SettingUrn("foo.bar[baz]");
+            var path = SettingUrn.Parse("foo.bar[baz]");
 
             path.Count.Verify().IsEqual(2);
 
@@ -92,11 +92,11 @@ namespace SmartConfig.Core.Tests.Unit
         [TestMethod]
         public void IsLike_WithOrWithoutKey()
         {
-            var path = new SettingUrn("foo.bar");
+            var path = SettingUrn.Parse("foo.bar");
 
-            path.IsLike("foo.bar").Validate().IsTrue();
-            path.IsLike("foo.bar[baz]").Validate().IsTrue();
-            path.IsLike("foo.baz").Validate().IsFalse();
+            path.IsLike(SettingUrn.Parse("foo.bar")).Verify().IsTrue();
+            path.IsLike(SettingUrn.Parse("foo.bar[baz]")).Verify().IsTrue();
+            path.IsLike(SettingUrn.Parse("foo.baz")).Verify().IsFalse();
         }
     }
 

@@ -20,8 +20,6 @@ namespace SmartConfig.DataStores.AppConfig
             _appSettingsSection = _exeConfiguration.AppSettings;
         }
 
-        public Type MapDataType(Type settingType) => typeof(string);
-
         public override IEnumerable<Setting> GetSettings(Setting setting)
         {
             var keys =
@@ -29,10 +27,10 @@ namespace SmartConfig.DataStores.AppConfig
                 .Where(k => SettingUrn.Parse(k).IsLike(setting.Name))
                 .ToArray();
 
-            var settings = keys.Select(k => new Setting
+            var settings = keys.Select(key => new Setting
             {
-                Name = k,
-                Value = _appSettingsSection.Settings[k].Value
+                Name = SettingUrn.Parse(key),
+                Value = _appSettingsSection.Settings[key].Value
             })
             .ToList();
 

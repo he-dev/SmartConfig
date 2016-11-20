@@ -45,7 +45,11 @@ namespace SmartConfig.DataStores
 
         public void Add(Setting setting) => Data.Add(setting);
 
-        public void Add(string name, object value) => Data.Add(new Setting { Name = name, Value = value });
+        public void Add(string name, object value) => Data.Add(new Setting
+        {
+            Name = SettingUrn.Parse(name),
+            Value = value
+        });
 
         public IEnumerator<Setting> GetEnumerator() => Data.GetEnumerator();
 

@@ -14,10 +14,10 @@ namespace SmartConfig.Data
     [DebuggerDisplay("{DebuggerDispaly,nq}")]
     internal class SettingProperty
     {
-        internal SettingProperty(PropertyInfo property, Type configType)
+        internal SettingProperty(PropertyInfo property) //, Type configType)
         {
             Property = property;
-            ConfigType = configType;
+            //ConfigType = configType;
             Path = new SettingUrn(Property.GetSettingPath());
 
             // an itemzed setting must be an enumerable
@@ -29,7 +29,7 @@ namespace SmartConfig.Data
 
         private PropertyInfo Property { get; }
 
-        public Type ConfigType { get; }
+        //public Type ConfigType { get; }
 
         public bool IsEnumerable => Property.PropertyType.IsEnumerable();
 
@@ -63,7 +63,8 @@ namespace SmartConfig.Data
         public override string ToString()
         {
             // FullConfig2.Foo.Bar[baz] (required) System.Collections.Generic.List < int >
-            return $"{ConfigType.Name}.{Path.StrongFullName} {(IsOptional ? "optional" : "required")} {Type.ToShortString()}";
+            //return $"{ConfigType.Name}.{Path.StrongFullName} {(IsOptional ? "optional" : "required")} {Type.ToShortString()}";
+            return $"{Path.StrongFullName} {(IsOptional ? "optional" : "required")} {Type.ToShortString()}";
         }
     }    
 }

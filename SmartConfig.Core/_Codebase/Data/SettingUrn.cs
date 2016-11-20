@@ -57,10 +57,9 @@ namespace SmartConfig.Data
             return new SettingUrn(names, key);
         }
 
-        public bool IsLike(SettingUrn path)
-        {
-            return WeakFullName.Equals(path.WeakFullName, StringComparison.OrdinalIgnoreCase);
-        }
+        public bool IsLike(SettingUrn path) => WeakFullName.Equals(path.WeakFullName, StringComparison.OrdinalIgnoreCase);
+
+        public bool IsLike(string value) => IsLike(Parse(value));
 
 
 #if DEBUG
@@ -70,8 +69,6 @@ namespace SmartConfig.Data
         }
 #endif
 
-        public static explicit operator string(SettingUrn settingPath) => settingPath.StrongFullName;
-
         public static bool operator ==(SettingUrn left, SettingUrn right)
         {
             return
@@ -80,20 +77,9 @@ namespace SmartConfig.Data
                 left.StrongFullName.Equals(right.StrongFullName, StringComparison.OrdinalIgnoreCase);
         }
 
-        public static bool operator !=(SettingUrn x, SettingUrn y)
-        {
-            return !(x == y);
-        }
+        public static bool operator !=(SettingUrn x, SettingUrn y) => !(x == y);
 
-        public static implicit operator SettingUrn(string name)
-        {
-            return Parse(name);
-        }
-
-        protected bool Equals(SettingUrn other)
-        {
-            return this == other;
-        }
+        protected bool Equals(SettingUrn other) => this == other;
 
         public override bool Equals(object obj)
         {

@@ -44,7 +44,7 @@ namespace SmartConfig.DataStores.SqlServer
 
             AddParameter(command, nameof(Setting.Name), setting.Name.WeakFullName);
             AddParameters(command, setting.Attributes);
-            
+
             return command;
         }
 
@@ -139,18 +139,20 @@ namespace SmartConfig.DataStores.SqlServer
 
             AddParameter(command, nameof(Setting.Name), setting.Name.StrongFullName);
             AddParameter(command, nameof(Setting.Value), setting.Value);
-            AddParameters(command, setting.Attributes);            
+            AddParameters(command, setting.Attributes);
 
             return command;
         }
 
         private void AddParameter(SqlCommand command, string name, object value = null)
         {
-            var parameter = command.Parameters.Add(
-                name,
-                TableConfiguration.Columns[name].DbType,
-                TableConfiguration.Columns[name].Length
-            );
+            var column = (ColumnConfiguration)null;
+            if (!TableConfiguration.Columns.TryGetValue(name, out column))
+            {
+                throw new ColumnConfigurationNotFoundException(name);
+            }
+
+            var parameter = command.Parameters.Add(name, column.DbType, column.Length);
 
             if (value != null)
             {
@@ -165,5 +167,17 @@ namespace SmartConfig.DataStores.SqlServer
                 AddParameter(command, parameter.Key, parameter.Value);
             }
         }
+    }
+
+    public class ColumnConfigurationNotFoundException : Exception
+    {
+        internal ColumnConfigurationNotFoundException(string column)
+        {
+            Column = column;
+        }
+
+        public string Column { get; set; }
+
+        public override string Message => $"\"{Column}\" column configuration not found. Ensure that it is set via the \"{nameof(SqlServerStore)}\" builder.";
     }
 }

@@ -4,27 +4,21 @@ using Reusable.Validations;
 
 namespace SmartConfig.DataAnnotations
 {
-    /// <summary>
-    /// Marks a type as <c>SmartConfig</c>.
-    /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
     public class SmartConfigAttribute : Attribute
     {
         public SmartConfigAttribute() { }
 
-        public SmartConfigAttribute(string name)
+        public SmartConfigAttribute(string name, ConfigurationNameTarget nameTarget)
         {
             Name = name.Validate(nameof(name)).IsNotNullOrEmpty().Value;
+            NameTarget = nameTarget;
         }
 
-        public string Name { get; internal set; }
+        public SmartConfigAttribute(string name) : this(name, ConfigurationNameTarget.Path) { }
 
-        public ConfigNameOption NameOption { get; set; } = ConfigNameOption.AsPath;
-    }
+        public string Name { get; }
 
-    public enum ConfigNameOption
-    {
-        AsPath,
-        AsNamespace
+        public ConfigurationNameTarget NameTarget { get; }
     }
 }
