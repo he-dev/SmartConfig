@@ -109,7 +109,8 @@
     <Compile Include="_codebase\Services\SettingDeserializer.cs" />
     <Compile Include="_codebase\ConfigurationReflection.cs" />
     <Compile Include="_codebase\Services\SettingSerializer.cs" />
-    <Compile Include="_codebase\Exceptions.cs" />
+    <Compile Include="_codebase\_Exceptions\ConfigurationLoadException.cs" />
+    <Compile Include="_codebase\_Exceptions\ConfigurationSaveException.cs" />
     <Compile Include="_codebase\Data\SettingProperty.cs" />
     <Compile Include="_codebase\DataAnnotations\RenameAttribute.cs" />
     <Compile Include="_codebase\Configuration.cs" />
@@ -118,6 +119,8 @@
     <Compile Include="_codebase\DataAnnotations\SmartConfigAttribute.cs" />
     <Compile Include="_codebase\Data\DataStore.cs" />
     <Compile Include="_codebase\Data\SettingAttribute.cs" />
+    <Compile Include="_codebase\_Exceptions\MultipleSettingsFoundException.cs" />
+    <Compile Include="_codebase\_Exceptions\SettingNotFoundException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -128,6 +129,53 @@ namespace SmartConfig.Core.Tests.Integration
             FullConfig.NestedConfig.NestedString.Verify().IsEqual("Quux");
         }
 
+
+        [TestMethod]
+        public void Load_Where_FromExpression()
+        {
+            var config = Configuration.Load
+                .From(new MemoryStore())
+                .Where(() => TestConfig.Foo)
+                .Select(typeof(TestConfig));
+
+            config.Attributes["Foo"].Verify().IsTrue(x => x.ToString() == "Bar");
+        }
+
+        // Test invalid usage errors
+
+        [TestMethod]
+        public void Load_NonStaticConfigType_Throws_ValidationException()
+        {
+            new Action(() =>
+            {
+                Configuration.Load.From(new MemoryStore()).Select(typeof(NonStaticConfig));
+            })
+            .Verify()
+            .Throws<ValidationException>(ex =>
+            {
+                // Config type "SmartConfig.Core.Tests.Integration.ConfigurationTestConfigs.NonStaticConfig" must be static.
+                /*
+#2
+ConfigurationLoadException: Could not load "TestConfig" from "SqlServerStore".
+- ConfigType: SmartConfig.DataStores.SqlServerStore.Tests.TestConfig
+- DataSourceType: SmartConfig.DataStores.SqlServerStore
+- Data:[]
+
+#1
+SettingNotFoundException: Setting "TestSetting" not found. You need to provide a value for it or decorate it with the "OptionalAttribute".
+- WeakFullName: TestSetting
+                 
+                 */
+                Debug.Write(ex.Message);                    
+            });
+        }
+
+        [TestMethod]
+        public void Load_ValueNull()
+        {
+            new Action(() => Configuration.Load.From(new MemoryStore()).Where("foo", null)).Verify().Throws<ValidationException>();
+        }
+
         [TestMethod]
         public void Load_Throws_SettingNotFoundException()
         {
@@ -143,16 +191,6 @@ namespace SmartConfig.Core.Tests.Integration
                     .Verify()
                     .IsEqual(1);
             });
-        }
-
-        [TestMethod]
-        public void Load_NonStaticConfigType()
-        {
-            new Action(() =>
-            {
-                Configuration.Load.From(new MemoryStore()).Select(typeof(NonStaticConfig));
-            })
-                .Verify().Throws<ValidationException>();
         }
 
         [TestMethod]
@@ -191,22 +229,6 @@ namespace SmartConfig.Core.Tests.Integration
                 .Verify().Throws<ValidationException>();
         }
 
-        [TestMethod]
-        public void Load_Where_FromExpression()
-        {
-            var config = Configuration.Load
-                .From(new MemoryStore())
-                .Where(() => TestConfig.Foo)
-                .Select(typeof(TestConfig));
-
-            config.Attributes["Foo"].Verify().IsTrue(x => x.ToString() == "Bar");
-        }
-
-        [TestMethod]
-        public void Load_ValueNull()
-        {
-            new Action(() => Configuration.Load.From(new MemoryStore()).Where("foo", null)).Verify().Throws<ValidationException>();
-        }
     }
 }
 

@@ -52,7 +52,12 @@ namespace SmartConfig
             } while (member != null && (smartConfigAttribute = member.GetCustomAttribute<SmartConfigAttribute>()) == null);
 
             // This should never happen because the type is already checked.
-            if (smartConfigAttribute == null) { throw new SmartConfigAttributeNotFoundException(propertyInfo); }
+            if (smartConfigAttribute == null)
+            {
+                throw new ArgumentException(
+                    paramName: nameof(propertyInfo),
+                    message: $"None of the \"{propertyInfo.Name}\" property parent types is decorated with the \"{nameof(SmartConfigAttribute)}\".");
+            }
 
             // Add config name if available.
             if (!string.IsNullOrEmpty(smartConfigAttribute.Name) && smartConfigAttribute.NameTarget == ConfigurationNameTarget.Path)

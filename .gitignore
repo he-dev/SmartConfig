@@ -191,7 +191,7 @@ ModelManifest.xml
 # My folders
 .nuget
 SmartNuGetPackager
-
+RoboNuGet
 
 # R#
 *.DotSettings

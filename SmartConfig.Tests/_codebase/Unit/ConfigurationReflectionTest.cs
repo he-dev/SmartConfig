@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reusable;
+using Reusable.Testing;
+using Reusable.Testing.Validations;
 using Reusable.Validations;
 using SmartConfig.DataAnnotations;
 
@@ -65,13 +68,16 @@ namespace SmartConfig.Core.Tests.Unit
         }
 
         [TestMethod]
-        [ExpectedException(typeof(SmartConfigAttributeNotFoundException))]
-        public void GetSettingPath_Throws_SmartConfigAttributeNotFoundException()
+        public void GetSettingPath_Throws_ArgumentException()
         {
-            var barProperty =
+            new Action(() =>
+            {
                 typeof(Bar.SubBar)
                     .GetProperty(nameof(Bar.SubBar.Baz), BindingFlags.Public | BindingFlags.Static)
                     .GetSettingPath();
+            })
+            .Verify()
+            .Throws<ArgumentException>();
         }
 
 
