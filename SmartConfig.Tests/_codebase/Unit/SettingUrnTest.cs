@@ -1,7 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Reusable;
-using Reusable.Testing;
-using Reusable.Validations;
+using Reusable.Fuse;
+using Reusable.Fuse.Testing;
 using SmartConfig.Data;
 
 namespace SmartConfig.Core.Tests.Unit

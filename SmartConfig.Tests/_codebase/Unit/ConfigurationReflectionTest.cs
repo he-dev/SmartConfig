@@ -2,16 +2,14 @@
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Reusable;
-using Reusable.Testing;
-using Reusable.Testing.Validations;
-using Reusable.Validations;
-using SmartConfig.DataAnnotations;
+using SmartConfig.Data.Annotations;
 
 // ReSharper disable once CheckNamespace
 namespace SmartConfig.Core.Tests.Unit
 {
     using ConfigurationReflectionTestConfigs;
+    using Reusable.Fuse;
+    using Reusable.Fuse.Testing;
 
     [TestClass]
     public class ConfigurationReflectionTest
@@ -20,33 +18,33 @@ namespace SmartConfig.Core.Tests.Unit
         public void GetSettingProperties_FromNestedWithIgnore()
         {
             var settings = typeof(Foo).GetSettingProperties();
-            settings.Count.Validate().IsEqual(3);
+            settings.Count.Verify().IsEqual(3);
         }
 
         [TestMethod]
         public void GetCustomNameOrDefault_Custom()
         {
             var property = typeof(Foo2).GetProperty(nameof(Foo2.Bar), BindingFlags.Public | BindingFlags.Static);
-            property.GetCustomNameOrDefault().Validate().IsEqual("Bar");
+            property.GetCustomNameOrDefault().Verify().IsEqual("Bar");
         }
 
         [TestMethod]
         public void GetCustomNameOrDefault_Default()
         {
             var property = typeof(Foo2).GetProperty(nameof(Foo2.Baz), BindingFlags.Public | BindingFlags.Static);
-            property.GetCustomNameOrDefault().Validate().IsEqual("Qux");
+            property.GetCustomNameOrDefault().Verify().IsEqual("Qux");
         }
 
         [TestMethod]
         public void HasAttribute_True()
         {
-            typeof(MissingAttributeConfig).HasAttribute<SmartConfigAttribute>().Validate().IsFalse();
+            typeof(MissingAttributeConfig).HasAttribute<SmartConfigAttribute>().Verify().IsFalse();
         }
 
         [TestMethod]
         public void HasAttribute_False()
         {
-            typeof(EmpyConfig).HasAttribute<SmartConfigAttribute>().Validate().IsTrue();
+            typeof(EmpyConfig).HasAttribute<SmartConfigAttribute>().Verify().IsTrue();
         }
 
         [TestMethod]
@@ -96,11 +94,11 @@ namespace SmartConfig.Core.Tests.Unit.ConfigurationReflectionTestConfigs
         {
             public static string Baz1 { get; set; }
 
-            [Reusable.Data.DataAnnotations.Ignore]
+            [Reusable.Data.Annotations.Ignore]
             public static string Baz2 { get; set; }
         }
 
-        [Reusable.Data.DataAnnotations.Ignore]
+        [Reusable.Data.Annotations.Ignore]
         public static class SubBaz
         {
             public static string Quux { get; set; }

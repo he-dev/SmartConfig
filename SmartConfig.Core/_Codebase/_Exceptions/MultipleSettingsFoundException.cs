@@ -1,5 +1,5 @@
 using System;
-using SmartConfig.DataAnnotations;
+using SmartConfig.Data.Annotations;
 
 namespace SmartConfig
 {

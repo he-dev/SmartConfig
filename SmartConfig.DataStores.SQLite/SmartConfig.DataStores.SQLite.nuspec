@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>SmartConfig.DataStores.SQLite</id>
-    <version>8.0.1</version>
+    <version>8.0.2</version>
     <title>SmartConfig.DataStores.SQLite</title>
     <authors>he-dev</authors>
     <owners>he-dev</owners>
@@ -19,7 +19,7 @@
       <dependency id="Reusable.Fuse" version="2.0.1" />
       <dependency id="Reusable.Utils" version="2.0.1" />
       <dependency id="System.Data.SQLite.Core" version="1.0.103" />
-      <dependency id="SmartConfig.Core" version="8.0.1" />
+      <dependency id="SmartConfig.Core" version="8.0.2" />
     </dependencies>
   </metadata>
   <files>

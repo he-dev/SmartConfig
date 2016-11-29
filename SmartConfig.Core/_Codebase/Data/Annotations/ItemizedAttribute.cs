@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SmartConfig.DataAnnotations
+namespace SmartConfig.Data.Annotations
 {
     [AttributeUsage(AttributeTargets.Property)]
     public class ItemizedAttribute : Attribute { }

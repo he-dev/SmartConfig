@@ -1,7 +1,5 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Reusable.Testing;
-using Reusable.Validations;
 // ReSharper disable InconsistentNaming
 
 // ReSharper disable CheckNamespace
@@ -9,6 +7,8 @@ using Reusable.Validations;
 
 namespace SmartConfig.DataStores.SQLite.Tests.Integration
 {
+    using Reusable.Fuse;
+    using Reusable.Fuse.Testing;
     using SQLite;
 
     [TestClass]

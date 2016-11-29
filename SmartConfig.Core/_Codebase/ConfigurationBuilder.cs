@@ -7,7 +7,7 @@ using Reusable.Fuse;
 using Reusable.Converters;
 using Reusable.Data.Annotations;
 using SmartConfig.Data;
-using SmartConfig.DataAnnotations;
+using SmartConfig.Data.Annotations;
 
 namespace SmartConfig
 {

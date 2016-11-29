@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Reusable.Testing;
-using Reusable.Validations;
+using Reusable.Fuse;
+using Reusable.Fuse.Testing;
 using SmartConfig.DataStores.AppConfig.Tests.TestData;
 
 namespace SmartConfig.DataStores.AppConfig.Tests.Integration

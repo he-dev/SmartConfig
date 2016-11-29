@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Reusable.Testing;
-using Reusable.Validations;
 using SmartConfig.Data;
+using Reusable.Fuse.Testing;
+using Reusable.Fuse;
 
 namespace SmartConfig.Core.Tests.Unit.Data
 {

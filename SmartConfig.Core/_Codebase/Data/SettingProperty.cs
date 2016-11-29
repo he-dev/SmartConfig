@@ -5,7 +5,7 @@ using System.Reflection;
 using Reusable;
 using Reusable.Data.Annotations;
 using Reusable.Fuse;
-using SmartConfig.DataAnnotations;
+using SmartConfig.Data.Annotations;
 
 namespace SmartConfig.Data
 {

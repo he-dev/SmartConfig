@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>SmartConfig.DataStores.Registry</id>
-    <version>8.0.1</version>
+    <version>8.0.2</version>
     <title>SmartConfig.DataStores.Registry</title>
     <authors>he-dev</authors>
     <owners>he-dev</owners>
@@ -17,7 +17,7 @@
     <dependencies>
       <dependency id="Newtonsoft.Json" version="9.0.1" />
       <dependency id="Reusable.Fuse" version="2.0.1" />
-      <dependency id="SmartConfig.Core" version="8.0.1" />
+      <dependency id="SmartConfig.Core" version="8.0.2" />
     </dependencies>
   </metadata>
   <files>

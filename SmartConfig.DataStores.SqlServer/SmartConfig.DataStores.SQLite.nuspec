@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>SmartConfig.DataStores.SqlServer</id>
-    <version>8.0.1</version>
+    <version>8.0.2</version>
     <title>SmartConfig.DataStores.SqlServer</title>
     <authors>he-dev</authors>
     <owners>he-dev</owners>
@@ -18,7 +18,7 @@
       <dependency id="Newtonsoft.Json" version="9.0.1" />
       <dependency id="Reusable.Fuse" version="2.0.1" />
       <dependency id="Reusable.Utils" version="2.0.1" />
-      <dependency id="SmartConfig.Core" version="8.0.1" />
+      <dependency id="SmartConfig.Core" version="8.0.2" />
     </dependencies>
   </metadata>
   <files>

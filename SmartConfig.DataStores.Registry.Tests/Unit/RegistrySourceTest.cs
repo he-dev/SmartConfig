@@ -1,14 +1,14 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reusable;
-using Reusable.Testing;
-using Reusable.Testing.Validations;
 
 // ReSharper disable CheckNamespace
 
 namespace SmartConfig.DataStores.Registry.Tests.Unit
 {
     using Registry;
+    using Reusable.Fuse;
+    using Reusable.Fuse.Testing;
 
     [TestClass]
     public class RegistrySourceTest

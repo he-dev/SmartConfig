@@ -2,7 +2,7 @@
 using Reusable;
 using Reusable.Fuse;
 
-namespace SmartConfig.DataAnnotations
+namespace SmartConfig.Data.Annotations
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
     public class RenameAttribute : Attribute

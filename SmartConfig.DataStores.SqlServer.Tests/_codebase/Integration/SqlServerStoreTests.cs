@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Reusable.Data.DataAnnotations;
-using Reusable.Testing;
-using Reusable.Testing.Validations;
-using Reusable.Validations;
-using SmartConfig.DataAnnotations;
+using Reusable.Data.Annotations;
+using Reusable.Fuse.Testing;
+using Reusable.Fuse;
+using SmartConfig.Data.Annotations;
 using SmartConfig.DataStores.SqlServer;
 
 namespace SmartConfig.DataStores.SqlServer.Tests.Integration

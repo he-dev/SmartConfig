@@ -7,13 +7,9 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reusable;
 using Reusable.Converters;
-using Reusable.Data.DataAnnotations;
-using Reusable.DataAnnotations;
-using Reusable.Testing;
-using Reusable.Testing.Validations;
-using Reusable.Validations;
+using Reusable.Data.Annotations;
 using SmartConfig;
-using SmartConfig.DataAnnotations;
+using SmartConfig.Data.Annotations;
 using SmartConfig.DataStores;
 
 namespace SmartConfig.Core.Tests.Integration
@@ -23,6 +19,8 @@ namespace SmartConfig.Core.Tests.Integration
     // ReSharper disable CheckNamespace
 
     using ConfigurationTestConfigs;
+    using Reusable.Fuse;
+    using Reusable.Fuse.Testing;
 
     [TestClass]
     public class ConfigurationTest
@@ -266,7 +264,7 @@ namespace SmartConfig.Core.Tests.Integration.ConfigurationTestConfigs
 
         public static List<int> JsonArray { get; set; }
 
-        [Reusable.Data.DataAnnotations.Optional]
+        [Reusable.Data.Annotations.Optional]
         public static string Optional { get; set; } = "Waldo";
 
         [Itemized]
@@ -280,7 +278,7 @@ namespace SmartConfig.Core.Tests.Integration.ConfigurationTestConfigs
             public static string NestedString { get; set; }
         }
 
-        [Reusable.Data.DataAnnotations.Ignore]
+        [Reusable.Data.Annotations.Ignore]
         public static class IgnoredConfig
         {
             public static string IgnoredString { get; set; } = "Grault";

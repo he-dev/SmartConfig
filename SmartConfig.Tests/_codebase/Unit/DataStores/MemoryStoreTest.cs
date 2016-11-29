@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Reusable.Testing;
-using Reusable.Validations;
 using SmartConfig.Data;
 using SmartConfig.DataStores;
+using Reusable.Fuse.Testing;
+using Reusable.Fuse;
 
 namespace SmartConfig.Core.Tests.Unit.DataStores
 {
