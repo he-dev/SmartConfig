@@ -1,4 +1,4 @@
-# SmartConfig v8.0.0
+# SmartConfig v8.0.1
 
 With SmartConfig you can setup a strongly typed configuration within a few minutes.
 
@@ -6,39 +6,54 @@ With SmartConfig you can setup a strongly typed configuration within a few minut
 
 ## Changelog
 
-- Updated references to `Reusable`
-- `Where` now allows you to specify an expression for the column name
+### v8.0.1
+
+- Updated references to `Reusable`.
+- `Where` now allows you to specify an expression for the column name.
+- Data stores are now available as separate packages.
+- Removed the `LoadFailedEvent` and the `TryLoad` method from the `Configuration`. The new `Reload` method now throws exceptions.
 
 ---
 
-The core package on NuGet: `Install-Package SmartConfig` contains:
+The core package on NuGet: `Install-Package SmartConfig` contains just the core functionality. You need to install a data store to be able to use it.
+
 - AppSettingsStore
 - ConnectionStringsStore
 - SqlServerStore
 - RegistryStore
 
-You can get the `SQLiteStore` extension with `Install-Package SmartConfig.DataStores.SQLite`
-
 ## Quick Start
 
 To create a configuration you need to define a static class and decorate it with the `[SmartConfig]` attribute. It can contain any number of **static** properties and nested classes.
 
-The below example contains all setting types that are supported by SmartConfig. Among the simple types there are also arrays and dictionaries. To use them you need to mark the setting with the `[Itemized]` attribute. Arrays are required to have additional `[index]` but the number actually doesn't matter. The names just have to be unique. Dictionary keys can be of any type supported by the converters (int, string, enum etc.).
+The below example show all kinds of settings that are supported by SmartConfig. 
+
+Among the simple types you can also use complex types. In order to use them you need to specify them as JSON and add the `Converters` attribute to the configuration where you specify the exact converters for them.
+
+Another possibility to specify collections, especially dynamic ones is by using the `[Itemized]` attribute. This means that each item of the collection is stored in a separate row in the data store. Arrays are required to have an additional `[index]` but the number actually doesn't matter. Dictionary keys can be of any type supported by the converters (`int`, `string`, `enum` etc.).
 
 ```cs
 [SmartConfig]
+[Converters(
+    typeof(JsonToObjectConverter<int[]>),
+    typeof(JsonToObjectConverter<Dictionary<string, int>>)
+)]
 public static class FullConfig
 {
     public static string StringSetting { get; set; }
 
     [Optional]
     public static string OptionalStringSetting { get; set; } = "Waldo";
+    
+    public static int[] ArraySetting1 { get; set; }
 
     [Itemized]
-    public static int[] ArraySetting { get; set; }
+    public static int[] ArraySetting2 { get; set; }
+
+    public static Dictionary<string, int> DictionarySetting1 { get; set; }
 
     [Itemized]
-    public static Dictionary<string, int> DictionarySetting { get; set; }
+    public static Dictionary<string, int> DictionarySetting2 { get; set; }
 
     public static class NestedConfig
     {
@@ -53,7 +68,7 @@ public static class FullConfig
 }
 ```
 
-The next step is to load the actual settings. SmartConfig supports various data sources. We'll look at them now.
+You load the configuration by specifying the source with the `From` method and the configuration.
 
 Loading a configuration from an `app.config` is as simple as this:
 
@@ -69,19 +84,19 @@ The respecitve `app.config` file:
 <appSettings>
 
     <add key="StringSetting" value="Foo"/>
-    <add key="ArraySetting[0]" value="5"/>
-    <add key="ArraySetting[1]" value="8"/>
-    <add key="DictionarySetting[foo]" value="21"/>
-    <add key="DictionarySetting[bar]" value="34"/>
+    <add key="ArraySetting2[0]" value="5"/>
+    <add key="ArraySetting2[1]" value="8"/>
+    <add key="DictionarySetting2[foo]" value="21"/>
+    <add key="DictionarySetting2[bar]" value="34"/>
     <add key="NestedConfig.StringSetting" value="Bar"/>
     <add key="IgnoredConfig.StringSetting" value="Qux"/>
     
 </appSettings>
 ``` 
 
-We're done.
+That's all.
 
-Using a database is not that different. You just need to specify a different data store:
+Using a database is not that different. You just need to specify another data store:
 
 ```cs
 Configuration.Load
@@ -89,13 +104,12 @@ Configuration.Load
     .Select(typeof(FullConfig));
 ```
 
-In this example you need to have the following table:
+For this example you need to have the following table:
 
 ```sql
 CREATE TABLE [dbo].[Setting](
 	[Name] [nvarchar](50) NOT NULL,
-	[Value] [nvarchar](max) NULL,
-	[Environment] [nvarchar](50) NULL
+	[Value] [nvarchar](max) NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 ```
 
@@ -118,13 +132,13 @@ Configuration.Load
     .Select(typeof(FullConfig));
 ```
 
-## Namespaces
+## Attributes
 
-With SmartConfig it is possible to use more then one identifier (Name) for a setting. The additional criteria are called namespaces and allow us to further describe a setting. Not all data stores allow this. That's why we use a database in this example.
+With SmartConfig it is possible to use more then one identifier (Name) for a setting. The additional criteria are called attributes and allow us to further describe a setting. Not all data stores allow this. That's why we use a database in this example.
 
 A common example is the _Environment_.
 
-The config class itself does not change at all. You add the namespaces when loading:
+The config class itself does not change at all. You add the attribute when loading:
 
 ```cs
  Configuration.Load
@@ -167,7 +181,3 @@ public static class FullConfig
 ```
 
 Now SmartConfig knows how to deserialize the list.
-
-
-
-_Previous version SmartConfig v6.0 and its documentation: <http://he-dev.github.io/SmartConfig/>_
