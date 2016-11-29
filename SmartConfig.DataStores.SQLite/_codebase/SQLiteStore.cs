@@ -5,10 +5,9 @@ using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 using Reusable;
-using Reusable.Data;
-using Reusable.Extensions;
-using Reusable.Validations;
+using Reusable.Fuse;
 using SmartConfig.Data;
+using Reusable.Data;
 
 namespace SmartConfig.DataStores.SQLite
 {

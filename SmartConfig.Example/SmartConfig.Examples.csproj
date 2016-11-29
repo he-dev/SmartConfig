@@ -55,6 +55,22 @@
     </StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Reusable.Converters, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Reusable.Converters.2.0.1\lib\net452\Reusable.Converters.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Reusable.Fuse, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Reusable.Fuse.2.0.1\lib\net452\Reusable.Fuse.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Reusable.Utils, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Reusable.Utils.2.0.1\lib\net452\Reusable.Utils.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -71,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
     <None Include="_configs\config.db">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

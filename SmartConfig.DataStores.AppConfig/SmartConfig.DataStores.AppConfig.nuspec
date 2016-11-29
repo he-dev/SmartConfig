@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package>
   <metadata>
-    <id>SmartConfig.DataStores.SQLite</id>
+    <id>SmartConfig.DataStores.AppConfig</id>
     <version>8.0.1</version>
-    <title>SmartConfig.DataStores.SQLite</title>
+    <title>SmartConfig.DataStores.AppConfig</title>
     <authors>he-dev</authors>
     <owners>he-dev</owners>
     <licenseUrl>https://github.com/he-dev/SmartConfig/blob/master/SmartConfig/LICENSE.txt</licenseUrl>
@@ -16,15 +16,11 @@
     <tags>.NET C# Config Configuration Settings Framework Tool Utility</tags>
     <dependencies>
       <dependency id="Newtonsoft.Json" version="9.0.1" />
-      <dependency id="Reusable.Fuse" version="2.0.1" />
-      <dependency id="Reusable.Utils" version="2.0.1" />
-      <dependency id="System.Data.SQLite.Core" version="1.0.103" />
       <dependency id="SmartConfig.Core" version="8.0.1" />
     </dependencies>
   </metadata>
   <files>
-    <file src="..\bin\Release\SmartConfig.DataStores.SQLite.dll" target="lib\net452" />
-    <file src="..\bin\Release\SmartConfig.DataStores.SQLite.dll.config" target="lib\net452" />
-    <file src="..\bin\Release\SmartConfig.DataStores.SQLite.pdb" target="lib\net452" />
+    <file src="..\bin\Release\SmartConfig.DataStores.AppConfig.dll" target="lib\net452" />
+    <file src="..\bin\Release\SmartConfig.DataStores.AppConfig.pdb" target="lib\net452" />
   </files>
 </package>

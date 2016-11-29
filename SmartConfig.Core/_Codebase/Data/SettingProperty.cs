@@ -3,9 +3,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Reusable;
-using Reusable.Data.DataAnnotations;
-using Reusable.Extensions;
-using Reusable.Validations;
+using Reusable.Data.Annotations;
+using Reusable.Fuse;
 using SmartConfig.DataAnnotations;
 
 namespace SmartConfig.Data

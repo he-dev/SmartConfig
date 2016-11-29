@@ -4,7 +4,7 @@ using System.Data;
 using System.Linq.Expressions;
 using Reusable;
 using Reusable.Collections;
-using Reusable.Validations;
+using Reusable.Fuse;
 
 namespace SmartConfig.DataStores.SqlServer
 {

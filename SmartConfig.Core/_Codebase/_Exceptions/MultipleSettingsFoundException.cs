@@ -1,5 +1,4 @@
 using System;
-using Reusable.Extensions;
 using SmartConfig.DataAnnotations;
 
 namespace SmartConfig

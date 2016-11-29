@@ -1,9 +1,9 @@
 using System;
 using System.Data;
 using System.Linq.Expressions;
-using Reusable;
+using Reusable.Data.Annotations;
+using Reusable.Fuse;
 using Reusable.Collections;
-using Reusable.Validations;
 
 namespace SmartConfig.DataStores.SQLite
 {
@@ -21,8 +21,8 @@ namespace SmartConfig.DataStores.SQLite
         }
 
         public TableConfigurationBuilder Column(
-            string columnName, 
-            DbType dbType = ColumnConfiguration.DefaultDbType, 
+            string columnName,
+            DbType dbType = ColumnConfiguration.DefaultDbType,
             int length = ColumnConfiguration.DefaultLength)
         {
             var columnConfiguration = new ColumnConfiguration(columnName, dbType, length);

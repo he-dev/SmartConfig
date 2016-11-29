@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Reusable.Extensions;
+using Reusable;
 
 namespace SmartConfig.Services
 {

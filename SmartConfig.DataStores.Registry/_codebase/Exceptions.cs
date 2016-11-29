@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Reusable.Extensions;
+using Reusable;
 
 namespace SmartConfig.DataStores.Registry
 {
@@ -19,7 +19,7 @@ namespace SmartConfig.DataStores.Registry
 
         public override string Message => $"Invalid type \"{InvalidType.Name}\". Valid types are [{string.Join(", ", ValidTypes.Select(x => x.Name))}].";
 
-        public override string ToString() => this.ToJson();
+        //public override string ToString() => this.ToJson();
     }
 
     public class OpenOrCreateSubKeyException : Exception

@@ -1,6 +1,5 @@
 using System;
-using Reusable.Data.DataAnnotations;
-using Reusable.Extensions;
+using Reusable.Data.Annotations;
 
 namespace SmartConfig
 {

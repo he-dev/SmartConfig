@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Reusable;
-using Reusable.Extensions;
 using SmartConfig.Data;
+using Reusable.Converters;
 
 namespace SmartConfig.Services
 {

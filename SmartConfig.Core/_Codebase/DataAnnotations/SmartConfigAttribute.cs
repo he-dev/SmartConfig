@@ -1,6 +1,6 @@
 ﻿using System;
 using Reusable;
-using Reusable.Validations;
+using Reusable.Fuse;
 
 namespace SmartConfig.DataAnnotations
 {

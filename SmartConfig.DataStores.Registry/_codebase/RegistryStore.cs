@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Win32;
 using Reusable;
-using Reusable.Validations;
+using Reusable.Fuse;
 using SmartConfig.Data;
 
 namespace SmartConfig.DataStores.Registry

@@ -62,28 +62,16 @@
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Reusable.Data, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.Data.1.3.0\lib\net452\Reusable.Data.dll</HintPath>
+    <Reference Include="Reusable.Converters, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Reusable.Converters.2.0.1\lib\net452\Reusable.Converters.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Reusable.Drawing.Color32, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.Drawing.Color32.1.3.0\lib\net452\Reusable.Drawing.Color32.dll</HintPath>
+    <Reference Include="Reusable.Fuse, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Reusable.Fuse.2.0.1\lib\net452\Reusable.Fuse.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Reusable.Extensions, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.Extensions.1.3.0\lib\net452\Reusable.Extensions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Reusable.FluentValidation, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.FluentValidation.1.3.0\lib\net452\Reusable.FluentValidation.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Reusable.Formatter, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.Formatter.1.3.0\lib\net452\Reusable.Formatter.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Reusable.TypeConversion, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.TypeConversion.1.3.0\lib\net452\Reusable.TypeConversion.dll</HintPath>
+    <Reference Include="Reusable.Utils, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Reusable.Utils.2.0.1\lib\net452\Reusable.Utils.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

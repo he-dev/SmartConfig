@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Reusable.Extensions;
+using Reusable.Collections;
 
 namespace SmartConfig.Data
 {

@@ -5,9 +5,8 @@ using System.Data.SqlClient;
 using System.Linq;
 using Reusable;
 using Reusable.Data;
-using Reusable.Extensions;
-using Reusable.Validations;
 using SmartConfig.Data;
+using Reusable.Fuse;
 
 namespace SmartConfig.DataStores.SqlServer
 {

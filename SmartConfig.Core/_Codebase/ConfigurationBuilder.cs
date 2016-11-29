@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using Reusable;
+using Reusable.Fuse;
 using Reusable.Converters;
-using Reusable.DataAnnotations;
-using Reusable.Extensions;
-using Reusable.Validations;
+using Reusable.Data.Annotations;
 using SmartConfig.Data;
 using SmartConfig.DataAnnotations;
 
