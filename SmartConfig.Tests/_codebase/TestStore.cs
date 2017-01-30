@@ -7,35 +7,29 @@ namespace SmartConfig.Core.Tests
 {
     public class TestStore : DataStore
     {
-        private readonly List<Setting> _getSettingsArguments = new List<Setting>();
-
-        private readonly List<Setting> _saveSettingsArguments = new List<Setting>();
-
-        private readonly DataStore _store;
+        //private readonly DataStore _store;
 
         public TestStore() : base(new[] { typeof(string) }) { }
 
-        public TestStore(DataStore store) : this()
-        {
-            _store = store;
-        }
+        //public TestStore(DataStore store) : this()
+        //{
+        //    _store = store;
+        //}
 
         public override IEnumerable<Setting> GetSettings(Setting setting)
         {
-            _getSettingsArguments.Add(setting);
-            return _store?.GetSettings(setting) ?? new List<Setting>();
+            return GetSettingsCallback(setting);
         }       
 
         public override int SaveSettings(IEnumerable<Setting> settings)
         {
-            _saveSettingsArguments.AddRange(settings);
-            return _store?.SaveSettings(settings) ?? settings.Count();
+            return SaveSettingsCallback(settings);
         }
 
         // ---
 
-        public IReadOnlyList<Setting> GetSettingsParameters => _getSettingsArguments;
+        public Func<Setting, IEnumerable<Setting>> GetSettingsCallback { get; set; }
 
-        public IReadOnlyList<Setting> SaveSettingsParameters => _saveSettingsArguments;
+        public Func<IEnumerable<Setting>, int> SaveSettingsCallback { get; set; }
     }
 }

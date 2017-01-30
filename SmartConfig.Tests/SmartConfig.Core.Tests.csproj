@@ -41,15 +41,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Reusable.Converters, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.Converters.2.0.1\lib\net452\Reusable.Converters.dll</HintPath>
+      <HintPath>..\packages\Reusable.Converters.2.4.2\lib\net452\Reusable.Converters.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Reusable.Fuse, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.Fuse.2.0.1\lib\net452\Reusable.Fuse.dll</HintPath>
+      <HintPath>..\packages\Reusable.Fuse.2.4.2\lib\net452\Reusable.Fuse.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Reusable.Utils, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.Utils.2.0.1\lib\net452\Reusable.Utils.dll</HintPath>
+      <HintPath>..\packages\Reusable.Utils.2.4.2\lib\net452\Reusable.Utils.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -76,7 +76,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="_codebase\Integration\ConfigurationTest.cs" />
+    <Compile Include="_codebase\ConfigurationTestData.cs" />
+    <Compile Include="_codebase\ConfigurationTest.cs" />
+    <Compile Include="_codebase\ConfigurationTypeTest.cs" />
     <Compile Include="_codebase\TestStore.cs" />
     <Compile Include="_codebase\Unit\DataStores\MemoryStoreTest.cs" />
     <Compile Include="_codebase\Unit\ConfigurationReflectionTest.cs" />
@@ -94,7 +96,9 @@
       <Name>SmartConfig.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="_codebase\Integration\" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

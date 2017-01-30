@@ -13,10 +13,9 @@ namespace SmartConfig.Data
     [DebuggerDisplay("{DebuggerDispaly,nq}")]
     internal class SettingProperty
     {
-        internal SettingProperty(PropertyInfo property) //, Type configType)
+        internal SettingProperty(PropertyInfo property)
         {
             Property = property;
-            //ConfigType = configType;
             Path = new SettingUrn(Property.GetSettingPath());
 
             // an itemzed setting must be an enumerable
@@ -28,17 +27,15 @@ namespace SmartConfig.Data
 
         private PropertyInfo Property { get; }
 
-        //public Type ConfigType { get; }
-
-        public bool IsEnumerable => Property.PropertyType.IsEnumerable();
+        public bool IsOptional => Property.GetCustomAttribute<OptionalAttribute>() != null;
 
         public bool IsItemized => Property.GetCustomAttribute<ItemizedAttribute>() != null;
+
+        public bool IsEnumerable => Property.PropertyType.IsEnumerable();
 
         public Type Type => Property.PropertyType;
 
         public SettingUrn Path { get; }
-
-        public bool IsOptional => Property.GetCustomAttribute<OptionalAttribute>() != null;
 
         public object Value
         {

@@ -8,70 +8,23 @@ using Reusable.Converters;
 using Reusable.Data.Annotations;
 using SmartConfig.Data;
 using SmartConfig.Data.Annotations;
+using SmartConfig.Services;
 
 namespace SmartConfig
 {
     public class ConfigurationBuilder
     {
+        private List<SettingProperty> _settingProperties;
+
         private DataStore _dataStore;
 
-        private TypeConverter _converter = CreateDefaultConverter();
+        private TypeConverter _converter = Configuration.DefaultConverter();
 
-        private Dictionary<string, object> _attributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, object> _tags = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
         private Type _configType;
 
-        internal ConfigurationBuilder() { }
-
-        private static TypeConverter CreateDefaultConverter()
-        {
-            return TypeConverter.Empty.Add(new TypeConverter[]
-            {
-                    new StringToSByteConverter(),
-                    new StringToByteConverter(),
-                    new StringToCharConverter(),
-                    new StringToInt16Converter(),
-                    new StringToInt32Converter(),
-                    new StringToInt64Converter(),
-                    new StringToUInt16Converter(),
-                    new StringToUInt32Converter(),
-                    new StringToUInt64Converter(),
-                    new StringToSingleConverter(),
-                    new StringToDoubleConverter(),
-                    new StringToDecimalConverter(),
-                    new StringToColorConverter(),
-                    new StringToBooleanConverter(),
-                    new StringToDateTimeConverter(),
-                    new StringToEnumConverter(),
-
-                    new SByteToStringConverter(),
-                    new ByteToStringConverter(),
-                    new CharToStringConverter(),
-                    new Int16ToStringConverter(),
-                    new Int32ToStringConverter(),
-                    new Int64ToStringConverter(),
-                    new UInt16ToStringConverter(),
-                    new UInt32ToStringConverter(),
-                    new UInt64ToStringConverter(),
-                    new SingleToStringConverter(),
-                    new DoubleToStringConverter(),
-                    new DecimalToStringConverter(),
-                    new ColorToStringConverter(),
-                    new BooleanToStringConverter(),
-                    new DateTimeToStringConverter(),
-                    new EnumToStringConverter(),
-
-                    new EnumerableObjectToArrayObjectConverter(),
-                    new EnumerableObjectToListObjectConverter(),
-                    new EnumerableObjectToHashSetObjectConverter(),
-                    new DictionaryObjectObjectToDictionaryObjectObjectConverter(),
-
-                    new EnumerableObjectToArrayStringConverter(),
-                    new EnumerableObjectToListStringConverter(),
-                    new EnumerableObjectToHashSetStringConverter(),
-                    new DictionaryObjectObjectToDictionaryStringStringConverter(),
-            });
-        }
+        internal ConfigurationBuilder() { }        
 
         public ConfigurationBuilder From(DataStore dataStore)
         {
@@ -83,8 +36,8 @@ namespace SmartConfig
         {
             name.Validate(nameof(name)).IsNotNullOrEmpty("You need to specify the namespace.");
             value.Validate(nameof(value)).IsNotNull("You need to specify the namespace value.");
-            _attributes.ContainsKey(name).Validate().IsFalse($"Namespace '{name}' already exists.");
-            _attributes.Add(name, value);
+            _tags.ContainsKey(name).Validate().IsFalse($"Namespace '{name}' already exists.");
+            _tags.Add(name, value);
             return this;
         }
 
@@ -95,7 +48,7 @@ namespace SmartConfig
             return Where(memberExpression.Member.Name, expression.Compile()());
         }
 
-        public Configuration Select(Type configType)
+        public Configuration Select(Type configType, Func<TypeConverter, TypeConverter> configureConverter)
         {
             _configType = configType.Validate(nameof(configType))
                 .IsNotNull($"You need to specify the \"{nameof(configType)}\".")
@@ -103,23 +56,42 @@ namespace SmartConfig
                 .IsTrue(x => x.HasAttribute<SmartConfigAttribute>(), $"Config type \"{configType.FullName}\" muss be decorated with the {nameof(SmartConfigAttribute)}.")
                 .Value;
 
-            var smartConfigAttribute = configType.GetCustomAttribute<SmartConfigAttribute>();
-            if (smartConfigAttribute.NameTarget == ConfigurationNameTarget.Attribute)
-            {
-                _attributes.Add(nameof(SettingAttribute.Config), smartConfigAttribute.Name);
-            }
+            GetNameTag(configType);
+            GetConverters(configType);
 
-            foreach (var typeConverterAttribute in configType.GetCustomAttributes<TypeConverterAttribute>())
-            {
-                _converter = _converter.Add(typeConverterAttribute.Type);
-            }
+            _converter = configureConverter?.Invoke(_converter) ?? _converter;
+            _settingProperties = ConfigurationType.GetSettingProperties(configType);
 
             return ToConfiguration();
         }
 
+        public Configuration Select(Type configType)
+        {
+            return Select(configType, null);
+        }
+
+        private void GetConverters(MemberInfo configType)
+        {
+            foreach (var typeConverterAttribute in configType.GetCustomAttributes<TypeConverterAttribute>())
+            {
+                _converter = _converter.Add(typeConverterAttribute.Type);
+            }
+        }
+
+        private void GetNameTag(MemberInfo configType)
+        {
+            var smartConfigAttribute = configType.GetCustomAttribute<SmartConfigAttribute>();
+            if (smartConfigAttribute.NameTarget == ConfigurationNameTarget.Tag)
+            {
+                _tags.Add(nameof(SettingAttribute.Config), smartConfigAttribute.Name);
+            }
+        }
+
         private Configuration ToConfiguration()
         {
-            var configuration = new Configuration(_configType, _dataStore, _attributes, _converter);
+            var settingReader = new SettingReader(_dataStore, _settingProperties, _tags, _converter);
+            var settingWriter = new SettingWriter(_dataStore, _settingProperties, _tags, _converter);
+            var configuration = new Configuration(_configType, settingReader, settingWriter);
             configuration.Reload();
 
             var temp = configuration;

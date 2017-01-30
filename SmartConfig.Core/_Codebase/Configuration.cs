@@ -5,6 +5,7 @@ using Reusable;
 using SmartConfig.Data;
 using SmartConfig.Services;
 using Reusable.Converters;
+using Reusable.Drawing;
 
 namespace SmartConfig
 {
@@ -13,108 +14,114 @@ namespace SmartConfig
         // Each loaded configuration is cached so that we don't have to run reflection mutliple times.
         private static readonly IDictionary<Type, Configuration> Cache = new Dictionary<Type, Configuration>();
 
+        private readonly SettingReader _settingReader;
+        private readonly SettingWriter _settingWriter;
+
         // The user must not create a configuration directly.
-        internal Configuration(Type configType, DataStore dataStore, IReadOnlyDictionary<string, object> attributes,
-            TypeConverter converter)
+        internal Configuration(Type configType, SettingReader settingReader, SettingWriter settingWriter)
         {
+            _settingReader = settingReader;
+            _settingWriter = settingWriter;
             Type = configType;
-            DataStore = dataStore;
-            Attributes = attributes;
-            Converter = converter;
         }
 
         // Initializes the fluent interface.
         public static ConfigurationBuilder Load => new ConfigurationBuilder();
 
+        public static TypeConverter DefaultConverter() => TypeConverter.Empty.Add(new TypeConverter[]
+        {
+            new StringToSByteConverter(),
+            new StringToByteConverter(),
+            new StringToCharConverter(),
+            new StringToInt16Converter(),
+            new StringToInt32Converter(),
+            new StringToInt64Converter(),
+            new StringToUInt16Converter(),
+            new StringToUInt32Converter(),
+            new StringToUInt64Converter(),
+            new StringToSingleConverter(),
+            new StringToDoubleConverter(),
+            new StringToDecimalConverter(),
+            new StringToColorConverter(new ColorParser[]
+            {
+                new NameColorParser(),
+                new DecimalColorParser(), 
+                new HexadecimalColorParser(), 
+            }),
+            new StringToBooleanConverter(),
+            new StringToDateTimeConverter(),
+            new StringToEnumConverter(),
+
+            new SByteToStringConverter(),
+            new ByteToStringConverter(),
+            new CharToStringConverter(),
+            new Int16ToStringConverter(),
+            new Int32ToStringConverter(),
+            new Int64ToStringConverter(),
+            new UInt16ToStringConverter(),
+            new UInt32ToStringConverter(),
+            new UInt64ToStringConverter(),
+            new SingleToStringConverter(),
+            new DoubleToStringConverter(),
+            new DecimalToStringConverter(),
+            new ColorToStringConverter(),
+            new BooleanToStringConverter(),
+            new DateTimeToStringConverter(),
+            new EnumToStringConverter(),
+
+            new EnumerableToArrayConverter(),
+            new EnumerableToListConverter(),
+            new EnumerableToHashSetConverter(),
+            new DictionaryToDictionaryConverter(),
+        });
+
         internal Type Type { get; }
 
-        internal DataStore DataStore { get; }
-
-        internal IEnumerable<SettingProperty> SettingProperties { get; private set; }
-
-        internal IReadOnlyDictionary<string, object> Attributes { get; }
-
-        internal TypeConverter Converter { get; }
-
-        internal int Reload()
+        public void Reload()
         {
-            SettingProperties = Type.GetSettingProperties();
-
             try
             {
-                // Load all settings.
-                var settings = SettingProperties.Select(x => new
-                {
-                    Key = x,
-                    Value = DataStore.GetSettings(new Setting
-                    {
-                        Name = x.Path,
-                        Attributes = Attributes
-                    }).ToList()
-                }).ToDictionary(x => x.Key, x => x.Value);
-
-                var settingDeserializer = new SettingDeserializer(Converter);
-                var deserializedSettings = settingDeserializer.DeserializeSettings(settings);
-
-                // Commit settings.
-                foreach (var item in deserializedSettings)
-                {
-                    var settingProperty = item.Key;
-                    settingProperty.Value = item.Value;
-                }
-
+                _settingReader.Read();
                 Cache[Type] = this;
-                return deserializedSettings.Count;
             }
             catch (Exception innerException)
             {
-                throw new ConfigurationLoadException(Type, DataStore.GetType(), innerException);
+                throw new ConfigurationException(Type, innerException);
             }
         }
 
-        public int Save()
+        public void Save()
         {
             try
             {
-                var settingSerializer = new SettingSerializer(Converter);
-                var allSettings = settingSerializer.SerializeSettings(SettingProperties, DataStore.SupportedTypes);
-                foreach (var item in allSettings)
-                {
-                    var settings = item.Value;
-                    foreach (var setting in settings)
-                    {
-                        setting.Attributes = Attributes;
-                    }
-                    DataStore.SaveSettings(settings);
-                }
-                return allSettings.Count;
+                _settingWriter.Write();
             }
             catch (Exception innerException)
             {
-                throw new ConfigurationSaveException(Type, DataStore.GetType(), innerException);
+                throw new ConfigurationException(Type, innerException);
             }
         }
 
-        public static int Reload(Type configurationType)
+        public static void Reload(Type configurationType)
         {
-            var configuration = (Configuration)null;
+            var configuration = default(Configuration);
             if (!Cache.TryGetValue(configurationType, out configuration))
             {
                 throw new InvalidOperationException($"Configuration {configurationType.Name} isn't loaded yet. To reload a configuration you need to load it first.");
             }
 
-            return configuration.Reload();
+            configuration.Reload();
         }
 
-        public static int Save(Type configurationType)
+        public static void Save(Type configurationType)
         {
-            var configuration = (Configuration)null;
+            var configuration = default(Configuration);
             if (!Cache.TryGetValue(configurationType, out configuration))
             {
                 throw new InvalidOperationException($"To save a configuration you need to load it first. Configuration {configurationType.Name} isn't loaded yet.");
             }
 
-            return configuration.Save();
+            configuration.Save();
         }
     }
 }

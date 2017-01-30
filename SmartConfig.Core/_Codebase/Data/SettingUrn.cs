@@ -60,7 +60,6 @@ namespace SmartConfig.Data
 
         public bool IsLike(string value) => IsLike(Parse(value));
 
-
 #if DEBUG
         public override string ToString()
         {

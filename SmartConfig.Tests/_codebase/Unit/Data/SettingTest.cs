@@ -16,15 +16,15 @@ namespace SmartConfig.Core.Tests.Unit.Data
             {
                 Name = SettingUrn.Parse("foo.bar[baz]"),
                 Value = "waldo",
-                Attributes = new Dictionary<string, object> { ["Environment"] = "qux" },
+                Tags = new Dictionary<string, object> { ["Environment"] = "qux" },
                 ["Config"] = "corge"
             };
 
             setting.Name.Verify().IsTrue(x => x == SettingUrn.Parse("foo.bar[baz]"));
 
-            setting.Attributes.Count.Verify().IsEqual(2);
-            setting.Attributes["Environment"].Verify().IsTrue(x => x.Equals("qux"));
-            setting.Attributes["Config"].Verify().IsTrue(x => x.Equals("corge"));
+            setting.Tags.Count.Verify().IsEqual(2);
+            setting.Tags["Environment"].Verify().IsTrue(x => x.Equals("qux"));
+            setting.Tags["Config"].Verify().IsTrue(x => x.Equals("corge"));
 
             (setting["Environment"] as string).Verify().IsNotNullOrEmpty().IsEqual("qux");
             (setting["Config"] as string).Verify().IsNotNullOrEmpty().IsEqual("corge");

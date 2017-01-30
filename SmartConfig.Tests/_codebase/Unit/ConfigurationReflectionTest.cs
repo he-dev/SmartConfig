@@ -15,13 +15,6 @@ namespace SmartConfig.Core.Tests.Unit
     public class ConfigurationReflectionTest
     {
         [TestMethod]
-        public void GetSettingProperties_FromNestedWithIgnore()
-        {
-            var settings = typeof(Foo).GetSettingProperties();
-            settings.Count.Verify().IsEqual(3);
-        }
-
-        [TestMethod]
         public void GetCustomNameOrDefault_Custom()
         {
             var property = typeof(Foo2).GetProperty(nameof(Foo2.Bar), BindingFlags.Public | BindingFlags.Static);

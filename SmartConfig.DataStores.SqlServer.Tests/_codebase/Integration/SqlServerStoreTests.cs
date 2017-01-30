@@ -97,7 +97,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
                     .Select(typeof(FullConfig3));
             })
             .Verify()
-            .Throws<ConfigurationLoadException>(ex =>
+            .Throws<ConfigurationReadException>(ex =>
             {
                 ex.InnerException.Verify().IsInstanceOfType(typeof(ColumnConfigurationNotFoundException));
             });

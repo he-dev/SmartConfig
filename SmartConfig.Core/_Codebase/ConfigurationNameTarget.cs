@@ -3,6 +3,6 @@
     public enum ConfigurationNameTarget
     {
         Path,
-        Attribute
+        Tag
     }
 }

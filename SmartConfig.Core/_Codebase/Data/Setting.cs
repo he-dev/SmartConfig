@@ -18,9 +18,9 @@ namespace SmartConfig.Data
             set { _values[key] = value; }
         }
 
-        public string WeakId => $"{Name.WeakFullName}/{Attributes.OrderBy(x => x.Key).Select(x => x.Value).Join("/")}";
+        public string WeakId => $"{Name.WeakFullName}/{Tags.OrderBy(x => x.Key).Select(x => x.Value).Join("/")}";
 
-        public string StrongId => $"{Name.StrongFullName}/{Attributes.OrderBy(x => x.Key).Select(x => x.Value).Join("/")}";
+        public string StrongId => $"{Name.StrongFullName}/{Tags.OrderBy(x => x.Key).Select(x => x.Value).Join("/")}";
 
         public SettingUrn Name
         {
@@ -40,7 +40,7 @@ namespace SmartConfig.Data
             set { _values[nameof(Value)] = value; }
         }
 
-        public IReadOnlyDictionary<string, object> Attributes
+        public IDictionary<string, object> Tags
         {
             get
             {
@@ -50,7 +50,7 @@ namespace SmartConfig.Data
             }
             set
             {
-                var attributes = Attributes.ToDictionary(x => x.Key, x => x.Value);
+                var attributes = Tags.ToDictionary(x => x.Key, x => x.Value);
                 foreach (var item in attributes)
                 {
                     _values.Remove(item.Key);
@@ -66,7 +66,7 @@ namespace SmartConfig.Data
 
         public override string ToString()
         {
-            return $"{Name.StrongFullName} = '{Value}' in [{string.Join(",", Attributes.Select(x => x.Value))}]";
+            return $"{Name.StrongFullName} = '{Value}' in [{string.Join(",", Tags.Select(x => x.Value))}]";
         }        
     }
 }

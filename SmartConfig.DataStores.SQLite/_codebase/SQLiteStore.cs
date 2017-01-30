@@ -81,7 +81,7 @@ namespace SmartConfig.DataStores.SQLite
                             Value = RecodeDataEnabled ? value.Recode(DataEncoding, SettingEncoding) : value
                         };
 
-                        foreach (var attribute in setting.Attributes)
+                        foreach (var attribute in setting.Tags)
                         {
                             result[attribute.Key] = settingReader[attribute.Key];
                         }

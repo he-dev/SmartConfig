@@ -63,15 +63,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Reusable.Converters, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.Converters.2.0.1\lib\net452\Reusable.Converters.dll</HintPath>
+      <HintPath>..\packages\Reusable.Converters.2.4.2\lib\net452\Reusable.Converters.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Reusable.Fuse, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.Fuse.2.0.1\lib\net452\Reusable.Fuse.dll</HintPath>
+      <HintPath>..\packages\Reusable.Fuse.2.4.2\lib\net452\Reusable.Fuse.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Reusable.Utils, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.Utils.2.0.1\lib\net452\Reusable.Utils.dll</HintPath>
+      <HintPath>..\packages\Reusable.Utils.2.4.2\lib\net452\Reusable.Utils.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -94,11 +94,12 @@
     <Compile Include="_codebase\Data\Annotations\ItemizedAttribute.cs" />
     <Compile Include="_codebase\DataStores\MemoryStore.cs" />
     <Compile Include="_codebase\Data\Setting.cs" />
-    <Compile Include="_codebase\Services\SettingDeserializer.cs" />
+    <Compile Include="_codebase\Services\SettingReader.cs" />
     <Compile Include="_codebase\ConfigurationReflection.cs" />
-    <Compile Include="_codebase\Services\SettingSerializer.cs" />
-    <Compile Include="_codebase\_Exceptions\ConfigurationLoadException.cs" />
-    <Compile Include="_codebase\_Exceptions\ConfigurationSaveException.cs" />
+    <Compile Include="_codebase\Services\SettingWriter.cs" />
+    <Compile Include="_codebase\_Exceptions\ConfigurationException.cs" />
+    <Compile Include="_codebase\_Exceptions\ConfigurationReadException.cs" />
+    <Compile Include="_codebase\_Exceptions\ConfigurationWriteException.cs" />
     <Compile Include="_codebase\Data\SettingProperty.cs" />
     <Compile Include="_codebase\Data\Annotations\RenameAttribute.cs" />
     <Compile Include="_codebase\Configuration.cs" />

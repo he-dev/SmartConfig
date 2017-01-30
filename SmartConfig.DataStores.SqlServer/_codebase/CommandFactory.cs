@@ -31,7 +31,7 @@ namespace SmartConfig.DataStores.SqlServer
 
                 sql.Append($"SELECT *").AppendLine();
                 sql.Append($"FROM {table}").AppendLine();
-                sql.Append(setting.Attributes.Aggregate(
+                sql.Append(setting.Tags.Aggregate(
                     $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} + N'[[]%]')",
                     (result, next) => $"{result} AND {quote(next.Key)} = @{next.Key}")
                 );
@@ -43,7 +43,7 @@ namespace SmartConfig.DataStores.SqlServer
             // --- add parameters & values
 
             AddParameter(command, nameof(Setting.Name), setting.Name.WeakFullName);
-            AddParameters(command, setting.Attributes);
+            AddParameters(command, setting.Tags);
 
             return command;
         }
@@ -66,7 +66,7 @@ namespace SmartConfig.DataStores.SqlServer
                 var table = $"{quote(TableConfiguration.SchemaName)}.{quote(TableConfiguration.TableName)}";
 
                 sql.Append($"DELETE FROM {table}").AppendLine();
-                sql.Append(setting.Attributes.Keys.Aggregate(
+                sql.Append(setting.Tags.Keys.Aggregate(
                     $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} + N'[[]%]')",
                     (result, next) => $"{result} AND {quote(next)} = @{next} ")
                 );
@@ -79,7 +79,7 @@ namespace SmartConfig.DataStores.SqlServer
             // --- add parameters & values
 
             AddParameter(command, nameof(Setting.Name), setting.Name.WeakFullName);
-            AddParameters(command, setting.Attributes);
+            AddParameters(command, setting.Tags);
 
             return command;
         }
@@ -109,21 +109,21 @@ namespace SmartConfig.DataStores.SqlServer
                 sql.Append($"UPDATE {table}").AppendLine();
                 sql.Append($"SET [{nameof(Setting.Value)}] = @{nameof(Setting.Value)}").AppendLine();
 
-                sql.Append(setting.Attributes.Keys.Aggregate(
+                sql.Append(setting.Tags.Keys.Aggregate(
                     $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} + N'[[]%]')",
                     (result, next) => $"{result} AND {quote(next)} = @{next} ")
                 ).AppendLine();
 
                 sql.Append($"IF @@ROWCOUNT = 0").AppendLine();
 
-                var columns = setting.Attributes.Keys.Select(columnName => quote(columnName)).Aggregate(
+                var columns = setting.Tags.Keys.Select(columnName => quote(columnName)).Aggregate(
                         $"[{nameof(Setting.Name)}], [{nameof(Setting.Value)}]",
                         (result, next) => $"{result}, {next}"
                 );
 
                 sql.Append($"INSERT INTO {table}({columns})").AppendLine();
 
-                var parameterNames = setting.Attributes.Keys.Aggregate(
+                var parameterNames = setting.Tags.Keys.Aggregate(
                     $"@{nameof(Setting.Name)}, @{nameof(Setting.Value)}",
                     (result, next) => $"{result}, @{next}"
                 );
@@ -139,7 +139,7 @@ namespace SmartConfig.DataStores.SqlServer
 
             AddParameter(command, nameof(Setting.Name), setting.Name.StrongFullName);
             AddParameter(command, nameof(Setting.Value), setting.Value);
-            AddParameters(command, setting.Attributes);
+            AddParameters(command, setting.Tags);
 
             return command;
         }
