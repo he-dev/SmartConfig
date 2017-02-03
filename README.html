@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Title</title>
+</head>
+<body>
+<h1 id="smartconfig-v8-0-1">SmartConfig v8.0.1</h1>
+<p>With SmartConfig you can setup a strongly typed configuration within a few minutes.</p>
+<hr>
+<h2 id="changelog">Changelog</h2>
+<h3 id="v8-0-1">v8.0.1</h3>
+<ul>
+<li>Updated references to <code>Reusable</code>.</li>
+<li><code>Where</code> now allows you to specify an expression for the column name.</li>
+<li>Data stores are now available as separate packages.</li>
+<li>Removed the <code>LoadFailedEvent</code> and the <code>TryLoad</code> method from the <code>Configuration</code>. The new <code>Reload</code> method now throws exceptions.</li>
+</ul>
+<hr>
+<p>The core package on NuGet: <code>Install-Package SmartConfig</code> contains just the core functionality. You need to install a data store to be able to use it.</p>
+<ul>
+<li>AppSettingsStore</li>
+<li>ConnectionStringsStore</li>
+<li>SqlServerStore</li>
+<li>RegistryStore</li>
+</ul>
+<h2 id="quick-start">Quick Start</h2>
+<p>To create a configuration you need to define a static class and decorate it with the <code>[SmartConfig]</code> attribute. It can contain any number of <strong>static</strong> properties and nested classes.</p>
+<p>The below example show all kinds of settings that are supported by SmartConfig. </p>
+<p>Among the simple types you can also use complex types. In order to use them you need to specify them as JSON and add the <code>Converters</code> attribute to the configuration where you specify the exact converters for them.</p>
+<p>Another possibility to specify collections, especially dynamic ones is by using the <code>[Itemized]</code> attribute. This means that each item of the collection is stored in a separate row in the data store. Arrays are required to have an additional <code>[index]</code> but the number actually doesn&#39;t matter. Dictionary keys can be of any type supported by the converters (<code>int</code>, <code>string</code>, <code>enum</code> etc.).</p>
+<pre><code class="lang-cs">[SmartConfig]
+[Converters(
+    typeof(JsonToObjectConverter&lt;int[]&gt;),
+    typeof(JsonToObjectConverter&lt;Dictionary&lt;string, int&gt;&gt;)
+)]
+public static class FullConfig
+{
+    public static string StringSetting { get; set; }
+
+    [Optional]
+    public static string OptionalStringSetting { get; set; } = &quot;Waldo&quot;;
+
+    public static int[] ArraySetting1 { get; set; }
+
+    [Itemized]
+    public static int[] ArraySetting2 { get; set; }
+
+    public static Dictionary&lt;string, int&gt; DictionarySetting1 { get; set; }
+
+    [Itemized]
+    public static Dictionary&lt;string, int&gt; DictionarySetting2 { get; set; }
+
+    public static class NestedConfig
+    {
+        public static string StringSetting { get; set; }
+    }
+
+    [Ignore]
+    public static class IgnoredConfig
+    {
+        public static string StringSetting { get; set; } = &quot;Grault&quot;;
+    }
+}
+</code></pre>
+<p>You load the configuration by specifying the source with the <code>From</code> method and the configuration.</p>
+<p>Loading a configuration from an <code>app.config</code> is as simple as this:</p>
+<pre><code class="lang-cs">Configuration.Load
+    .From(new AppSettingsStore())
+    .Select(typeof(FullConfig));
+</code></pre>
+<p>The respecitve <code>app.config</code> file:</p>
+<pre><code class="lang-xml">&lt;appSettings&gt;
+
+    &lt;add key=&quot;StringSetting&quot; value=&quot;Foo&quot;/&gt;
+    &lt;add key=&quot;ArraySetting2[0]&quot; value=&quot;5&quot;/&gt;
+    &lt;add key=&quot;ArraySetting2[1]&quot; value=&quot;8&quot;/&gt;
+    &lt;add key=&quot;DictionarySetting2[foo]&quot; value=&quot;21&quot;/&gt;
+    &lt;add key=&quot;DictionarySetting2[bar]&quot; value=&quot;34&quot;/&gt;
+    &lt;add key=&quot;NestedConfig.StringSetting&quot; value=&quot;Bar&quot;/&gt;
+    &lt;add key=&quot;IgnoredConfig.StringSetting&quot; value=&quot;Qux&quot;/&gt;
+
+&lt;/appSettings&gt;
+</code></pre>
+<p>That&#39;s all.</p>
+<p>Using a database is not that different. You just need to specify another data store:</p>
+<pre><code class="lang-cs">Configuration.Load
+    .From(new SqlServerStore(&quot;name=SmartConfigTest&quot;))
+    .Select(typeof(FullConfig));
+</code></pre>
+<p>For this example you need to have the following table:</p>
+<pre><code class="lang-sql">CREATE TABLE [dbo].[Setting](
+    [Name] [nvarchar](50) NOT NULL,
+    [Value] [nvarchar](max) NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+</code></pre>
+<p>The same applies to other data sources:</p>
+<p><code>SQLiteStore</code></p>
+<pre><code class="lang-cs">Configuration.Load
+    .From(new SQLiteStore(&quot;name=configdb&quot;))
+    .Select(typeof(FullConfig));
+</code></pre>
+<p><code>RegistryStore</code></p>
+<pre><code class="lang-cs">const string TestRegistryKey = @&quot;Software\SmartConfig\Tests&quot;;
+Configuration.Load
+    .From(RegistryStore.CreateForCurrentUser(TestRegistryKey))
+    .Select(typeof(FullConfig));
+</code></pre>
+<h2 id="attributes">Attributes</h2>
+<p>With SmartConfig it is possible to use more then one identifier (Name) for a setting. The additional criteria are called attributes and allow us to further describe a setting. Not all data stores allow this. That&#39;s why we use a database in this example.</p>
+<p>A common example is the <em>Environment</em>.</p>
+<p>The config class itself does not change at all. You add the attribute when loading:</p>
+<pre><code class="lang-cs"> Configuration.Load
+    .From(new SqlServerStore(&quot;name=SmartConfigTest&quot;).Column(&quot;Environment&quot;, SqlDbType.NVarChar, 200))
+    .Where(&quot;Environment&quot;, &quot;Qux&quot;)
+    .Select(typeof(FullConfig));
+</code></pre>
+<p>Here we&#39;ve added the <code>Where</code> to set the <em>Environment</em> and we configured the <em>Environment</em> column by setting its data-type and length.</p>
+<p>The respecitve table is:</p>
+<pre><code class="lang-sql">CREATE TABLE [dbo].[Setting](
+    [Name] [nvarchar](50) NOT NULL,
+    [Value] [nvarchar](max) NULL,
+    [Environment] [nvarchar](50) NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+</code></pre>
+<h2 id="converters">Converters</h2>
+<p>SmartConfig already supports a lot of data types:</p>
+<ul>
+<li>Integral types: <code>sbyte</code>, <code>byte</code>, <code>char</code>, <code>short</code>, <code>ushort</code>, <code>int</code>, <code>uint</code>, <code>long</code>, <code>ulong</code></li>
+<li>Floating-point types: <code>float</code>, <code>double</code></li>
+<li>Other types: <code>decimal</code>, <code>bool</code>, <code>Enum</code>, <code>DateTime</code>, <code>string</code></li>
+<li>JSON</li>
+<li>Colors (System.Drawing.Color as <code>Name</code> (Red), <code>Hex</code> (#FF00AA), <code>Decimal</code> (122, 134,90)</li>
+</ul>
+<p>In most cases for complex data structures we would want to use json. To be able to parse your type you first need to register a new converter. You add it with an attribute to your config class:</p>
+<pre><code class="lang-cs">[SmartConfig]
+[Converters(typeof(JsonToObjectConverter&lt;List&lt;Int32&gt;&gt;))]
+public static class FullConfig
+{
+    public static List&lt;int&gt; JsonArray { get; set; } // &quot;[1, 2, 3]&quot;
+}
+</code></pre>
+<p>Now SmartConfig knows how to deserialize the list.</p>
+
+</body>
+</html>

@@ -88,27 +88,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="_codebase\ConfigurationNameTarget.cs" />
-    <Compile Include="_codebase\Services\CollectionItemizer.cs" />
+    <Compile Include="_codebase\ConfigurationType.cs" />
     <Compile Include="_codebase\ConfigurationBuilder.cs" />
-    <Compile Include="_codebase\Data\Annotations\ItemizedAttribute.cs" />
     <Compile Include="_codebase\DataStores\MemoryStore.cs" />
+    <Compile Include="_codebase\Data\Annotations\ItemizedAttribute.cs" />
+    <Compile Include="_codebase\_Exceptions\ItemizedSettingPropertyException.cs" />
     <Compile Include="_codebase\Data\Setting.cs" />
+    <Compile Include="_codebase\Converters\EnumerableToDictionaryConverter.cs" />
     <Compile Include="_codebase\Services\SettingReader.cs" />
     <Compile Include="_codebase\ConfigurationReflection.cs" />
     <Compile Include="_codebase\Services\SettingWriter.cs" />
+    <Compile Include="_codebase\TypeConverterFactory.cs" />
     <Compile Include="_codebase\_Exceptions\ConfigurationException.cs" />
     <Compile Include="_codebase\_Exceptions\ConfigurationReadException.cs" />
     <Compile Include="_codebase\_Exceptions\ConfigurationWriteException.cs" />
     <Compile Include="_codebase\Data\SettingProperty.cs" />
     <Compile Include="_codebase\Data\Annotations\RenameAttribute.cs" />
     <Compile Include="_codebase\Configuration.cs" />
-    <Compile Include="_codebase\Data\SettingUrn.cs" />
+    <Compile Include="_codebase\Data\SettingPath.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="_codebase\Data\Annotations\SmartConfigAttribute.cs" />
     <Compile Include="_codebase\Data\DataStore.cs" />
     <Compile Include="_codebase\Data\SettingAttribute.cs" />
-    <Compile Include="_codebase\_Exceptions\MultipleSettingsFoundException.cs" />
     <Compile Include="_codebase\_Exceptions\SettingNotFoundException.cs" />
   </ItemGroup>
   <ItemGroup>

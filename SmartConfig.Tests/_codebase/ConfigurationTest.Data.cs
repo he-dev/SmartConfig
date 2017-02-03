@@ -4,6 +4,7 @@ using System.Drawing;
 using Reusable.Converters;
 using Reusable.Data.Annotations;
 using SmartConfig.Data.Annotations;
+// ReSharper disable BuiltInTypeReferenceStyle
 
 namespace SmartConfig.Core.Tests
 {
@@ -11,8 +12,7 @@ namespace SmartConfig.Core.Tests
     public static class EmptyConfig { }
 
     [SmartConfig]
-    [TypeConverter(typeof(JsonToObjectConverter<List<Int32>>))]
-    public static class FullConfig
+    public static class IntegralConfig
     {
         public static SByte SByte { get; set; }
         public static Byte Byte { get; set; }
@@ -30,35 +30,69 @@ namespace SmartConfig.Core.Tests
         public static String String { get; set; }
         public static bool False { get; set; }
         public static bool True { get; set; }
-        public static DateTime DateTime { get; set; }
         public static TestEnum Enum { get; set; }
+    }
 
+    [SmartConfig]
+    public static class DateTimeConfig
+    {
+        public static DateTime DateTime { get; set; }
+    }
+
+    [SmartConfig]
+    public static class ColorConfig
+    {
         public static Color ColorName { get; set; }
         public static Color ColorDec { get; set; }
         public static Color ColorHex { get; set; }
+    }
 
+    [SmartConfig]
+    [TypeConverter(typeof(JsonToObjectConverter<List<Int32>>))]
+    public static class JsonConfig
+    {
         public static List<int> JsonArray { get; set; }
+    }
 
-        [Reusable.Data.Annotations.Optional]
-        public static string Optional { get; set; } = "Waldo";
-
+    [SmartConfig]
+    public static class ItemizedArrayConfig
+    {
         [Itemized]
         public static int[] ItemizedArray { get; set; }
+    }
 
+    [SmartConfig]
+    public static class ItemizedDictionaryConfig
+    {
         [Itemized]
         public static Dictionary<string, int> ItemizedDictionary { get; set; }
+    }
 
-        public static class NestedConfig
+    [SmartConfig]
+    public static class NestedConfig
+    {
+        public static class SubConfig
         {
             public static string NestedString { get; set; }
         }
+    }
 
-        [Reusable.Data.Annotations.Ignore]
-        public static class IgnoredConfig
+    [SmartConfig]
+    public static class IgnoredConfig
+    {
+        [Ignore]
+        public static class SubConfig
         {
             public static string IgnoredString { get; set; } = "Grault";
         }
     }
+
+    [SmartConfig]
+    public static class OptionalConfig
+    {
+        [Optional]
+        public static string OptionalSetting { get; set; } = "Waldo";
+    }    
 
     [SmartConfig]
     public static class SettingNotFoundConfig

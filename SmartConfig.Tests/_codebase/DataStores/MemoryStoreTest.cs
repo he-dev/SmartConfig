@@ -27,7 +27,7 @@ namespace SmartConfig.Core.Tests.Unit.DataStores
         {
             var store = new MemoryStore();
 
-            var settings = store.GetSettings(new Setting { Name = SettingUrn.Parse("baz") });
+            var settings = store.GetSettings(new Setting { Name = SettingPath.Parse("baz") });
             settings.Count().Verify().IsEqual(0);
         }
 
@@ -40,7 +40,7 @@ namespace SmartConfig.Core.Tests.Unit.DataStores
                 { "baz", "qux" }
             };
 
-            var settings = store.GetSettings(new Setting { Name = SettingUrn.Parse("baz") });
+            var settings = store.GetSettings(new Setting { Name = SettingPath.Parse("baz") });
             settings.Count().Verify().IsEqual(1);
             settings.First().Value.ToString().Verify().IsEqual("qux");
         }
@@ -55,7 +55,7 @@ namespace SmartConfig.Core.Tests.Unit.DataStores
                 { "bar[b]", "qux" }
             };
 
-            var settings = store.GetSettings(new Setting { Name = SettingUrn.Parse("foo") });
+            var settings = store.GetSettings(new Setting { Name = SettingPath.Parse("foo") });
             settings.Count().Verify().IsEqual(2);
             //settings.First().Value.ToString().Verify().IsEqual("qux");
         }

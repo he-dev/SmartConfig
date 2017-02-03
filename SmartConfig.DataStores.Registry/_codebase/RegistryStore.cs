@@ -57,7 +57,7 @@ namespace SmartConfig.DataStores.Registry
                         .Where(valueName => RegistryUrn.Parse(valueName).IsLike(registryPath.WeakFullName))
                         .Select(valueName => new Setting
                         {
-                            Name = SettingUrn.Parse(valueName),
+                            Name = SettingPath.Parse(valueName),
                             Value = subKey.GetValue(valueName)
                         })
                         .ToList();

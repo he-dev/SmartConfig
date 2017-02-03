@@ -3,18 +3,18 @@ using SmartConfig.Data;
 
 namespace SmartConfig.DataStores.Registry
 {
-    public class RegistryUrn : SettingUrn
+    public class RegistryUrn : SettingPath
     {
         public static readonly string DefaultDelimiter = @"\";
 
-        public RegistryUrn(SettingUrn urn) : base(urn)
+        public RegistryUrn(SettingPath urn) : base(urn)
         {
             Delimiter = DefaultDelimiter;
         }
 
         public static RegistryUrn Parse(string value)
         {
-            var settingUrn = SettingUrn.Parse(value, DefaultDelimiter);
+            var settingUrn = SettingPath.Parse(value, DefaultDelimiter);
             return new RegistryUrn(settingUrn);
         }
 

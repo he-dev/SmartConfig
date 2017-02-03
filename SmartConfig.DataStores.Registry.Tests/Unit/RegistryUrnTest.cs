@@ -11,7 +11,7 @@ namespace SmartConfig.DataStores.Registry.Tests.Unit
         [TestMethod]
         public void ctor_CreateFromSettingUrnWithoutNamespace()
         {
-            var registryPath = new RegistryUrn(new SettingUrn(new[] { "Foo" }));
+            var registryPath = new RegistryUrn(new SettingPath(new[] { "Foo" }));
 
             registryPath.Namespace.Verify().IsNullOrEmpty();
             registryPath.WeakName.Verify().IsEqual(@"Foo");
@@ -20,7 +20,7 @@ namespace SmartConfig.DataStores.Registry.Tests.Unit
         [TestMethod]
         public void ctor_CreateFromSettingUrnWithNamespace()
         {
-            var registryPath = new RegistryUrn(new SettingUrn(new[] { "qux", "Foo", "Bar", "Baz" }));
+            var registryPath = new RegistryUrn(new SettingPath(new[] { "qux", "Foo", "Bar", "Baz" }));
 
             registryPath.Namespace.Verify().IsEqual(@"qux\Foo\Bar");
             registryPath.WeakName.Verify().IsEqual(@"Baz");

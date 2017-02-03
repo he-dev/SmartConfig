@@ -82,7 +82,6 @@ The respecitve `app.config` file:
 
 ```xml
 <appSettings>
-
     <add key="StringSetting" value="Foo"/>
     <add key="ArraySetting2[0]" value="5"/>
     <add key="ArraySetting2[1]" value="8"/>
@@ -90,9 +89,8 @@ The respecitve `app.config` file:
     <add key="DictionarySetting2[bar]" value="34"/>
     <add key="NestedConfig.StringSetting" value="Bar"/>
     <add key="IgnoredConfig.StringSetting" value="Qux"/>
-    
 </appSettings>
-``` 
+```
 
 That's all.
 
@@ -108,8 +106,8 @@ For this example you need to have the following table:
 
 ```sql
 CREATE TABLE [dbo].[Setting](
-	[Name] [nvarchar](50) NOT NULL,
-	[Value] [nvarchar](max) NULL
+    [Name] [nvarchar](50) NOT NULL,
+    [Value] [nvarchar](max) NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 ```
 
@@ -153,9 +151,9 @@ The respecitve table is:
 
 ```sql
 CREATE TABLE [dbo].[Setting](
-	[Name] [nvarchar](50) NOT NULL,
-	[Value] [nvarchar](max) NULL,
-	[Environment] [nvarchar](50) NOT NULL
+    [Name] [nvarchar](50) NOT NULL,
+    [Value] [nvarchar](max) NULL,
+    [Environment] [nvarchar](50) NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 ```
 

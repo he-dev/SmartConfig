@@ -77,7 +77,7 @@ namespace SmartConfig.DataStores.SQLite
 
                         var result = new Setting
                         {
-                            Name = SettingUrn.Parse((string)settingReader[nameof(Setting.Name)]),
+                            Name = SettingPath.Parse((string)settingReader[nameof(Setting.Name)]),
                             Value = RecodeDataEnabled ? value.Recode(DataEncoding, SettingEncoding) : value
                         };
 

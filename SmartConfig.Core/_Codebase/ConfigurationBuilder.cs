@@ -18,7 +18,7 @@ namespace SmartConfig
 
         private DataStore _dataStore;
 
-        private TypeConverter _converter = Configuration.DefaultConverter();
+        private TypeConverter _converter = TypeConverterFactory.CreateDefaultConverter();
 
         private Dictionary<string, object> _tags = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
@@ -56,7 +56,7 @@ namespace SmartConfig
                 .IsTrue(x => x.HasAttribute<SmartConfigAttribute>(), $"Config type \"{configType.FullName}\" muss be decorated with the {nameof(SmartConfigAttribute)}.")
                 .Value;
 
-            GetNameTag(configType);
+            GetConfigurationTag(configType);
             GetConverters(configType);
 
             _converter = configureConverter?.Invoke(_converter) ?? _converter;
@@ -78,12 +78,12 @@ namespace SmartConfig
             }
         }
 
-        private void GetNameTag(MemberInfo configType)
+        private void GetConfigurationTag(MemberInfo configType)
         {
             var smartConfigAttribute = configType.GetCustomAttribute<SmartConfigAttribute>();
-            if (smartConfigAttribute.NameTarget == ConfigurationNameTarget.Tag)
+            if (!string.IsNullOrEmpty(smartConfigAttribute.Name) && !string.IsNullOrEmpty(smartConfigAttribute.Tag))
             {
-                _tags.Add(nameof(SettingAttribute.Config), smartConfigAttribute.Name);
+                _tags.Add(smartConfigAttribute.Tag, smartConfigAttribute.Name);
             }
         }
 

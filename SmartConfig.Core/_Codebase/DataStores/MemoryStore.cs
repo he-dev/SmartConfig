@@ -47,7 +47,7 @@ namespace SmartConfig.DataStores
 
         public void Add(string name, object value) => Data.Add(new Setting
         {
-            Name = SettingUrn.Parse(name),
+            Name = SettingPath.Parse(name),
             Value = value
         });
 

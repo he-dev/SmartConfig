@@ -62,7 +62,7 @@ namespace SmartConfig.DataStores.SqlServer
                         {
                             var result = new Setting
                             {
-                                Name = SettingUrn.Parse((string)settingReader[nameof(Setting.Name)]),
+                                Name = SettingPath.Parse((string)settingReader[nameof(Setting.Name)]),
                                 Value = settingReader[nameof(Setting.Value)]
                             };
                             foreach (var attribute in setting.Tags)

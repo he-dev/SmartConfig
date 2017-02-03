@@ -34,7 +34,7 @@ namespace SmartConfig.DataStores.SQLite.Tests
         }
     }
 
-    [SmartConfig("thud")]
+    [SmartConfig(Name = "thud")]
     public static class FullConfig2
     {
         public static string StringSetting { get; set; }
@@ -60,7 +60,7 @@ namespace SmartConfig.DataStores.SQLite.Tests
         }
     }
 
-    [SmartConfig("thudy", ConfigurationNameTarget.Tag)]
+    [SmartConfig(Name = "thudy", Tag = "Config")]
     public static class FullConfig3
     {
         public static string StringSetting { get; set; }
@@ -86,7 +86,7 @@ namespace SmartConfig.DataStores.SQLite.Tests
         }
     }
 
-    [SmartConfig("thudy")]
+    [SmartConfig(Name = "thudy")]
     public static class FullConfig4
     {
         public static string StringSetting { get; set; }

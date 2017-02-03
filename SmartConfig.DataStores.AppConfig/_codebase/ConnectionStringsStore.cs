@@ -24,10 +24,10 @@ namespace SmartConfig.DataStores.AppConfig
         {
             var connectionStringSettings =
                 _connectionStringsSection.ConnectionStrings.Cast<ConnectionStringSettings>()
-                .Where(x => SettingUrn.Parse(x.Name).IsLike(setting.Name) && !string.IsNullOrEmpty(x.ConnectionString))
+                .Where(x => SettingPath.Parse(x.Name).IsLike(setting.Name) && !string.IsNullOrEmpty(x.ConnectionString))
                 .Select(x => new Setting
                 {
-                    Name = SettingUrn.Parse(x.Name),
+                    Name = SettingPath.Parse(x.Name),
                     Value = x.ConnectionString
                 })
                 .ToList();
@@ -55,7 +55,7 @@ namespace SmartConfig.DataStores.AppConfig
                         var names =
                             _connectionStringsSection.ConnectionStrings
                                 .Cast<ConnectionStringSettings>()
-                                .Where(x => SettingUrn.Parse(x.Name).IsLike(setting.Name));
+                                .Where(x => SettingPath.Parse(x.Name).IsLike(setting.Name));
 
                         foreach (var item in names)
                         {

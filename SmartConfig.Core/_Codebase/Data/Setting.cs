@@ -22,10 +22,10 @@ namespace SmartConfig.Data
 
         public string StrongId => $"{Name.StrongFullName}/{Tags.OrderBy(x => x.Key).Select(x => x.Value).Join("/")}";
 
-        public SettingUrn Name
+        public SettingPath Name
         {
             [DebuggerStepThrough]
-            get { return (SettingUrn)_values[nameof(Name)]; }
+            get { return (SettingPath)_values[nameof(Name)]; }
 
             [DebuggerStepThrough]
             set { _values[nameof(Name)] = value; }

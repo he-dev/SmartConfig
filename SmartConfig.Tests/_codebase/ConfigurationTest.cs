@@ -27,7 +27,7 @@ namespace SmartConfig.Core.Tests
     public class ConfigurationTest
     {
         [TestMethod]
-        public void Load_EmptyConfig()
+        public void Load_EmptyConfig_NothingLoaded()
         {
             var getSettingsCallCount = 0;
             var saveSettingsCallCount = 0;
@@ -54,94 +54,148 @@ namespace SmartConfig.Core.Tests
         }
 
         [TestMethod]
-        public void Load_FullConfig()
+        public void Load_IntegralConfig()
         {
             var culture = CultureInfo.InvariantCulture;
 
-            var config = Configuration.Load.From(new MemoryStore
+            Configuration.Load.From(new MemoryStore
             {
-                {nameof(FullConfig.SByte), SByte.MaxValue.ToString()},
-                {nameof(FullConfig.Byte), Byte.MaxValue.ToString()},
-                {nameof(FullConfig.Char), Char.MaxValue.ToString()},
-                {nameof(FullConfig.Int16), Int16.MaxValue.ToString()},
-                {nameof(FullConfig.Int32), Int32.MaxValue.ToString()},
-                {nameof(FullConfig.Int64), Int64.MaxValue.ToString()},
-                {nameof(FullConfig.UInt16), UInt16.MaxValue.ToString()},
-                {nameof(FullConfig.UInt32), UInt32.MaxValue.ToString()},
-                {nameof(FullConfig.UInt64), UInt64.MaxValue.ToString()},
-                {nameof(FullConfig.Single), Single.MaxValue.ToString("R", culture)},
-                {nameof(FullConfig.Double), Double.MaxValue.ToString("R", culture)},
-                {nameof(FullConfig.Decimal), Decimal.MaxValue.ToString(culture)},
+                {nameof(IntegralConfig.SByte), SByte.MaxValue.ToString()},
+                {nameof(IntegralConfig.Byte), Byte.MaxValue.ToString()},
+                {nameof(IntegralConfig.Char), Char.MaxValue.ToString()},
+                {nameof(IntegralConfig.Int16), Int16.MaxValue.ToString()},
+                {nameof(IntegralConfig.Int32), Int32.MaxValue.ToString()},
+                {nameof(IntegralConfig.Int64), Int64.MaxValue.ToString()},
+                {nameof(IntegralConfig.UInt16), UInt16.MaxValue.ToString()},
+                {nameof(IntegralConfig.UInt32), UInt32.MaxValue.ToString()},
+                {nameof(IntegralConfig.UInt64), UInt64.MaxValue.ToString()},
+                {nameof(IntegralConfig.Single), Single.MaxValue.ToString("R", culture)},
+                {nameof(IntegralConfig.Double), Double.MaxValue.ToString("R", culture)},
+                {nameof(IntegralConfig.Decimal), Decimal.MaxValue.ToString(culture)},
 
-                {nameof(FullConfig.String), "foo"},
-                {nameof(FullConfig.False), bool.FalseString},
-                {nameof(FullConfig.True), bool.TrueString},
-                {nameof(FullConfig.DateTime), new DateTime(2016, 7, 30).ToString(culture)},
-                {nameof(FullConfig.Enum), TestEnum.TestValue2.ToString()},
-
-                {nameof(FullConfig.ColorName), Color.DarkRed.Name},
-                {nameof(FullConfig.ColorDec), $"{Color.Plum.R},{Color.Plum.G},{Color.Plum.B}"},
-                {nameof(FullConfig.ColorHex), Color.Beige.ToArgb().ToString("X")},
-
-                {nameof(FullConfig.JsonArray), "[5, 8, 13]"},
-
-                //{ nameof(FullConfig.Optional), "Fox" },
-
-                {nameof(FullConfig.ItemizedArray) + "[0]", "5"},
-                {nameof(FullConfig.ItemizedArray) + "[1]", "8"},
-
-                {nameof(FullConfig.ItemizedDictionary) + "[foo]", "21"},
-                {nameof(FullConfig.ItemizedDictionary) + "[bar]", "34"},
-
-                {nameof(FullConfig.NestedConfig) + "." + nameof(FullConfig.NestedConfig.NestedString), "Quux"},
-
-                //new Setting { Name = nameof(TypesConfig.Uri), Value = bool.TrueString },
-                //new Setting { Name = nameof(TypesConfig.XDocument), Value = @"<?xml version=""1.0""?><testXml></testXml>" },
-                //new Setting { Name = nameof(TypesConfig.XElement), Value = @"<testXml></testXml>" },
+                {nameof(IntegralConfig.String), "foo"},
+                {nameof(IntegralConfig.False), bool.FalseString},
+                {nameof(IntegralConfig.True), bool.TrueString},
+                {nameof(IntegralConfig.Enum), TestEnum.TestValue2.ToString()},
             })
-            //.With<JsonToObjectConverter<List<Int32>>>()
-            .Select(typeof(FullConfig));
+            .Select(typeof(IntegralConfig));
 
-            //config.SettingProperties.Count().Verify().IsEqual(25);
+            IntegralConfig.SByte.Verify().IsEqual(SByte.MaxValue);
+            IntegralConfig.Byte.Verify().IsEqual(Byte.MaxValue);
+            IntegralConfig.Char.Verify().IsEqual(Char.MaxValue);
+            IntegralConfig.Int16.Verify().IsEqual(Int16.MaxValue);
+            IntegralConfig.Int32.Verify().IsEqual(Int32.MaxValue);
+            IntegralConfig.Int64.Verify().IsEqual(Int64.MaxValue);
+            IntegralConfig.UInt16.Verify().IsEqual(UInt16.MaxValue);
+            IntegralConfig.UInt32.Verify().IsEqual(UInt32.MaxValue);
+            IntegralConfig.UInt64.Verify().IsEqual(UInt64.MaxValue);
+            IntegralConfig.Single.Verify().IsEqual(Single.MaxValue);
+            IntegralConfig.Double.Verify().IsEqual(Double.MaxValue);
+            IntegralConfig.Decimal.Verify().IsEqual(Decimal.MaxValue);
 
-            FullConfig.SByte.Verify().IsEqual(SByte.MaxValue);
-            FullConfig.Byte.Verify().IsEqual(Byte.MaxValue);
-            FullConfig.Char.Verify().IsEqual(Char.MaxValue);
-            FullConfig.Int16.Verify().IsEqual(Int16.MaxValue);
-            FullConfig.Int32.Verify().IsEqual(Int32.MaxValue);
-            FullConfig.Int64.Verify().IsEqual(Int64.MaxValue);
-            FullConfig.UInt16.Verify().IsEqual(UInt16.MaxValue);
-            FullConfig.UInt32.Verify().IsEqual(UInt32.MaxValue);
-            FullConfig.UInt64.Verify().IsEqual(UInt64.MaxValue);
-            FullConfig.Single.Verify().IsEqual(Single.MaxValue);
-            FullConfig.Double.Verify().IsEqual(Double.MaxValue);
-            FullConfig.Decimal.Verify().IsEqual(Decimal.MaxValue);
-
-            FullConfig.String.Verify().IsEqual("foo");
-            FullConfig.False.Verify().IsEqual(false);
-            FullConfig.True.Verify().IsEqual(true);
-            FullConfig.DateTime.Verify().IsEqual(new DateTime(2016, 7, 30));
-            FullConfig.Enum.Verify().IsTrue(x => x == TestEnum.TestValue2);
-
-            FullConfig.ColorName.ToArgb().Verify().IsEqual(Color.DarkRed.ToArgb());
-            FullConfig.ColorDec.ToArgb().Verify().IsEqual(Color.Plum.ToArgb());
-            FullConfig.ColorHex.ToArgb().Verify().IsEqual(Color.Beige.ToArgb());
-
-            FullConfig.JsonArray.Verify().IsTrue(x => x.SequenceEqual(new List<int> { 5, 8, 13 }));
-
-            FullConfig.Optional.Verify().IsEqual("Waldo");
-
-            FullConfig.ItemizedArray.Length.Verify().IsEqual(2);
-            FullConfig.ItemizedArray[0].Verify().IsEqual(5);
-            FullConfig.ItemizedArray[1].Verify().IsEqual(8);
-
-            FullConfig.ItemizedDictionary.Count.Verify().IsEqual(2);
-            FullConfig.ItemizedDictionary["foo"].Verify().IsEqual(21);
-            FullConfig.ItemizedDictionary["bar"].Verify().IsEqual(34);
-
-            FullConfig.NestedConfig.NestedString.Verify().IsEqual("Quux");
+            IntegralConfig.String.Verify().IsEqual("foo");
+            IntegralConfig.False.Verify().IsEqual(false);
+            IntegralConfig.True.Verify().IsEqual(true);
+            IntegralConfig.Enum.Verify().IsTrue(x => x == TestEnum.TestValue2);
         }
 
+        [TestMethod]
+        public void Load_DateTimeConfig()
+        {
+            var culture = CultureInfo.InvariantCulture;
+
+            Configuration.Load.From(new MemoryStore
+            {
+                {nameof(DateTimeConfig.DateTime), new DateTime(2016, 7, 30).ToString(culture)},
+            })
+            .Select(typeof(DateTimeConfig));
+
+            DateTimeConfig.DateTime.Verify().IsEqual(new DateTime(2016, 7, 30));
+        }
+
+        [TestMethod]
+        public void Load_ColorConfig()
+        {
+            Configuration.Load.From(new MemoryStore
+            {
+                {nameof(ColorConfig.ColorName), Color.DarkRed.Name},
+                {nameof(ColorConfig.ColorDec), $"{Color.Plum.R},{Color.Plum.G},{Color.Plum.B}"},
+                {nameof(ColorConfig.ColorHex), Color.Beige.ToArgb().ToString("X")},
+            })
+            .Select(typeof(ColorConfig));
+
+            ColorConfig.ColorName.ToArgb().Verify().IsEqual(Color.DarkRed.ToArgb());
+            ColorConfig.ColorDec.ToArgb().Verify().IsEqual(Color.Plum.ToArgb());
+            ColorConfig.ColorHex.ToArgb().Verify().IsEqual(Color.Beige.ToArgb());
+        }
+
+        [TestMethod]
+        public void Load_JsonConfig()
+        {
+            Configuration.Load.From(new MemoryStore
+            {
+                {nameof(JsonConfig.JsonArray), "[5, 8, 13]"},
+            })
+            .Select(typeof(JsonConfig));
+
+            JsonConfig.JsonArray.Verify().IsTrue(x => x.SequenceEqual(new List<int> { 5, 8, 13 }));
+        }
+
+        [TestMethod]
+        public void Load_ItemizedArrayConfig()
+        {
+            Configuration.Load.From(new MemoryStore
+            {
+                {$"{nameof(ItemizedArrayConfig.ItemizedArray)}[0]", "5"},
+                {$"{nameof(ItemizedArrayConfig.ItemizedArray)}[1]", "8"},
+            })
+            .Select(typeof(ItemizedArrayConfig));
+
+            ItemizedArrayConfig.ItemizedArray.Length.Verify().IsEqual(2);
+            ItemizedArrayConfig.ItemizedArray[0].Verify().IsEqual(5);
+            ItemizedArrayConfig.ItemizedArray[1].Verify().IsEqual(8);
+        }
+
+        [TestMethod]
+        public void Load_ItemizedDictionaryConfig()
+        {
+            Configuration.Load.From(new MemoryStore
+            {
+                {$"{nameof(ItemizedDictionaryConfig.ItemizedDictionary)}[foo]", "21"},
+                {$"{nameof(ItemizedDictionaryConfig.ItemizedDictionary)}[bar]", "34"},
+            })
+            .Select(typeof(ItemizedDictionaryConfig));
+
+            ItemizedDictionaryConfig.ItemizedDictionary.Count.Verify().IsEqual(2);
+            ItemizedDictionaryConfig.ItemizedDictionary["foo"].Verify().IsEqual(21);
+            ItemizedDictionaryConfig.ItemizedDictionary["bar"].Verify().IsEqual(34);
+        }
+
+        [TestMethod]
+        public void Load_NestedConfig()
+        {
+            Configuration.Load.From(new MemoryStore
+            {
+                {nameof(NestedConfig.SubConfig) + "." + nameof(NestedConfig.SubConfig.NestedString), "Quux"},
+            })
+            .Select(typeof(NestedConfig));
+
+            NestedConfig.SubConfig.NestedString.Verify().IsEqual("Quux");
+        }
+
+        [TestMethod]
+        public void Load_IgnoredConfig()
+        {
+            Configuration.Load.From(new MemoryStore()).Select(typeof(IgnoredConfig));
+            IgnoredConfig.SubConfig.IgnoredString.Verify().IsEqual("Grault");
+        }
+
+        [TestMethod]
+        public void Load_OptionalConfig()
+        {
+            Configuration.Load.From(new MemoryStore()).Select(typeof(OptionalConfig));
+            OptionalConfig.OptionalSetting.Verify().IsEqual("Waldo");
+        }      
 
         [TestMethod]
         public void Load_Where_FromExpression()

@@ -32,7 +32,7 @@ namespace SmartConfig.DataStores.Registry.Tests
         }
     }
 
-    [SmartConfig("thud")]
+    [SmartConfig(Name = "thud")]
     public static class FullConfig2
     {
         public static string StringSetting { get; set; }
@@ -78,7 +78,7 @@ namespace SmartConfig.DataStores.Registry.Tests
         }
     }
 
-    [SmartConfig("thudy")]
+    [SmartConfig(Name = "thudy")]
     public static class FullConfig4
     {
         public static string StringSetting { get; set; }

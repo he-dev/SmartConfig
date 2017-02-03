@@ -24,12 +24,12 @@ namespace SmartConfig.DataStores.AppConfig
         {
             var keys =
                 _appSettingsSection.Settings.AllKeys
-                .Where(k => SettingUrn.Parse(k).IsLike(setting.Name))
+                .Where(k => SettingPath.Parse(k).IsLike(setting.Name))
                 .ToArray();
 
             var settings = keys.Select(key => new Setting
             {
-                Name = SettingUrn.Parse(key),
+                Name = SettingPath.Parse(key),
                 Value = _appSettingsSection.Settings[key].Value
             })
             .ToList();
@@ -59,7 +59,7 @@ namespace SmartConfig.DataStores.AppConfig
                     if (!groupDeleted)
                     {
                         // Get weak keys for this setting group to delete.
-                        var keys = _appSettingsSection.Settings.AllKeys.Where(key => SettingUrn.Parse(key).IsLike(setting.Name)).ToList();
+                        var keys = _appSettingsSection.Settings.AllKeys.Where(key => SettingPath.Parse(key).IsLike(setting.Name)).ToList();
                         foreach (var key in keys)
                         {
                             _appSettingsSection.Settings.Remove(key);

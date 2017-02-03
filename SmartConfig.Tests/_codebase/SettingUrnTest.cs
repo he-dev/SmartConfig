@@ -11,7 +11,7 @@ namespace SmartConfig.Core.Tests.Unit
         [TestMethod]
         public void ctor_CreateFromPath2WithoutKey()
         {
-            var path = new SettingUrn(new[] { "foo", "bar" });
+            var path = new SettingPath(new[] { "foo", "bar" });
 
             path.Count.Verify().IsEqual(2);
 
@@ -27,7 +27,7 @@ namespace SmartConfig.Core.Tests.Unit
         [TestMethod]
         public void ctor_CreateFromPath1WithKey()
         {
-            var path = new SettingUrn(new[] { "foo" }, "baz");
+            var path = new SettingPath(new[] { "foo" }, "baz");
 
             path.Count.Verify().IsEqual(1);
 
@@ -43,7 +43,7 @@ namespace SmartConfig.Core.Tests.Unit
         [TestMethod]
         public void ctor_CreateFromPath2WithKey()
         {
-            var path = new SettingUrn(new[] { "foo", "bar" }, "baz");
+            var path = new SettingPath(new[] { "foo", "bar" }, "baz");
 
             path.Count.Verify().IsEqual(2);
 
@@ -59,7 +59,7 @@ namespace SmartConfig.Core.Tests.Unit
         [TestMethod]
         public void ctor_CreateFromStringWithoutKey()
         {
-            var path = SettingUrn.Parse("foo.bar");
+            var path = SettingPath.Parse("foo.bar");
 
             path.Count.Verify().IsEqual(2);
 
@@ -75,7 +75,7 @@ namespace SmartConfig.Core.Tests.Unit
         [TestMethod]
         public void ctor_CreateFromStringWithKey()
         {
-            var path = SettingUrn.Parse("foo.bar[baz]");
+            var path = SettingPath.Parse("foo.bar[baz]");
 
             path.Count.Verify().IsEqual(2);
 
@@ -91,11 +91,11 @@ namespace SmartConfig.Core.Tests.Unit
         [TestMethod]
         public void IsLike_WithOrWithoutKey()
         {
-            var path = SettingUrn.Parse("foo.bar");
+            var path = SettingPath.Parse("foo.bar");
 
-            path.IsLike(SettingUrn.Parse("foo.bar")).Verify().IsTrue();
-            path.IsLike(SettingUrn.Parse("foo.bar[baz]")).Verify().IsTrue();
-            path.IsLike(SettingUrn.Parse("foo.baz")).Verify().IsFalse();
+            path.IsLike(SettingPath.Parse("foo.bar")).Verify().IsTrue();
+            path.IsLike(SettingPath.Parse("foo.bar[baz]")).Verify().IsTrue();
+            path.IsLike(SettingPath.Parse("foo.baz")).Verify().IsFalse();
         }
     }
 

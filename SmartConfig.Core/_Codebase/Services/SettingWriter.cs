@@ -5,6 +5,7 @@ using System.Linq;
 using Reusable;
 using SmartConfig.Data;
 using Reusable.Converters;
+using SmartConfig.Converters;
 
 // ReSharper disable RedundantIfElseBlock
 
@@ -17,7 +18,6 @@ namespace SmartConfig.Services
         private readonly IDictionary<string, object> _tags;
         private readonly TypeConverter _converter;
         private readonly TypeConverter _itemizer;
-
 
         public SettingWriter(
             DataStore dataStore,
@@ -63,14 +63,15 @@ namespace SmartConfig.Services
 
         private IList<Setting> SerializeSetting(SettingProperty setting)
         {
-            if (setting.IsItemized)
+            var itemize = setting.Type.IsEnumerable() && !_converter.CanConvert(setting.Value, setting.Type);
+            if (itemize)
             {
-                var settingType = GetSettingType(setting.Type.GetElementType());
+                var storeType = GetStoreType(setting.Type.GetElementType());
                 var items = (IDictionary<object, object>)_itemizer.Convert(setting.Value, typeof(Dictionary<object, object>));
                 var settings = items.Select(x => new Setting
                 {
-                    Name = new SettingUrn(setting.Path, (string)_converter.Convert(x.Key, typeof(string))),
-                    Value = _converter.Convert(x.Value, settingType)
+                    Name = new SettingPath(setting.Path, (string)_converter.Convert(x.Key, typeof(string))),
+                    Value = _converter.Convert(x.Value, storeType)
                 })
                 .ToList();
 
@@ -78,7 +79,7 @@ namespace SmartConfig.Services
             }
             else
             {
-                var settingType = GetSettingType(setting.Type);
+                var settingType = GetStoreType(setting.Type);
                 var value = _converter.Convert(setting.Value, settingType);
                 var settings = new[]
                 {
@@ -92,7 +93,7 @@ namespace SmartConfig.Services
             }
         }
 
-        private Type GetSettingType(Type type)
+        private Type GetStoreType(Type type)
         {
             if (_dataStore.SupportedTypes.Any(supportedType => supportedType == type))
             {

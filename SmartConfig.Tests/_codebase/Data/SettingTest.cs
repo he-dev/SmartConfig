@@ -14,13 +14,13 @@ namespace SmartConfig.Core.Tests.Unit.Data
         {
             var setting = new Setting
             {
-                Name = SettingUrn.Parse("foo.bar[baz]"),
+                Name = SettingPath.Parse("foo.bar[baz]"),
                 Value = "waldo",
                 Tags = new Dictionary<string, object> { ["Environment"] = "qux" },
                 ["Config"] = "corge"
             };
 
-            setting.Name.Verify().IsTrue(x => x == SettingUrn.Parse("foo.bar[baz]"));
+            setting.Name.Verify().IsTrue(x => x == SettingPath.Parse("foo.bar[baz]"));
 
             setting.Tags.Count.Verify().IsEqual(2);
             setting.Tags["Environment"].Verify().IsTrue(x => x.Equals("qux"));

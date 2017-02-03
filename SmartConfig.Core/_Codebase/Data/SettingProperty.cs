@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -16,13 +19,10 @@ namespace SmartConfig.Data
         internal SettingProperty(PropertyInfo property)
         {
             Property = property;
-            Path = new SettingUrn(Property.GetSettingPath());
+            Path = new SettingPath(Property.GetPath());
 
             // an itemzed setting must be an enumerable
-            if (IsItemized)
-            {
-                IsEnumerable.Validate(nameof(IsEnumerable)).IsTrue();
-            }
+            if (IsItemized && !IsEnumerable) throw new ItemizedSettingPropertyException();            
         }
 
         private PropertyInfo Property { get; }
@@ -31,11 +31,13 @@ namespace SmartConfig.Data
 
         public bool IsItemized => Property.GetCustomAttribute<ItemizedAttribute>() != null;
 
+        public IEnumerable<ValidationAttribute> Validations => Property.GetCustomAttributes<ValidationAttribute>();
+
         public bool IsEnumerable => Property.PropertyType.IsEnumerable();
 
         public Type Type => Property.PropertyType;
 
-        public SettingUrn Path { get; }
+        public SettingPath Path { get; }
 
         public object Value
         {
@@ -62,5 +64,5 @@ namespace SmartConfig.Data
             //return $"{ConfigType.Name}.{Path.StrongFullName} {(IsOptional ? "optional" : "required")} {Type.ToShortString()}";
             return $"{Path.StrongFullName} {(IsOptional ? "optional" : "required")} {Type.ToShortString()}";
         }
-    }    
+    }
 }

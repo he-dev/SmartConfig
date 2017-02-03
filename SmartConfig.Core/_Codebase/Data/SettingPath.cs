@@ -9,19 +9,19 @@ using Reusable.Fuse;
 namespace SmartConfig.Data
 {
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
-    public class SettingUrn : IReadOnlyCollection<string>
+    public class SettingPath : IReadOnlyCollection<string>
     {
         private const string DefaultDelimiter = ".";
 
-        public SettingUrn(IEnumerable<string> names, string key)
+        public SettingPath(IEnumerable<string> names, string key)
         {
             Names = names.Validate(nameof(names)).IsNotNull().IsTrue(x => x.Any()).Value.ToList();
             Key = key;
         }
 
-        public SettingUrn(IEnumerable<string> names) : this(names, null) { }
+        public SettingPath(IEnumerable<string> names) : this(names, null) { }
 
-        public SettingUrn(SettingUrn urn) : this(urn, urn.Key) { }
+        public SettingPath(SettingPath urn) : this(urn, urn.Key) { }
 
         private IReadOnlyCollection<string> Names { get; }
 
@@ -39,11 +39,13 @@ namespace SmartConfig.Data
 
         public string Key { get; }
 
+        public bool HasKey => !string.IsNullOrEmpty(Key);
+
         private string DebuggerDisplay => $"StrongFullName = \"{StrongFullName}\"";
 
         public int Count => Names.Count;
 
-        public static SettingUrn Parse(string value, string delimiter = DefaultDelimiter)
+        public static SettingPath Parse(string value, string delimiter = DefaultDelimiter)
         {
             var names = value.Trim().Split(new[] { delimiter }, StringSplitOptions.None);
 
@@ -53,10 +55,10 @@ namespace SmartConfig.Data
             names[names.Length - 1] = lastNameMatch.Groups["name"].Value;
             var key = lastNameMatch.Groups["key"].Value;
 
-            return new SettingUrn(names, key);
+            return new SettingPath(names, key);
         }
 
-        public bool IsLike(SettingUrn path) => WeakFullName.Equals(path.WeakFullName, StringComparison.OrdinalIgnoreCase);
+        public bool IsLike(SettingPath path) => WeakFullName.Equals(path.WeakFullName, StringComparison.OrdinalIgnoreCase);
 
         public bool IsLike(string value) => IsLike(Parse(value));
 
@@ -67,7 +69,7 @@ namespace SmartConfig.Data
         }
 #endif
 
-        public static bool operator ==(SettingUrn left, SettingUrn right)
+        public static bool operator ==(SettingPath left, SettingPath right)
         {
             return
                 !ReferenceEquals(left, null) &&
@@ -75,16 +77,16 @@ namespace SmartConfig.Data
                 left.StrongFullName.Equals(right.StrongFullName, StringComparison.OrdinalIgnoreCase);
         }
 
-        public static bool operator !=(SettingUrn x, SettingUrn y) => !(x == y);
+        public static bool operator !=(SettingPath x, SettingPath y) => !(x == y);
 
-        protected bool Equals(SettingUrn other) => this == other;
+        protected bool Equals(SettingPath other) => this == other;
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((SettingUrn)obj);
+            return Equals((SettingPath)obj);
         }
 
         public override int GetHashCode() => StrongFullName.GetHashCode();

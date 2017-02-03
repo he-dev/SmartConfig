@@ -7,18 +7,19 @@ namespace SmartConfig.Data.Annotations
     [AttributeUsage(AttributeTargets.Class)]
     public class SmartConfigAttribute : Attribute
     {
-        public SmartConfigAttribute() { }
+        private string _name;
+        private string _tag;
 
-        public SmartConfigAttribute(string name, ConfigurationNameTarget nameTarget)
+        public string Name
         {
-            Name = name.Validate(nameof(name)).IsNotNullOrEmpty().Value;
-            NameTarget = nameTarget;
+            get { return _name; }
+            set { _name = value.Validate(nameof(Name)).IsNotNullOrEmpty().Value; }
         }
 
-        public SmartConfigAttribute(string name) : this(name, ConfigurationNameTarget.Path) { }
-
-        public string Name { get; }
-
-        public ConfigurationNameTarget NameTarget { get; }
+        public string Tag
+        {
+            get { return _tag; }
+            set { _tag = value.Validate(nameof(Tag)).IsNotNullOrEmpty().Value; }
+        }
     }
 }
