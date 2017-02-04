@@ -14,6 +14,7 @@ using SmartConfig.Services;
 
 namespace SmartConfig
 {
+    // Builds a configuration.
     public class ConfigurationBuilder
     {
         private List<SettingProperty> _settingProperties;

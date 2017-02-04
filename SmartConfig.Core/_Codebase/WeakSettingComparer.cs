@@ -4,6 +4,7 @@ using SmartConfig.Data;
 
 namespace SmartConfig
 {
+    // Compares settings by the weak-full-name and tags if available.
     public class WeakSettingComparer : IEqualityComparer<Setting>
     {
         public bool Equals(Setting x, Setting y)

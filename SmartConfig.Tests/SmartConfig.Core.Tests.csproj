@@ -101,7 +101,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="_codebase\Data\" />
-    <Folder Include="_codebase\Unit\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

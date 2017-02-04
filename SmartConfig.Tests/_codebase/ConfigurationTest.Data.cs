@@ -114,8 +114,6 @@ namespace SmartConfig.Core.Tests
         TestValue3
     }
 
-
-
     [SmartConfig]
     public class NonStaticConfig { }
 

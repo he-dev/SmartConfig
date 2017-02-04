@@ -9,6 +9,7 @@ using SmartConfig.Data.Annotations;
 
 namespace SmartConfig
 {
+    // 
     internal static class ConfigurationType
     {
         internal static IEnumerable<SettingProperty> GetSettingProperties(Type configType)

@@ -36,7 +36,7 @@ namespace SmartConfig.DataStores.SQLite
                 .TableName(nameof(Setting))
                 .Column(nameof(Setting.Name), DbType.String, 300)
                 .Column(nameof(Setting.Value), DbType.String, ColumnConfiguration.MaxLength)
-                .Column(SettingAttribute.Config);
+                .Column(SettingTag.Config);
 
             tableConfigBuilder?.Invoke(settingTableConfigBuilder);
             SettingTableConfiguration = settingTableConfigBuilder.Build();

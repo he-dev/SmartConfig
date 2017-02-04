@@ -6,6 +6,7 @@ using Reusable.Converters;
 
 namespace SmartConfig.Converters
 {
+    // Converts enumerables to dictionaries. This converter is used for itemized settings.
     internal class EnumerableToDictionaryConverter : TypeConverter<IEnumerable, IDictionary>
     {
         public override bool CanConvert(object value, Type targetType)

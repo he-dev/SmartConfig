@@ -7,6 +7,7 @@ using SmartConfig.Data;
 
 namespace SmartConfig.DataStores
 {
+    // Provides a memory-store.
     public class MemoryStore : DataStore, IEnumerable<Setting>
     {
         public MemoryStore() : base(new[] { typeof(string) }) { }

@@ -27,6 +27,7 @@ namespace SmartConfig.Services
     //    }
     //}
 
+    // Reads settings from data-store into setting-properties.
     internal class SettingReader
     {
         private readonly DataStore _dataStore;
@@ -69,7 +70,7 @@ namespace SmartConfig.Services
                         throw new Exception(string.Join(", ", validationErrorMessages));
                     }
 
-                    cache[settingProperty] = value;                    
+                    cache[settingProperty] = value;
                 }
                 catch (Exception inner)
                 {
@@ -101,8 +102,7 @@ namespace SmartConfig.Services
                     return values.Select(x => x.Value);
                 }
 
-                // TODO unknown setting type
-                throw new Exception();
+                throw new NotSupportedException($"Setting type '{settingProperty.Type}' is not supported for itemized settings.");
             }
             else
             {

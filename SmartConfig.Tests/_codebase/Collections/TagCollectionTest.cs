@@ -9,7 +9,7 @@ namespace SmartConfig.Core.Tests.Collections
     {
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public void Add_ReservedName_Exception()
+        public void Add_ReservedName_ArgumentException()
         {
             var tc = new TagCollection
             {
@@ -19,7 +19,7 @@ namespace SmartConfig.Core.Tests.Collections
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public void Add_ReservedValue_Exception()
+        public void Add_ReservedValue_ArgumentException()
         {
             var tc = new TagCollection
             {

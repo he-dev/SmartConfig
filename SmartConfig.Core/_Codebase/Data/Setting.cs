@@ -8,6 +8,7 @@ using SmartConfig.Collections;
 
 namespace SmartConfig.Data
 {
+    // Data model for a setting in a data store.
     [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
     public class Setting
     {

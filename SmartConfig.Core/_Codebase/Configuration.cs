@@ -9,6 +9,7 @@ using Reusable.Drawing;
 
 namespace SmartConfig
 {
+    // Provides configuration APIs.
     public class Configuration
     {
         // Each loaded configuration is cached so that we don't have to run reflection mutliple times.

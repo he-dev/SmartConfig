@@ -13,6 +13,7 @@ using SmartConfig.Converters;
 
 namespace SmartConfig.Services
 {
+    // Writes settings from setting-properties into data-store.
     internal class SettingWriter
     {
         private readonly DataStore _dataStore;

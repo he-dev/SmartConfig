@@ -20,7 +20,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
     public class SqlServerTest
     {
         [TestMethod]
-        public void GetSettings_SimpleSetting()
+        public void LoadSave_SimpleSetting()
         {
             Configuration.Loader
                 .FromSqlServer("name=SmartConfigTest", configure => configure.TableName("Setting1"))
@@ -54,7 +54,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
         }
 
         [TestMethod]
-        public void GetSettings_WithConfigAsPath()
+        public void LoadSave_WithConfigAsPath()
         {
             Configuration.Loader
                 .FromSqlServer("name=SmartConfigTest", configure => configure.TableName("Setting1"))
@@ -68,7 +68,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
         }
 
         [TestMethod]
-        public void GetSettings_WithConfigAsNamespace()
+        public void LoadSave_WithConfigAsNamespace()
         {
             Configuration.Loader
                 .FromSqlServer("name=SmartConfigTest", builder => builder.TableName("Setting2").Column("Corge"))

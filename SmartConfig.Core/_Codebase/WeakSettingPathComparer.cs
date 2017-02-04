@@ -4,6 +4,7 @@ using SmartConfig.Data;
 
 namespace SmartConfig
 {
+    // Compares setting-pats by the weak-full-name.
     public class WeakSettingPathComparer : IEqualityComparer<SettingPath>
     {
         public bool Equals(SettingPath x, SettingPath y)

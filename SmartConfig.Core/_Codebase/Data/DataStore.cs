@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace SmartConfig.Data
 {
+    // Base class for all data stores. Requires supported-types.
     public abstract class DataStore
     {
         protected DataStore(IEnumerable<Type> supportedTypes)
@@ -16,7 +17,5 @@ namespace SmartConfig.Data
         public abstract IEnumerable<Setting> GetSettings(Setting setting);
 
         public abstract int SaveSettings(IEnumerable<Setting> settings);
-
-        //public int SaveSetting(Setting setting) => SaveSettings(new[] { setting });
     }
 }

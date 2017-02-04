@@ -35,7 +35,7 @@ namespace SmartConfig.DataStores.SqlServer
                 .TableName(nameof(Setting))
                 .Column(nameof(Setting.Name), SqlDbType.NVarChar, 300)
                 .Column(nameof(Setting.Value), SqlDbType.NVarChar, ColumnConfiguration.MaxLength)
-                .Column(SettingAttribute.Config);
+                .Column(SettingTag.Config);
 
             buildTableConfiguration?.Invoke(settingTableConfigurationBuilder);
             TableConfiguration = settingTableConfigurationBuilder.Build();

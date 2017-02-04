@@ -9,6 +9,7 @@ using SmartConfig.Data.Annotations;
 
 namespace SmartConfig
 {
+    // Provides methods for reflecting the configuration type.
     internal static class ConfigurationReflection
     {
         public static bool HasAttribute<T>(this MemberInfo memberInfo) where T : Attribute

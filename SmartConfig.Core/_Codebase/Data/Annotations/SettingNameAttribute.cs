@@ -4,6 +4,7 @@ using Reusable.Fuse;
 
 namespace SmartConfig.Data.Annotations
 {
+    // Allows to specify an alternative setting name.
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
     public class SettingNameAttribute : Attribute
     {
