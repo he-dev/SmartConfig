@@ -25,33 +25,32 @@ namespace SmartConfig.Core.Tests
         }
 
         [TestMethod]
-        public void GetPath_NoConfigName_PathWithoutConfigName()
+        public void GetPath_NoConfigName_PathWitConfigName()
         {
             var barProperty =
                 typeof(Baz.SubBaz.SubSubBaz.SubSubSubBaz)
                 .GetProperty(nameof(Baz.SubBaz.SubSubBaz.SubSubSubBaz.Bar), BindingFlags.Public | BindingFlags.Static);
-
+            var path = barProperty.GetPath().ToList();
             CollectionAssert.AreEqual(
                 new[]
                 {
+                    nameof(Baz),
                     nameof(Baz.SubBaz),
                     nameof(Baz.SubBaz.SubSubBaz),
                     nameof(Baz.SubBaz.SubSubBaz.SubSubSubBaz),
                     nameof(Baz.SubBaz.SubSubBaz.SubSubSubBaz.Bar),
                 },
-                barProperty.GetPath().ToList());
+                path);
         }
 
         [TestMethod]
         public void GetPath_ConfigWithName_PathWithConfigName()
         {
-            var barProperty =
-                typeof(Foo2)
-                .GetProperty(nameof(Foo2.Baz), BindingFlags.Public | BindingFlags.Static);
-
+            var barProperty = typeof(Foo2).GetProperty(nameof(Foo2.Baz), BindingFlags.Public | BindingFlags.Static);
+            var path = barProperty.GetPath().ToList();
             CollectionAssert.AreEqual(
                 new[] { "Corge", "Qux" },
-                barProperty.GetPath().ToList()
+                path
             );
         }
     }

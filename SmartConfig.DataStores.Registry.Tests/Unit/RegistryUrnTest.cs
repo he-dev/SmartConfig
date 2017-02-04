@@ -11,7 +11,7 @@ namespace SmartConfig.DataStores.Registry.Tests.Unit
         [TestMethod]
         public void ctor_CreateFromSettingUrnWithoutNamespace()
         {
-            var registryPath = new RegistryUrn(new SettingPath(new[] { "Foo" }));
+            var registryPath = new RegistryPath(new SettingPath(new[] { "Foo" }));
 
             registryPath.Namespace.Verify().IsNullOrEmpty();
             registryPath.WeakName.Verify().IsEqual(@"Foo");
@@ -20,7 +20,7 @@ namespace SmartConfig.DataStores.Registry.Tests.Unit
         [TestMethod]
         public void ctor_CreateFromSettingUrnWithNamespace()
         {
-            var registryPath = new RegistryUrn(new SettingPath(new[] { "qux", "Foo", "Bar", "Baz" }));
+            var registryPath = new RegistryPath(new SettingPath(new[] { "qux", "Foo", "Bar", "Baz" }));
 
             registryPath.Namespace.Verify().IsEqual(@"qux\Foo\Bar");
             registryPath.WeakName.Verify().IsEqual(@"Baz");
@@ -29,7 +29,7 @@ namespace SmartConfig.DataStores.Registry.Tests.Unit
         [TestMethod]
         public void Parse_Name()
         {
-            var registryPath = RegistryUrn.Parse("Foo");
+            var registryPath = RegistryPath.Parse("Foo");
 
             registryPath.Namespace.Verify().IsNullOrEmpty();
             registryPath.WeakName.Verify().IsEqual(@"Foo");
@@ -38,7 +38,7 @@ namespace SmartConfig.DataStores.Registry.Tests.Unit
         [TestMethod]
         public void Parse_NameWithNamespace()
         {
-            var registryPath = RegistryUrn.Parse(@"qux\Foo\Bar\Baz");
+            var registryPath = RegistryPath.Parse(@"qux\Foo\Bar\Baz");
 
             registryPath.Namespace.Verify().IsEqual(@"qux\Foo\Bar");
             registryPath.WeakName.Verify().IsEqual(@"Baz");

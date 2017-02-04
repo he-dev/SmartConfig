@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Reusable;
 using SmartConfig.Data;
 using Reusable.Converters;
+using SmartConfig.Collections;
 using SmartConfig.Converters;
 
 // ReSharper disable RedundantIfElseBlock
@@ -15,14 +17,14 @@ namespace SmartConfig.Services
     {
         private readonly DataStore _dataStore;
         private readonly IEnumerable<SettingProperty> _settingProperties;
-        private readonly IDictionary<string, object> _tags;
+        private readonly TagCollection _tags;
         private readonly TypeConverter _converter;
         private readonly TypeConverter _itemizer;
 
         public SettingWriter(
             DataStore dataStore,
             IEnumerable<SettingProperty> settingProperties,
-            IDictionary<string, object> tags,
+            TagCollection tags,
             TypeConverter converter
         )
         {
@@ -63,15 +65,18 @@ namespace SmartConfig.Services
 
         private IList<Setting> SerializeSetting(SettingProperty setting)
         {
-            var itemize = setting.Type.IsEnumerable() && !_converter.CanConvert(setting.Value, setting.Type);
-            if (itemize)
+            //var itemize = setting.Type.IsEnumerable() && !_converter.CanConvert(setting.Value, setting.Type);
+            if (setting.IsItemized)
             {
                 var storeType = GetStoreType(setting.Type.GetElementType());
-                var items = (IDictionary<object, object>)_itemizer.Convert(setting.Value, typeof(Dictionary<object, object>));
-                var settings = items.Select(x => new Setting
+                var items = (IDictionary)_itemizer.Convert(setting.Value, typeof(Dictionary<object, object>), setting.FormatString, setting.FormatProvider);
+                var settings = items.Keys.Cast<object>().Select(key => new Setting
                 {
-                    Name = new SettingPath(setting.Path, (string)_converter.Convert(x.Key, typeof(string))),
-                    Value = _converter.Convert(x.Value, storeType)
+                    Name = new SettingPath(setting.Path)
+                    {
+                        Key = (string)_converter.Convert(key, typeof(string))
+                    },
+                    Value = _converter.Convert(items[key], storeType)
                 })
                 .ToList();
 
@@ -80,7 +85,7 @@ namespace SmartConfig.Services
             else
             {
                 var settingType = GetStoreType(setting.Type);
-                var value = _converter.Convert(setting.Value, settingType);
+                var value = _converter.Convert(setting.Value, settingType, setting.FormatString, setting.FormatProvider);
                 var settings = new[]
                 {
                     new Setting

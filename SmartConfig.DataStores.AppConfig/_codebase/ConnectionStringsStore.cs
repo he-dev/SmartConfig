@@ -39,7 +39,7 @@ namespace SmartConfig.DataStores.AppConfig
         {
             var rowsAffected = 0;
 
-            var groups = settings.GroupBy(x => x.WeakId).ToList();
+            var groups = settings.GroupBy(x => x, new WeakSettingComparer()).ToList();
             if (!groups.Any())
             {
                 return rowsAffected;

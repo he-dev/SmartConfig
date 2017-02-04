@@ -8,6 +8,7 @@ using Reusable;
 using Reusable.Fuse;
 using SmartConfig.Data;
 using Reusable.Data;
+using SmartConfig.Collections;
 
 namespace SmartConfig.DataStores.SQLite
 {
@@ -78,13 +79,9 @@ namespace SmartConfig.DataStores.SQLite
                         var result = new Setting
                         {
                             Name = SettingPath.Parse((string)settingReader[nameof(Setting.Name)]),
-                            Value = RecodeDataEnabled ? value.Recode(DataEncoding, SettingEncoding) : value
+                            Value = RecodeDataEnabled ? value.Recode(DataEncoding, SettingEncoding) : value,
+                            Tags = new TagCollection(setting.Tags.ToDictionary(tag => tag.Key, tag => settingReader[tag.Key]))
                         };
-
-                        foreach (var attribute in setting.Tags)
-                        {
-                            result[attribute.Key] = settingReader[attribute.Key];
-                        }
                         yield return result;
                     }
                 }
@@ -93,7 +90,7 @@ namespace SmartConfig.DataStores.SQLite
 
         public override int SaveSettings(IEnumerable<Setting> settings)
         {
-            var groups = settings.GroupBy(x => x.Name.WeakFullName).ToList();
+            var groups = settings.GroupBy(x => x, new WeakSettingComparer()).ToList();
             if (!groups.Any())
             {
                 return 0;

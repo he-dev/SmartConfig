@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reusable.Fuse;
 using Reusable.Fuse.Testing;
@@ -12,7 +13,7 @@ namespace SmartConfig.Core.Tests
         [TestMethod]
         public void GetSettingProperties_FromNestedWithIgnore()
         {
-            var settings = ConfigurationType.GetSettingProperties(typeof(Foo));
+            var settings = ConfigurationType.GetSettingProperties(typeof(Foo)).ToList();
             settings.Count.Verify().IsEqual(3);
         }
 

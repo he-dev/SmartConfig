@@ -32,7 +32,8 @@ namespace SmartConfig.DataStores.SqlServer.Tests
         }
     }
 
-    [SmartConfig(Name = "thud")]
+    [SmartConfig]
+    [SettingName("thud")]
     public static class FullConfig2
     {
         public static string StringSetting { get; set; }
@@ -58,7 +59,8 @@ namespace SmartConfig.DataStores.SqlServer.Tests
         }
     }
 
-    [SmartConfig(Name = "thudy", Tag = "Config")]
+    [SmartConfig(SettingNameTarget.Tag)]
+    [SettingName("thudy")]
     public static class FullConfig3
     {
         public static string StringSetting { get; set; }
@@ -84,7 +86,8 @@ namespace SmartConfig.DataStores.SqlServer.Tests
         }
     }
 
-    [SmartConfig(Name = "thudy")]
+    [SmartConfig]
+    [SettingName("thudy")]
     public static class FullConfig4
     {
         public static string StringSetting { get; set; }

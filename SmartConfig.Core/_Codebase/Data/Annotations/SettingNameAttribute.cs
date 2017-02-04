@@ -5,9 +5,9 @@ using Reusable.Fuse;
 namespace SmartConfig.Data.Annotations
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
-    public class RenameAttribute : Attribute
+    public class SettingNameAttribute : Attribute
     {
-        public RenameAttribute(string name)
+        public SettingNameAttribute(string name)
         {
             Name = name.Validate(nameof(name)).IsNotNullOrEmpty().Value;
         }

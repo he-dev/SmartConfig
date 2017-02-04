@@ -42,7 +42,7 @@ namespace SmartConfig.DataStores.Registry
 
         public override IEnumerable<Setting> GetSettings(Setting setting)
         {
-            var registryPath = new RegistryUrn(setting.Name);
+            var registryPath = new RegistryPath(setting.Name);
 
             var subKeyName = Path.Combine(_baseSubKeyName, registryPath.Namespace);
             using (var subKey = _baseKey.OpenSubKey(subKeyName, false))
@@ -54,7 +54,7 @@ namespace SmartConfig.DataStores.Registry
 
                 var settings =
                     subKey.GetValueNames()
-                        .Where(valueName => RegistryUrn.Parse(valueName).IsLike(registryPath.WeakFullName))
+                        .Where(valueName => RegistryPath.Parse(valueName).IsLike(registryPath))
                         .Select(valueName => new Setting
                         {
                             Name = SettingPath.Parse(valueName),
@@ -93,7 +93,7 @@ namespace SmartConfig.DataStores.Registry
                         {
                             var valueNames = subKey
                                 .GetValueNames()
-                                .Where(x => RegistryUrn.Parse(x).IsLike(setting.Name))
+                                .Where(x => RegistryPath.Parse(x).IsLike(setting.Name))
                                 .ToList();
 
                             foreach (var valueName in valueNames)
@@ -106,7 +106,7 @@ namespace SmartConfig.DataStores.Registry
                             groupDeleted = true;
                         }
 
-                        var registryUrn = new RegistryUrn(setting.Name);
+                        var registryUrn = new RegistryPath(setting.Name);
 #if !DISABLE_SET_VALUE
                         subKey.SetValue(registryUrn.StrongName, setting.Value, registryValueKind);
 #endif

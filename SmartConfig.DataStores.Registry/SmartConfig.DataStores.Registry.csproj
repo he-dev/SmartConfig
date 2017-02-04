@@ -63,7 +63,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Reusable.Fuse, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.Fuse.2.4.2\lib\net452\Reusable.Fuse.dll</HintPath>
+      <HintPath>..\packages\Reusable.Fuse.2.4.4\lib\net452\Reusable.Fuse.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -81,7 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="_codebase\Exceptions.cs" />
-    <Compile Include="_codebase\RegistryUrn.cs" />
+    <Compile Include="_codebase\RegistryPath.cs" />
     <Compile Include="_codebase\RegistryStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

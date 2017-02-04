@@ -44,7 +44,7 @@ namespace SmartConfig.DataStores.AppConfig
             // If we are saving an itemized setting its keys might have changed.
             // Since we don't know the old keys we need to delete all keys that are alike first.
 
-            var groups = settings.GroupBy(x => x.WeakId).ToList();
+            var groups = settings.GroupBy(x => x, new WeakSettingComparer()).ToList();
             if (!groups.Any())
             {
                 return rowsAffected;

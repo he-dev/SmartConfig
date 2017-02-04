@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using Reusable.Converters;
 using Reusable.Data.Annotations;
+using Reusable.Formatters;
 using SmartConfig.Data.Annotations;
 // ReSharper disable BuiltInTypeReferenceStyle
 
@@ -42,13 +43,19 @@ namespace SmartConfig.Core.Tests
     [SmartConfig]
     public static class ColorConfig
     {
+        [Format(typeof(HexadecimalColorFormatter), "#RRGGBB")]
         public static Color ColorName { get; set; }
+
+        [Format(typeof(HexadecimalColorFormatter), "#RRGGBB")]
         public static Color ColorDec { get; set; }
+
+        [Format(typeof(HexadecimalColorFormatter), "#RRGGBB")]
         public static Color ColorHex { get; set; }
     }
 
     [SmartConfig]
     [TypeConverter(typeof(JsonToObjectConverter<List<Int32>>))]
+    [TypeConverter(typeof(ObjectToJsonConverter<List<Int32>>))]
     public static class JsonConfig
     {
         public static List<int> JsonArray { get; set; }

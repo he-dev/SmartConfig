@@ -10,6 +10,7 @@ using Reusable.Converters;
 using Reusable.Data.Annotations;
 using Reusable.Drawing;
 using SmartConfig;
+using SmartConfig.Collections;
 using SmartConfig.Data;
 using SmartConfig.Data.Annotations;
 using SmartConfig.DataStores;
@@ -27,10 +28,11 @@ namespace SmartConfig.Core.Tests
     public class ConfigurationTest
     {
         [TestMethod]
-        public void Load_EmptyConfig_NothingLoaded()
+        public void LoadSave_EmptyConfig()
         {
             var getSettingsCallCount = 0;
             var saveSettingsCallCount = 0;
+
             var testStore = new TestStore
             {
                 GetSettingsCallback = s =>
@@ -44,21 +46,19 @@ namespace SmartConfig.Core.Tests
                     return 0;
                 }
             };
-            var configuration = Configuration.Load.From(new TestStore()).Select(typeof(EmptyConfig));
 
-            configuration.Type.Verify().IsTrue(x => x == typeof(EmptyConfig));
-            //configuration.SettingProperties.Count().Verify().IsEqual(0);
+            Configuration.Loader.From(testStore).Select(typeof(EmptyConfig));            
 
             getSettingsCallCount.Verify().IsEqual(0);
             saveSettingsCallCount.Verify().IsEqual(0);
         }
 
         [TestMethod]
-        public void Load_IntegralConfig()
+        public void LoadSave_IntegralConfig()
         {
             var culture = CultureInfo.InvariantCulture;
 
-            Configuration.Load.From(new MemoryStore
+            Configuration.Loader.From(new MemoryStore
             {
                 {nameof(IntegralConfig.SByte), SByte.MaxValue.ToString()},
                 {nameof(IntegralConfig.Byte), Byte.MaxValue.ToString()},
@@ -97,26 +97,30 @@ namespace SmartConfig.Core.Tests
             IntegralConfig.False.Verify().IsEqual(false);
             IntegralConfig.True.Verify().IsEqual(true);
             IntegralConfig.Enum.Verify().IsTrue(x => x == TestEnum.TestValue2);
+
+            Configuration.Save(typeof(IntegralConfig));
         }
 
         [TestMethod]
-        public void Load_DateTimeConfig()
+        public void LoadSave_DateTimeConfig()
         {
             var culture = CultureInfo.InvariantCulture;
 
-            Configuration.Load.From(new MemoryStore
+            Configuration.Loader.From(new MemoryStore
             {
                 {nameof(DateTimeConfig.DateTime), new DateTime(2016, 7, 30).ToString(culture)},
             })
             .Select(typeof(DateTimeConfig));
 
             DateTimeConfig.DateTime.Verify().IsEqual(new DateTime(2016, 7, 30));
+
+            Configuration.Save(typeof(DateTimeConfig));
         }
 
         [TestMethod]
-        public void Load_ColorConfig()
+        public void LoadSave_ColorConfig()
         {
-            Configuration.Load.From(new MemoryStore
+            Configuration.Loader.From(new MemoryStore
             {
                 {nameof(ColorConfig.ColorName), Color.DarkRed.Name},
                 {nameof(ColorConfig.ColorDec), $"{Color.Plum.R},{Color.Plum.G},{Color.Plum.B}"},
@@ -127,24 +131,28 @@ namespace SmartConfig.Core.Tests
             ColorConfig.ColorName.ToArgb().Verify().IsEqual(Color.DarkRed.ToArgb());
             ColorConfig.ColorDec.ToArgb().Verify().IsEqual(Color.Plum.ToArgb());
             ColorConfig.ColorHex.ToArgb().Verify().IsEqual(Color.Beige.ToArgb());
+
+            Configuration.Save(typeof(ColorConfig));
         }
 
         [TestMethod]
-        public void Load_JsonConfig()
+        public void LoadSave_JsonConfig()
         {
-            Configuration.Load.From(new MemoryStore
+            Configuration.Loader.From(new MemoryStore
             {
                 {nameof(JsonConfig.JsonArray), "[5, 8, 13]"},
             })
             .Select(typeof(JsonConfig));
 
             JsonConfig.JsonArray.Verify().IsTrue(x => x.SequenceEqual(new List<int> { 5, 8, 13 }));
+
+            Configuration.Save(typeof(JsonConfig));
         }
 
         [TestMethod]
-        public void Load_ItemizedArrayConfig()
+        public void LoadSave_ItemizedArrayConfig()
         {
-            Configuration.Load.From(new MemoryStore
+            Configuration.Loader.From(new MemoryStore
             {
                 {$"{nameof(ItemizedArrayConfig.ItemizedArray)}[0]", "5"},
                 {$"{nameof(ItemizedArrayConfig.ItemizedArray)}[1]", "8"},
@@ -154,12 +162,14 @@ namespace SmartConfig.Core.Tests
             ItemizedArrayConfig.ItemizedArray.Length.Verify().IsEqual(2);
             ItemizedArrayConfig.ItemizedArray[0].Verify().IsEqual(5);
             ItemizedArrayConfig.ItemizedArray[1].Verify().IsEqual(8);
+
+            Configuration.Save(typeof(ItemizedArrayConfig));
         }
 
         [TestMethod]
-        public void Load_ItemizedDictionaryConfig()
+        public void LoadSave_ItemizedDictionaryConfig()
         {
-            Configuration.Load.From(new MemoryStore
+            Configuration.Loader.From(new MemoryStore
             {
                 {$"{nameof(ItemizedDictionaryConfig.ItemizedDictionary)}[foo]", "21"},
                 {$"{nameof(ItemizedDictionaryConfig.ItemizedDictionary)}[bar]", "34"},
@@ -169,39 +179,47 @@ namespace SmartConfig.Core.Tests
             ItemizedDictionaryConfig.ItemizedDictionary.Count.Verify().IsEqual(2);
             ItemizedDictionaryConfig.ItemizedDictionary["foo"].Verify().IsEqual(21);
             ItemizedDictionaryConfig.ItemizedDictionary["bar"].Verify().IsEqual(34);
+
+            Configuration.Save(typeof(ItemizedDictionaryConfig));
         }
 
         [TestMethod]
-        public void Load_NestedConfig()
+        public void LoadSave_NestedConfig()
         {
-            Configuration.Load.From(new MemoryStore
+            Configuration.Loader.From(new MemoryStore
             {
                 {nameof(NestedConfig.SubConfig) + "." + nameof(NestedConfig.SubConfig.NestedString), "Quux"},
             })
             .Select(typeof(NestedConfig));
 
             NestedConfig.SubConfig.NestedString.Verify().IsEqual("Quux");
+
+            Configuration.Save(typeof(NestedConfig));
         }
 
         [TestMethod]
-        public void Load_IgnoredConfig()
+        public void LoadSave_IgnoredConfig()
         {
-            Configuration.Load.From(new MemoryStore()).Select(typeof(IgnoredConfig));
+            Configuration.Loader.From(new MemoryStore()).Select(typeof(IgnoredConfig));
             IgnoredConfig.SubConfig.IgnoredString.Verify().IsEqual("Grault");
+
+            Configuration.Save(typeof(IgnoredConfig));
         }
 
         [TestMethod]
-        public void Load_OptionalConfig()
+        public void LoadSave_OptionalConfig()
         {
-            Configuration.Load.From(new MemoryStore()).Select(typeof(OptionalConfig));
+            Configuration.Loader.From(new MemoryStore()).Select(typeof(OptionalConfig));
             OptionalConfig.OptionalSetting.Verify().IsEqual("Waldo");
+
+            Configuration.Save(typeof(OptionalConfig));
         }      
 
         [TestMethod]
-        public void Load_Where_FromExpression()
+        public void LoadSave_Where_FromExpression()
         {
-            var tags = default(IDictionary<string, object>);
-            var config = Configuration.Load
+            var tags = default(TagCollection);
+            Configuration.Loader
                 .From(new TestStore
                 {
                     GetSettingsCallback = s =>
@@ -224,7 +242,7 @@ namespace SmartConfig.Core.Tests
         {
             new Action(() =>
             {
-                Configuration.Load.From(new MemoryStore()).Select(typeof(NonStaticConfig));
+                Configuration.Loader.From(new MemoryStore()).Select(typeof(NonStaticConfig));
             })
             .Verify()
             .Throws<ValidationException>(ex =>
@@ -249,7 +267,7 @@ SettingNotFoundException: Setting "TestSetting" not found. You need to provide a
         [TestMethod]
         public void Load_ValueNull()
         {
-            new Action(() => Configuration.Load.From(new MemoryStore()).Where("foo", null)).Verify().Throws<ValidationException>();
+            new Action(() => Configuration.Loader.From(new MemoryStore()).Where("foo", null)).Verify().Throws<ValidationException>();
         }
 
         [TestMethod]
@@ -257,7 +275,7 @@ SettingNotFoundException: Setting "TestSetting" not found. You need to provide a
         {
             new Action(() =>
             {
-                Configuration.Load.From(new TestStore()).Select(typeof(SettingNotFoundConfig));
+                Configuration.Loader.From(new TestStore()).Select(typeof(SettingNotFoundConfig));
             })
             .Verify().Throws<ConfigurationException>(exception =>
             {
@@ -271,7 +289,7 @@ SettingNotFoundException: Setting "TestSetting" not found. You need to provide a
         {
             new Action(() =>
             {
-                Configuration.Load.From(new MemoryStore()).Select(typeof(ConfigNotDecorated));
+                Configuration.Loader.From(new MemoryStore()).Select(typeof(ConfigNotDecorated));
             })
             .Verify().Throws<ValidationException>();
         }
@@ -281,7 +299,7 @@ SettingNotFoundException: Setting "TestSetting" not found. You need to provide a
         {
             new Action(() =>
             {
-                Configuration.Load.From(new MemoryStore()).Select(typeof(RequiredSettings));
+                Configuration.Loader.From(new MemoryStore()).Select(typeof(RequiredSettings));
             })
             .Verify().Throws<ConfigurationException>();
         }
@@ -291,16 +309,21 @@ SettingNotFoundException: Setting "TestSetting" not found. You need to provide a
         {
             new Action(() =>
             {
-                Configuration.Load.From(new MemoryStore()).Where(null, null);
+                Configuration.Loader.From(new MemoryStore()).Where(null, null);
             })
                 .Verify().Throws<ValidationException>();
 
             new Action(() =>
             {
-                Configuration.Load.From(new MemoryStore()).Where(string.Empty, null);
+                Configuration.Loader.From(new MemoryStore()).Where(string.Empty, null);
             })
                 .Verify().Throws<ValidationException>();
         }
 
+        [TestMethod]
+        public void Save_IntegralConfig_IntegralSettings()
+        {
+
+        }
     }
 }

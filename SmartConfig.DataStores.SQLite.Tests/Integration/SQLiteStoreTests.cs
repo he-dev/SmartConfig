@@ -17,7 +17,7 @@ namespace SmartConfig.DataStores.SQLite.Tests.Integration
         [TestMethod]
         public void GetSettings_Simple()
         {
-            Configuration.Load
+            Configuration.Loader
                 .From(new SQLiteStore("name=configdb", builder => builder.TableName("Setting1")))
                 .Select(typeof(FullConfig1));
 
@@ -46,7 +46,7 @@ namespace SmartConfig.DataStores.SQLite.Tests.Integration
             else if (FullConfig1.DictionarySetting.Count == 3) { FullConfig1.DictionarySetting.Remove("baz"); }
 
             Configuration.Save(typeof(FullConfig1));
-            Configuration.Reload(typeof(FullConfig1));
+            Configuration.Load(typeof(FullConfig1));
 
             // Verfiy FullConfig1 values agian.
 

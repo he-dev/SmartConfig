@@ -11,7 +11,7 @@ namespace SmartConfig.DataStores.AppConfig.Tests.Integration
         [TestMethod]
         public void Load_SimpleConfig()
         {
-            Configuration.Load.From(new ConnectionStringsStore()).Select(typeof(FullConfig3));
+            Configuration.Loader.From(new ConnectionStringsStore()).Select(typeof(FullConfig3));
 
             FullConfig3.StringSetting.Verify().IsNotNullOrEmpty().IsEqual("Foox");
             FullConfig3.NestedConfig.StringSetting.Verify().IsEqual("Barx");
@@ -21,7 +21,7 @@ namespace SmartConfig.DataStores.AppConfig.Tests.Integration
         [TestMethod]
         public void Load_ConfigWithNameAsPath()
         {
-            Configuration.Load.From(new ConnectionStringsStore()).Select(typeof(FullConfig4));
+            Configuration.Loader.From(new ConnectionStringsStore()).Select(typeof(FullConfig4));
 
             FullConfig4.StringSetting.Verify().IsNotNullOrEmpty().IsEqual("Fooxy");
             FullConfig4.NestedConfig.StringSetting.Verify().IsEqual("Barxy");

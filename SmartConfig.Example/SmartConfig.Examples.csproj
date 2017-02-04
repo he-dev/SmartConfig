@@ -60,15 +60,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Reusable.Converters, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.Converters.2.4.2\lib\net452\Reusable.Converters.dll</HintPath>
+      <HintPath>..\packages\Reusable.Converters.2.4.4\lib\net452\Reusable.Converters.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Reusable.Fuse, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.Fuse.2.4.2\lib\net452\Reusable.Fuse.dll</HintPath>
+      <HintPath>..\packages\Reusable.Fuse.2.4.4\lib\net452\Reusable.Fuse.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Reusable.Utils, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.Utils.2.4.2\lib\net452\Reusable.Utils.dll</HintPath>
+      <HintPath>..\packages\Reusable.Utils.2.4.4\lib\net452\Reusable.Utils.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

@@ -22,39 +22,25 @@ namespace SmartConfig
 
             foreach (var parent in propertyInfo.Parents())
             {
-                var name = default(string);
-                if (TryGetName(parent, out name))
-                {
-                    path.AddFirst(name);
-                }
-                else
-                {
-                    break;
-                }
-            }          
+                var name = GetNameOrDefault(parent);
+                path.AddFirst(name);
+            }
             return path;
         }
 
-        private static bool TryGetName(MemberInfo memberInfo, out string name)
+        public static string GetNameOrDefault(this MemberInfo memberInfo)
         {
-            var smartConfigAttribute = memberInfo.GetCustomAttribute<SmartConfigAttribute>();
-            if (smartConfigAttribute != null)
-            {
-                return !string.IsNullOrEmpty(name = smartConfigAttribute.Name);
-            }
-
-            name = memberInfo.GetCustomAttribute<RenameAttribute>()?.Name ?? memberInfo.Name;
-            return true;
+            return memberInfo.GetCustomAttribute<SettingNameAttribute>()?.Name ?? memberInfo.Name;
         }
-        
-        public static IEnumerable<MemberInfo> Parents(this PropertyInfo propertyInfo)
-        {
-            var member = (MemberInfo)propertyInfo;
+
+        private static IEnumerable<MemberInfo> Parents(this MemberInfo member)
+        {          
             do
             {
                 yield return member;
+                if (member.HasAttribute<SmartConfigAttribute>()) yield break;
                 member = member.DeclaringType;
-            } while (member != null);            
+            } while (member != null);
         }
     }
 }

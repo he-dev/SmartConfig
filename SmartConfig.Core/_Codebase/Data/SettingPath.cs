@@ -8,20 +8,22 @@ using Reusable.Fuse;
 
 namespace SmartConfig.Data
 {
-    [DebuggerDisplay("{DebuggerDisplay,nq}")]
+    [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
     public class SettingPath : IReadOnlyCollection<string>
     {
         private const string DefaultDelimiter = ".";
 
-        public SettingPath(IEnumerable<string> names, string key)
+        public SettingPath(IEnumerable<string> names)
         {
             Names = names.Validate(nameof(names)).IsNotNull().IsTrue(x => x.Any()).Value.ToList();
-            Key = key;
         }
 
-        public SettingPath(IEnumerable<string> names) : this(names, null) { }
+        public SettingPath(params string[] names) : this((IEnumerable<string>)names) { }
 
-        public SettingPath(SettingPath urn) : this(urn, urn.Key) { }
+        public SettingPath(SettingPath path) : this(path.Names)
+        {
+            Key = path.Key;
+        }
 
         private IReadOnlyCollection<string> Names { get; }
 
@@ -37,7 +39,7 @@ namespace SmartConfig.Data
 
         public string StrongFullName => Names.Count > 1 ? $"{Namespace}{Delimiter}{StrongName}" : StrongName;
 
-        public string Key { get; }
+        public string Key { get; set; }
 
         public bool HasKey => !string.IsNullOrEmpty(Key);
 
@@ -55,44 +57,33 @@ namespace SmartConfig.Data
             names[names.Length - 1] = lastNameMatch.Groups["name"].Value;
             var key = lastNameMatch.Groups["key"].Value;
 
-            return new SettingPath(names, key);
+            return new SettingPath(names)
+            {
+                Key = key                
+            };
         }
-
-        public bool IsLike(SettingPath path) => WeakFullName.Equals(path.WeakFullName, StringComparison.OrdinalIgnoreCase);
-
-        public bool IsLike(string value) => IsLike(Parse(value));
 
 #if DEBUG
         public override string ToString()
         {
-            throw new InvalidOperationException($"Use {WeakFullName} instead.");
+            throw new InvalidOperationException($"{nameof(ToString)} was used. Did you mean {nameof(WeakFullName)} instead?");
         }
-#endif
-
-        public static bool operator ==(SettingPath left, SettingPath right)
-        {
-            return
-                !ReferenceEquals(left, null) &&
-                !ReferenceEquals(right, null) &&
-                left.StrongFullName.Equals(right.StrongFullName, StringComparison.OrdinalIgnoreCase);
-        }
-
-        public static bool operator !=(SettingPath x, SettingPath y) => !(x == y);
-
-        protected bool Equals(SettingPath other) => this == other;
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((SettingPath)obj);
-        }
+#endif       
 
         public override int GetHashCode() => StrongFullName.GetHashCode();
 
         public IEnumerator<string> GetEnumerator() => Names.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    public static class SettingPathExtensions
+    {
+        private static readonly WeakSettingPathComparer WeakSettingPathComparer = new WeakSettingPathComparer();
+
+        public static bool IsLike(this SettingPath x, SettingPath y)
+        {
+            return WeakSettingPathComparer.Equals(x, y);
+        }
     }
 }

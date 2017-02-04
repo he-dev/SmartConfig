@@ -1,51 +1,46 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SmartConfig.Data;
-using Reusable.Fuse.Testing;
 using Reusable.Fuse;
+using Reusable.Fuse.Testing;
+using SmartConfig.Data;
 
-namespace SmartConfig.Core.Tests.Unit.Data
+namespace SmartConfig.Core.Tests.Data
 {
     [TestClass]
     public class SettingTest
     {
         [TestMethod]
-        public void ctor_ObjectInitializer()
+        public void WeakId_NameOnly_NameOnly()
         {
             var setting = new Setting
             {
-                Name = SettingPath.Parse("foo.bar[baz]"),
-                Value = "waldo",
-                Tags = new Dictionary<string, object> { ["Environment"] = "qux" },
-                ["Config"] = "corge"
+                Name = SettingPath.Parse("Setting1"),
+                Value = "Value1"
             };
-
-            setting.Name.Verify().IsTrue(x => x == SettingPath.Parse("foo.bar[baz]"));
-
-            setting.Tags.Count.Verify().IsEqual(2);
-            setting.Tags["Environment"].Verify().IsTrue(x => x.Equals("qux"));
-            setting.Tags["Config"].Verify().IsTrue(x => x.Equals("corge"));
-
-            (setting["Environment"] as string).Verify().IsNotNullOrEmpty().IsEqual("qux");
-            (setting["Config"] as string).Verify().IsNotNullOrEmpty().IsEqual("corge");
-
-            setting.Value.Verify().IsNotNull().IsTrue(x => x.Equals("waldo"));
-
-            setting.WeakId.Verify().IsNotNullOrEmpty().IsEqual("foo.bar/corge/qux");
-            setting.StrongId.Verify().IsNotNullOrEmpty().IsEqual("foo.bar[baz]/corge/qux");
-
-            //setting.NamespaceEquals("environment", "qux").Verify().IsTrue();
-            //setting.IsLike(new Setting(
-            //    new SettingUrn("foo.bar"),
-            //    new Dictionary<string, object> { ["Environment"] = "qux" })
-            //{ Config = "corge" }
-            //).Verify().IsTrue();
-
-            //setting.IsLike(new Setting(
-            //    new SettingUrn("foo.baar"),
-            //    new Dictionary<string, object> { ["Environment"] = "qux" })
-            //{ Config = "corge" }
-            //).Verify().IsFalse();
+            setting.WeakId.Verify().IsEqual("[Setting1]");
         }
+
+        [TestMethod]
+        public void WeakId_NameWithKey_NameOnly()
+        {
+            var setting = new Setting
+            {
+                Name = SettingPath.Parse("Setting1[0]"),
+                Value = "Setting1-Value"
+            };
+            setting.WeakId.Verify().IsEqual("[Setting1]");
+        }
+
+        [TestMethod]
+        public void WeakId_WithTags_NameAndTags()
+        {
+            var setting = new Setting
+            {
+                Name = SettingPath.Parse("Setting1"),
+                Value = "Value1",
+                Tags = { { "Tag2", "TagValue2" }, { "Tag1", "TagValue1" } }
+            };
+            setting.WeakId.Verify().IsEqual("[Setting1, TagValue1, TagValue2]");
+        }       
     }
 }

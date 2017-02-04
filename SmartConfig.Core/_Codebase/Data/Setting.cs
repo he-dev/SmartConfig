@@ -3,24 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Reusable.Collections;
+using Reusable.Fuse;
+using SmartConfig.Collections;
 
 namespace SmartConfig.Data
 {
-    [DebuggerDisplay("{DebuggerDisplay,nq}")]
+    [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
     public class Setting
     {
-        // We store all names and values in a non-case sensitive dictionary.
         private readonly Dictionary<string, object> _values = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-
-        public object this[string key]
-        {
-            get { return _values[key]; }
-            set { _values[key] = value; }
-        }
-
-        public string WeakId => $"{Name.WeakFullName}/{Tags.OrderBy(x => x.Key).Select(x => x.Value).Join("/")}";
-
-        public string StrongId => $"{Name.StrongFullName}/{Tags.OrderBy(x => x.Key).Select(x => x.Value).Join("/")}";
 
         public SettingPath Name
         {
@@ -28,7 +19,7 @@ namespace SmartConfig.Data
             get { return (SettingPath)_values[nameof(Name)]; }
 
             [DebuggerStepThrough]
-            set { _values[nameof(Name)] = value; }
+            set { _values[nameof(Name)] = value.Validate(nameof(Name)).IsNotNull().Value; }
         }
 
         public object Value
@@ -40,33 +31,13 @@ namespace SmartConfig.Data
             set { _values[nameof(Value)] = value; }
         }
 
-        public IDictionary<string, object> Tags
-        {
-            get
-            {
-                var defaultPropertyNames = new[] { nameof(Name), nameof(Value) };
-                var namespaces = _values.Where(x => !defaultPropertyNames.Contains(x.Key));
-                return namespaces.ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
-            }
-            set
-            {
-                var attributes = Tags.ToDictionary(x => x.Key, x => x.Value);
-                foreach (var item in attributes)
-                {
-                    _values.Remove(item.Key);
-                }
-                foreach (var item in value)
-                {
-                    _values.Add(item.Key, item.Value);
-                }
-            }
-        }
+        public TagCollection Tags { get; set; } = new TagCollection();
 
-        private string DebuggerDisplay => ToString();       
+        private string DebuggerDisplay => ToString();
 
         public override string ToString()
         {
             return $"{Name.StrongFullName} = '{Value}' in [{string.Join(",", Tags.Select(x => x.Value))}]";
-        }        
+        }
     }
 }

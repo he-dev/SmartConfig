@@ -32,12 +32,13 @@ namespace SmartConfig.Core.Tests.ConfigurationReflectionTestData
         }
     }
 
-    [SmartConfig(Name = "Corge")]
+    [SmartConfig]
+    [SettingName("Corge")]
     internal static class Foo2
     {
         public static string Bar { get; set; }
 
-        [Rename("Qux")]
+        [SettingName("Qux")]
         public static string Baz { get; set; }
     }
 

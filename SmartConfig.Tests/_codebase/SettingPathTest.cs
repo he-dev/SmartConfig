@@ -3,10 +3,10 @@ using Reusable.Fuse;
 using Reusable.Fuse.Testing;
 using SmartConfig.Data;
 
-namespace SmartConfig.Core.Tests.Unit
+namespace SmartConfig.Core.Tests
 {
     [TestClass]
-    public class SettingUrnTest
+    public class SettingPathTest
     {
         [TestMethod]
         public void ctor_CreateFromPath2WithoutKey()
@@ -27,7 +27,7 @@ namespace SmartConfig.Core.Tests.Unit
         [TestMethod]
         public void ctor_CreateFromPath1WithKey()
         {
-            var path = new SettingPath(new[] { "foo" }, "baz");
+            var path = new SettingPath("foo") { Key = "baz" };
 
             path.Count.Verify().IsEqual(1);
 
@@ -43,7 +43,7 @@ namespace SmartConfig.Core.Tests.Unit
         [TestMethod]
         public void ctor_CreateFromPath2WithKey()
         {
-            var path = new SettingPath(new[] { "foo", "bar" }, "baz");
+            var path = new SettingPath("foo", "bar") { Key = "baz" };
 
             path.Count.Verify().IsEqual(2);
 
@@ -55,7 +55,7 @@ namespace SmartConfig.Core.Tests.Unit
             path.WeakFullName.Verify().IsEqual("foo.bar");
             path.StrongFullName.Verify().IsEqual("foo.bar[baz]");
         }
-    
+
         [TestMethod]
         public void ctor_CreateFromStringWithoutKey()
         {
@@ -87,7 +87,7 @@ namespace SmartConfig.Core.Tests.Unit
             path.WeakFullName.Verify().IsEqual("foo.bar");
             path.StrongFullName.Verify().IsEqual("foo.bar[baz]");
         }
-           
+
         [TestMethod]
         public void IsLike_WithOrWithoutKey()
         {

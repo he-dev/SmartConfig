@@ -7,6 +7,7 @@ using Reusable;
 using Reusable.Data;
 using SmartConfig.Data;
 using Reusable.Fuse;
+using SmartConfig.Collections;
 
 namespace SmartConfig.DataStores.SqlServer
 {
@@ -63,12 +64,9 @@ namespace SmartConfig.DataStores.SqlServer
                             var result = new Setting
                             {
                                 Name = SettingPath.Parse((string)settingReader[nameof(Setting.Name)]),
-                                Value = settingReader[nameof(Setting.Value)]
-                            };
-                            foreach (var attribute in setting.Tags)
-                            {
-                                result[attribute.Key] = settingReader[attribute.Key];
-                            }
+                                Value = settingReader[nameof(Setting.Value)],
+                                Tags = new TagCollection(setting.Tags.ToDictionary(tag => tag.Key, tag => settingReader[tag.Key]))
+                            };                            
                             yield return result;
                         }
                     }
@@ -78,7 +76,7 @@ namespace SmartConfig.DataStores.SqlServer
 
         public override int SaveSettings(IEnumerable<Setting> settings)
         {
-            var groups = settings.GroupBy(x => x.WeakId).ToList();
+            var groups = settings.GroupBy(x => x, new WeakSettingComparer()).ToList();
             if (!groups.Any())
             {
                 return 0;

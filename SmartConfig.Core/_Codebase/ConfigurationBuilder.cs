@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Reusable;
 using Reusable.Fuse;
 using Reusable.Converters;
 using Reusable.Data.Annotations;
+using SmartConfig.Collections;
 using SmartConfig.Data;
 using SmartConfig.Data.Annotations;
 using SmartConfig.Services;
@@ -20,7 +22,7 @@ namespace SmartConfig
 
         private TypeConverter _converter = TypeConverterFactory.CreateDefaultConverter();
 
-        private Dictionary<string, object> _tags = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+        private TagCollection _tags = new TagCollection();
 
         private Type _configType;
 
@@ -36,7 +38,6 @@ namespace SmartConfig
         {
             name.Validate(nameof(name)).IsNotNullOrEmpty("You need to specify the namespace.");
             value.Validate(nameof(value)).IsNotNull("You need to specify the namespace value.");
-            _tags.ContainsKey(name).Validate().IsFalse($"Namespace '{name}' already exists.");
             _tags.Add(name, value);
             return this;
         }
@@ -56,11 +57,11 @@ namespace SmartConfig
                 .IsTrue(x => x.HasAttribute<SmartConfigAttribute>(), $"Config type \"{configType.FullName}\" muss be decorated with the {nameof(SmartConfigAttribute)}.")
                 .Value;
 
-            GetConfigurationTag(configType);
+            AddConfigTag(configType);
             GetConverters(configType);
 
             _converter = configureConverter?.Invoke(_converter) ?? _converter;
-            _settingProperties = ConfigurationType.GetSettingProperties(configType);
+            _settingProperties = ConfigurationType.GetSettingProperties(configType).ToList();
 
             return ToConfiguration();
         }
@@ -78,12 +79,12 @@ namespace SmartConfig
             }
         }
 
-        private void GetConfigurationTag(MemberInfo configType)
+        private void AddConfigTag(MemberInfo configType)
         {
             var smartConfigAttribute = configType.GetCustomAttribute<SmartConfigAttribute>();
-            if (!string.IsNullOrEmpty(smartConfigAttribute.Name) && !string.IsNullOrEmpty(smartConfigAttribute.Tag))
+            if (smartConfigAttribute.SettingNameTarget == SettingNameTarget.Tag)
             {
-                _tags.Add(smartConfigAttribute.Tag, smartConfigAttribute.Name);
+                _tags.Add("Config", configType.GetNameOrDefault());
             }
         }
 
@@ -92,7 +93,7 @@ namespace SmartConfig
             var settingReader = new SettingReader(_dataStore, _settingProperties, _tags, _converter);
             var settingWriter = new SettingWriter(_dataStore, _settingProperties, _tags, _converter);
             var configuration = new Configuration(_configType, settingReader, settingWriter);
-            configuration.Reload();
+            configuration.Load();
 
             var temp = configuration;
             configuration = null;

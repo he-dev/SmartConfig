@@ -13,16 +13,16 @@ using SmartConfig.Data.Annotations;
 namespace SmartConfig.Data
 {
     // stores information about a single setting
-    [DebuggerDisplay("{DebuggerDispaly,nq}")]
+    [DebuggerDisplay("{" + nameof(DebuggerDispaly) + ",nq}")]
     internal class SettingProperty
     {
-        internal SettingProperty(PropertyInfo property)
+        internal SettingProperty(PropertyInfo property, SettingPath path)
         {
             Property = property;
-            Path = new SettingPath(Property.GetPath());
+            Path = path;
 
             // an itemzed setting must be an enumerable
-            if (IsItemized && !IsEnumerable) throw new ItemizedSettingPropertyException();            
+            if (IsItemized && !IsEnumerable) throw new ItemizedSettingException(path);            
         }
 
         private PropertyInfo Property { get; }
@@ -34,6 +34,10 @@ namespace SmartConfig.Data
         public IEnumerable<ValidationAttribute> Validations => Property.GetCustomAttributes<ValidationAttribute>();
 
         public bool IsEnumerable => Property.PropertyType.IsEnumerable();
+
+        public IFormatProvider FormatProvider => Property.GetCustomAttribute<FormatAttribute>()?.FormatProvider;
+
+        public string FormatString => Property.GetCustomAttribute<FormatAttribute>()?.FormatString;
 
         public Type Type => Property.PropertyType;
 

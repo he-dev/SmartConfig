@@ -22,7 +22,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
         [TestMethod]
         public void GetSettings_SimpleSetting()
         {
-            Configuration.Load
+            Configuration.Loader
                 .FromSqlServer("name=SmartConfigTest", configure => configure.TableName("Setting1"))
                 .Select(typeof(FullConfig1));
 
@@ -56,7 +56,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
         [TestMethod]
         public void GetSettings_WithConfigAsPath()
         {
-            Configuration.Load
+            Configuration.Loader
                 .FromSqlServer("name=SmartConfigTest", configure => configure.TableName("Setting1"))
                 .Select(typeof(FullConfig2));
 
@@ -70,7 +70,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
         [TestMethod]
         public void GetSettings_WithConfigAsNamespace()
         {
-            Configuration.Load
+            Configuration.Loader
                 .FromSqlServer("name=SmartConfigTest", builder => builder.TableName("Setting2").Column("Corge"))
                 .Where("Corge", "waldo")
                 .Select(typeof(FullConfig3));
@@ -91,22 +91,19 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
         {
             new Action(() =>
             {
-                Configuration.Load
+                Configuration.Loader
                     .FromSqlServer("name=SmartConfigTest", builder => builder.TableName("Setting2"))
                     .Where("Corge", "waldo")
                     .Select(typeof(FullConfig3));
             })
             .Verify()
-            .Throws<ConfigurationReadException>(ex =>
-            {
-                ex.InnerException.Verify().IsInstanceOfType(typeof(ColumnConfigurationNotFoundException));
-            });
+            .Throws<ConfigurationException>();
         }
 
         [TestMethod]
         public void SaveSetting_ByName()
         {
-            Configuration.Load
+            Configuration.Loader
                 .From(new SqlServerStore("name=SmartConfigTest"))
                 .Select(typeof(TestConfig1));
 
@@ -116,14 +113,14 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
 
             Configuration.Save(typeof(TestConfig1));
             TestConfig1.Roxy = string.Empty;
-            Configuration.Reload(typeof(TestConfig1));
+            Configuration.Load(typeof(TestConfig1));
             TestConfig1.Roxy.Verify().IsNotNullOrEmpty().IsEqual(newValue);
         }
 
         [TestMethod]
         public void SaveSettings_ByNameAndNamespaceFromExpression()
         {
-            Configuration.Load
+            Configuration.Loader
                 .FromSqlServer("name=SmartConfigTest", configure => configure.Column(() => BaseConfig.Environment))
                 .Where("Environment", "Qux")
                 .Select(typeof(TestConfig2));
@@ -134,14 +131,14 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
 
             Configuration.Save(typeof(TestConfig2));
             TestConfig2.Bar = string.Empty;
-            Configuration.Reload(typeof(TestConfig2));
+            Configuration.Load(typeof(TestConfig2));
             TestConfig2.Bar.Verify().IsNotNullOrEmpty().IsEqual(newValue);
         }
 
         [TestMethod]
         public void SaveSettings_Itemized()
         {
-            Configuration.Load
+            Configuration.Loader
                 .FromSqlServer("name=SmartConfigTest", configure => configure.Column("Environment", SqlDbType.NVarChar, 300))
                 .Where("Environment", "Itemized")
                 .Select(typeof(ItemizedConfig));
@@ -158,7 +155,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
 
             ItemizedConfig.Numbers2.Remove(ItemizedConfig.Numbers2.ElementAt(1).Key);
             Configuration.Save(typeof(ItemizedConfig));
-            Configuration.Reload(typeof(ItemizedConfig));
+            Configuration.Load(typeof(ItemizedConfig));
 
             ItemizedConfig.Numbers2.Count.Verify().IsEqual(2);
         }

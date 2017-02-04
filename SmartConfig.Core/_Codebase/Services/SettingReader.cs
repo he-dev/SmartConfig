@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using Reusable;
 using SmartConfig.Data;
 using Reusable.Converters;
+using SmartConfig.Collections;
 
 namespace SmartConfig.Services
 {
@@ -30,13 +31,13 @@ namespace SmartConfig.Services
     {
         private readonly DataStore _dataStore;
         private readonly IEnumerable<SettingProperty> _settingProperties;
-        private readonly IDictionary<string, object> _tags;
+        private readonly TagCollection _tags;
         private readonly TypeConverter _converter;
 
         public SettingReader(
             DataStore dataStore,
             IEnumerable<SettingProperty> settingProperties,
-            IDictionary<string, object> tags,
+            TagCollection tags,
             TypeConverter converter
         )
         {
