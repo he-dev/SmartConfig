@@ -123,7 +123,7 @@ namespace SmartConfig.Services
                 {
                     setting.Tags = _tags;
                 }
-                _dataStore.SaveSettings(settings);
+                _dataStore.WriteSettings(settings);
             }
         }
     }

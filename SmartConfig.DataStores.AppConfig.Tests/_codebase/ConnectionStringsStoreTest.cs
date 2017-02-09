@@ -3,7 +3,7 @@ using Reusable.Fuse;
 using Reusable.Fuse.Testing;
 using SmartConfig.DataStores.AppConfig.Tests.TestData;
 
-namespace SmartConfig.DataStores.AppConfig.Tests.Integration
+namespace SmartConfig.DataStores.AppConfig.Tests
 {
     [TestClass]
     public class ConnectionStringsStoreTest
@@ -11,7 +11,7 @@ namespace SmartConfig.DataStores.AppConfig.Tests.Integration
         [TestMethod]
         public void Load_SimpleConfig()
         {
-            Configuration.Loader.From(new ConnectionStringsStore()).Select(typeof(FullConfig3));
+            Configuration.Builder.From(new ConnectionStringsStore()).Select(typeof(FullConfig3));
 
             FullConfig3.StringSetting.Verify().IsNotNullOrEmpty().IsEqual("Foox");
             FullConfig3.NestedConfig.StringSetting.Verify().IsEqual("Barx");
@@ -21,7 +21,7 @@ namespace SmartConfig.DataStores.AppConfig.Tests.Integration
         [TestMethod]
         public void Load_ConfigWithNameAsPath()
         {
-            Configuration.Loader.From(new ConnectionStringsStore()).Select(typeof(FullConfig4));
+            Configuration.Builder.From(new ConnectionStringsStore()).Select(typeof(FullConfig4));
 
             FullConfig4.StringSetting.Verify().IsNotNullOrEmpty().IsEqual("Fooxy");
             FullConfig4.NestedConfig.StringSetting.Verify().IsEqual("Barxy");

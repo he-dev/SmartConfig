@@ -59,7 +59,7 @@ namespace SmartConfig.Services
             {
                 try
                 {
-                    var settings = _dataStore.GetSettings(new Setting { Name = settingProperty.Path, Tags = _tags }).ToList();
+                    var settings = _dataStore.ReadSettings(new Setting { Name = settingProperty.Path, Tags = _tags }).ToList();
                     var data = GetData(settingProperty, settings);
                     if (data == null && settingProperty.IsOptional) continue;
                     var value = _converter.Convert(data, settingProperty.Type);

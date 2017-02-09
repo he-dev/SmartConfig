@@ -27,7 +27,7 @@ namespace SmartConfig.Core.Tests.DataStores
         {
             var store = new MemoryStore();
 
-            var settings = store.GetSettings(new Setting { Name = SettingPath.Parse("baz") }).ToList();
+            var settings = store.ReadSettings(new Setting { Name = SettingPath.Parse("baz") }).ToList();
             settings.Count().Verify().IsEqual(0);
         }
 
@@ -40,7 +40,7 @@ namespace SmartConfig.Core.Tests.DataStores
                 { "baz", "qux" }
             };
 
-            var settings = store.GetSettings(new Setting { Name = SettingPath.Parse("baz") }).ToList();
+            var settings = store.ReadSettings(new Setting { Name = SettingPath.Parse("baz") }).ToList();
             settings.Count.Verify().IsEqual(1);
             settings.First().Value.ToString().Verify().IsEqual("qux");
         }
@@ -55,12 +55,12 @@ namespace SmartConfig.Core.Tests.DataStores
                 { "bar[b]", "qux" }
             };
 
-            var settings = store.GetSettings(new Setting { Name = SettingPath.Parse("foo") }).ToList();
+            var settings = store.ReadSettings(new Setting { Name = SettingPath.Parse("foo") }).ToList();
             settings.Count().Verify().IsEqual(2);
             settings[0].Value.ToString().Verify().IsEqual("bar");
             settings[1].Value.ToString().Verify().IsEqual("qux");
         }
 
-        // TODO add SaveSettings tests
+        // TODO add WriteSettings tests
     }
 }

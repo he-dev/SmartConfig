@@ -67,9 +67,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="_codebase\CommandFactory.cs" />
-    <Compile Include="_codebase\TableConfiguration.cs" />
-    <Compile Include="_codebase\TableConfigurationBuilder.cs" />
+    <Compile Include="_codebase\SettingCommandFactory.cs" />
+    <Compile Include="_codebase\ConfigurationBuilderExtensions.cs" />
     <Compile Include="_codebase\SQLiteStore.cs" />
     <Compile Include="_codebase\StringEncoder.cs" />
   </ItemGroup>

@@ -7,14 +7,14 @@ using SmartConfig.Data.Annotations;
 namespace SmartConfig.DataStores.SQLite.Tests
 {
     [SmartConfig]
-    public static class FullConfig1
+    public static class TestConfig1
     {
         public static string Utf8SettingDE { get; set; }
 
         public static string Utf8SettingPL { get; set; }
 
         [Optional]
-        public static string OptionalStringSetting { get; set; } = "Waldo";
+        public static string OptionalStringSetting { get; set; } = "Default value";
 
         [Itemized]
         public static int[] ArraySetting { get; set; }
@@ -30,7 +30,7 @@ namespace SmartConfig.DataStores.SQLite.Tests
         [Ignore]
         public static class IgnoredConfig
         {
-            public static string StringSetting { get; set; } = "Grault";
+            public static string StringSetting { get; set; } = "Ignored value";
         }
     }
 

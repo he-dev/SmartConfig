@@ -1,14 +1,15 @@
 ﻿#if DEBUG
-//#define DISABLE_DELETE_VALUE
-//#define DISABLE_SET_VALUE
 #endif
 using System;
 using System.Collections.Generic;
+using System.Drawing.Text;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using Reusable;
 using Reusable.Fuse;
+using SmartConfig.Collections;
 using SmartConfig.Data;
 
 namespace SmartConfig.DataStores.Registry
@@ -40,7 +41,7 @@ namespace SmartConfig.DataStores.Registry
             _baseSubKeyName = subKey;
         }
 
-        public override IEnumerable<Setting> GetSettings(Setting setting)
+        public override IEnumerable<Setting> ReadSettings(Setting setting)
         {
             var registryPath = new RegistryPath(setting.Name);
 
@@ -52,70 +53,59 @@ namespace SmartConfig.DataStores.Registry
                     throw new OpenOrCreateSubKeyException(_baseKey.Name, _baseSubKeyName, subKeyName);
                 }
 
-                var settings =
-                    subKey.GetValueNames()
-                        .Where(valueName => RegistryPath.Parse(valueName).IsLike(registryPath))
-                        .Select(valueName => new Setting
-                        {
-                            Name = SettingPath.Parse(valueName),
-                            Value = subKey.GetValue(valueName)
-                        })
-                        .ToList();
+                var valueNames = subKey.GetValueNames().Where(x => RegistryPath.Parse(x).IsLike(registryPath));
 
-                return settings;
+                foreach (var valueName in valueNames)
+                {
+                    yield return new Setting
+                    {
+                        Name = SettingPath.Parse(valueName),
+                        Value = subKey.GetValue(valueName)
+                    };
+                }
             }
         }
 
-        public override int SaveSettings(IEnumerable<Setting> settings)
+        protected override void WriteSettings(ICollection<IGrouping<Setting, Setting>> settings)
         {
-            var groups = settings.GroupBy(x => x.Name.WeakFullName).ToList();
-
-            foreach (var group in groups)
+            foreach (var group in settings)
             {
-                var groupDeleted = false;
-                foreach (var setting in group)
+                var subKeyName = Path.Combine(_baseSubKeyName, group.Key.Name.Namespace);
+                using (var subKey = _baseKey.OpenSubKey(subKeyName, true) ?? _baseKey.CreateSubKey(subKeyName))
                 {
-                    var registryValueKind = RegistryValueKind.None;
-                    if (!_registryValueKinds.TryGetValue(setting.Value.GetType(), out registryValueKind))
+                    if (subKey == null)
                     {
-                        throw new InvalidTypeException(setting.Value.GetType(), SupportedTypes);
+                        throw new OpenOrCreateSubKeyException(_baseKey.Name, _baseSubKeyName, subKeyName);
                     }
 
-                    var subKeyName = Path.Combine(_baseSubKeyName, setting.Name.Namespace);
-                    using (var subKey = _baseKey.OpenSubKey(subKeyName, true) ?? _baseKey.CreateSubKey(subKeyName))
+                    DeleteObsoleteSettings(subKey, group);
+
+                    foreach (var setting in group)
                     {
-                        if (subKey == null)
+                        var registryValueKind = RegistryValueKind.None;
+                        if (!_registryValueKinds.TryGetValue(setting.Value.GetType(), out registryValueKind))
                         {
-                            throw new OpenOrCreateSubKeyException(_baseKey.Name, _baseSubKeyName, subKeyName);
+                            throw new InvalidTypeException(setting.Value.GetType(), SupportedTypes);
                         }
 
-                        if (!groupDeleted)
-                        {
-                            var valueNames = subKey
-                                .GetValueNames()
-                                .Where(x => RegistryPath.Parse(x).IsLike(setting.Name))
-                                .ToList();
-
-                            foreach (var valueName in valueNames)
-                            {
-#if !DISABLE_DELETE_VALUE
-                                subKey.DeleteValue(valueName);
-#endif
-                            }
-
-                            groupDeleted = true;
-                        }
 
                         var registryUrn = new RegistryPath(setting.Name);
-#if !DISABLE_SET_VALUE
                         subKey.SetValue(registryUrn.StrongName, setting.Value, registryValueKind);
-#endif
                     }
                 }
 
             }
+        }
 
-            return groups.Sum(x => x.Count());
+        private static void DeleteObsoleteSettings(RegistryKey registryKey, IGrouping<Setting, Setting> settings)
+        {
+            var obsoleteNames =
+                registryKey
+                    .GetValueNames()
+                    .Where(x => RegistryPath.Parse(x).IsLike(settings.Key.Name))
+                    .ToList();
+
+            obsoleteNames.ForEach(registryKey.DeleteValue);
         }
 
         public static RegistryStore CreateForCurrentUser(string subRegistryKey)

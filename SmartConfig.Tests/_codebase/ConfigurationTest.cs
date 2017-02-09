@@ -35,19 +35,18 @@ namespace SmartConfig.Core.Tests
 
             var testStore = new TestStore
             {
-                GetSettingsCallback = s =>
+                ReadSettingsCallback = s =>
                 {
                     getSettingsCallCount++;
                     return Enumerable.Empty<Setting>();
                 },
-                SaveSettingsCallback = s =>
+                WriteSettingsCallback = s =>
                 {
                     saveSettingsCallCount++;
-                    return 0;
                 }
             };
 
-            Configuration.Loader.From(testStore).Select(typeof(EmptyConfig));            
+            Configuration.Builder.From(testStore).Select(typeof(EmptyConfig));            
 
             getSettingsCallCount.Verify().IsEqual(0);
             saveSettingsCallCount.Verify().IsEqual(0);
@@ -58,7 +57,7 @@ namespace SmartConfig.Core.Tests
         {
             var culture = CultureInfo.InvariantCulture;
 
-            Configuration.Loader.From(new MemoryStore
+            Configuration.Builder.From(new MemoryStore
             {
                 {nameof(IntegralConfig.SByte), SByte.MaxValue.ToString()},
                 {nameof(IntegralConfig.Byte), Byte.MaxValue.ToString()},
@@ -106,7 +105,7 @@ namespace SmartConfig.Core.Tests
         {
             var culture = CultureInfo.InvariantCulture;
 
-            Configuration.Loader.From(new MemoryStore
+            Configuration.Builder.From(new MemoryStore
             {
                 {nameof(DateTimeConfig.DateTime), new DateTime(2016, 7, 30).ToString(culture)},
             })
@@ -120,7 +119,7 @@ namespace SmartConfig.Core.Tests
         [TestMethod]
         public void LoadSave_ColorConfig()
         {
-            Configuration.Loader.From(new MemoryStore
+            Configuration.Builder.From(new MemoryStore
             {
                 {nameof(ColorConfig.ColorName), Color.DarkRed.Name},
                 {nameof(ColorConfig.ColorDec), $"{Color.Plum.R},{Color.Plum.G},{Color.Plum.B}"},
@@ -138,7 +137,7 @@ namespace SmartConfig.Core.Tests
         [TestMethod]
         public void LoadSave_JsonConfig()
         {
-            Configuration.Loader.From(new MemoryStore
+            Configuration.Builder.From(new MemoryStore
             {
                 {nameof(JsonConfig.JsonArray), "[5, 8, 13]"},
             })
@@ -152,7 +151,7 @@ namespace SmartConfig.Core.Tests
         [TestMethod]
         public void LoadSave_ItemizedArrayConfig()
         {
-            Configuration.Loader.From(new MemoryStore
+            Configuration.Builder.From(new MemoryStore
             {
                 {$"{nameof(ItemizedArrayConfig.ItemizedArray)}[0]", "5"},
                 {$"{nameof(ItemizedArrayConfig.ItemizedArray)}[1]", "8"},
@@ -169,7 +168,7 @@ namespace SmartConfig.Core.Tests
         [TestMethod]
         public void LoadSave_ItemizedDictionaryConfig()
         {
-            Configuration.Loader.From(new MemoryStore
+            Configuration.Builder.From(new MemoryStore
             {
                 {$"{nameof(ItemizedDictionaryConfig.ItemizedDictionary)}[foo]", "21"},
                 {$"{nameof(ItemizedDictionaryConfig.ItemizedDictionary)}[bar]", "34"},
@@ -186,7 +185,7 @@ namespace SmartConfig.Core.Tests
         [TestMethod]
         public void LoadSave_NestedConfig()
         {
-            Configuration.Loader.From(new MemoryStore
+            Configuration.Builder.From(new MemoryStore
             {
                 {nameof(NestedConfig.SubConfig) + "." + nameof(NestedConfig.SubConfig.NestedString), "Quux"},
             })
@@ -200,7 +199,7 @@ namespace SmartConfig.Core.Tests
         [TestMethod]
         public void LoadSave_IgnoredConfig()
         {
-            Configuration.Loader.From(new MemoryStore()).Select(typeof(IgnoredConfig));
+            Configuration.Builder.From(new MemoryStore()).Select(typeof(IgnoredConfig));
             IgnoredConfig.SubConfig.IgnoredString.Verify().IsEqual("Grault");
 
             Configuration.Save(typeof(IgnoredConfig));
@@ -209,7 +208,7 @@ namespace SmartConfig.Core.Tests
         [TestMethod]
         public void LoadSave_OptionalConfig()
         {
-            Configuration.Loader.From(new MemoryStore()).Select(typeof(OptionalConfig));
+            Configuration.Builder.From(new MemoryStore()).Select(typeof(OptionalConfig));
             OptionalConfig.OptionalSetting.Verify().IsEqual("Waldo");
 
             Configuration.Save(typeof(OptionalConfig));
@@ -219,10 +218,10 @@ namespace SmartConfig.Core.Tests
         public void LoadSave_Where_FromExpression()
         {
             var tags = default(TagCollection);
-            Configuration.Loader
+            Configuration.Builder
                 .From(new TestStore
                 {
-                    GetSettingsCallback = s =>
+                    ReadSettingsCallback = s =>
                     {
                         tags = s.Tags;
                         return Enumerable.Empty<Setting>();
@@ -242,7 +241,7 @@ namespace SmartConfig.Core.Tests
         {
             new Action(() =>
             {
-                Configuration.Loader.From(new MemoryStore()).Select(typeof(NonStaticConfig));
+                Configuration.Builder.From(new MemoryStore()).Select(typeof(NonStaticConfig));
             })
             .Verify()
             .Throws<ValidationException>(ex =>
@@ -267,7 +266,7 @@ SettingNotFoundException: Setting "TestSetting" not found. You need to provide a
         [TestMethod]
         public void Load_ValueNull()
         {
-            new Action(() => Configuration.Loader.From(new MemoryStore()).Where("foo", null)).Verify().Throws<ValidationException>();
+            new Action(() => Configuration.Builder.From(new MemoryStore()).Where("foo", null)).Verify().Throws<ValidationException>();
         }
 
         [TestMethod]
@@ -275,7 +274,7 @@ SettingNotFoundException: Setting "TestSetting" not found. You need to provide a
         {
             new Action(() =>
             {
-                Configuration.Loader.From(new TestStore()).Select(typeof(SettingNotFoundConfig));
+                Configuration.Builder.From(new TestStore()).Select(typeof(SettingNotFoundConfig));
             })
             .Verify().Throws<ConfigurationException>(exception =>
             {
@@ -289,7 +288,7 @@ SettingNotFoundException: Setting "TestSetting" not found. You need to provide a
         {
             new Action(() =>
             {
-                Configuration.Loader.From(new MemoryStore()).Select(typeof(ConfigNotDecorated));
+                Configuration.Builder.From(new MemoryStore()).Select(typeof(ConfigNotDecorated));
             })
             .Verify().Throws<ValidationException>();
         }
@@ -299,7 +298,7 @@ SettingNotFoundException: Setting "TestSetting" not found. You need to provide a
         {
             new Action(() =>
             {
-                Configuration.Loader.From(new MemoryStore()).Select(typeof(RequiredSettings));
+                Configuration.Builder.From(new MemoryStore()).Select(typeof(RequiredSettings));
             })
             .Verify().Throws<ConfigurationException>();
         }
@@ -309,13 +308,13 @@ SettingNotFoundException: Setting "TestSetting" not found. You need to provide a
         {
             new Action(() =>
             {
-                Configuration.Loader.From(new MemoryStore()).Where(null, null);
+                Configuration.Builder.From(new MemoryStore()).Where(null, null);
             })
                 .Verify().Throws<ValidationException>();
 
             new Action(() =>
             {
-                Configuration.Loader.From(new MemoryStore()).Where(string.Empty, null);
+                Configuration.Builder.From(new MemoryStore()).Where(string.Empty, null);
             })
                 .Verify().Throws<ValidationException>();
         }

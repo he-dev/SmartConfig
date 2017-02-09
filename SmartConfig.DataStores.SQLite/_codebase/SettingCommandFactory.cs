@@ -2,24 +2,28 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
+using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 using SmartConfig.Data;
 
-namespace SmartConfig.DataStores.SqlServer
+namespace SmartConfig.DataStores.SQLite
 {
-    internal class CommandFactory
+    internal class SettingCommandFactory
     {
-        public CommandFactory(TableConfiguration tableConfiguration)
+        public SettingCommandFactory(TableMetadata<DbType> tableMetadata)
         {
-            TableConfiguration = tableConfiguration;
+            TableMetadata = tableMetadata;
         }
 
-        public TableConfiguration TableConfiguration { get; }
+        public TableMetadata<DbType> TableMetadata { get; }
 
-        public SqlCommand CreateSelectCommand(SqlConnection connection, Setting setting)
+        public SQLiteCommand CreateSelectCommand(SQLiteConnection connection, Setting setting)
         {
+            // --- build sql
+
+            // SELECT * FROM {table} WHERE [Name] = '{name}' AND 'Foo' = 'bar'
+
             var sql = new StringBuilder();
 
             var dbProviderFactory = DbProviderFactories.GetFactory(connection);
@@ -27,20 +31,20 @@ namespace SmartConfig.DataStores.SqlServer
             {
                 var quote = new Func<string, string>(identifier => commandBuilder.QuoteIdentifier(identifier));
 
-                var table = $"{quote(TableConfiguration.SchemaName)}.{quote(TableConfiguration.TableName)}";
+                var table = $"{quote(TableMetadata.TableName)}";
 
-                sql.Append($"SELECT *").AppendLine();
-                sql.Append($"FROM {table}").AppendLine();
-                sql.Append(setting.Tags.Aggregate(
-                    $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} + N'[[]%]')",
-                    (result, next) => $"{result} AND {quote(next.Key)} = @{next.Key}")
+                sql.Append($"SELECT * FROM {table}").AppendLine();
+                sql.Append(setting.Tags.Keys.Aggregate(
+                    $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} || '[%]')",
+                    (result, key) => $"{result} AND {quote(key)} = @{key}")
                 );
             }
 
             var command = connection.CreateCommand();
+            command.CommandType = CommandType.Text;
             command.CommandText = sql.ToString();
 
-            // --- add parameters & values
+            // --- add parameters
 
             AddParameter(command, nameof(Setting.Name), setting.Name.WeakFullName);
             AddParameters(command, setting.Tags);
@@ -48,7 +52,7 @@ namespace SmartConfig.DataStores.SqlServer
             return command;
         }
 
-        public SqlCommand CreateDeleteCommand(SqlConnection connection, Setting setting)
+        public SQLiteCommand CreateDeleteCommand(SQLiteConnection connection, Setting setting)
         {
             /*
              
@@ -63,12 +67,12 @@ namespace SmartConfig.DataStores.SqlServer
             {
                 var quote = new Func<string, string>(identifier => commandBuilder.QuoteIdentifier(identifier));
 
-                var table = $"{quote(TableConfiguration.SchemaName)}.{quote(TableConfiguration.TableName)}";
+                var table = $"{quote(TableMetadata.TableName)}";
 
                 sql.Append($"DELETE FROM {table}").AppendLine();
                 sql.Append(setting.Tags.Keys.Aggregate(
-                    $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} + N'[[]%]')",
-                    (result, next) => $"{result} AND {quote(next)} = @{next} ")
+                    $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} || '[%]')",
+                    (result, key) => $"{result} AND {quote(key)} = @{key} ")
                 );
             }
 
@@ -84,18 +88,14 @@ namespace SmartConfig.DataStores.SqlServer
             return command;
         }
 
-        public SqlCommand CreateInsertCommand(SqlConnection connection, Setting setting)
+        public SQLiteCommand CreateInsertCommand(SQLiteConnection connection, Setting setting)
         {
             /*
-             
-            UPDATE [Setting]
-	            SET [Value] = 'Hallo update!'
-	            WHERE [Name]='baz' AND [Environment] = 'boz'
-            IF @@ROWCOUNT = 0 
-	            INSERT INTO [Setting]([Name], [Value], [Environment])
-	            VALUES ('baz', 'Hallo insert!', 'boz')
-            
+                INSERT OR REPLACE INTO Setting([Name], [Value])
+                VALUES('{setting.Name.FullNameEx}', '{setting.Value}')
             */
+
+            // --- build sql
 
             var sql = new StringBuilder();
 
@@ -104,31 +104,21 @@ namespace SmartConfig.DataStores.SqlServer
             {
                 var quote = new Func<string, string>(identifier => commandBuilder.QuoteIdentifier(identifier));
 
-                var table = $"{quote(TableConfiguration.SchemaName)}.{quote(TableConfiguration.TableName)}";
-
-                sql.Append($"UPDATE {table}").AppendLine();
-                sql.Append($"SET [{nameof(Setting.Value)}] = @{nameof(Setting.Value)}").AppendLine();
-
-                sql.Append(setting.Tags.Keys.Aggregate(
-                    $"WHERE ([{nameof(Setting.Name)}] = @{nameof(Setting.Name)} OR [{nameof(Setting.Name)}] LIKE @{nameof(Setting.Name)} + N'[[]%]')",
-                    (result, next) => $"{result} AND {quote(next)} = @{next} ")
-                ).AppendLine();
-
-                sql.Append($"IF @@ROWCOUNT = 0").AppendLine();
+                var table = $"{quote(TableMetadata.TableName)}";
 
                 var columns = setting.Tags.Keys.Select(columnName => quote(columnName)).Aggregate(
-                        $"[{nameof(Setting.Name)}], [{nameof(Setting.Value)}]",
-                        (result, next) => $"{result}, {next}"
+                    $"[{nameof(Setting.Name)}], [{nameof(Setting.Value)}]",
+                    (result, next) => $"{result}, {next}"
                 );
 
-                sql.Append($"INSERT INTO {table}({columns})").AppendLine();
+                sql.Append($"INSERT OR REPLACE INTO {table}({columns})").AppendLine();
 
                 var parameterNames = setting.Tags.Keys.Aggregate(
-                    $"@{nameof(Setting.Name)}, @{nameof(Setting.Value)}",
-                    (result, next) => $"{result}, @{next}"
+                        $"@{nameof(Setting.Name)}, @{nameof(Setting.Value)}",
+                        (result, next) => $"{result}, @{next}"
                 );
 
-                sql.Append($"VALUES ({parameterNames})");
+                sql.Append($"VALUES ({parameterNames})").AppendLine();
             }
 
             var command = connection.CreateCommand();
@@ -144,10 +134,9 @@ namespace SmartConfig.DataStores.SqlServer
             return command;
         }
 
-        private void AddParameter(SqlCommand command, string name, object value = null)
+        private void AddParameter(SQLiteCommand command, string name, object value = null)
         {
-            var column = (ColumnConfiguration)null;
-            if (!TableConfiguration.Columns.TryGetValue(name, out column))
+            if (!TableMetadata.Columns.TryGetValue(name, out ColumnMetadata<DbType> column))
             {
                 throw new ColumnConfigurationNotFoundException(name);
             }
@@ -160,7 +149,7 @@ namespace SmartConfig.DataStores.SqlServer
             }
         }
 
-        private void AddParameters(SqlCommand command, IEnumerable<KeyValuePair<string, object>> parameters)
+        private void AddParameters(SQLiteCommand command, IEnumerable<KeyValuePair<string, object>> parameters)
         {
             foreach (var parameter in parameters)
             {
@@ -178,6 +167,6 @@ namespace SmartConfig.DataStores.SqlServer
 
         public string Column { get; set; }
 
-        public override string Message => $"\"{Column}\" column configuration not found. Ensure that it is set via the \"{nameof(SqlServerStore)}\" builder.";
+        public override string Message => $"\"{Column}\" column configuration not found. Ensure that it is set via the \"{nameof(SQLiteStore)}\" builder.";
     }
 }

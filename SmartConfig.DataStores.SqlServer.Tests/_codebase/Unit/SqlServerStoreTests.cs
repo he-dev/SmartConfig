@@ -18,7 +18,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Unit
             var store = new SqlServerStore("foo");
             store.ConnectionString.Validate().IsNotNullOrEmpty();
             store.ConnectionString.Validate().IsEqual("foo");
-            store.TableConfiguration.Validate().IsNotNull();
+            store.TableMetadata.Validate().IsNotNull();
         }
 
         [TestMethod]
@@ -27,7 +27,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Unit
             var store = new SqlServerStore("name=foo");
             store.ConnectionString.Validate().IsNotNullOrEmpty();
             store.ConnectionString.Validate().IsEqual("bar");
-            store.TableConfiguration.Validate().IsNotNull();
+            store.TableMetadata.Validate().IsNotNull();
         }
 
         [TestMethod]
@@ -40,10 +40,10 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Unit
             );
             store.ConnectionString.Validate().IsNotNullOrEmpty();
             store.ConnectionString.Validate().IsEqual("foo");
-            store.TableConfiguration.Validate().IsNotNull();
-            store.TableConfiguration.SchemaName.Validate().IsEqual("baz");
-            store.TableConfiguration.TableName.Validate().IsEqual("qux");
-            store.TableConfiguration.Columns["corge"].DbType.Validate().IsEqual(SqlDbType.Bit);
+            store.TableMetadata.Validate().IsNotNull();
+            store.TableMetadata.SchemaName.Validate().IsEqual("baz");
+            store.TableMetadata.TableName.Validate().IsEqual("qux");
+            store.TableMetadata.Columns["corge"].DbType.Validate().IsEqual(SqlDbType.Bit);
         }
 
         [TestMethod]

@@ -3,7 +3,7 @@ using Reusable.Fuse;
 using Reusable.Fuse.Testing;
 using SmartConfig.DataStores.AppConfig.Tests.TestData;
 
-namespace SmartConfig.DataStores.AppConfig.Tests.Integration
+namespace SmartConfig.DataStores.AppConfig.Tests
 {
     [TestClass]
     public class AppSettingsStoreTest
@@ -11,7 +11,7 @@ namespace SmartConfig.DataStores.AppConfig.Tests.Integration
         [TestMethod]
         public void Load_SimpleConfig()
         {
-            Configuration.Loader.From(new AppSettingsStore()).Select(typeof(FullConfig1));
+            Configuration.Builder.From(new AppSettingsStore()).Select(typeof(FullConfig1));
 
             FullConfig1.StringSetting.Verify().IsNotNullOrEmpty().IsEqual("Foo");
             FullConfig1.ArraySetting.Length.Verify().IsBetweenOrEqual(2, 3);
@@ -44,7 +44,7 @@ namespace SmartConfig.DataStores.AppConfig.Tests.Integration
         [TestMethod]
         public void Load_ConfigWithNameAsPath()
         {
-            Configuration.Loader.From(new AppSettingsStore()).Select(typeof(FullConfig2));
+            Configuration.Builder.From(new AppSettingsStore()).Select(typeof(FullConfig2));
 
             FullConfig2.StringSetting.Verify().IsNotNullOrEmpty().IsEqual("Foox");
             FullConfig2.ArraySetting.Length.Verify().IsEqual(2);

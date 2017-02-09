@@ -2,34 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SmartConfig.Data;
+using SmartConfig.DataStores;
 
 namespace SmartConfig.Core.Tests
 {
-    public class TestStore : DataStore
+    public class TestStore : MemoryStore
     {
-        //private readonly DataStore _store;
-
         public TestStore() : base(new[] { typeof(string) }) { }
 
-        //public TestStore(DataStore store) : this()
-        //{
-        //    _store = store;
-        //}
-
-        public override IEnumerable<Setting> GetSettings(Setting setting)
+        public override IEnumerable<Setting> ReadSettings(Setting setting)
         {
-            return GetSettingsCallback(setting);
-        }       
-
-        public override int SaveSettings(IEnumerable<Setting> settings)
-        {
-            return SaveSettingsCallback(settings);
+            return ReadSettingsCallback(setting);
         }
+
+        protected override void WriteSettings(ICollection<IGrouping<Setting, Setting>> settings) => WriteSettingsCallback(settings);
 
         // ---
 
-        public Func<Setting, IEnumerable<Setting>> GetSettingsCallback { get; set; }
+        public Func<Setting, IEnumerable<Setting>> ReadSettingsCallback { get; set; }
 
-        public Func<IEnumerable<Setting>, int> SaveSettingsCallback { get; set; }
+        public Action<ICollection<IGrouping<Setting, Setting>>> WriteSettingsCallback { get; set; }
     }
 }

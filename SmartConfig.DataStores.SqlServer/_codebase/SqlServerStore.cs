@@ -16,7 +16,7 @@ namespace SmartConfig.DataStores.SqlServer
     /// </summary>
     public class SqlServerStore : DataStore
     {
-        public SqlServerStore(string nameOrConnectionString, Action<TableConfigurationBuilder> buildTableConfiguration = null) : base(new[] { typeof(string) })
+        public SqlServerStore(string nameOrConnectionString, Action<TableMetadataBuilder<SqlDbType>> buildTableConfiguration = null) : base(new[] { typeof(string) })
         {
             nameOrConnectionString.Validate(nameof(nameOrConnectionString)).IsNotNullOrEmpty();
 
@@ -30,28 +30,28 @@ namespace SmartConfig.DataStores.SqlServer
 
             ConnectionString.Validate(nameof(nameOrConnectionString)).IsNotNullOrEmpty();
 
-            var settingTableConfigurationBuilder = new TableConfigurationBuilder()
+            var tableMetadataBuilder = TableMetadataBuilder<SqlDbType>.Create()
                 .SchemaName("dbo")
                 .TableName(nameof(Setting))
                 .Column(nameof(Setting.Name), SqlDbType.NVarChar, 300)
-                .Column(nameof(Setting.Value), SqlDbType.NVarChar, ColumnConfiguration.MaxLength)
-                .Column(SettingTag.Config);
+                .Column(nameof(Setting.Value), SqlDbType.NVarChar, -1)
+                .Column(SettingTag.Config, SqlDbType.NVarChar, 50);
 
-            buildTableConfiguration?.Invoke(settingTableConfigurationBuilder);
-            TableConfiguration = settingTableConfigurationBuilder.Build();
+            buildTableConfiguration?.Invoke(tableMetadataBuilder);
+            TableMetadata = tableMetadataBuilder.Build();
         }
 
         public string ConnectionString { get; }
 
-        public TableConfiguration TableConfiguration { get; }
+        public TableMetadata<SqlDbType> TableMetadata { get; }
 
         public Type MapDataType(Type settingType) => typeof(string);
 
-        public override IEnumerable<Setting> GetSettings(Setting setting)
+        public override IEnumerable<Setting> ReadSettings(Setting setting)
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
-                var commandFactory = new CommandFactory(TableConfiguration);
+                var commandFactory = new SettingCommandFactory(TableMetadata);
                 using (var command = commandFactory.CreateSelectCommand(connection, setting))
                 {
                     connection.Open();
@@ -74,16 +74,9 @@ namespace SmartConfig.DataStores.SqlServer
             }
         }
 
-        public override int SaveSettings(IEnumerable<Setting> settings)
-        {
-            var groups = settings.GroupBy(x => x, new WeakSettingComparer()).ToList();
-            if (!groups.Any())
-            {
-                return 0;
-            }
-
-            var commandFactory = new CommandFactory(TableConfiguration);
-            var rowsAffected = 0;
+        protected override void WriteSettings(ICollection<IGrouping<Setting, Setting>> settings)
+        {            
+            var commandFactory = new SettingCommandFactory(TableMetadata);
 
             using (var connection = new SqlConnection(ConnectionString))
             {
@@ -93,33 +86,26 @@ namespace SmartConfig.DataStores.SqlServer
                 {
                     try
                     {
-                        foreach (var group in groups)
+                        foreach (var group in settings)
                         {
-                            var deleted = false;
+                            using (var deleteCommand = commandFactory.CreateDeleteCommand(connection, group.Key))
+                            {
+                                deleteCommand.Transaction = transaction;
+                                deleteCommand.Prepare();
+                                deleteCommand.ExecuteNonQuery();
+                            }
+
                             foreach (var setting in group)
                             {
-                                // Before adding this group of settings delete the old ones first.
-                                if (!deleted)
-                                {
-                                    using (var deleteCommand = commandFactory.CreateDeleteCommand(connection, setting))
-                                    {
-                                        deleteCommand.Transaction = transaction;
-                                        deleteCommand.Prepare();
-                                        rowsAffected += deleteCommand.ExecuteNonQuery();
-                                    }
-                                    deleted = true;
-                                }
-
                                 using (var insertCommand = commandFactory.CreateInsertCommand(connection, setting))
                                 {
                                     insertCommand.Transaction = transaction;
                                     insertCommand.Prepare();
-                                    rowsAffected += insertCommand.ExecuteNonQuery();
+                                    insertCommand.ExecuteNonQuery();
                                 }
                             }
                         }
                         transaction.Commit();
-                        return rowsAffected;
                     }
                     catch (Exception)
                     {
@@ -128,18 +114,6 @@ namespace SmartConfig.DataStores.SqlServer
                     }
                 }
             }
-        }
-    }
-
-    public static class ConfigurationBuilderExtensions
-    {
-        public static ConfigurationBuilder FromSqlServer(
-            this ConfigurationBuilder configurationBuilder,
-            string nameOrConnectionString,
-            Action<TableConfigurationBuilder> configure = null
-        )
-        {
-            return configurationBuilder.From(new SqlServerStore(nameOrConnectionString, configure));
         }
     }
 }

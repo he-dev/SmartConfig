@@ -22,7 +22,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
         [TestMethod]
         public void LoadSave_SimpleSetting()
         {
-            Configuration.Loader
+            Configuration.Builder
                 .FromSqlServer("name=SmartConfigTest", configure => configure.TableName("Setting1"))
                 .Select(typeof(FullConfig1));
 
@@ -56,7 +56,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
         [TestMethod]
         public void LoadSave_WithConfigAsPath()
         {
-            Configuration.Loader
+            Configuration.Builder
                 .FromSqlServer("name=SmartConfigTest", configure => configure.TableName("Setting1"))
                 .Select(typeof(FullConfig2));
 
@@ -70,8 +70,8 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
         [TestMethod]
         public void LoadSave_WithConfigAsNamespace()
         {
-            Configuration.Loader
-                .FromSqlServer("name=SmartConfigTest", builder => builder.TableName("Setting2").Column("Corge"))
+            Configuration.Builder
+                .FromSqlServer("name=SmartConfigTest", builder => builder.TableName("Setting2").Column("Corge", SqlDbType.NVarChar, 50))
                 .Where("Corge", "waldo")
                 .Select(typeof(FullConfig3));
 
@@ -91,7 +91,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
         {
             new Action(() =>
             {
-                Configuration.Loader
+                Configuration.Builder
                     .FromSqlServer("name=SmartConfigTest", builder => builder.TableName("Setting2"))
                     .Where("Corge", "waldo")
                     .Select(typeof(FullConfig3));
@@ -103,7 +103,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
         [TestMethod]
         public void SaveSetting_ByName()
         {
-            Configuration.Loader
+            Configuration.Builder
                 .From(new SqlServerStore("name=SmartConfigTest"))
                 .Select(typeof(TestConfig1));
 
@@ -120,8 +120,8 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
         [TestMethod]
         public void SaveSettings_ByNameAndNamespaceFromExpression()
         {
-            Configuration.Loader
-                .FromSqlServer("name=SmartConfigTest", configure => configure.Column(() => BaseConfig.Environment))
+            Configuration.Builder
+                .FromSqlServer("name=SmartConfigTest", configure => configure.Column(() => BaseConfig.Environment, SqlDbType.NVarChar, 50))
                 .Where("Environment", "Qux")
                 .Select(typeof(TestConfig2));
 
@@ -138,7 +138,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Integration
         [TestMethod]
         public void SaveSettings_Itemized()
         {
-            Configuration.Loader
+            Configuration.Builder
                 .FromSqlServer("name=SmartConfigTest", configure => configure.Column("Environment", SqlDbType.NVarChar, 300))
                 .Where("Environment", "Itemized")
                 .Select(typeof(ItemizedConfig));

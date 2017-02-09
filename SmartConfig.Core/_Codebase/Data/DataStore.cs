@@ -14,8 +14,10 @@ namespace SmartConfig.Data
 
         public IReadOnlyCollection<Type> SupportedTypes { get; }
 
-        public abstract IEnumerable<Setting> GetSettings(Setting setting);
+        public abstract IEnumerable<Setting> ReadSettings(Setting setting);
 
-        public abstract int SaveSettings(IEnumerable<Setting> settings);
+        public void WriteSettings(IEnumerable<Setting> settings)=> WriteSettings(settings.GroupBy(x => x, new WeakSettingComparer()).ToList());
+
+        protected abstract void WriteSettings(ICollection<IGrouping<Setting, Setting>> settings);
     }
 }

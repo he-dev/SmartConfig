@@ -88,11 +88,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="_codebase\Collections\EnumerableExtensions.cs" />
     <Compile Include="_codebase\Collections\TagCollection.cs" />
     <Compile Include="_codebase\ConfigurationType.cs" />
     <Compile Include="_codebase\ConfigurationBuilder.cs" />
     <Compile Include="_codebase\DataStores\MemoryStore.cs" />
     <Compile Include="_codebase\Data\Annotations\ItemizedAttribute.cs" />
+    <Compile Include="_codebase\Data\TableMetadata.cs" />
+    <Compile Include="_codebase\Data\TableMetadataBuilder.cs" />
     <Compile Include="_codebase\SettingNameTarget.cs" />
     <Compile Include="_codebase\WeakSettingPathComparer.cs" />
     <Compile Include="_codebase\WeakSettingComparer.cs" />

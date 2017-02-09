@@ -27,7 +27,7 @@ namespace SmartConfig
         }
 
         // Initializes the fluent interface.
-        public static ConfigurationBuilder Loader => new ConfigurationBuilder();
+        public static ConfigurationBuilder Builder => new ConfigurationBuilder();
 
         internal Type Type { get; }
 
@@ -58,8 +58,7 @@ namespace SmartConfig
 
         public static void Load(Type configurationType)
         {
-            var configuration = default(Configuration);
-            if (!Cache.TryGetValue(configurationType, out configuration))
+            if (!Cache.TryGetValue(configurationType, out Configuration configuration))
             {
                 throw new InvalidOperationException($"Configuration {configurationType.Name} isn't loaded yet. To reload a configuration you need to load it first.");
             }
@@ -69,8 +68,7 @@ namespace SmartConfig
 
         public static void Save(Type configurationType)
         {
-            var configuration = default(Configuration);
-            if (!Cache.TryGetValue(configurationType, out configuration))
+            if (!Cache.TryGetValue(configurationType, out Configuration configuration))
             {
                 throw new InvalidOperationException($"To save a configuration you need to load it first. Configuration {configurationType.Name} isn't loaded yet.");
             }

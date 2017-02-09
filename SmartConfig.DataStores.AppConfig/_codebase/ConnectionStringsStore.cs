@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using SmartConfig.Collections;
 using SmartConfig.Data;
 
 namespace SmartConfig.DataStores.AppConfig
 {
-    /// <summary>
-    /// Implements the app.configuration as data source.
-    /// </summary>
     public class ConnectionStringsStore : DataStore
     {
         private readonly System.Configuration.Configuration _exeConfiguration;
@@ -20,69 +18,49 @@ namespace SmartConfig.DataStores.AppConfig
             _connectionStringsSection = _exeConfiguration.ConnectionStrings;
         }
 
-        public override IEnumerable<Setting> GetSettings(Setting setting)
+        public override IEnumerable<Setting> ReadSettings(Setting setting)
         {
             var connectionStringSettings =
-                _connectionStringsSection.ConnectionStrings.Cast<ConnectionStringSettings>()
-                .Where(x => SettingPath.Parse(x.Name).IsLike(setting.Name) && !string.IsNullOrEmpty(x.ConnectionString))
-                .Select(x => new Setting
+                _connectionStringsSection
+                .ConnectionStrings
+                .Cast<ConnectionStringSettings>()
+                .Like(x => x.Name, setting);
+
+            foreach (var x in connectionStringSettings)
+            {
+                yield return new Setting
                 {
                     Name = SettingPath.Parse(x.Name),
                     Value = x.ConnectionString
-                })
-                .ToList();
-
-            return connectionStringSettings;
+                };
+            }
         }
 
-        public override int SaveSettings(IEnumerable<Setting> settings)
+        protected override void WriteSettings(ICollection<IGrouping<Setting, Setting>> settings)
         {
-            var rowsAffected = 0;
-
-            var groups = settings.GroupBy(x => x, new WeakSettingComparer()).ToList();
-            if (!groups.Any())
+            foreach (var group in settings)
             {
-                return rowsAffected;
-            }
+                DeleteObsoleteSettings(group);
 
-            foreach (var group in groups)
-            {
-                var groupDeleted = false;
                 foreach (var setting in group)
                 {
-                    if (!groupDeleted)
-                    {
-                        var names =
-                            _connectionStringsSection.ConnectionStrings
-                                .Cast<ConnectionStringSettings>()
-                                .Where(x => SettingPath.Parse(x.Name).IsLike(setting.Name));
-
-                        foreach (var item in names)
-                        {
-                            _connectionStringsSection.ConnectionStrings.Remove(item.Name);
-                        }
-                        groupDeleted = true;
-                    }
-
                     var connectionStringSettings = new ConnectionStringSettings(setting.Name.StrongFullName, (string)setting.Value);
                     _connectionStringsSection.ConnectionStrings.Add(connectionStringSettings);
-                    rowsAffected++;
                 }
             }
-            
             _exeConfiguration.Save(ConfigurationSaveMode.Minimal);
-            return rowsAffected;
+        }
+
+        private void DeleteObsoleteSettings(IGrouping<Setting, Setting> settings)
+        {
+            var obsoleteNames =
+                _connectionStringsSection
+                .ConnectionStrings
+                .Cast<ConnectionStringSettings>()
+                .Where(x => SettingPath.Parse(x.Name).IsLike(settings.Key.Name))
+                .ToList();
+
+            obsoleteNames.ForEach(x => _connectionStringsSection.ConnectionStrings.Remove(x.Name));
         }
     }
-
-    //var connectionStringSettings = _connectionStringsSection.ConnectionStrings[setting.Name.StrongFullName];
-    //            if (connectionStringSettings == null)
-    //            {
-    //                connectionStringSettings = new ConnectionStringSettings(setting.Name.StrongFullName, (string)setting.Value);
-    //                _connectionStringsSection.ConnectionStrings.Add(connectionStringSettings);
-    //            }
-    //            else
-    //            {
-    //                connectionStringSettings.ConnectionString = (string)setting.Value;
-    //            }
 }

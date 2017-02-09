@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using SmartConfig.Collections;
 using SmartConfig.Data;
 
 namespace SmartConfig.DataStores
@@ -10,39 +11,36 @@ namespace SmartConfig.DataStores
     // Provides a memory-store.
     public class MemoryStore : DataStore, IEnumerable<Setting>
     {
-        public MemoryStore() : base(new[] { typeof(string) }) { }
+        public MemoryStore()
+            : base(new[] { typeof(string) })
+        { }
 
-        public override IEnumerable<Setting> GetSettings(Setting setting)
+        protected MemoryStore(IEnumerable<Type> supportedTypes)
+            : base(supportedTypes)
+        { }
+
+        public override IEnumerable<Setting> ReadSettings(Setting setting)
         {
-            var settings =
-                (from x in Data
-                     //where x.Name.IsMatch(path) && (namespaces == null || namespaces.All(n => x.NamespaceEquals(n.Key, n.Value)))
-                 where x.Name.IsLike(setting.Name)
-                 select x).ToList();
-
-            return settings;
+            return Data.Like(setting);
         }
 
-        public override int SaveSettings(IEnumerable<Setting> settings)
+        protected override void WriteSettings(ICollection<IGrouping<Setting, Setting>> settings)
         {
-            foreach (var setting in settings)
+            foreach (var grouping in settings)
             {
-                var removeSettings = GetSettings(setting);
-                foreach (var removeSetting in removeSettings)
+                var obsoleteSettings = Data.Like(grouping.Key).ToList();
+                obsoleteSettings.ForEach(x => Data.Remove(x));
+
+                foreach (var setting in grouping)
                 {
-                    Data.Remove(removeSetting);
+                    Add(setting.Name.StrongFullName, setting.Value);
                 }
             }
-
-            foreach (var setting in settings)
-            {
-                Add(setting.Name.StrongFullName, setting.Value);
-            }
-
-            return settings.Count();
         }
 
         public List<Setting> Data { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = new List<Setting>();
+
+        #region IEnumerable
 
         public void Add(Setting setting) => Data.Add(setting);
 
@@ -55,5 +53,7 @@ namespace SmartConfig.DataStores
         public IEnumerator<Setting> GetEnumerator() => Data.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        #endregion
     }
 }
