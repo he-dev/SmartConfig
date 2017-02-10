@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26206.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartConfig.Core.Tests", "SmartConfig.Tests\SmartConfig.Core.Tests.csproj", "{31CF8B56-2577-4FC9-B711-14CFAA524A2A}"
 EndProject
@@ -28,6 +28,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartConfig.DataStores.SQLite", "SmartConfig.DataStores.SQLite\SmartConfig.DataStores.SQLite.csproj", "{B3BE1B2C-188F-4CD1-A488-710E5807E3D5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartConfig.DataStores.SQLite.Tests", "SmartConfig.DataStores.SQLite.Tests\SmartConfig.DataStores.SQLite.Tests.csproj", "{9B3FE9D8-F12B-4398-8FF3-EEA20F639553}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartConfig.DataStores.Tests.Common", "SmartConfig.DataStores.Tests.Common\SmartConfig.DataStores.Tests.Common.csproj", "{175D1571-18FC-4F18-8AD0-5945FA88E4FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +75,10 @@ Global
 		{9B3FE9D8-F12B-4398-8FF3-EEA20F639553}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9B3FE9D8-F12B-4398-8FF3-EEA20F639553}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B3FE9D8-F12B-4398-8FF3-EEA20F639553}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{175D1571-18FC-4F18-8AD0-5945FA88E4FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{175D1571-18FC-4F18-8AD0-5945FA88E4FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{175D1571-18FC-4F18-8AD0-5945FA88E4FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{175D1571-18FC-4F18-8AD0-5945FA88E4FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -88,5 +94,6 @@ Global
 		{B35D539F-676A-4AEC-B6CA-F8E73856E849} = {CE61ADC7-764A-4B0E-9866-713F87729B80}
 		{B3BE1B2C-188F-4CD1-A488-710E5807E3D5} = {3541D70F-BAEA-4875-82E3-3CCC936F6462}
 		{9B3FE9D8-F12B-4398-8FF3-EEA20F639553} = {CE61ADC7-764A-4B0E-9866-713F87729B80}
+		{175D1571-18FC-4F18-8AD0-5945FA88E4FF} = {CE61ADC7-764A-4B0E-9866-713F87729B80}
 	EndGlobalSection
 EndGlobal

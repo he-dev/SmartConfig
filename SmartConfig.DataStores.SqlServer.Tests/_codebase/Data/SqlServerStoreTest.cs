@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Data;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Reusable;
-using Reusable.Fuse.Testing;
 using Reusable.Fuse;
-namespace SmartConfig.DataStores.SqlServer.Tests.Unit
+using Reusable.Fuse.Testing;
+
+namespace SmartConfig.DataStores.SqlServer.Tests.Data
 {
     // ReSharper disable InconsistentNaming
 

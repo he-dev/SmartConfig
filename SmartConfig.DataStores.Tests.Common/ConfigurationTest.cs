@@ -1,28 +1,23 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-// ReSharper disable InconsistentNaming
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Reusable.Fuse;
+using Reusable.Fuse.Testing;
+using SmartConfig.Data;
 
-// ReSharper disable CheckNamespace
+// ReSharper disable InconsistentNaming
 // ReSharper disable ConvertIfStatementToSwitchStatement
 
-namespace SmartConfig.DataStores.SQLite.Tests
+namespace SmartConfig.DataStores.Tests.Common
 {
-    using Reusable.Fuse;
-    using Reusable.Fuse.Testing;
-    using SQLite;
-
-    [TestClass]
-    public class SQLiteStoreTest
+    public class ConfigurationTestBase
     {
-        
+        protected DataStore DataStore { get; set; }
+
         [TestMethod]
         public void RWR_TestConfig1()
         {
-            Configuration.Builder
-                .FromSQLite("name=configdb", builder => builder.TableName("Setting1"))
-                .Select(typeof(TestConfig1));
+            Configuration.Builder.From(DataStore).Select(typeof(TestConfig1));
 
-            // Read 1
+            #region Read 1
 
             TestConfig1.Utf8SettingDE.Verify().IsNotNullOrEmpty().IsEqual("äöüß");
             TestConfig1.Utf8SettingPL.Verify().IsNotNullOrEmpty().IsEqual("ąęśćżźó");
@@ -34,13 +29,13 @@ namespace SmartConfig.DataStores.SQLite.Tests
             TestConfig1.DictionarySetting.Count.Verify().IsEqual(2);
             TestConfig1.DictionarySetting["foo"].Verify().IsEqual(21);
             TestConfig1.DictionarySetting["bar"].Verify().IsEqual(34);
-            //if (TestConfig1.DictionarySetting.Count == 3) { TestConfig1.DictionarySetting["baz"].Verify().IsEqual(55); }
 
             TestConfig1.NestedConfig.StringSetting.Verify().IsEqual("Bar");
             TestConfig1.IgnoredConfig.StringSetting.Verify().IsEqual("Ignored value");
 
+            #endregion
 
-            // Modify
+            #region Modify & Write
 
             TestConfig1.Utf8SettingDE = "äöüß--";
             TestConfig1.Utf8SettingPL = "ąęśćżźó--";
@@ -48,11 +43,11 @@ namespace SmartConfig.DataStores.SQLite.Tests
             TestConfig1.ArraySetting = new[] { 5, 8, 13 };
             TestConfig1.DictionarySetting["baz"] = 55;
 
-            // Write 1
-
             Configuration.Save(typeof(TestConfig1));
 
-            //  Read 2
+            #endregion
+
+            #region Read 2
 
             Configuration.Load(typeof(TestConfig1));
 
@@ -71,6 +66,8 @@ namespace SmartConfig.DataStores.SQLite.Tests
 
             TestConfig1.NestedConfig.StringSetting.Verify().IsEqual("Bar");
             TestConfig1.IgnoredConfig.StringSetting.Verify().IsEqual("Ignored value");
+
+            #endregion
         }
     }
 }

@@ -74,10 +74,18 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="_codebase\SQLiteStoreTests.cs" />
+    <Compile Include="..\SmartConfig.DataStores.Tests.Common\ConfigurationTest.cs">
+      <Link>_linked\ConfigurationTest.cs</Link>
+    </Compile>
+    <Compile Include="..\SmartConfig.DataStores.Tests.Common\TestConfig1.cs">
+      <Link>_linked\TestConfig1.cs</Link>
+    </Compile>
+    <Compile Include="..\SmartConfig.DataStores.Tests.Common\TestConfig3.cs">
+      <Link>_linked\TestConfig3.cs</Link>
+    </Compile>
+    <Compile Include="_codebase\ConfigurationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="_codebase\TestAssemblyInitialize.cs" />
-    <Compile Include="_codebase\TestConfig.cs" />
+    <Compile Include="_helpers\TestAssemblyInitialize.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SmartConfig.Core\SmartConfig.Core.csproj">

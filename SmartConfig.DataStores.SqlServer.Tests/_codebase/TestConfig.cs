@@ -7,7 +7,7 @@ using SmartConfig.Data.Annotations;
 namespace SmartConfig.DataStores.SqlServer.Tests
 {
     [SmartConfig]
-    public static class FullConfig1
+    public static class TestConfig1
     {
         public static string StringSetting { get; set; }
 

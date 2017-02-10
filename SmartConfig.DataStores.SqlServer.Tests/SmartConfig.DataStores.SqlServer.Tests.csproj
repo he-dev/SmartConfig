@@ -76,9 +76,18 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="_codebase\TestConfig.cs" />
-    <Compile Include="_codebase\Unit\SqlServerStoreTests.cs" />
-    <Compile Include="_codebase\Integration\SqlServerStoreTests.cs" />
+    <Compile Include="..\SmartConfig.DataStores.Tests.Common\ConfigurationTest.cs">
+      <Link>_linked\ConfigurationTest.cs</Link>
+    </Compile>
+    <Compile Include="..\SmartConfig.DataStores.Tests.Common\TestConfig1.cs">
+      <Link>_linked\TestConfig1.cs</Link>
+    </Compile>
+    <Compile Include="..\SmartConfig.DataStores.Tests.Common\TestConfig3.cs">
+      <Link>_linked\TestConfig3.cs</Link>
+    </Compile>
+    <Compile Include="_helpers\AssemblyInitializer.cs" />
+    <Compile Include="_codebase\Data\SqlServerStoreTest.cs" />
+    <Compile Include="_codebase\ConfigurationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -95,7 +104,11 @@
       <Name>SmartConfig.DataStores.SqlServer</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="config.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

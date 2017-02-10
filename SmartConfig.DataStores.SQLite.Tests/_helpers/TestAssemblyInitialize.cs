@@ -17,14 +17,16 @@ namespace SmartConfig.DataStores.SQLite.Tests
         [AssemblyInitialize]
         public static void AssemblyInitialize(TestContext testContext)
         {
+            // Insert test data.
             var connectionString = new AppConfigRepository().GetConnectionString("configdb");
-            using (var connection = new SQLiteConnection(connectionString))
-            using (var command = connection.CreateCommand())
+            using (var sqLiteConnection = new SQLiteConnection(connectionString))
+            using (var sqLiteCommand = sqLiteConnection.CreateCommand())
             {
-                connection.Open();
+                sqLiteConnection.Open();
 
-                command.CommandText  = File.ReadAllText("config.sql").Recode(Encoding.UTF8, Encoding.Default);
-                command.ExecuteNonQuery();
+                // Encode query for sqlite or otherwise the utf8 will be broken.
+                sqLiteCommand.CommandText  = File.ReadAllText("config.sql").Recode(Encoding.UTF8, Encoding.Default);
+                sqLiteCommand.ExecuteNonQuery();
             }
         }
     }
