@@ -20,8 +20,8 @@ IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Setting3' AND xtype=@userTab
 
 TRUNCATE TABLE [Setting1];
 
-INSERT INTO [Setting1]([Name], [Value]) VALUES('Utf8SettingDE', 'äöüß');
-INSERT INTO [Setting1]([Name], [Value]) VALUES('Utf8SettingPL', 'ąęśćżźó');
+INSERT INTO [Setting1]([Name], [Value]) VALUES('Utf8SettingDE', N'äöüß');
+INSERT INTO [Setting1]([Name], [Value]) VALUES('Utf8SettingPL', N'ąęśćżźó');
 INSERT INTO [Setting1]([Name], [Value]) VALUES('ArraySetting[0]', '5');
 INSERT INTO [Setting1]([Name], [Value]) VALUES('ArraySetting[1]', '8');
 INSERT INTO [Setting1]([Name], [Value]) VALUES('DictionarySetting[foo]', '21');
@@ -29,8 +29,8 @@ INSERT INTO [Setting1]([Name], [Value]) VALUES('DictionarySetting[bar]', '34');
 INSERT INTO [Setting1]([Name], [Value]) VALUES('NestedConfig.StringSetting', 'Bar');
 INSERT INTO [Setting1]([Name], [Value]) VALUES('IgnoredConfig.StringSettingDE', 'Qux');
 
-INSERT INTO [Setting1]([Name], [Value]) VALUES('TestConfig1.Utf8SettingDE', 'äöüß');
-INSERT INTO [Setting1]([Name], [Value]) VALUES('TestConfig1.Utf8SettingPL', 'ąęśćżźó');
+INSERT INTO [Setting1]([Name], [Value]) VALUES('TestConfig1.Utf8SettingDE', N'äöüß');
+INSERT INTO [Setting1]([Name], [Value]) VALUES('TestConfig1.Utf8SettingPL', N'ąęśćżźó');
 INSERT INTO [Setting1]([Name], [Value]) VALUES('TestConfig1.ArraySetting[0]', '51');
 INSERT INTO [Setting1]([Name], [Value]) VALUES('TestConfig1.ArraySetting[1]', '81');
 INSERT INTO [Setting1]([Name], [Value]) VALUES('TestConfig1.DictionarySetting[foo]', '212');
@@ -40,8 +40,8 @@ INSERT INTO [Setting1]([Name], [Value]) VALUES('TestConfig1.IgnoredConfig.String
 
 TRUNCATE TABLE [Setting3];
 
-INSERT INTO [Setting3]([Name], [Value], [Environment], [Config]) VALUES('Utf8SettingDE', 'äöüß', 'TEST', 'TestConfig3');
-INSERT INTO [Setting3]([Name], [Value], [Environment], [Config]) VALUES('Utf8SettingPL', 'ąęśćżźó', 'TEST', 'TestConfig3');
+INSERT INTO [Setting3]([Name], [Value], [Environment], [Config]) VALUES('Utf8SettingDE', N'äöüß', 'TEST', 'TestConfig3');
+INSERT INTO [Setting3]([Name], [Value], [Environment], [Config]) VALUES('Utf8SettingPL', N'ąęśćżźó', 'TEST', 'TestConfig3');
 INSERT INTO [Setting3]([Name], [Value], [Environment], [Config]) VALUES('ArraySetting[0]', '52', 'TEST', 'TestConfig3');
 INSERT INTO [Setting3]([Name], [Value], [Environment], [Config]) VALUES('ArraySetting[1]', '82', 'TEST', 'TestConfig3');
 INSERT INTO [Setting3]([Name], [Value], [Environment], [Config]) VALUES('DictionarySetting[foo]', '213', 'TEST', 'TestConfig3');
@@ -50,8 +50,8 @@ INSERT INTO [Setting3]([Name], [Value], [Environment], [Config]) VALUES('NestedC
 INSERT INTO [Setting3]([Name], [Value], [Environment], [Config]) VALUES('IgnoredConfig.StringSettingDE', 'Qux', 'TEST', 'TestConfig3');
 
 -- some noise settings to be sure they don't get selected
-INSERT INTO [Setting3]([Name], [Value], [Environment], [Config]) VALUES('Utf8SettingDE', 'äöüß-', 'TEST', 'UndefinedConfig');
-INSERT INTO [Setting3]([Name], [Value], [Environment], [Config]) VALUES('Utf8SettingPL', 'ąęśćżźó-', 'TEST', 'UndefinedConfig');
+INSERT INTO [Setting3]([Name], [Value], [Environment], [Config]) VALUES('Utf8SettingDE', N'äöüß-', 'TEST', 'UndefinedConfig');
+INSERT INTO [Setting3]([Name], [Value], [Environment], [Config]) VALUES('Utf8SettingPL', N'ąęśćżźó-', 'TEST', 'UndefinedConfig');
 INSERT INTO [Setting3]([Name], [Value], [Environment], [Config]) VALUES('ArraySetting[0]', '54-', 'TEST', 'UndefinedConfig');
 INSERT INTO [Setting3]([Name], [Value], [Environment], [Config]) VALUES('ArraySetting[1]', '84-', 'TEST', 'UndefinedConfig');
 INSERT INTO [Setting3]([Name], [Value], [Environment], [Config]) VALUES('DictionarySetting[foo]', '214-', 'TEST', 'UndefinedConfig');

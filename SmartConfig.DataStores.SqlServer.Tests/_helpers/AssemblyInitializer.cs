@@ -17,13 +17,13 @@ namespace SmartConfig.DataStores.SqlServer.Tests
 
             // Insert test data.
             var connectionString = new AppConfigRepository().GetConnectionString("SmartConfigTest");
-            using (var sqLiteConnection = new SqlConnection(connectionString))
-            using (var sqLiteCommand = sqLiteConnection.CreateCommand())
+            using (var sqlConnection = new SqlConnection(connectionString))
+            using (var sqlCommand = sqlConnection.CreateCommand())
             {
-                sqLiteConnection.Open();
+                sqlConnection.Open();
 
-                sqLiteCommand.CommandText  = File.ReadAllText("config.sql");
-                sqLiteCommand.ExecuteNonQuery();
+                sqlCommand.CommandText = File.ReadAllText("config.sql");
+                sqlCommand.ExecuteNonQuery();
             }
         }
     }

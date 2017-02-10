@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reusable;
 using Reusable.Data;
+using SmartConfig;
 
 namespace SmartConfig.DataStores.SQLite.Tests
 {
