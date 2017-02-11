@@ -13,7 +13,7 @@ using SmartConfig;
 namespace SmartConfig.DataStores.SQLite.Tests
 {
     [TestClass]
-    public class TestAssemblyInitialize
+    public class AssemblyInitializer
     {
         [AssemblyInitialize]
         public static void AssemblyInitialize(TestContext testContext)

@@ -41,16 +41,13 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Reusable.Converters, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.Converters.2.4.4\lib\net452\Reusable.Converters.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Reusable.Converters.2.5.0\lib\net452\Reusable.Converters.dll</HintPath>
     </Reference>
     <Reference Include="Reusable.Fuse, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.Fuse.2.4.4\lib\net452\Reusable.Fuse.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Reusable.Fuse.2.5.0\lib\net452\Reusable.Fuse.dll</HintPath>
     </Reference>
     <Reference Include="Reusable.Utils, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Reusable.Utils.2.4.4\lib\net452\Reusable.Utils.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Reusable.Utils.2.5.0\lib\net452\Reusable.Utils.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -76,10 +73,18 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="..\SmartConfig.DataStores.Tests.Common\ConfigurationTest.cs">
+      <Link>_linked\ConfigurationTest.cs</Link>
+    </Compile>
+    <Compile Include="..\SmartConfig.DataStores.Tests.Common\TestConfig1.cs">
+      <Link>_linked\TestConfig1.cs</Link>
+    </Compile>
+    <Compile Include="..\SmartConfig.DataStores.Tests.Common\TestConfig2.cs">
+      <Link>_linked\TestConfig2.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="_codebase\ConnectionStringsStoreTest.cs" />
-    <Compile Include="_codebase\AppSettingsStoreTest.cs" />
-    <Compile Include="TestData\TestConfig.cs" />
+    <Compile Include="_codebase\ConfigurationTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -98,8 +103,15 @@
       <Project>{b48970d4-1daf-4fc6-b8f0-0fe442436a3f}</Project>
       <Name>SmartConfig.DataStores.AppConfig</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SmartConfig.DataStores.Tests.Data\SmartConfig.DataStores.Tests.Data.csproj">
+      <Project>{6ed090eb-6dc1-42e8-b765-9f0cddc9556b}</Project>
+      <Name>SmartConfig.DataStores.Tests.Data</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="TestData\" />
+    <Folder Include="_helpers\" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

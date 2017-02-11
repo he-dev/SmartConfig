@@ -1,0 +1,10 @@
+﻿{
+	 "Utf8SettingDE": "äöüß" ,
+	 "Utf8SettingPL": "ąęśćżźó" ,
+	 "ArraySetting[0]": "5" ,
+	 "ArraySetting[1]": "8" ,
+	 "DictionarySetting[foo]": "21" ,
+	 "DictionarySetting[bar]": "34" ,
+	 "NestedConfig.StringSetting": "Bar" ,
+	 "IgnoredConfig.StringSettingDE": "Qux" 
+}

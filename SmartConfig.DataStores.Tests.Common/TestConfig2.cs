@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Reusable.Data.Annotations;
 using SmartConfig.Data.Annotations;
+// ReSharper disable InconsistentNaming
 
 namespace SmartConfig.DataStores.Tests.Common
 {
