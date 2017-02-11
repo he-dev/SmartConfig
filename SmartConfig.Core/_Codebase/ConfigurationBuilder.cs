@@ -58,7 +58,6 @@ namespace SmartConfig
                 .IsTrue(x => x.HasAttribute<SmartConfigAttribute>(), $"Config type \"{configType.FullName}\" muss be decorated with the {nameof(SmartConfigAttribute)}.")
                 .Value;
 
-            AddConfigTag(configType);
             GetConverters(configType);
 
             _converter = configureConverter?.Invoke(_converter) ?? _converter;
@@ -78,16 +77,7 @@ namespace SmartConfig
             {
                 _converter = _converter.Add(typeConverterAttribute.Type);
             }
-        }
-
-        private void AddConfigTag(MemberInfo configType)
-        {
-            var smartConfigAttribute = configType.GetCustomAttribute<SmartConfigAttribute>();
-            if (smartConfigAttribute.SettingNameTarget == SettingNameTarget.Tag)
-            {
-                _tags.Add("Config", configType.GetNameOrDefault());
-            }
-        }
+        }        
 
         private Configuration ToConfiguration()
         {

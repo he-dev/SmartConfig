@@ -14,33 +14,26 @@ namespace SmartConfig
     {
         internal static IEnumerable<SettingProperty> GetSettingProperties(Type configType)
         {
-            var includeConfigName = IncludeConfigName(configType);
-
-            var nameCount = includeConfigName ? 0 : 1;
+            var configName = ConfigName(configType);
+            var settingNameCount = configName == SettingName.Unset ? 1 : 0;
 
             var types = configType.NestedTypes(type => !type.HasAttribute<IgnoreAttribute>());
 
-            var settingProperties =
-                types.Select(type => type.GetProperties(BindingFlags.Public | BindingFlags.Static))
+            return
+                types
+                    .Select(type => type.GetProperties(BindingFlags.Public | BindingFlags.Static))
                     .SelectMany(properties => properties)
                     .Where(property => !property.HasAttribute<IgnoreAttribute>())
                     .Select(property => new SettingProperty(
                         property, 
-                        new SettingPath(property.GetPath().Skip(nameCount))
+                        new SettingPath(property.GetPath().Skip(settingNameCount))
                     ));
-
-            return settingProperties;
         }
 
-        private static bool IncludeConfigName(MemberInfo configType)
+        private static string ConfigName(MemberInfo configType)
         {
-            var smartConfig = configType.GetCustomAttribute<SmartConfigAttribute>();
-
-            if (smartConfig.SettingNameTarget == SettingNameTarget.Path) return true;
-
-            if (smartConfig.SettingNameTarget == SettingNameTarget.None && configType.GetCustomAttribute<SettingNameAttribute>() != null) return true;
-
-            return false;
-        }
+            var name = configType.GetCustomAttribute<SettingNameAttribute>()?.ToString();
+            return string.IsNullOrEmpty(name) ? SettingName.Unset : name;
+        }        
     }
 }

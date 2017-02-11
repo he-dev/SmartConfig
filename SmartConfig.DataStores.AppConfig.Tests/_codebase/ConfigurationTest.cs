@@ -22,7 +22,7 @@ namespace SmartConfig.DataStores.AppConfig.Tests
             exeConfiguration.AppSettings.Settings.Clear();
             exeConfiguration.ConnectionStrings.ConnectionStrings.Clear();
 
-            var testSettings = TestSettingFactory.CreateTestSettings().ToList();
+            var testSettings = TestSettingFactory.CreateTestSettings1().ToList();
             foreach (var testSetting in testSettings)
             {
                 exeConfiguration.AppSettings.Settings.Add(testSetting.Name, testSetting.Value);
@@ -37,7 +37,8 @@ namespace SmartConfig.DataStores.AppConfig.Tests
 
             DataStores = new Dictionary<Type, DataStore>
             {
-                [typeof(TestConfig1)] = new AppSettingsStore()
+                [typeof(TestConfig1)] = new AppSettingsStore(),
+                //[typeof(TestConfig2)] = new AppSettingsStore(),
             };
         }
     }

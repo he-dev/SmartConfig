@@ -1,17 +1,19 @@
 using System.Collections.Generic;
 using Reusable.Data.Annotations;
 using SmartConfig.Data.Annotations;
+// ReSharper disable InconsistentNaming
 
 namespace SmartConfig.DataStores.Tests.Common
 {
-    [SmartConfig(SettingNameTarget.Tag)]
-    [SettingName("thudy")]
+    [SmartConfig]
     public static class TestConfig3
     {
-        public static string StringSetting { get; set; }
+        public static string Utf8SettingDE { get; set; }
+
+        public static string Utf8SettingPL { get; set; }
 
         [Optional]
-        public static string OptionalStringSetting { get; set; } = "Waldo";
+        public static string OptionalStringSetting { get; set; } = "Default value";
 
         [Itemized]
         public static int[] ArraySetting { get; set; }
@@ -27,7 +29,7 @@ namespace SmartConfig.DataStores.Tests.Common
         [Ignore]
         public static class IgnoredConfig
         {
-            public static string StringSetting { get; set; } = "Grault";
+            public static string StringSetting { get; set; } = "Ignored value";
         }
     }
 }
