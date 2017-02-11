@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reusable.Fuse;
 using Reusable.Fuse.Testing;
 using SmartConfig.Data;
@@ -10,14 +12,16 @@ namespace SmartConfig.DataStores.Tests.Common
 {
     public class ConfigurationTestBase
     {
-        protected DataStore DataStore { get; set; }
+        protected IDictionary<Type, DataStore> DataStores { get; set; }
 
         [TestMethod]
-        public void RWR_TestConfig1()
+        public void Load_Modify_Save_Load_TestConfig1()
         {
-            Configuration.Builder.From(DataStore).Select(typeof(TestConfig1));
+            // Load 1
 
-            #region Read 1
+            Configuration.Builder.From(DataStores[typeof(TestConfig1)]).Select(typeof(TestConfig1));
+            
+            // Verify load 1
 
             TestConfig1.Utf8SettingDE.Verify().IsNotNullOrEmpty().IsEqual("äöüß");
             TestConfig1.Utf8SettingPL.Verify().IsNotNullOrEmpty().IsEqual("ąęśćżźó");
@@ -33,9 +37,7 @@ namespace SmartConfig.DataStores.Tests.Common
             TestConfig1.NestedConfig.StringSetting.Verify().IsEqual("Bar");
             TestConfig1.IgnoredConfig.StringSetting.Verify().IsEqual("Ignored value");
 
-            #endregion
-
-            #region Modify & Write
+            // Modify & save
 
             TestConfig1.Utf8SettingDE = "äöüß--";
             TestConfig1.Utf8SettingPL = "ąęśćżźó--";
@@ -45,11 +47,19 @@ namespace SmartConfig.DataStores.Tests.Common
 
             Configuration.Save(typeof(TestConfig1));
 
-            #endregion
+            // Reset before load 2
 
-            #region Read 2
+            TestConfig1.Utf8SettingDE = null;
+            TestConfig1.Utf8SettingPL = null;
+
+            TestConfig1.ArraySetting = null;
+            TestConfig1.DictionarySetting = null;
+
+            // Load 2
 
             Configuration.Load(typeof(TestConfig1));
+
+            // Verify load 2
 
             TestConfig1.Utf8SettingDE.Verify().IsNotNullOrEmpty().IsEqual("äöüß--");
             TestConfig1.Utf8SettingPL.Verify().IsNotNullOrEmpty().IsEqual("ąęśćżźó--");
@@ -66,8 +76,6 @@ namespace SmartConfig.DataStores.Tests.Common
 
             TestConfig1.NestedConfig.StringSetting.Verify().IsEqual("Bar");
             TestConfig1.IgnoredConfig.StringSetting.Verify().IsEqual("Ignored value");
-
-            #endregion
         }
     }
 }

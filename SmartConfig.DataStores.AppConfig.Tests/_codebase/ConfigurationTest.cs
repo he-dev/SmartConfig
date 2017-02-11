@@ -1,8 +1,11 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reusable.Fuse;
 using Reusable.Fuse.Testing;
+using SmartConfig.Data;
 using SmartConfig.DataStores.Tests.Common;
 using SmartConfig.DataStores.Tests.Data;
 
@@ -32,7 +35,10 @@ namespace SmartConfig.DataStores.AppConfig.Tests
 
             exeConfiguration.Save(ConfigurationSaveMode.Minimal);
 
-            DataStore = new AppSettingsStore();
+            DataStores = new Dictionary<Type, DataStore>
+            {
+                [typeof(TestConfig1)] = new AppSettingsStore()
+            };
         }
     }
 

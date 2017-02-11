@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartConfig.DataStores.SqlServer.Tests</RootNamespace>
     <AssemblyName>SmartConfig.DataStores.SqlServer.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -82,7 +82,6 @@
     <Compile Include="..\SmartConfig.DataStores.Tests.Common\TestConfig3.cs">
       <Link>_linked\TestConfig3.cs</Link>
     </Compile>
-    <Compile Include="_helpers\AssemblyInitializer.cs" />
     <Compile Include="_codebase\Data\SqlServerStoreTest.cs" />
     <Compile Include="_codebase\ConfigurationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -100,11 +99,23 @@
       <Project>{adf3e7c7-84f3-476c-a914-c6d01c60bf75}</Project>
       <Name>SmartConfig.DataStores.SqlServer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SmartConfig.DataStores.Tests.Data\SmartConfig.DataStores.Tests.Data.csproj">
+      <Project>{6ed090eb-6dc1-42e8-b765-9f0cddc9556b}</Project>
+      <Name>SmartConfig.DataStores.Tests.Data</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="config.sql">
+    <EmbeddedResource Include="Resources\CreateSettingTables.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\InsertSetting1.sql" />
+    <EmbeddedResource Include="Resources\InsertSetting3.sql" />
+    <EmbeddedResource Include="Resources\TruncateSettingTables.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="_helpers\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
