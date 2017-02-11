@@ -14,9 +14,6 @@ namespace SmartConfig
     {
         internal static IEnumerable<SettingProperty> GetSettingProperties(Type configType)
         {
-            var configName = ConfigName(configType);
-            var settingNameCount = configName == SettingName.Unset ? 1 : 0;
-
             var types = configType.NestedTypes(type => !type.HasAttribute<IgnoreAttribute>());
 
             return
@@ -26,14 +23,8 @@ namespace SmartConfig
                     .Where(property => !property.HasAttribute<IgnoreAttribute>())
                     .Select(property => new SettingProperty(
                         property, 
-                        new SettingPath(property.GetPath().Skip(settingNameCount))
+                        new SettingPath(names: property.GetPath().Where(Conditional.IsNotNullOrEmpty))
                     ));
-        }
-
-        private static string ConfigName(MemberInfo configType)
-        {
-            var name = configType.GetCustomAttribute<SettingNameAttribute>()?.ToString();
-            return string.IsNullOrEmpty(name) ? SettingName.Unset : name;
-        }        
+        }         
     }
 }

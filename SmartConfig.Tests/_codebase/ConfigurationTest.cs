@@ -28,6 +28,12 @@ namespace SmartConfig.Core.Tests
     public class ConfigurationTest
     {
         [TestMethod]
+        public void MyTestMethod()
+        {
+
+        }
+
+        [TestMethod]
         public void LoadSave_EmptyConfig()
         {
             var getSettingsCallCount = 0;

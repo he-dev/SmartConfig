@@ -14,5 +14,9 @@ namespace SmartConfig.Data.Annotations
         }
 
         public string Name { get; }
+
+        public override string ToString() => Name;
+
+        public static implicit operator string(SettingNameAttribute attribute) => attribute.ToString();
     }
 }
