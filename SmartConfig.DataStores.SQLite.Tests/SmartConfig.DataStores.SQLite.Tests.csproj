@@ -57,6 +57,7 @@
       <HintPath>..\packages\System.Data.SQLite.Core.1.0.103\lib\net46\System.Data.SQLite.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -74,11 +75,8 @@
     <Compile Include="..\SmartConfig.DataStores.Tests.Common\ConfigurationTest.cs">
       <Link>_linked\ConfigurationTest.cs</Link>
     </Compile>
-    <Compile Include="..\SmartConfig.DataStores.Tests.Common\TestConfig1.cs">
-      <Link>_linked\TestConfig1.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartConfig.DataStores.Tests.Common\TestConfig3.cs">
-      <Link>_linked\TestConfig3.cs</Link>
+    <Compile Include="..\SmartConfig.DataStores.Tests.Common\FullConfig.cs">
+      <Link>_linked\FullConfig.cs</Link>
     </Compile>
     <Compile Include="_codebase\ConfigurationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -92,6 +90,10 @@
       <Project>{b3be1b2c-188f-4cd1-a488-710e5807e3d5}</Project>
       <Name>SmartConfig.DataStores.SQLite</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SmartConfig.DataStores.Tests.Data\SmartConfig.DataStores.Tests.Data.csproj">
+      <Project>{6ed090eb-6dc1-42e8-b765-9f0cddc9556b}</Project>
+      <Name>SmartConfig.DataStores.Tests.Data</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -101,9 +103,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="config.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <EmbeddedResource Include="Resources\TruncateSettingTables.sql" />
+    <EmbeddedResource Include="Resources\InsertSetting3.sql" />
+    <EmbeddedResource Include="Resources\InsertSetting1.sql" />
+    <EmbeddedResource Include="Resources\CreateSettingTables.sql" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

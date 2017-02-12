@@ -76,11 +76,8 @@
     <Compile Include="..\SmartConfig.DataStores.Tests.Common\ConfigurationTest.cs">
       <Link>_linked\ConfigurationTest.cs</Link>
     </Compile>
-    <Compile Include="..\SmartConfig.DataStores.Tests.Common\TestConfig1.cs">
-      <Link>_linked\TestConfig1.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartConfig.DataStores.Tests.Common\TestConfig3.cs">
-      <Link>_linked\TestConfig3.cs</Link>
+    <Compile Include="..\SmartConfig.DataStores.Tests.Common\FullConfig.cs">
+      <Link>_linked\FullConfig.cs</Link>
     </Compile>
     <Compile Include="_codebase\Data\SqlServerStoreTest.cs" />
     <Compile Include="_codebase\ConfigurationTest.cs" />
@@ -105,18 +102,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\CreateSettingTables.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\CreateSettingTables.sql" />
     <EmbeddedResource Include="Resources\InsertSetting1.sql" />
     <EmbeddedResource Include="Resources\InsertSetting3.sql" />
-    <EmbeddedResource Include="Resources\TruncateSettingTables.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\TruncateSettingTables.sql" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="_helpers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

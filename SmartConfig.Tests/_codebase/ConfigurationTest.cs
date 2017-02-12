@@ -28,13 +28,53 @@ namespace SmartConfig.Core.Tests
     public class ConfigurationTest
     {
         [TestMethod]
-        public void MyTestMethod()
+        [TestCategory("SettingName")]
+        public void Load_TestConfig1_DefaultSettingName()
         {
+            var store = new MemoryStore
+            {
+                { "TestConfig1_DefaultSettingName.TestSetting", "Correct value" },
+                { "TestSetting", "Incorrect value" }
+            };
 
+            Configuration.Builder.From(store).Select(typeof(TestConfig1_DefaultSettingName));
+
+            TestConfig1_DefaultSettingName.TestSetting.Verify().IsEqual("Correct value");
         }
 
         [TestMethod]
-        public void LoadSave_EmptyConfig()
+        [TestCategory("SettingName")]
+        public void Load_TestConfig1_CustomSettingName()
+        {
+            var store = new MemoryStore
+            {
+                { "CustomConfig.CustomSetting", "Correct value" },
+                { "TestSetting", "Incorrect value" }
+            };
+
+            Configuration.Builder.From(store).Select(typeof(TestConfig1_CustomSettingName));
+
+            TestConfig1_CustomSettingName.TestSetting.Verify().IsEqual("Correct value");
+        }
+
+        [TestMethod]
+        [TestCategory("SettingName")]
+        public void Load_TestConfig1_UnsetSettingName()
+        {
+            var store = new MemoryStore
+            {
+                { "TestSetting", "Correct value" },
+                { "TestConfig1_UnsetSettingName.TestSetting", "Incorrect value" },
+                { "TestConfig1_UnsetSettingName.SubConfig.TestSetting", "Incorrect value" },
+            };
+
+            Configuration.Builder.From(store).Select(typeof(TestConfig1_UnsetSettingName));
+
+            TestConfig1_UnsetSettingName.SubConfig.TestSetting.Verify().IsEqual("Correct value");
+        }
+
+        [TestMethod]
+        public void Load_TestConfig1_Empty()
         {
             var getSettingsCallCount = 0;
             var saveSettingsCallCount = 0;
@@ -52,7 +92,7 @@ namespace SmartConfig.Core.Tests
                 }
             };
 
-            Configuration.Builder.From(testStore).Select(typeof(EmptyConfig));            
+            Configuration.Builder.From(testStore).Select(typeof(TestConfig1_Empty));            
 
             getSettingsCallCount.Verify().IsEqual(0);
             saveSettingsCallCount.Verify().IsEqual(0);
@@ -65,45 +105,45 @@ namespace SmartConfig.Core.Tests
 
             Configuration.Builder.From(new MemoryStore
             {
-                {nameof(IntegralConfig.SByte), SByte.MaxValue.ToString()},
-                {nameof(IntegralConfig.Byte), Byte.MaxValue.ToString()},
-                {nameof(IntegralConfig.Char), Char.MaxValue.ToString()},
-                {nameof(IntegralConfig.Int16), Int16.MaxValue.ToString()},
-                {nameof(IntegralConfig.Int32), Int32.MaxValue.ToString()},
-                {nameof(IntegralConfig.Int64), Int64.MaxValue.ToString()},
-                {nameof(IntegralConfig.UInt16), UInt16.MaxValue.ToString()},
-                {nameof(IntegralConfig.UInt32), UInt32.MaxValue.ToString()},
-                {nameof(IntegralConfig.UInt64), UInt64.MaxValue.ToString()},
-                {nameof(IntegralConfig.Single), Single.MaxValue.ToString("R", culture)},
-                {nameof(IntegralConfig.Double), Double.MaxValue.ToString("R", culture)},
-                {nameof(IntegralConfig.Decimal), Decimal.MaxValue.ToString(culture)},
+                {nameof(IntegralConfig1.SByte), SByte.MaxValue.ToString()},
+                {nameof(IntegralConfig1.Byte), Byte.MaxValue.ToString()},
+                {nameof(IntegralConfig1.Char), Char.MaxValue.ToString()},
+                {nameof(IntegralConfig1.Int16), Int16.MaxValue.ToString()},
+                {nameof(IntegralConfig1.Int32), Int32.MaxValue.ToString()},
+                {nameof(IntegralConfig1.Int64), Int64.MaxValue.ToString()},
+                {nameof(IntegralConfig1.UInt16), UInt16.MaxValue.ToString()},
+                {nameof(IntegralConfig1.UInt32), UInt32.MaxValue.ToString()},
+                {nameof(IntegralConfig1.UInt64), UInt64.MaxValue.ToString()},
+                {nameof(IntegralConfig1.Single), Single.MaxValue.ToString("R", culture)},
+                {nameof(IntegralConfig1.Double), Double.MaxValue.ToString("R", culture)},
+                {nameof(IntegralConfig1.Decimal), Decimal.MaxValue.ToString(culture)},
 
-                {nameof(IntegralConfig.String), "foo"},
-                {nameof(IntegralConfig.False), bool.FalseString},
-                {nameof(IntegralConfig.True), bool.TrueString},
-                {nameof(IntegralConfig.Enum), TestEnum.TestValue2.ToString()},
+                {nameof(IntegralConfig1.String), "foo"},
+                {nameof(IntegralConfig1.False), bool.FalseString},
+                {nameof(IntegralConfig1.True), bool.TrueString},
+                {nameof(IntegralConfig1.Enum), TestEnum.TestValue2.ToString()},
             })
-            .Select(typeof(IntegralConfig));
+            .Select(typeof(IntegralConfig1));
 
-            IntegralConfig.SByte.Verify().IsEqual(SByte.MaxValue);
-            IntegralConfig.Byte.Verify().IsEqual(Byte.MaxValue);
-            IntegralConfig.Char.Verify().IsEqual(Char.MaxValue);
-            IntegralConfig.Int16.Verify().IsEqual(Int16.MaxValue);
-            IntegralConfig.Int32.Verify().IsEqual(Int32.MaxValue);
-            IntegralConfig.Int64.Verify().IsEqual(Int64.MaxValue);
-            IntegralConfig.UInt16.Verify().IsEqual(UInt16.MaxValue);
-            IntegralConfig.UInt32.Verify().IsEqual(UInt32.MaxValue);
-            IntegralConfig.UInt64.Verify().IsEqual(UInt64.MaxValue);
-            IntegralConfig.Single.Verify().IsEqual(Single.MaxValue);
-            IntegralConfig.Double.Verify().IsEqual(Double.MaxValue);
-            IntegralConfig.Decimal.Verify().IsEqual(Decimal.MaxValue);
+            IntegralConfig1.SByte.Verify().IsEqual(SByte.MaxValue);
+            IntegralConfig1.Byte.Verify().IsEqual(Byte.MaxValue);
+            IntegralConfig1.Char.Verify().IsEqual(Char.MaxValue);
+            IntegralConfig1.Int16.Verify().IsEqual(Int16.MaxValue);
+            IntegralConfig1.Int32.Verify().IsEqual(Int32.MaxValue);
+            IntegralConfig1.Int64.Verify().IsEqual(Int64.MaxValue);
+            IntegralConfig1.UInt16.Verify().IsEqual(UInt16.MaxValue);
+            IntegralConfig1.UInt32.Verify().IsEqual(UInt32.MaxValue);
+            IntegralConfig1.UInt64.Verify().IsEqual(UInt64.MaxValue);
+            IntegralConfig1.Single.Verify().IsEqual(Single.MaxValue);
+            IntegralConfig1.Double.Verify().IsEqual(Double.MaxValue);
+            IntegralConfig1.Decimal.Verify().IsEqual(Decimal.MaxValue);
 
-            IntegralConfig.String.Verify().IsEqual("foo");
-            IntegralConfig.False.Verify().IsEqual(false);
-            IntegralConfig.True.Verify().IsEqual(true);
-            IntegralConfig.Enum.Verify().IsTrue(x => x == TestEnum.TestValue2);
+            IntegralConfig1.String.Verify().IsEqual("foo");
+            IntegralConfig1.False.Verify().IsEqual(false);
+            IntegralConfig1.True.Verify().IsEqual(true);
+            IntegralConfig1.Enum.Verify().IsTrue(x => x == TestEnum.TestValue2);
 
-            Configuration.Save(typeof(IntegralConfig));
+            Configuration.Save(typeof(IntegralConfig1));
         }
 
         [TestMethod]

@@ -8,15 +8,24 @@ namespace SmartConfig.Data.Annotations
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
     public class SettingNameAttribute : Attribute
     {
+        private readonly string _name;
+
         public SettingNameAttribute(string name)
         {
-            Name = name.Validate(nameof(name)).IsNotNullOrEmpty().Value;
+            if (string.IsNullOrEmpty(name)) throw new ArgumentException("Value cannot be null or empty.", nameof(name));
+            _name = name;
         }
 
-        public string Name { get; }
-
-        public override string ToString() => Name;
+        public override string ToString() => _name;
 
         public static implicit operator string(SettingNameAttribute attribute) => attribute.ToString();
+    }
+
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
+    public class SettingNameUnsetAttribute : SettingNameAttribute
+    {
+        public SettingNameUnsetAttribute():base(SettingName.Unset)
+        {
+        }
     }
 }

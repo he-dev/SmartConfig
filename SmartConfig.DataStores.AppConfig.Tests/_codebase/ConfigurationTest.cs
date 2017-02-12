@@ -17,6 +17,21 @@ namespace SmartConfig.DataStores.AppConfig.Tests
         [TestInitialize]
         public void TestInitialize()
         {
+            ConfigInfos = new[]
+            {
+                new ConfigInfo
+                {
+                    DataStore = new AppSettingsStore(),
+                    Tags = new Dictionary<string, object>(),
+                    ConfigType = typeof(FullConfig)
+                }
+            };
+
+            ResetData();
+        }
+
+        private void ResetData()
+        {
             var exeConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
             exeConfiguration.AppSettings.Settings.Clear();
@@ -31,15 +46,9 @@ namespace SmartConfig.DataStores.AppConfig.Tests
             foreach (var testSetting in testSettings)
             {
                 exeConfiguration.AppSettings.Settings.Add($"TestConfig2.{testSetting.Name}", testSetting.Value);
-            }            
+            }
 
             exeConfiguration.Save(ConfigurationSaveMode.Minimal);
-
-            DataStores = new Dictionary<Type, DataStore>
-            {
-                [typeof(TestConfig1)] = new AppSettingsStore(),
-                //[typeof(TestConfig2)] = new AppSettingsStore(),
-            };
         }
     }
 

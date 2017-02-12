@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Reusable;
 using Reusable.Data;
 using SmartConfig.Data;
 using SmartConfig.DataStores.Tests.Common;
+using SmartConfig.DataStores.Tests.Data;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable ConvertIfStatementToSwitchStatement
@@ -21,10 +25,15 @@ namespace SmartConfig.DataStores.SQLite.Tests
     {
         [TestInitialize]
         public void TestInitialize()
-        { 
-            DataStores = new Dictionary<Type, DataStore>
+        {
+            ConfigInfos = new[]
             {
-                [typeof(TestConfig1)] = new SQLiteStore("name=configdb", builder => builder.TableName("Setting1"))
+                new ConfigInfo
+                {
+                    DataStore = new SQLiteStore("name=configdb", builder => builder.TableName("Setting1")),
+                    Tags = new Dictionary<string, object>(),
+                    ConfigType = typeof(FullConfig)
+                }
             };
 
             ResetData();
@@ -34,14 +43,75 @@ namespace SmartConfig.DataStores.SQLite.Tests
         {
             // Insert test data.
             var connectionString = new AppConfigRepository().GetConnectionString("configdb");
-            using (var sqLiteConnection = new SQLiteConnection(connectionString))
-            using (var sqLiteCommand = sqLiteConnection.CreateCommand())
+
+            SQLiteConnection OpenSQLiteConnection()
             {
+                var sqLiteConnection = new SQLiteConnection(connectionString);
                 sqLiteConnection.Open();
+                return sqLiteConnection;
+            }
+
+            using (var connection = OpenSQLiteConnection())
+            using (var command = connection.CreateCommand())
+            using (var transaction = connection.BeginTransaction())
+            {
+                command.Transaction = transaction;
+                try
+                {
+                    command.CommandText = ResourceReader.ReadEmbeddedResource<ConfigurationTest>("Resources.CreateSettingTables.sql");
+                    command.ExecuteNonQuery();
+
+                    //command.CommandText = ResourceReader.ReadEmbeddedResource<ConfigurationTest>("Resources.TruncateSettingTables.sql");
+                    //command.ExecuteNonQuery();
+
+                    // Insert test data.
+                    InsertSetting1(command);
+                    InsertSetting3(command);
+
+                    transaction.Commit();
+                }
+                catch
+                {
+                    transaction.Rollback();
+                }
 
                 // Encode query for sqlite or otherwise the utf8 will be broken.
-                sqLiteCommand.CommandText = File.ReadAllText("config.sql").Recode(Encoding.UTF8, Encoding.Default);
-                sqLiteCommand.ExecuteNonQuery();
+                command.CommandText = File.ReadAllText("config.sql").Recode(Encoding.UTF8, Encoding.Default);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        private static void InsertSetting1(SQLiteCommand command)
+        {
+            command.CommandText = ResourceReader.ReadEmbeddedResource<ConfigurationTest>("Resources.InsertSetting1.sql");
+            command.Parameters.Clear();
+            command.Parameters.Add("@Name", DbType.String, 50);
+            command.Parameters.Add("@Value", DbType.String, -1);
+
+            foreach (var testSetting in TestSettingFactory.CreateTestSettings1())
+            {
+                command.Parameters["@Name"].Value = testSetting.Name;
+                command.Parameters["@Value"].Value = testSetting.Value;
+                command.ExecuteNonQuery();
+            }
+        }
+
+        private static void InsertSetting3(SQLiteCommand command)
+        {
+            command.CommandText = ResourceReader.ReadEmbeddedResource<ConfigurationTest>("Resources.InsertSetting3.sql");
+            command.Parameters.Clear();
+            command.Parameters.Add("@Name", DbType.String, 50);
+            command.Parameters.Add("@Value", DbType.String, -1);
+            command.Parameters.Add("@Environment", DbType.String, 50);
+            command.Parameters.Add("@Config", DbType.String, 50);
+
+            foreach (var testSetting in TestSettingFactory.CreateTestSettings3())
+            {
+                command.Parameters["@Name"].Value = testSetting.Name;
+                command.Parameters["@Value"].Value = testSetting.Value;
+                command.Parameters["@Environment"].Value = testSetting.Tags["Environment"];
+                command.Parameters["@Config"].Value = testSetting.Tags["Config"];
+                command.ExecuteNonQuery();
             }
         }
     }

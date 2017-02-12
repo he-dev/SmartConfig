@@ -73,6 +73,12 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="..\SmartConfig.DataStores.Tests.Common\ConfigurationTest.cs">
+      <Link>_linked\ConfigurationTest.cs</Link>
+    </Compile>
+    <Compile Include="..\SmartConfig.DataStores.Tests.Common\FullConfig.cs">
+      <Link>_linked\FullConfig.cs</Link>
+    </Compile>
     <Compile Include="_codebase\Collections\TagCollectionTest.cs" />
     <Compile Include="_codebase\ConfigurationReflectionTest.Data.cs" />
     <Compile Include="_codebase\ConfigurationTest.Data.cs" />

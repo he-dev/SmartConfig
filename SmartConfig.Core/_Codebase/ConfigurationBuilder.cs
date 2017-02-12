@@ -50,6 +50,13 @@ namespace SmartConfig
             return Where(memberExpression.Member.Name, expression.Compile()());
         }
 
+        public ConfigurationBuilder Where(IDictionary<string, object> tags)
+        {
+            tags.Validate(nameof(tags)).IsNotNull("You need to specify the tags.");
+            _tags = new TagCollection(tags);
+            return this;
+        }
+
         public Configuration Select(Type configType, Func<TypeConverter, TypeConverter> configureConverter)
         {
             _configType = configType.Validate(nameof(configType))

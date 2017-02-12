@@ -6,14 +6,41 @@ using Reusable.Data.Annotations;
 using Reusable.Formatters;
 using SmartConfig.Data.Annotations;
 // ReSharper disable BuiltInTypeReferenceStyle
+// ReSharper disable UnusedMember.Global
+// ReSharper disable InconsistentNaming
 
 namespace SmartConfig.Core.Tests
 {
     [SmartConfig]
-    public static class EmptyConfig { }
+    public static class TestConfig1_DefaultSettingName
+    {
+        public static string TestSetting { get; set; }
+    }
 
     [SmartConfig]
-    public static class IntegralConfig
+    [SettingName("CustomConfig")]
+    public static class TestConfig1_CustomSettingName
+    {
+        [SettingName("CustomSetting")]
+        public static string TestSetting { get; set; }
+    }
+
+    [SmartConfig]
+    [SettingNameUnset]
+    public static class TestConfig1_UnsetSettingName
+    {
+        [SettingNameUnset]
+        public static class SubConfig
+        {
+            public static string TestSetting { get; set; }
+        }
+    }
+
+    [SmartConfig]
+    public static class TestConfig1_Empty { }
+
+    [SmartConfig]
+    public static class IntegralConfig1
     {
         public static SByte SByte { get; set; }
         public static Byte Byte { get; set; }

@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using Reusable;
-using SmartConfig.DataStores.Tests.Common;
 
 namespace SmartConfig.DataStores.Tests.Data
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class TestSettingFactory
     {
         public static IEnumerable<TestSetting> CreateTestSettings1()
@@ -28,7 +28,7 @@ namespace SmartConfig.DataStores.Tests.Data
                 let tags = new Dictionary<string, string>
                 {
                     ["Environment"] = "Test",
-                    ["Config"] = "TestSetting3"
+                    ["Config"] = "FullConfig3"
                 }
                 select new TestSetting
                 {

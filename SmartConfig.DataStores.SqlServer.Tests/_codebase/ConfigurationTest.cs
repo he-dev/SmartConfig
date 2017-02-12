@@ -26,16 +26,31 @@ namespace SmartConfig.DataStores.SqlServer.Tests
         [TestInitialize]
         public void TestInitialize()
         {
-            DataStores = new Dictionary<Type, DataStore>
+            ConfigInfos = new[]
             {
-                [typeof(TestConfig1)] = new SqlServerStore("name=SmartConfigTest", configure => 
-                    configure
-                        .TableName("Setting1")),
-                [typeof(TestConfig3)] = new SqlServerStore("name=SmartConfigTest", configure => 
-                    configure
-                        .TableName("Setting3")
-                        .Column("Environment", SqlDbType.NVarChar, 50)
-                        .Column("Config", SqlDbType.NVarChar, 50))
+                new ConfigInfo
+                {
+                    DataStore = new SqlServerStore("name=SmartConfigTest", configure =>
+                        configure
+                            .TableName("Setting1")
+                    ),
+                    ConfigType = typeof(FullConfig)
+                },
+                new ConfigInfo
+                {
+                    DataStore = new SqlServerStore("name=SmartConfigTest", configure =>
+                        configure
+                            .TableName("Setting3")
+                            .Column("Environment", SqlDbType.NVarChar, 50)
+                            .Column("Config", SqlDbType.NVarChar, 50)
+                    ),
+                    Tags =
+                    {
+                        ["Environment"] = "Test",
+                        ["Config"]= $"{nameof(FullConfig)}3"
+                    },
+                    ConfigType = typeof(FullConfig)
+                }
             };
 
             ResetData();
@@ -45,7 +60,6 @@ namespace SmartConfig.DataStores.SqlServer.Tests
         {
             //AppDomain.CurrentDomain.SetData("DataDirectory", Environment.CurrentDirectory);
 
-            // Insert test data.
             var connectionString = new AppConfigRepository().GetConnectionString("SmartConfigTest");
 
             SqlConnection OpenSqlConnection()
@@ -68,6 +82,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests
                     sqlCommand.CommandText = ResourceReader.ReadEmbeddedResource<ConfigurationTest>("Resources.TruncateSettingTables.sql");
                     sqlCommand.ExecuteNonQuery();
 
+                    // Insert test data.
                     InsertSetting1(sqlCommand);
                     InsertSetting3(sqlCommand);
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SmartConfig.DataStores.Tests.Common
+namespace SmartConfig.DataStores.Tests.Data
 {
     public class TestSetting
     {
