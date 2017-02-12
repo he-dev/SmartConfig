@@ -34,7 +34,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests
                         configure
                             .TableName("Setting1")
                     ),
-                    ConfigType = typeof(FullConfig)
+                    ConfigType = typeof(TestConfig)
                 },
                 new ConfigInfo
                 {
@@ -47,9 +47,9 @@ namespace SmartConfig.DataStores.SqlServer.Tests
                     Tags =
                     {
                         ["Environment"] = "Test",
-                        ["Config"]= $"{nameof(FullConfig)}3"
+                        ["Config"]= $"{nameof(TestConfig)}3"
                     },
-                    ConfigType = typeof(FullConfig)
+                    ConfigType = typeof(TestConfig)
                 }
             };
 

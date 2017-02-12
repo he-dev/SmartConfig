@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
@@ -14,6 +15,8 @@ using SmartConfig.Collections;
 using SmartConfig.Data;
 using SmartConfig.Data.Annotations;
 using SmartConfig.DataStores;
+using SmartConfig.DataStores.Tests.Common;
+using SmartConfig.DataStores.Tests.Data;
 
 namespace SmartConfig.Core.Tests
 {
@@ -25,8 +28,28 @@ namespace SmartConfig.Core.Tests
     using Reusable.Fuse.Testing;
 
     [TestClass]
-    public class ConfigurationTest
+    public class ConfigurationTest : ConfigurationTestBase
     {
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            var memoryStore = new MemoryStore();
+            foreach (var testSetting in TestSettingFactory.CreateTestSettings1())
+            {
+                memoryStore.Add(testSetting.Name, testSetting.Value);
+            }
+
+            ConfigInfos = new[]
+            {
+                new ConfigInfo
+                {
+                    DataStore = memoryStore,
+                    Tags = new Dictionary<string, object>(),
+                    ConfigType = typeof(TestConfig)
+                }
+            };
+        }
+
         [TestMethod]
         [TestCategory("SettingName")]
         public void Load_TestConfig1_DefaultSettingName()
@@ -259,26 +282,6 @@ namespace SmartConfig.Core.Tests
 
             Configuration.Save(typeof(OptionalConfig));
         }      
-
-        [TestMethod]
-        public void LoadSave_Where_FromExpression()
-        {
-            var tags = default(TagCollection);
-            Configuration.Builder
-                .From(new TestStore
-                {
-                    ReadSettingsCallback = s =>
-                    {
-                        tags = s.Tags;
-                        return Enumerable.Empty<Setting>();
-                    }
-                })
-                .Where(() => TestConfig.Foo)
-                .Select(typeof(TestConfig));
-
-            tags.Verify().IsNotNull();
-            tags["Foo"].Verify().IsTrue(x => x.ToString() == "Bar");
-        }
 
         // Test invalid usage errors
 

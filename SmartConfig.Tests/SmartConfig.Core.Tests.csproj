@@ -76,15 +76,15 @@
     <Compile Include="..\SmartConfig.DataStores.Tests.Common\ConfigurationTest.cs">
       <Link>_linked\ConfigurationTest.cs</Link>
     </Compile>
-    <Compile Include="..\SmartConfig.DataStores.Tests.Common\FullConfig.cs">
-      <Link>_linked\FullConfig.cs</Link>
+    <Compile Include="..\SmartConfig.DataStores.Tests.Common\TestConfig.cs">
+      <Link>_linked\TestConfig.cs</Link>
     </Compile>
     <Compile Include="_codebase\Collections\TagCollectionTest.cs" />
     <Compile Include="_codebase\ConfigurationReflectionTest.Data.cs" />
     <Compile Include="_codebase\ConfigurationTest.Data.cs" />
     <Compile Include="_codebase\ConfigurationTest.cs" />
     <Compile Include="_codebase\ConfigurationTypeTest.cs" />
-    <Compile Include="_codebase\TestStore.cs" />
+    <Compile Include="_helpers\TestStore.cs" />
     <Compile Include="_codebase\DataStores\MemoryStoreTest.cs" />
     <Compile Include="_codebase\ConfigurationReflectionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -100,6 +100,10 @@
     <ProjectReference Include="..\SmartConfig.Core\SmartConfig.Core.csproj">
       <Project>{b499d748-d867-4939-929b-bae2bbae6336}</Project>
       <Name>SmartConfig.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SmartConfig.DataStores.Tests.Data\SmartConfig.DataStores.Tests.Data.csproj">
+      <Project>{6ed090eb-6dc1-42e8-b765-9f0cddc9556b}</Project>
+      <Name>SmartConfig.DataStores.Tests.Data</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

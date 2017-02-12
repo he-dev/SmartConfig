@@ -32,7 +32,22 @@ namespace SmartConfig.DataStores.SQLite.Tests
                 {
                     DataStore = new SQLiteStore("name=configdb", builder => builder.TableName("Setting1")),
                     Tags = new Dictionary<string, object>(),
-                    ConfigType = typeof(FullConfig)
+                    ConfigType = typeof(TestConfig)
+                },
+                new ConfigInfo
+                {
+                    DataStore = new SQLiteStore("name=configdb", configure =>
+                        configure
+                            .TableName("Setting3")
+                            .Column("Environment", DbType.String, 50)
+                            .Column("Config", DbType.String, 50)
+                    ),
+                    Tags =
+                    {
+                        ["Environment"] = "Test",
+                        ["Config"]= $"{nameof(TestConfig)}3"
+                    },
+                    ConfigType = typeof(TestConfig)
                 }
             };
 
@@ -74,10 +89,6 @@ namespace SmartConfig.DataStores.SQLite.Tests
                 {
                     transaction.Rollback();
                 }
-
-                // Encode query for sqlite or otherwise the utf8 will be broken.
-                command.CommandText = File.ReadAllText("config.sql").Recode(Encoding.UTF8, Encoding.Default);
-                command.ExecuteNonQuery();
             }
         }
 
@@ -91,7 +102,7 @@ namespace SmartConfig.DataStores.SQLite.Tests
             foreach (var testSetting in TestSettingFactory.CreateTestSettings1())
             {
                 command.Parameters["@Name"].Value = testSetting.Name;
-                command.Parameters["@Value"].Value = testSetting.Value;
+                command.Parameters["@Value"].Value = testSetting.Value.Recode(Encoding.UTF8, Encoding.Default);
                 command.ExecuteNonQuery();
             }
         }
@@ -108,7 +119,7 @@ namespace SmartConfig.DataStores.SQLite.Tests
             foreach (var testSetting in TestSettingFactory.CreateTestSettings3())
             {
                 command.Parameters["@Name"].Value = testSetting.Name;
-                command.Parameters["@Value"].Value = testSetting.Value;
+                command.Parameters["@Value"].Value = testSetting.Value.Recode(Encoding.UTF8, Encoding.Default);
                 command.Parameters["@Environment"].Value = testSetting.Tags["Environment"];
                 command.Parameters["@Config"].Value = testSetting.Tags["Config"];
                 command.ExecuteNonQuery();

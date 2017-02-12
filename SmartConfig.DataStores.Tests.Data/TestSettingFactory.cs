@@ -28,7 +28,7 @@ namespace SmartConfig.DataStores.Tests.Data
                 let tags = new Dictionary<string, string>
                 {
                     ["Environment"] = "Test",
-                    ["Config"] = "FullConfig3"
+                    ["Config"] = "TestConfig3"
                 }
                 select new TestSetting
                 {

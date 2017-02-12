@@ -73,7 +73,13 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Integration\RegistrySourceTest.cs" />
+    <Compile Include="..\SmartConfig.DataStores.Tests.Common\ConfigurationTest.cs">
+      <Link>_linked\ConfigurationTest.cs</Link>
+    </Compile>
+    <Compile Include="..\SmartConfig.DataStores.Tests.Common\TestConfig.cs">
+      <Link>_linked\TestConfig.cs</Link>
+    </Compile>
+    <Compile Include="_codebase\ConfigurationTest.cs" />
     <Compile Include="Unit\RegistryUrnTest.cs" />
     <Compile Include="Unit\RegistrySourceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -91,6 +97,10 @@
     <ProjectReference Include="..\SmartConfig.DataStores.Registry\SmartConfig.DataStores.Registry.csproj">
       <Project>{2c032c08-24fd-4d48-860d-7d3e9c513ee1}</Project>
       <Name>SmartConfig.DataStores.Registry</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SmartConfig.DataStores.Tests.Data\SmartConfig.DataStores.Tests.Data.csproj">
+      <Project>{6ed090eb-6dc1-42e8-b765-9f0cddc9556b}</Project>
+      <Name>SmartConfig.DataStores.Tests.Data</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

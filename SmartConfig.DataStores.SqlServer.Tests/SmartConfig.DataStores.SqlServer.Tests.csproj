@@ -76,8 +76,8 @@
     <Compile Include="..\SmartConfig.DataStores.Tests.Common\ConfigurationTest.cs">
       <Link>_linked\ConfigurationTest.cs</Link>
     </Compile>
-    <Compile Include="..\SmartConfig.DataStores.Tests.Common\FullConfig.cs">
-      <Link>_linked\FullConfig.cs</Link>
+    <Compile Include="..\SmartConfig.DataStores.Tests.Common\TestConfig.cs">
+      <Link>_linked\TestConfig.cs</Link>
     </Compile>
     <Compile Include="_codebase\Data\SqlServerStoreTest.cs" />
     <Compile Include="_codebase\ConfigurationTest.cs" />

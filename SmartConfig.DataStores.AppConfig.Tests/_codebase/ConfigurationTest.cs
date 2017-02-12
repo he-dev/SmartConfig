@@ -22,8 +22,7 @@ namespace SmartConfig.DataStores.AppConfig.Tests
                 new ConfigInfo
                 {
                     DataStore = new AppSettingsStore(),
-                    Tags = new Dictionary<string, object>(),
-                    ConfigType = typeof(FullConfig)
+                    ConfigType = typeof(TestConfig)
                 }
             };
 
@@ -45,7 +44,7 @@ namespace SmartConfig.DataStores.AppConfig.Tests
 
             foreach (var testSetting in testSettings)
             {
-                exeConfiguration.AppSettings.Settings.Add($"TestConfig2.{testSetting.Name}", testSetting.Value);
+                exeConfiguration.AppSettings.Settings.Add($"{nameof(TestConfig)}1.{testSetting.Name}", testSetting.Value);
             }
 
             exeConfiguration.Save(ConfigurationSaveMode.Minimal);

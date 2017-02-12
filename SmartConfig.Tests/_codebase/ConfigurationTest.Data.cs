@@ -151,11 +151,4 @@ namespace SmartConfig.Core.Tests
     {
         public static int Int32Setting { get; set; }
     }
-
-    [SmartConfig]
-    internal static class TestConfig
-    {
-        [Optional]
-        public static string Foo { get; set; } = "Bar";
-    }
 }

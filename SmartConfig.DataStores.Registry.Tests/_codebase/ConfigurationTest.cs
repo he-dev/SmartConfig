@@ -1,13 +1,20 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reusable.Fuse;
 using Reusable.Fuse.Testing;
+using SmartConfig.DataStores.Tests.Common;
 
-namespace SmartConfig.DataStores.Registry.Tests.Integration
+namespace SmartConfig.DataStores.Registry.Tests
 {
     [TestClass]
-    public class RegistrySourceTest
+    public class ConfigurationTest : ConfigurationTestBase
     {
         private const string TestRegistryKey = @"Software\SmartConfig\Tests";
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            
+        }
 
         [TestMethod]
         public void Load_SimpleConfig()

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using Reusable.Converters;
@@ -14,7 +14,7 @@ namespace SmartConfig.DataStores.Tests.Common
     [TypeConverter(typeof(JsonToObjectConverter<List<Int32>>))]
     [TypeConverter(typeof(ObjectToJsonConverter<List<Int32>>))]
     [SettingNameUnset]
-    public static class FullConfig
+    public static class TestConfig
     {
         public static SByte SByte { get; set; }
         public static Byte Byte { get; set; }

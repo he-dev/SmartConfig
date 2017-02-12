@@ -76,8 +76,8 @@
     <Compile Include="..\SmartConfig.DataStores.Tests.Common\ConfigurationTest.cs">
       <Link>_linked\ConfigurationTest.cs</Link>
     </Compile>
-    <Compile Include="..\SmartConfig.DataStores.Tests.Common\FullConfig.cs">
-      <Link>_linked\FullConfig.cs</Link>
+    <Compile Include="..\SmartConfig.DataStores.Tests.Common\TestConfig.cs">
+      <Link>_linked\TestConfig.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="_codebase\ConnectionStringsStoreTest.cs" />
@@ -105,10 +105,7 @@
       <Name>SmartConfig.DataStores.Tests.Data</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="TestData\" />
-    <Folder Include="_helpers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reusable.Fuse;
 using Reusable.Fuse.Testing;
 using SmartConfig.Data;
-
+// ReSharper disable BuiltInTypeReferenceStyle
 // ReSharper disable InconsistentNaming
 // ReSharper disable ConvertIfStatementToSwitchStatement
 
@@ -19,12 +19,14 @@ namespace SmartConfig.DataStores.Tests.Common
         public Type ConfigType { get; set; }
     }
 
-    public class ConfigurationTestBase
+    // [TestClass] - we don't want this attribute here because with it the tests will appear twice.
+    public abstract class ConfigurationTestBase
     {
         // ReSharper disable once MemberCanBePrivate.Global
         protected IEnumerable<ConfigInfo> ConfigInfos { get; set; }
 
         [TestMethod]
+        [TestCategory("Data store tests")]
         public void Load_Modify_Save_Load_FullConfig()
         {
             foreach (var configInfo in ConfigInfos)
@@ -38,43 +40,45 @@ namespace SmartConfig.DataStores.Tests.Common
 
                 // Verify load 1
 
-                FullConfig.SByte.Verify().IsEqual(SByte.MaxValue);
-                FullConfig.Byte.Verify().IsEqual(Byte.MaxValue);
-                FullConfig.Char.Verify().IsEqual(Char.MaxValue);
-                FullConfig.Int16.Verify().IsEqual(Int16.MaxValue);
-                FullConfig.Int32.Verify().IsEqual(Int32.MaxValue);
-                FullConfig.Int64.Verify().IsEqual(Int64.MaxValue);
-                FullConfig.UInt16.Verify().IsEqual(UInt16.MaxValue);
-                FullConfig.UInt32.Verify().IsEqual(UInt32.MaxValue);
-                FullConfig.UInt64.Verify().IsEqual(UInt64.MaxValue);
-                FullConfig.Single.Verify().IsEqual(Single.MaxValue);
-                FullConfig.Double.Verify().IsEqual(Double.MaxValue);
-                FullConfig.Decimal.Verify().IsEqual(Decimal.MaxValue);
+                TestConfig.SByte.Verify().IsEqual(SByte.MaxValue);
+                TestConfig.Byte.Verify().IsEqual(Byte.MaxValue);
+                TestConfig.Char.Verify().IsEqual(Char.MaxValue);
+                TestConfig.Int16.Verify().IsEqual(Int16.MaxValue);
+                TestConfig.Int32.Verify().IsEqual(Int32.MaxValue);
+                TestConfig.Int64.Verify().IsEqual(Int64.MaxValue);
+                TestConfig.UInt16.Verify().IsEqual(UInt16.MaxValue);
+                TestConfig.UInt32.Verify().IsEqual(UInt32.MaxValue);
+                TestConfig.UInt64.Verify().IsEqual(UInt64.MaxValue);
+                TestConfig.Single.Verify().IsEqual(Single.MaxValue);
+                TestConfig.Double.Verify().IsEqual(Double.MaxValue);
+                TestConfig.Decimal.Verify().IsEqual(Decimal.MaxValue);
 
-                FullConfig.StringDE.Verify().IsEqual("äöüß");
-                FullConfig.StringPL.Verify().IsEqual("ąęśćżźó");
-                FullConfig.Boolean.Verify().IsTrue();
-                FullConfig.Enum.Verify().IsTrue(x => x == TestEnum.TestValue2);
+                TestConfig.StringDE.Verify().IsEqual("äöüß");
+                TestConfig.StringPL.Verify().IsEqual("ąęśćżźó");
+                TestConfig.Boolean.Verify().IsTrue();
+                TestConfig.Enum.Verify().IsTrue(x => x == TestEnum.TestValue2);
 
-                FullConfig.DateTime.Verify().IsEqual(new DateTime(2016, 7, 30));
+                TestConfig.DateTime.Verify().IsEqual(new DateTime(2016, 7, 30));
 
-                FullConfig.ColorName.ToArgb().Verify().IsEqual(Color.DarkRed.ToArgb());
-                FullConfig.ColorDec.ToArgb().Verify().IsEqual(Color.Plum.ToArgb());
-                FullConfig.ColorHex.ToArgb().Verify().IsEqual(Color.Beige.ToArgb());
+                TestConfig.ColorName.ToArgb().Verify().IsEqual(Color.DarkRed.ToArgb());
+                TestConfig.ColorDec.ToArgb().Verify().IsEqual(Color.Plum.ToArgb());
+                TestConfig.ColorHex.ToArgb().Verify().IsEqual(Color.Beige.ToArgb());
 
-                FullConfig.JsonArray.Verify().IsTrue(x => x.SequenceEqual(new List<int> { 5, 8, 13 }));
+                TestConfig.JsonArray.Verify().IsTrue(x => x.SequenceEqual(new List<int> { 5, 8, 13 }));
 
-                FullConfig.ArrayInt32.Length.Verify().IsEqual(2);
-                FullConfig.ArrayInt32[0].Verify().IsEqual(5);
-                FullConfig.ArrayInt32[1].Verify().IsEqual(8);
+                TestConfig.ArrayInt32.Length.Verify().IsEqual(2);
+                TestConfig.ArrayInt32[0].Verify().IsEqual(5);
+                TestConfig.ArrayInt32[1].Verify().IsEqual(8);
 
-                FullConfig.DictionaryStringInt32.Count.Verify().IsEqual(2);
-                FullConfig.DictionaryStringInt32["foo"].Verify().IsEqual(21);
-                FullConfig.DictionaryStringInt32["bar"].Verify().IsEqual(34);
+                TestConfig.DictionaryStringInt32.Count.Verify().IsEqual(2);
+                TestConfig.DictionaryStringInt32["foo"].Verify().IsEqual(21);
+                TestConfig.DictionaryStringInt32["bar"].Verify().IsEqual(34);
 
-                FullConfig.OptionalString.Verify().IsEqual("Optional value");
-                FullConfig.NestedConfig.NestedString.Verify().IsEqual("Nested value");
-                FullConfig.IgnoredConfig.IgnoredString.Verify().IsEqual("Ignored value");
+                TestConfig.OptionalString.Verify().IsEqual("Optional value");
+                TestConfig.NestedConfig.NestedString.Verify().IsEqual("Nested value");
+                TestConfig.IgnoredConfig.IgnoredString.Verify().IsEqual("Ignored value");
+
+                // Modify settings
             }
         }
     }
