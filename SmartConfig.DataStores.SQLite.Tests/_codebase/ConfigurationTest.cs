@@ -21,7 +21,7 @@ namespace SmartConfig.DataStores.SQLite.Tests
     using SQLite;
 
     [TestClass]
-    public class ConfigurationTest : ConfigurationTestBase
+    public class ConfigurationTest_SQLite : ConfigurationTestBase
     {
         [TestInitialize]
         public void TestInitialize()
@@ -73,7 +73,7 @@ namespace SmartConfig.DataStores.SQLite.Tests
                 command.Transaction = transaction;
                 try
                 {
-                    command.CommandText = ResourceReader.ReadEmbeddedResource<ConfigurationTest>("Resources.CreateSettingTables.sql");
+                    command.CommandText = ResourceReader.ReadEmbeddedResource<ConfigurationTest_SQLite>("Resources.CreateSettingTables.sql");
                     command.ExecuteNonQuery();
 
                     //command.CommandText = ResourceReader.ReadEmbeddedResource<ConfigurationTest>("Resources.TruncateSettingTables.sql");
@@ -94,7 +94,7 @@ namespace SmartConfig.DataStores.SQLite.Tests
 
         private static void InsertSetting1(SQLiteCommand command)
         {
-            command.CommandText = ResourceReader.ReadEmbeddedResource<ConfigurationTest>("Resources.InsertSetting1.sql");
+            command.CommandText = ResourceReader.ReadEmbeddedResource<ConfigurationTest_SQLite>("Resources.InsertSetting1.sql");
             command.Parameters.Clear();
             command.Parameters.Add("@Name", DbType.String, 50);
             command.Parameters.Add("@Value", DbType.String, -1);
@@ -109,7 +109,7 @@ namespace SmartConfig.DataStores.SQLite.Tests
 
         private static void InsertSetting3(SQLiteCommand command)
         {
-            command.CommandText = ResourceReader.ReadEmbeddedResource<ConfigurationTest>("Resources.InsertSetting3.sql");
+            command.CommandText = ResourceReader.ReadEmbeddedResource<ConfigurationTest_SQLite>("Resources.InsertSetting3.sql");
             command.Parameters.Clear();
             command.Parameters.Add("@Name", DbType.String, 50);
             command.Parameters.Add("@Value", DbType.String, -1);

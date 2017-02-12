@@ -12,7 +12,7 @@ using SmartConfig.DataStores.Tests.Data;
 namespace SmartConfig.DataStores.AppConfig.Tests
 {
     [TestClass]
-    public class ConfigurationTest : ConfigurationTestBase
+    public class ConfigurationTest_AppConfig : ConfigurationTestBase
     {
         [TestInitialize]
         public void TestInitialize()

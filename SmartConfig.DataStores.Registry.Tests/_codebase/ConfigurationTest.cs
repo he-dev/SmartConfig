@@ -6,7 +6,7 @@ using SmartConfig.DataStores.Tests.Common;
 namespace SmartConfig.DataStores.Registry.Tests
 {
     [TestClass]
-    public class ConfigurationTest : ConfigurationTestBase
+    public class ConfigurationTest_Registry : ConfigurationTestBase
     {
         private const string TestRegistryKey = @"Software\SmartConfig\Tests";
 

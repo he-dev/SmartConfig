@@ -26,8 +26,8 @@ namespace SmartConfig.DataStores.Tests.Common
         protected IEnumerable<ConfigInfo> ConfigInfos { get; set; }
 
         [TestMethod]
-        [TestCategory("Data store tests")]
-        public void Load_Modify_Save_Load_FullConfig()
+        [TestCategory("Load/Save")]
+        public void LoadSave_TestConfig()
         {
             foreach (var configInfo in ConfigInfos)
             {

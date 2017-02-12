@@ -21,7 +21,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests
     // ReSharper disable InconsistentNaming
 
     [TestClass]
-    public class ConfigurationTest : ConfigurationTestBase
+    public class ConfigurationTest_SqlServer : ConfigurationTestBase
     {
         [TestInitialize]
         public void TestInitialize()
@@ -76,10 +76,10 @@ namespace SmartConfig.DataStores.SqlServer.Tests
                 sqlCommand.Transaction = transaction;
                 try
                 {
-                    sqlCommand.CommandText = ResourceReader.ReadEmbeddedResource<ConfigurationTest>("Resources.CreateSettingTables.sql");
+                    sqlCommand.CommandText = ResourceReader.ReadEmbeddedResource<ConfigurationTest_SqlServer>("Resources.CreateSettingTables.sql");
                     sqlCommand.ExecuteNonQuery();
 
-                    sqlCommand.CommandText = ResourceReader.ReadEmbeddedResource<ConfigurationTest>("Resources.TruncateSettingTables.sql");
+                    sqlCommand.CommandText = ResourceReader.ReadEmbeddedResource<ConfigurationTest_SqlServer>("Resources.TruncateSettingTables.sql");
                     sqlCommand.ExecuteNonQuery();
 
                     // Insert test data.
@@ -97,7 +97,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests
 
         private static void InsertSetting1(SqlCommand sqlCommand)
         {
-            sqlCommand.CommandText = ResourceReader.ReadEmbeddedResource<ConfigurationTest>("Resources.InsertSetting1.sql");
+            sqlCommand.CommandText = ResourceReader.ReadEmbeddedResource<ConfigurationTest_SqlServer>("Resources.InsertSetting1.sql");
             sqlCommand.Parameters.Clear();
             sqlCommand.Parameters.Add("@Name", SqlDbType.NVarChar, 50);
             sqlCommand.Parameters.Add("@Value", SqlDbType.NVarChar, -1);
@@ -112,7 +112,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests
 
         private static void InsertSetting3(SqlCommand sqlCommand)
         {
-            sqlCommand.CommandText = ResourceReader.ReadEmbeddedResource<ConfigurationTest>("Resources.InsertSetting3.sql");
+            sqlCommand.CommandText = ResourceReader.ReadEmbeddedResource<ConfigurationTest_SqlServer>("Resources.InsertSetting3.sql");
             sqlCommand.Parameters.Clear();
             sqlCommand.Parameters.Add("@Name", SqlDbType.NVarChar, 50);
             sqlCommand.Parameters.Add("@Value", SqlDbType.NVarChar, -1);
