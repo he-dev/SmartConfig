@@ -4,7 +4,7 @@ using Reusable.Drawing;
 namespace SmartConfig
 {
     // Creates type-converters.
-    public class TypeConverterFactory
+    public static class TypeConverterFactory
     {
         public static TypeConverter CreateDefaultConverter() => TypeConverter.Empty.Add(new TypeConverter[]
         {

@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Configuration;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using Reusable;
 using Reusable.Data.Annotations;
-using Reusable.Fuse;
 using SmartConfig.Data.Annotations;
 
 namespace SmartConfig.Data

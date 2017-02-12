@@ -18,7 +18,7 @@ namespace SmartConfig.Core.Tests
         }
 
         [SmartConfig]
-        internal static class Foo
+        private static class Foo
         {
             public static string Bar1 { get; set; }
             public static string Bar2 { get; set; }

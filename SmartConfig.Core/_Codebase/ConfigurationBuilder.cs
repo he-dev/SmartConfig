@@ -6,7 +6,6 @@ using System.Reflection;
 using Reusable;
 using Reusable.Fuse;
 using Reusable.Converters;
-using Reusable.Data.Annotations;
 using SmartConfig.Collections;
 using SmartConfig.Data;
 using SmartConfig.Data.Annotations;

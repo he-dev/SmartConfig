@@ -208,6 +208,6 @@ SettingNotFoundException: Setting "TestSetting" not found. You need to provide a
                 Configuration.Builder.From(new MemoryStore()).Where(string.Empty, null);
             })
             .Verify().Throws<ValidationException>();
-        }       
+        }
     }
 }

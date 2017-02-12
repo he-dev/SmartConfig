@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.Linq.Expressions;
 using Reusable.Collections;
 using Reusable.Fuse;
@@ -16,7 +15,7 @@ namespace SmartConfig.Data
 
         public static TableMetadataBuilder<TDbType> Create() => new TableMetadataBuilder<TDbType>();
 
-        public virtual TableMetadataBuilder<TDbType> SchemaName(string schemaName)
+        public TableMetadataBuilder<TDbType> SchemaName(string schemaName)
         {
             _schemaName = schemaName;
             return this;
@@ -28,7 +27,7 @@ namespace SmartConfig.Data
             return this;
         }
 
-        public virtual TableMetadataBuilder<TDbType> Column(string name, TDbType sqlDbType, int length)
+        public TableMetadataBuilder<TDbType> Column(string name, TDbType sqlDbType, int length)
         {
             var column = new ColumnMetadata<TDbType>(name, sqlDbType, length);
             _columns.Remove(column);
