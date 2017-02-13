@@ -16,6 +16,8 @@ namespace SmartConfig.DataStores.SqlServer
     /// </summary>
     public class SqlServerStore : DataStore
     {
+        private readonly SettingCommandFactory _settingCommandFactory;
+
         public SqlServerStore(string nameOrConnectionString, Action<TableMetadataBuilder<SqlDbType>> buildTableConfiguration = null) : base(new[] { typeof(string) })
         {
             nameOrConnectionString.Validate(nameof(nameOrConnectionString)).IsNotNullOrEmpty();
@@ -34,86 +36,90 @@ namespace SmartConfig.DataStores.SqlServer
                 .SchemaName("dbo")
                 .TableName(nameof(Setting))
                 .Column(nameof(Setting.Name), SqlDbType.NVarChar, 300)
-                .Column(nameof(Setting.Value), SqlDbType.NVarChar, -1)
-                .Column(SettingTag.Config, SqlDbType.NVarChar, 50);
+                .Column(nameof(Setting.Value), SqlDbType.NVarChar, -1);
 
             buildTableConfiguration?.Invoke(tableMetadataBuilder);
             TableMetadata = tableMetadataBuilder.Build();
+            _settingCommandFactory = new SettingCommandFactory(TableMetadata);
         }
 
         public string ConnectionString { get; }
 
         public TableMetadata<SqlDbType> TableMetadata { get; }
 
-        public Type MapDataType(Type settingType) => typeof(string);
-
         public override IEnumerable<Setting> ReadSettings(Setting setting)
         {
-            using (var connection = new SqlConnection(ConnectionString))
+            using (var connection = OpenConnection())
+            using (var command = _settingCommandFactory.CreateSelectCommand(connection, setting))
             {
-                var commandFactory = new SettingCommandFactory(TableMetadata);
-                using (var command = commandFactory.CreateSelectCommand(connection, setting))
-                {
-                    connection.Open();
-                    command.Prepare();
+                command.Prepare();
 
-                    using (var settingReader = command.ExecuteReader())
+                using (var settingReader = command.ExecuteReader())
+                {
+                    while (settingReader.Read())
                     {
-                        while (settingReader.Read())
+                        var result = new Setting
                         {
-                            var result = new Setting
-                            {
-                                Name = SettingPath.Parse((string)settingReader[nameof(Setting.Name)]),
-                                Value = settingReader[nameof(Setting.Value)],
-                                Tags = new TagCollection(setting.Tags.ToDictionary(tag => tag.Key, tag => settingReader[tag.Key]))
-                            };                            
-                            yield return result;
-                        }
+                            Name = SettingPath.Parse((string)settingReader[nameof(Setting.Name)]),
+                            Value = settingReader[nameof(Setting.Value)],
+                            Tags = new TagCollection(setting.Tags.ToDictionary(tag => tag.Key, tag => settingReader[tag.Key]))
+                        };
+                        yield return result;
                     }
                 }
             }
         }
 
         protected override void WriteSettings(ICollection<IGrouping<Setting, Setting>> settings)
-        {            
-            var commandFactory = new SettingCommandFactory(TableMetadata);
-
-            using (var connection = new SqlConnection(ConnectionString))
+        {
+            void DeleteObsoleteSettings(SqlConnection connection, SqlTransaction transaction, IGrouping<Setting, Setting> obsoleteSettings)
             {
-                connection.Open();
-
-                using (var transaction = connection.BeginTransaction())
+                using (var deleteCommand = _settingCommandFactory.CreateDeleteCommand(connection, obsoleteSettings.Key))
                 {
-                    try
-                    {
-                        foreach (var group in settings)
-                        {
-                            using (var deleteCommand = commandFactory.CreateDeleteCommand(connection, group.Key))
-                            {
-                                deleteCommand.Transaction = transaction;
-                                deleteCommand.Prepare();
-                                deleteCommand.ExecuteNonQuery();
-                            }
+                    deleteCommand.Transaction = transaction;
+                    deleteCommand.Prepare();
+                    deleteCommand.ExecuteNonQuery();
+                }
+            }
 
-                            foreach (var setting in group)
-                            {
-                                using (var insertCommand = commandFactory.CreateInsertCommand(connection, setting))
-                                {
-                                    insertCommand.Transaction = transaction;
-                                    insertCommand.Prepare();
-                                    insertCommand.ExecuteNonQuery();
-                                }
-                            }
-                        }
-                        transaction.Commit();
-                    }
-                    catch (Exception)
+            void InsertNewSettings(SqlConnection connection, SqlTransaction transaction, IGrouping<Setting, Setting> newSettings)
+            {
+                foreach (var setting in newSettings)
+                {
+                    using (var insertCommand = _settingCommandFactory.CreateInsertCommand(connection, setting))
                     {
-                        transaction.Rollback();
-                        throw;
+                        insertCommand.Transaction = transaction;
+                        insertCommand.Prepare();
+                        insertCommand.ExecuteNonQuery();
                     }
                 }
             }
+
+            using (var connection = OpenConnection())
+            using (var transaction = connection.BeginTransaction())
+            {
+                try
+                {
+                    foreach (var group in settings)
+                    {
+                        DeleteObsoleteSettings(connection, transaction, group);
+                        InsertNewSettings(connection, transaction, group);                        
+                    }
+                    transaction.Commit();
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
+        }
+
+        private SqlConnection OpenConnection()
+        {
+            var connection = new SqlConnection(ConnectionString);
+            connection.Open();
+            return connection;
         }
     }
 }

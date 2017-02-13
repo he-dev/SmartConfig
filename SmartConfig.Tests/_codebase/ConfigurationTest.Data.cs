@@ -1,4 +1,5 @@
-﻿using SmartConfig.Data.Annotations;
+﻿using System.ComponentModel.DataAnnotations;
+using SmartConfig.Data.Annotations;
 // ReSharper disable BuiltInTypeReferenceStyle
 // ReSharper disable UnusedMember.Global
 // ReSharper disable InconsistentNaming
@@ -7,14 +8,14 @@
 namespace SmartConfig.Core.Tests
 {
     [SmartConfig]
-    public static class TestConfig1_DefaultSettingName
+    public static class TestConfig_DefaultSettingName
     {
         public static string TestSetting { get; set; }
     }
 
     [SmartConfig]
     [SettingName("CustomConfig")]
-    public static class TestConfig1_CustomSettingName
+    public static class TestConfig_CustomSettingName
     {
         [SettingName("CustomSetting")]
         public static string TestSetting { get; set; }
@@ -22,7 +23,7 @@ namespace SmartConfig.Core.Tests
 
     [SmartConfig]
     [SettingNameUnset]
-    public static class TestConfig1_UnsetSettingName
+    public static class TestConfig_UnsetSettingName
     {
         [SettingNameUnset]
         public static class SubConfig
@@ -32,22 +33,17 @@ namespace SmartConfig.Core.Tests
     }
 
     [SmartConfig]
-    public static class TestConfig1_Empty { }
+    public static class TestConfig_Empty { }
 
     [SmartConfig]
-    public static class SettingNotFoundConfig
+    public static class RequiredSettingConfig
     {
-        public static string MissingSetting { get; set; }
+        [Required]
+        public static string RequiredSetting { get; set; }
     }
 
     [SmartConfig]
     public class NonStaticConfig { }
 
     public static class ConfigNotDecorated { }
-
-    [SmartConfig]
-    public static class RequiredSettings
-    {
-        public static int Int32Setting { get; set; }
-    }
 }

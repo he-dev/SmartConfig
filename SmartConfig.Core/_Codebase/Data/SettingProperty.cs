@@ -24,7 +24,7 @@ namespace SmartConfig.Data
 
         private PropertyInfo Property { get; }
 
-        public bool IsOptional => Property.GetCustomAttribute<OptionalAttribute>() != null;
+        //public bool IsOptional => Property.GetCustomAttribute<OptionalAttribute>() != null;
 
         public bool IsItemized => Property.GetCustomAttribute<ItemizedAttribute>() != null;
 
@@ -63,7 +63,7 @@ namespace SmartConfig.Data
         {
             // FullConfig2.Foo.Bar[baz] (required) System.Collections.Generic.List < int >
             //return $"{ConfigType.Name}.{Path.StrongFullName} {(IsOptional ? "optional" : "required")} {Type.ToShortString()}";
-            return $"{Path.StrongFullName} {(IsOptional ? "optional" : "required")} {Type.ToShortString()}";
+            return $"{Path.StrongFullName} {nameof(IsItemized)} = '{IsItemized}' Type = '{Type.ToShortString()}'";
         }
     }
 }

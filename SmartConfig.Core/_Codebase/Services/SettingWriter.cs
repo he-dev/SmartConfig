@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using SmartConfig.Data;
 using Reusable.Converters;
@@ -18,19 +19,16 @@ namespace SmartConfig.Services
         private readonly IEnumerable<SettingProperty> _settingProperties;
         private readonly TagCollection _tags;
         private readonly TypeConverter _converter;
+        private readonly Action<string> _log;
         private readonly TypeConverter _itemizer;
 
-        public SettingWriter(
-            DataStore dataStore,
-            IEnumerable<SettingProperty> settingProperties,
-            TagCollection tags,
-            TypeConverter converter
-        )
+        public SettingWriter(DataStore dataStore, IEnumerable<SettingProperty> settingProperties, TagCollection tags, TypeConverter converter, Action<string> log)
         {
             _dataStore = dataStore;
             _settingProperties = settingProperties;
             _tags = tags;
             _converter = converter;
+            _log = log;
             _itemizer = TypeConverter.Empty.Add<EnumerableToDictionaryConverter>();
         }
 
@@ -84,7 +82,7 @@ namespace SmartConfig.Services
             else
             {
                 var settingType = GetStoreType(setting.Type);
-                var value = _converter.Convert(setting.Value, settingType, setting.FormatString, setting.FormatProvider);
+                var value = _converter.Convert(setting.Value, settingType, setting.FormatString, setting.FormatProvider ?? CultureInfo.InvariantCulture);
                 var settings = new[]
                 {
                     new Setting

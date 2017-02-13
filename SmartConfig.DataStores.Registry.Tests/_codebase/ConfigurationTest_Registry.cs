@@ -19,7 +19,7 @@ namespace SmartConfig.DataStores.Registry.Tests
         [TestMethod]
         public void Load_SimpleConfig()
         {
-            Configuration.Builder
+            Configuration.Builder()
                 .From(RegistryStore.CreateForCurrentUser(TestRegistryKey))
                 .Select(typeof(FullConfig1));
 
@@ -53,7 +53,7 @@ namespace SmartConfig.DataStores.Registry.Tests
         [TestMethod]
         public void Load_ConfigWithNameAsPath()
         {
-            Configuration.Builder.From(RegistryStore.CreateForCurrentUser(TestRegistryKey)).Select(typeof(FullConfig2));
+            Configuration.Builder().From(RegistryStore.CreateForCurrentUser(TestRegistryKey)).Select(typeof(FullConfig2));
 
             FullConfig2.StringSetting.Verify().IsNotNullOrEmpty().IsEqual("Foox");
             FullConfig2.ArraySetting.Length.Verify().IsEqual(2);

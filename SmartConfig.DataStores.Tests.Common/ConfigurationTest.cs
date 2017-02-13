@@ -33,7 +33,7 @@ namespace SmartConfig.DataStores.Tests.Common
             {
                 // Load 1
 
-                Configuration.Builder
+                Configuration.Builder()
                     .From(configInfo.DataStore)
                     .Where(configInfo.Tags)
                     .Select(configInfo.ConfigType);
@@ -79,6 +79,49 @@ namespace SmartConfig.DataStores.Tests.Common
                 TestConfig.IgnoredConfig.IgnoredString.Verify().IsEqual("Ignored value");
 
                 // Modify settings
+
+                TestConfig.SByte -= 1;
+                TestConfig.Byte -= 1;
+                TestConfig.Char = (char)(Char.MaxValue - 1);
+                TestConfig.Int16 -= 1;
+                TestConfig.Int32 -= 1;
+                TestConfig.Int64 -= 1;
+                TestConfig.UInt16 -= 1;
+                TestConfig.UInt32 -= 1;
+                TestConfig.UInt64 -= 1;
+                TestConfig.Single -= 1;
+                TestConfig.Double -= 1;
+                TestConfig.Decimal -= 1;
+
+                TestConfig.StringDE += "---";
+                TestConfig.StringPL += "---";
+                TestConfig.Boolean = !TestConfig.Boolean;
+                TestConfig.Enum = TestEnum.TestValue3;
+
+                TestConfig.DateTime = TestConfig.DateTime.AddDays(-1);
+
+                //TestConfig.ColorName = "Magenta";
+
+                Configuration.Save(typeof(TestConfig));
+                Configuration.Load(typeof(TestConfig));
+
+                TestConfig.SByte.Verify().IsEqual((SByte)(SByte.MaxValue - 1));
+                TestConfig.Byte.Verify().IsEqual((Byte)(Byte.MaxValue - 1));
+                TestConfig.Char.Verify().IsEqual((Char)(Char.MaxValue - 1));
+                TestConfig.Int16.Verify().IsEqual((Int16)(Int16.MaxValue - 1));
+                TestConfig.Int32.Verify().IsEqual(Int32.MaxValue - 1);
+                TestConfig.Int64.Verify().IsEqual(Int64.MaxValue - 1);
+                TestConfig.UInt16.Verify().IsEqual((UInt16)(UInt16.MaxValue - 1));
+                TestConfig.UInt32.Verify().IsEqual(UInt32.MaxValue - 1);
+                TestConfig.UInt64.Verify().IsEqual(UInt64.MaxValue - 1);
+                TestConfig.Single.Verify().IsEqual((Single)(Single.MaxValue - 1));
+                TestConfig.Double.Verify().IsEqual(Double.MaxValue - 1);
+                TestConfig.Decimal.Verify().IsEqual(Decimal.MaxValue - 1);
+
+                TestConfig.StringDE.Verify().IsEqual("äöüß---");
+                TestConfig.StringPL.Verify().IsEqual("ąęśćżźó---");
+                TestConfig.Boolean.Verify().IsFalse();
+                TestConfig.Enum.Verify().IsTrue(x => x == TestEnum.TestValue3);
             }
         }
     }

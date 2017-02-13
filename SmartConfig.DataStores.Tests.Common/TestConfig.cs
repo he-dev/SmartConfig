@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using Reusable;
 using Reusable.Converters;
 using Reusable.Data.Annotations;
 using Reusable.Formatters;
@@ -25,7 +26,9 @@ namespace SmartConfig.DataStores.Tests.Common
         public static UInt16 UInt16 { get; set; }
         public static UInt32 UInt32 { get; set; }
         public static UInt64 UInt64 { get; set; }
+        //[Format(typeof(DefaultFormatter), "{0:R}")]
         public static Single Single { get; set; }
+        [Format("R")]
         public static Double Double { get; set; }
         public static Decimal Decimal { get; set; }
 

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using Reusable;
 using SmartConfig.Data;
@@ -30,18 +32,15 @@ namespace SmartConfig.Services
         private readonly IEnumerable<SettingProperty> _settingProperties;
         private readonly TagCollection _tags;
         private readonly TypeConverter _converter;
+        private readonly Action<string> _log;
 
-        public SettingReader(
-            DataStore dataStore,
-            IEnumerable<SettingProperty> settingProperties,
-            TagCollection tags,
-            TypeConverter converter
-        )
+        public SettingReader(DataStore dataStore, IEnumerable<SettingProperty> settingProperties, TagCollection tags, TypeConverter converter, Action<string> log)
         {
             _dataStore = dataStore;
             _settingProperties = settingProperties;
             _tags = tags;
             _converter = converter;
+            _log = log;
         }
 
         public void Read()
@@ -51,21 +50,29 @@ namespace SmartConfig.Services
             // Deserialization exceptions are collected and rethrown aggregated.
             var exceptions = new List<Exception>();
 
+            IList<Setting> ReadSettings(SettingProperty settingProperty) => _dataStore.ReadSettings(new Setting
+            {
+                Name = settingProperty.Path,
+                Tags = _tags
+            }).ToList();
+
+            void ValidateSetting(SettingProperty settingProperty, object value)
+            {
+                foreach (var validation in settingProperty.Validations)
+                {
+                    validation.Validate(value, settingProperty.Path.WeakFullName);
+                }
+            }
+
             foreach (var settingProperty in _settingProperties)
             {
                 try
                 {
-                    var settings = _dataStore.ReadSettings(new Setting { Name = settingProperty.Path, Tags = _tags }).ToList();
-                    var data = GetData(settingProperty, settings);
-                    if (data == null && settingProperty.IsOptional) continue;
-                    var value = _converter.Convert(data, settingProperty.Type);
-
-                    var validationErrorMessages = settingProperty.Validations.Where(x => !x.IsValid(value)).Select(x => x.ErrorMessage).ToList();
-                    if (validationErrorMessages.Any())
-                    {
-                        throw new Exception(string.Join(", ", validationErrorMessages));
-                    }
-
+                    var settings = ReadSettings(settingProperty);
+                    var data = GetSettingData(settingProperty, settings);
+                    var value = data == null ? null : _converter.Convert(data, settingProperty.Type, settingProperty.FormatString, settingProperty.FormatProvider ?? CultureInfo.InvariantCulture);
+                    ValidateSetting(settingProperty, value);
+                    if (value == null) continue;
                     cache[settingProperty] = value;
                 }
                 catch (Exception inner)
@@ -81,49 +88,49 @@ namespace SmartConfig.Services
                     innerExceptions: exceptions);
             }
 
+            void CommitSettingValues(Dictionary<SettingProperty, object> settingValues)
+            {
+                foreach (var item in settingValues)
+                {
+                    var settingProperty = item.Key;
+                    settingProperty.Value = item.Value;
+                }
+            }
+
             CommitSettingValues(cache);
         }
 
-        private static object GetData(SettingProperty settingProperty, ICollection<Setting> values)
+        private static object GetSettingData(SettingProperty settingProperty, ICollection<Setting> settings)
         {
-            if (IsItemized(values))
+            void ValidateItemizedSettings()
             {
+                // All itemized settings must have keys.
+                var keyCount = settings.Count(x => x.Name.HasKey);
+
+                // If key-count does not match the setting-count then something is wrong.
+                if (keyCount > 0 && keyCount != settings.Count) throw new ItemizedSettingException(settingProperty.Path);
+            }
+
+            if (settingProperty.IsItemized)
+            {
+                ValidateItemizedSettings();
+
                 if (settingProperty.Type.IsDictionary())
                 {
-                    return values.ToDictionary(x => x.Name.Key, x => x.Value);
+                    return settings.ToDictionary(x => x.Name.Key, x => x.Value);
                 }
 
                 if (settingProperty.Type.IsEnumerable())
                 {
-                    return values.Select(x => x.Value);
+                    return settings.Select(x => x.Value);
                 }
 
                 throw new NotSupportedException($"Setting type '{settingProperty.Type}' is not supported for itemized settings.");
             }
             else
             {
-                return values.SingleOrDefault()?.Value;
+                return settings.SingleOrDefault()?.Value;
             }
-        }
-
-        private static bool IsItemized(ICollection<Setting> values)
-        {
-            // Settings is itemized if all values have a key.
-            var keyCount = values.Count(x => x.Name.HasKey);
-
-            // If key-count does not match the value-count then something is wrong.
-            if (keyCount > 0 && keyCount != values.Count) throw new Exception("Invalid setting.");
-
-            return keyCount > 0;
-        }
-
-        private static void CommitSettingValues(Dictionary<SettingProperty, object> settingValues)
-        {
-            foreach (var item in settingValues)
-            {
-                var settingProperty = item.Key;
-                settingProperty.Value = item.Value;
-            }
-        }
+        }        
     }
 }

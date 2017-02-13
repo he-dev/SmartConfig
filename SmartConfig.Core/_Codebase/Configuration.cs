@@ -22,16 +22,19 @@ namespace SmartConfig
         }
 
         // Initializes the fluent interface.
-        public static ConfigurationBuilder Builder => new ConfigurationBuilder();
+        public static ConfigurationBuilder Builder() => Builder(message => { });
+
+        public static ConfigurationBuilder Builder(Action<string> log) => new ConfigurationBuilder(log);
 
         internal Type Type { get; }
 
-        public void Load()
+        public Configuration Load()
         {
             try
             {
                 _settingReader.Read();
                 Cache[Type] = this;
+                return this;
             }
             catch (Exception innerException)
             {
@@ -53,22 +56,26 @@ namespace SmartConfig
 
         public static void Load(Type configurationType)
         {
-            if (!Cache.TryGetValue(configurationType, out Configuration configuration))
+            if (Cache.TryGetValue(configurationType, out Configuration configuration))
             {
-                throw new InvalidOperationException($"Configuration {configurationType.Name} isn't loaded yet. To reload a configuration you need to load it first.");
+                configuration.Load();
             }
-
-            configuration.Load();
+            else
+            {
+                throw new InvalidOperationException($"Cannot load configuration '{configurationType.Name}'. Use the '{nameof(Builder)}' to initialize it first.");
+            }
         }
 
         public static void Save(Type configurationType)
         {
-            if (!Cache.TryGetValue(configurationType, out Configuration configuration))
+            if (Cache.TryGetValue(configurationType, out Configuration configuration))
             {
-                throw new InvalidOperationException($"To save a configuration you need to load it first. Configuration {configurationType.Name} isn't loaded yet.");
+                configuration.Save();
             }
-
-            configuration.Save();
+            else
+            {
+                throw new InvalidOperationException($"Cannot save configuration '{configurationType.Name}'. Use the '{nameof(Builder)}' to initialize it first.");
+            }
         }
     }
 }

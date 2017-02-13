@@ -17,6 +17,7 @@ namespace SmartConfig.DataStores.SQLite
     {
         private Encoding _dataEncoding = Encoding.Default;
         private Encoding _settingEncoding = Encoding.UTF8;
+        private readonly SettingCommandFactory _settingCommandFactory;
 
         public SQLiteStore(string nameOrConnectionString, Action<TableMetadataBuilder<DbType>> tableConfigBuilder = null) : base(new[] { typeof(string) })
         {
@@ -32,7 +33,7 @@ namespace SmartConfig.DataStores.SQLite
 
             ConnectionString.Validate(nameof(nameOrConnectionString)).IsNotNullOrEmpty();
 
-            var settingTableConfigBuilder = 
+            var settingTableConfigBuilder =
                 TableMetadataBuilder<DbType>.Create()
                     .TableName(nameof(Setting))
                     .Column(nameof(Setting.Name), DbType.String, 300)
@@ -41,6 +42,7 @@ namespace SmartConfig.DataStores.SQLite
 
             tableConfigBuilder?.Invoke(settingTableConfigBuilder);
             SettingTableMetadata = settingTableConfigBuilder.Build();
+            _settingCommandFactory = new SettingCommandFactory(SettingTableMetadata);
         }
 
         public string ConnectionString { get; }
@@ -65,12 +67,9 @@ namespace SmartConfig.DataStores.SQLite
 
         public override IEnumerable<Setting> ReadSettings(Setting setting)
         {
-            var commandFactory = new SettingCommandFactory(SettingTableMetadata);
-
-            using (var connection = new SQLiteConnection(ConnectionString))
-            using (var command = commandFactory.CreateSelectCommand(connection, setting))
+            using (var connection = OpenConnection())
+            using (var command = _settingCommandFactory.CreateSelectCommand(connection, setting))
             {
-                connection.Open();
                 command.Prepare();
 
                 using (var settingReader = command.ExecuteReader())
@@ -92,51 +91,63 @@ namespace SmartConfig.DataStores.SQLite
         }
 
         protected override void WriteSettings(ICollection<IGrouping<Setting, Setting>> settings)
-        {           
-            var commandFactory = new SettingCommandFactory(SettingTableMetadata);
+        {
+            
 
-            using (var connection = new SQLiteConnection(ConnectionString))
+            void DeleteObsoleteSettings(SQLiteConnection connection, SQLiteTransaction transaction, IGrouping<Setting, Setting> obsoleteSettings)
             {
-                connection.Open();
-
-                using (var transaction = connection.BeginTransaction())
+                using (var deleteCommand = _settingCommandFactory.CreateDeleteCommand(connection, obsoleteSettings.Key))
                 {
-                    try
+                    deleteCommand.Transaction = transaction;
+                    deleteCommand.Prepare();
+                    deleteCommand.ExecuteNonQuery();
+                }
+            }
+
+            void InsertNewSettings(SQLiteConnection connection, SQLiteTransaction transaction, IGrouping<Setting, Setting> newSettings)
+            {
+                foreach (var setting in newSettings)
+                {
+                    if (CanRecodeSetting && setting.Value is string)
                     {
-                        foreach (var group in settings)
-                        {
-                            using (var deleteCommand = commandFactory.CreateDeleteCommand(connection, group.Key))
-                            {
-                                deleteCommand.Transaction = transaction;
-                                deleteCommand.Prepare();
-                                deleteCommand.ExecuteNonQuery();
-                            }
-
-                            foreach (var setting in group)
-                            {
-                                if (CanRecodeSetting && setting.Value is string)
-                                {
-                                    setting.Value = ((string)setting.Value).Recode(SettingEncoding, DataEncoding);
-                                }
-
-                                using (var insertCommand = commandFactory.CreateInsertCommand(connection, setting))
-                                {
-                                    insertCommand.Transaction = transaction;
-                                    insertCommand.Prepare();
-                                    insertCommand.ExecuteNonQuery();
-                                }
-                            }
-                        }
-
-                        transaction.Commit();
+                        setting.Value = ((string)setting.Value).Recode(SettingEncoding, DataEncoding);
                     }
-                    catch (Exception)
+
+                    using (var insertCommand = _settingCommandFactory.CreateInsertCommand(connection, setting))
                     {
-                        transaction.Rollback();
-                        throw;
+                        insertCommand.Transaction = transaction;
+                        insertCommand.Prepare();
+                        insertCommand.ExecuteNonQuery();
                     }
                 }
             }
-        }        
+
+            using (var connection = OpenConnection())
+            using (var transaction = connection.BeginTransaction())
+            {
+                try
+                {
+                    foreach (var group in settings)
+                    {
+                        DeleteObsoleteSettings(connection, transaction, group);
+                        InsertNewSettings(connection, transaction, group);
+                    }
+
+                    transaction.Commit();
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
+        }
+
+        private SQLiteConnection OpenConnection()
+        {
+            var connection = new SQLiteConnection(ConnectionString);
+            connection.Open();
+            return connection;
+        }
     }
 }

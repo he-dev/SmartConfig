@@ -16,6 +16,8 @@ namespace SmartConfig
     // Builds a configuration.
     public class ConfigurationBuilder
     {
+        private readonly Action<string> _log;
+
         private List<SettingProperty> _settingProperties;
 
         private DataStore _dataStore;
@@ -26,7 +28,10 @@ namespace SmartConfig
 
         private Type _configType;
 
-        internal ConfigurationBuilder() { }        
+        internal ConfigurationBuilder(Action<string> log)
+        {
+            _log = log;
+        }        
 
         public ConfigurationBuilder From(DataStore dataStore)
         {
@@ -64,20 +69,22 @@ namespace SmartConfig
                 .IsTrue(x => x.HasAttribute<SmartConfigAttribute>(), $"Config type \"{configType.FullName}\" muss be decorated with the {nameof(SmartConfigAttribute)}.")
                 .Value;
 
-            GetConverters(configType);
+            configureConverter.Validate(nameof(configType)).IsNotNull();
 
-            _converter = configureConverter?.Invoke(_converter) ?? _converter;
+            AddCustomConverters(configType);
+
+            _converter = configureConverter(_converter);
             _settingProperties = ConfigurationType.GetSettingProperties(configType).ToList();
 
-            return ToConfiguration();
+            return ToConfiguration().Load();
         }
 
         public Configuration Select(Type configType)
         {
-            return Select(configType, null);
+            return Select(configType, x => x);
         }
 
-        private void GetConverters(MemberInfo configType)
+        private void AddCustomConverters(MemberInfo configType)
         {
             foreach (var typeConverterAttribute in configType.GetCustomAttributes<TypeConverterAttribute>())
             {
@@ -87,14 +94,11 @@ namespace SmartConfig
 
         private Configuration ToConfiguration()
         {
-            var settingReader = new SettingReader(_dataStore, _settingProperties, _tags, _converter);
-            var settingWriter = new SettingWriter(_dataStore, _settingProperties, _tags, _converter);
-            var configuration = new Configuration(_configType, settingReader, settingWriter);
-            configuration.Load();
-
-            var temp = configuration;
-            configuration = null;
-            return temp;
+            return new Configuration(
+                _configType, 
+                new SettingReader(_dataStore, _settingProperties, _tags, _converter, _log),
+                new SettingWriter(_dataStore, _settingProperties, _tags, _converter, _log)
+            );
         }
     }
 }
