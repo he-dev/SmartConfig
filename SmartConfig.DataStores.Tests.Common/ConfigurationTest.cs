@@ -89,8 +89,8 @@ namespace SmartConfig.DataStores.Tests.Common
                 TestConfig.UInt16 -= 1;
                 TestConfig.UInt32 -= 1;
                 TestConfig.UInt64 -= 1;
-                TestConfig.Single -= 1;
-                TestConfig.Double -= 1;
+                TestConfig.Single = Single.MinValue;
+                TestConfig.Double = Double.MinValue;
                 TestConfig.Decimal -= 1;
 
                 TestConfig.StringDE += "---";
@@ -114,8 +114,8 @@ namespace SmartConfig.DataStores.Tests.Common
                 TestConfig.UInt16.Verify().IsEqual((UInt16)(UInt16.MaxValue - 1));
                 TestConfig.UInt32.Verify().IsEqual(UInt32.MaxValue - 1);
                 TestConfig.UInt64.Verify().IsEqual(UInt64.MaxValue - 1);
-                TestConfig.Single.Verify().IsEqual((Single)(Single.MaxValue - 1));
-                TestConfig.Double.Verify().IsEqual(Double.MaxValue - 1);
+                TestConfig.Single.Verify().IsEqual(Single.MinValue);
+                TestConfig.Double.Verify().IsEqual(Double.MinValue);
                 TestConfig.Decimal.Verify().IsEqual(Decimal.MaxValue - 1);
 
                 TestConfig.StringDE.Verify().IsEqual("äöüß---");

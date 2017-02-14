@@ -26,7 +26,7 @@ namespace SmartConfig.DataStores.Tests.Common
         public static UInt16 UInt16 { get; set; }
         public static UInt32 UInt32 { get; set; }
         public static UInt64 UInt64 { get; set; }
-        //[Format(typeof(DefaultFormatter), "{0:R}")]
+        [Format("R")]
         public static Single Single { get; set; }
         [Format("R")]
         public static Double Double { get; set; }
@@ -39,13 +39,13 @@ namespace SmartConfig.DataStores.Tests.Common
 
         public static DateTime DateTime { get; set; }
 
-        [Format(typeof(HexadecimalColorFormatter), "#RRGGBB")]
+        [Format("#RRGGBB", typeof(HexadecimalColorFormatter))]
         public static Color ColorName { get; set; }
 
-        [Format(typeof(HexadecimalColorFormatter), "#RRGGBB")]
+        [Format("#RRGGBB", typeof(HexadecimalColorFormatter))]
         public static Color ColorDec { get; set; }
 
-        [Format(typeof(HexadecimalColorFormatter), "#RRGGBB")]
+        [Format("#RRGGBB", typeof(HexadecimalColorFormatter))]
         public static Color ColorHex { get; set; }
 
         public static List<int> JsonArray { get; set; }        
