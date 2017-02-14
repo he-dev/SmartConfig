@@ -12,6 +12,9 @@ using Reusable.Fuse;
 using SmartConfig.Collections;
 using SmartConfig.Data;
 
+// ReSharper does not understad C# 7
+// ReSharper disable HeuristicUnreachableCode
+
 namespace SmartConfig.DataStores.Registry
 {
     public class RegistryStore : DataStore
@@ -46,13 +49,11 @@ namespace SmartConfig.DataStores.Registry
             var registryPath = new RegistryPath(setting.Name);
 
             var subKeyName = Path.Combine(_baseSubKeyName, registryPath.Namespace);
-            using (var subKey = _baseKey.OpenSubKey(subKeyName, false))
+            using (
+                var subKey = _baseKey.OpenSubKey(subKeyName, false) ??
+                throw new OpenOrCreateSubKeyException(_baseKey.Name, _baseSubKeyName, subKeyName)
+            )
             {
-                if (subKey == null)
-                {
-                    throw new OpenOrCreateSubKeyException(_baseKey.Name, _baseSubKeyName, subKeyName);
-                }
-
                 var valueNames = subKey.GetValueNames().Where(x => RegistryPath.Parse(x).IsLike(registryPath));
 
                 foreach (var valueName in valueNames)
@@ -68,45 +69,44 @@ namespace SmartConfig.DataStores.Registry
 
         protected override void WriteSettings(ICollection<IGrouping<Setting, Setting>> settings)
         {
+            void DeleteObsoleteSettings(RegistryKey registryKey, IGrouping<Setting, Setting> group)
+            {
+                var obsoleteNames =
+                    registryKey
+                        .GetValueNames()
+                        .Where(x => RegistryPath.Parse(x).IsLike(group.Key.Name))
+                        .ToList();
+
+                obsoleteNames.ForEach(registryKey.DeleteValue);
+            }
+
             foreach (var group in settings)
             {
                 var subKeyName = Path.Combine(_baseSubKeyName, group.Key.Name.Namespace);
-                using (var subKey = _baseKey.OpenSubKey(subKeyName, true) ?? _baseKey.CreateSubKey(subKeyName))
+                using (var subKey =
+                    _baseKey.OpenSubKey(subKeyName, true) ??
+                    _baseKey.CreateSubKey(subKeyName) ??
+                    throw new OpenOrCreateSubKeyException(_baseKey.Name, _baseSubKeyName, subKeyName)
+                )
                 {
-                    if (subKey == null)
-                    {
-                        throw new OpenOrCreateSubKeyException(_baseKey.Name, _baseSubKeyName, subKeyName);
-                    }
-
                     DeleteObsoleteSettings(subKey, group);
 
                     foreach (var setting in group)
                     {
-                        var registryValueKind = RegistryValueKind.None;
-                        if (!_registryValueKinds.TryGetValue(setting.Value.GetType(), out registryValueKind))
+                        if (!_registryValueKinds.TryGetValue(setting.Value.GetType(), out RegistryValueKind registryValueKind))
                         {
                             throw new InvalidTypeException(setting.Value.GetType(), SupportedTypes);
                         }
 
-
                         var registryUrn = new RegistryPath(setting.Name);
+
                         subKey.SetValue(registryUrn.StrongName, setting.Value, registryValueKind);
                     }
                 }
-
             }
         }
 
-        private static void DeleteObsoleteSettings(RegistryKey registryKey, IGrouping<Setting, Setting> settings)
-        {
-            var obsoleteNames =
-                registryKey
-                    .GetValueNames()
-                    .Where(x => RegistryPath.Parse(x).IsLike(settings.Key.Name))
-                    .ToList();
-
-            obsoleteNames.ForEach(registryKey.DeleteValue);
-        }
+        public const string DefaultKey = @"Software\SmartConfig";
 
         public static RegistryStore CreateForCurrentUser(string subRegistryKey)
         {

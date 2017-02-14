@@ -39,7 +39,7 @@ namespace SmartConfig.DataStores.Registry.Tests
             {
                 if (subKey != null && subKey.GetSubKeyNames().Contains("Test", StringComparer.OrdinalIgnoreCase))
                 {
-                    subKey?.DeleteSubKeyTree("Test");
+                    subKey.DeleteSubKeyTree("Test");
                 }
             }
 
