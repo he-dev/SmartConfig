@@ -5,8 +5,8 @@ using System.Globalization;
 using System.Linq;
 using Reusable;
 using SmartConfig.Data;
-using Reusable.Converters;
 using SmartConfig.Collections;
+using Reusable.TypeConversion;
 
 namespace SmartConfig.Services
 {

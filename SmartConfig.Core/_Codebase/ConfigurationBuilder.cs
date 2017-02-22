@@ -4,12 +4,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Reusable;
-using Reusable.Fuse;
-using Reusable.Converters;
 using SmartConfig.Collections;
 using SmartConfig.Data;
 using SmartConfig.Data.Annotations;
 using SmartConfig.Services;
+using Reusable.TypeConversion;
+using Reusable.Fuse;
 
 namespace SmartConfig
 {

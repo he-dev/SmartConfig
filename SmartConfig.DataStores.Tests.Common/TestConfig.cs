@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using Reusable;
-using Reusable.Converters;
 using Reusable.Data.Annotations;
-using Reusable.Formatters;
 using SmartConfig.Data.Annotations;
+using Reusable.TypeConversion;
+using Reusable.StringFormatting.Formatters;
 // ReSharper disable InconsistentNaming
 // ReSharper disable BuiltInTypeReferenceStyle
 

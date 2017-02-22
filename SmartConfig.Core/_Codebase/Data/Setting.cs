@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Reusable.Fuse;
 using SmartConfig.Collections;
 
 namespace SmartConfig.Data
@@ -19,7 +18,7 @@ namespace SmartConfig.Data
             get { return (SettingPath)_values[nameof(Name)]; }
 
             [DebuggerStepThrough]
-            set { _values[nameof(Name)] = value.Validate(nameof(Name)).IsNotNull().Value; }
+            set { _values[nameof(Name)] = value ?? throw new ArgumentNullException(nameof(Name)); }
         }
 
         public object Value

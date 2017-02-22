@@ -7,7 +7,6 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reusable;
-using Reusable.Converters;
 using Reusable.Data.Annotations;
 using Reusable.Drawing;
 using SmartConfig;

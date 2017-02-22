@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package>
   <metadata>
-    <id>SmartConfig</id>
+    <id>SmartConfig.Core</id>
     <version>8.0.2</version>
-    <title>SmartConfig</title>
+    <title>SmartConfig.Core</title>
     <authors>he-dev</authors>
     <owners>he-dev</owners>
     <licenseUrl>https://github.com/he-dev/SmartConfig/blob/master/SmartConfig/LICENSE.txt</licenseUrl>
