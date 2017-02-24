@@ -9,53 +9,58 @@ namespace SmartConfig.DataStores.AppConfig
 {
     public class AppSettingsStore : DataStore
     {
-        private readonly System.Configuration.Configuration _exeConfiguration;
-        private readonly AppSettingsSection _appSettingsSection;
+        //private readonly System.Configuration.Configuration _exeConfiguration;
+        //private readonly AppSettingsSection _appSettingsSection;
 
         public AppSettingsStore() : base(new[] { typeof(string) })
         {
-            _exeConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            _appSettingsSection = _exeConfiguration.AppSettings;
+            //_exeConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);            
+            //_appSettingsSection = _exeConfiguration.AppSettings;
         }
 
         public override IEnumerable<Setting> ReadSettings(Setting setting)
         {
-            var keys = _appSettingsSection.Settings.AllKeys.Like(setting);
+            var exeConfig = OpenExeConfiguration();
+            var keys = exeConfig.AppSettings.Settings.AllKeys.Like(setting);
             foreach (var key in keys)
             {
                 yield return new Setting
                 {
                     Name = SettingPath.Parse(key),
-                    Value = _appSettingsSection.Settings[key].Value
+                    Value = exeConfig.AppSettings.Settings[key].Value
                 };
             }
         }
 
         protected override void WriteSettings(ICollection<IGrouping<Setting, Setting>> settings)
         {
+            var exeConfig = OpenExeConfiguration();
+
             // If we are saving an itemized setting its keys might have changed.
             // Since we don't know the old keys we need to delete all keys that are alike first.
 
             foreach (var group in settings)
             {
-                DeleteSettingGroup(group);
+                DeleteSettingGroup(group, exeConfig.AppSettings);
 
                 foreach (var setting in group)
                 {
-                    _appSettingsSection.Settings.Add(setting.Name.StrongFullName, (string)setting.Value);
+                    exeConfig.AppSettings.Settings.Add(setting.Name.StrongFullName, (string)setting.Value);
                 }
             }
-            _exeConfiguration.Save(ConfigurationSaveMode.Minimal);
+            exeConfig.Save(ConfigurationSaveMode.Minimal);
         }
 
-        private void DeleteSettingGroup(IGrouping<Setting, Setting> settingGroup)
+        private void DeleteSettingGroup(IGrouping<Setting, Setting> settingGroup, AppSettingsSection appSettings)
         {
             var settingWeakPath = settingGroup.Key.Name;
-            var keys = _appSettingsSection.Settings.AllKeys.Where(key => SettingPath.Parse(key).IsLike(settingWeakPath));
+            var keys = appSettings.Settings.AllKeys.Where(key => SettingPath.Parse(key).IsLike(settingWeakPath));
             foreach (var key in keys)
             {
-                _appSettingsSection.Settings.Remove(key);
+                appSettings.Settings.Remove(key);
             }
         }
+
+        private System.Configuration.Configuration OpenExeConfiguration() => ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
     }
 }
