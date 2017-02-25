@@ -33,6 +33,8 @@ The core package on NuGet: `Install-Package SmartConfig.Core` contains just the 
 - `SQLiteStore`
 - `RegistryStore`
 
+---
+
 ## Creating settings
 
 You can start with very simple configs or create more complex ones if necessary. With `SmartConfig` you have several choices.
@@ -51,7 +53,18 @@ public static class SampleConfig
 }
 ```
 
-You can use all build-in types like `float`, `int`, `string` or `enum` and `DateTime`. By default all settings are **optional**.
+By default all settings are **optional**.
+
+### _What types can SmartConfig handle?_
+
+`SmartConfig` can handle most built-in types:
+
+- Integral types: `sbyte`, `byte`, `char`, `short`, `ushort`, `int`, `uint`, `long`, `ulong`
+- Floating-point types: `float`, `double`
+- Other types: `decimal`, `bool`, `Enum`, `DateTime`, `string`
+- Colors (System.Drawing.Color as `Name` (Red), `Hex` (#FF00AA), `Decimal` (122, 134,90) _(You need to specify the format. See other questions.)_
+
+They can be used also in lists but they need to be declared as _itemized_.
 
 ### _I'd like to have some requried settings!_
 
@@ -61,21 +74,70 @@ Decorate settings that are mandatory with the `[Requried]` attribute.
 
 The easiest way to store custom types is in the JSON format but you need to tell `SmartConfig` how to handle it by decorating the config with the `[TypeConverter]` attribute.
 
-
 ```cs
-class Foo
-{
-    public int Bar { get; set; }
-}
-
 [SmartConfig]
-[TypeConverter(typeof(Foo))]
+[TypeConverter(typeof(JsonToObjectConverter<List<Int32>>))]
 public static class SampleConfig
 {
-    public static Foo FooSetting { get; set; }
+    public static List<int> JsonArray { get; set; } // "[1, 2, 3]"
 }
 ```
 
+This example uses a `List<int>` but the same principle applies to all other types. _(You can also create you own type-converter)._
+
+### _Some of my settings are used only at runtime. Can I still use them?_
+
+Yes. You can decorate settings _(classes or properties)_ with the `[Ignore]` attribute. `SmartConfig` won't load them and it won't save them either.
+
+### _My application requires colors in different formats. How can I deal with it?_
+
+In order to store colors you need to specify their format:
+
+```cs
+[SmartConfig]
+public static class SampleConfig
+{
+    [Format("#RRGGBB", typeof(HexadecimalColorFormatter))]
+    public static Color ColorName { get; set; }
+
+    [Format("#RRGGBB", typeof(HexadecimalColorFormatter))]
+    public static Color ColorDec { get; set; }
+
+    [Format("#RRGGBB", typeof(HexadecimalColorFormatter))]
+    public static Color ColorHex { get; set; }
+}
+```
+
+Other formats are `RGB`, `ARGB` and `RGBA`. The `#` prefix means hexadecimal and color parts need to be specified by doubling the color like `RR`.
+
+The `DecimalColorFormatter` allows you to use colors defined as `126, 24, 33`.
+
+`SmartCofig` won't colors as names but it can parse them. This means if the value is `blue` it'll be parse correctly.
+
+### _Can is store collections natively without JSON?_
+
+Yes. You can store _itemized_ collections. This means that each collection item is stored as a separate _row_ (setting). Just decorate it with the `[Itemized]` attribute.
+
+```cs
+[SmartConfig]
+public static class SampleConfig
+{
+    [Itemized]
+    public static List<int> ItemizedArray { get; set; }
+}
+```
+
+Settings like this require an additional _key_ attached to their names:
+
+Name|Value
+----|------
+ItemizedArray[0]|5
+ItemizedArray[1]|7
+
+You can use this also with dictionaries. In their case the actual key will be used. With arrays the index does not matter, it just should be unique.
+
+
+---
 
 ## Storing and loading settings
 
@@ -159,157 +221,14 @@ CREATE TABLE [abc].[DifferentSetting](
 
 ### _How do I use the `RegistryStore`?_
 
-
-
-
-The below example show all kinds of settings that are supported by SmartConfig. 
-
-Among the simple types you can also use complex types. In order to use them you need to specify them as JSON and add the `TypeConverter` attribute to the configuration where you specify the exact converters for them.
-
-Another possibility to specify collections, especially dynamic ones is by using the `[Itemized]` attribute. This means that each item of the collection is stored in a separate row in the data store. Arrays are required to have an additional `[index]` but the number actually doesn't matter. Dictionary keys can be of any type supported by the converters (`int`, `string`, `enum` etc.).
+This data-store requries only the name of the root key.
 
 ```cs
-[SmartConfig]
-[TypeConverter(typeof(JsonToObjectConverter<int[]>))]
-[TypeConverter(typeof(JsonToObjectConverter<Dictionary<string, int>>))]
-public static class SampleConfig
-{
-    [Required]
-    public static string StringSetting { get; set; }
+const string sampleConfigKey = @"Software\SmartConfig\SampleConfig";
 
-    public static string OptionalStringSetting { get; set; } = "Waldo";
-    
-    public static int[] ArraySetting1 { get; set; }
-
-    [Itemized]
-    public static int[] ArraySetting2 { get; set; }
-
-    public static Dictionary<string, int> DictionarySetting1 { get; set; }
-
-    [Itemized]
-    public static Dictionary<string, int> DictionarySetting2 { get; set; }
-
-    public static class NestedConfig
-    {
-        public static string StringSetting { get; set; }
-    }
-
-    [Ignore]
-    public static class IgnoredConfig
-    {
-        public static string StringSetting { get; set; } = "Grault";
-    }
-}
-```
-
-You load the configuration by specifying the source with the `From` method and the configuration.
-
-Loading a configuration from an `app.config` is as simple as this:
-
-```cs
 Configuration.Builder()
-    .From(new AppSettingsStore())
+    .From(RegistryStore.CreateForCurrentUser(SampleConfig))
     .Select(typeof(FullConfig));
 ```
 
-The respecitve `app.config` file:
 
-```xml
-<appSettings>
-    <add key="StringSetting" value="Foo"/>
-    <add key="ArraySetting2[0]" value="5"/>
-    <add key="ArraySetting2[1]" value="8"/>
-    <add key="DictionarySetting2[foo]" value="21"/>
-    <add key="DictionarySetting2[bar]" value="34"/>
-    <add key="NestedConfig.StringSetting" value="Bar"/>
-    <add key="IgnoredConfig.StringSetting" value="Qux"/>
-</appSettings>
-```
-
-That's all.
-
-Using a database is not that different. You just need to specify another data store:
-
-```cs
-Configuration.Builder()
-    .From(new SqlServerStore("name=SmartConfigTest"))
-    .Select(typeof(FullConfig));
-```
-
-For this example you need to have the following table:
-
-```sql
-CREATE TABLE [dbo].[Setting](
-    [Name] [nvarchar](50) NOT NULL,
-    [Value] [nvarchar](max) NULL
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-```
-
-The same applies to other data sources:
-
-`SQLiteStore`
-
-```cs
-Configuration.Builder()
-    .From(new SQLiteStore("name=configdb"))
-    .Select(typeof(FullConfig));
-```
-
-`RegistryStore`
-
-```cs
-const string TestRegistryKey = @"Software\SmartConfig\Tests";
-Configuration.Builder()
-    .From(RegistryStore.CreateForCurrentUser(TestRegistryKey))
-    .Select(typeof(FullConfig));
-```
-
-## Attributes
-
-With SmartConfig it is possible to use more then one identifier (Name) for a setting. The additional criteria are called attributes and allow us to further describe a setting. Not all data stores allow this. That's why we use a database in this example.
-
-A common example is the _Environment_.
-
-The config class itself does not change at all. You add the attribute when loading:
-
-```cs
- Configuration.Builder()
-    .From(new SqlServerStore("name=SmartConfigTest").Column("Environment", SqlDbType.NVarChar, 200))
-    .Where("Environment", "Qux")
-    .Select(typeof(FullConfig));
-```
-
-Here we've added the `Where` to set the _Environment_ and we configured the _Environment_ column by setting its data-type and length.
-
-The respecitve table is:
-
-```sql
-CREATE TABLE [dbo].[Setting](
-    [Name] [nvarchar](50) NOT NULL,
-    [Value] [nvarchar](max) NULL,
-    [Environment] [nvarchar](50) NOT NULL
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-```
-
-## Converters
-
-SmartConfig already supports a lot of data types:
-
-- Integral types: `sbyte`, `byte`, `char`, `short`, `ushort`, `int`, `uint`, `long`, `ulong`
-- Floating-point types: `float`, `double`
-- Other types: `decimal`, `bool`, `Enum`, `DateTime`, `string`
-- JSON
-- Colors (System.Drawing.Color as `Name` (Red), `Hex` (#FF00AA), `Decimal` (122, 134,90)
-
-In most cases for complex data structures we would want to use json. To be able to parse your type you first need to register a new converter. You add it with an attribute to your config class:
-
-```cs
-[SmartConfig]
-[Converters(typeof(JsonToObjectConverter<List<Int32>>))]
-public static class SampleConfig
-{
-    public static List<int> JsonArray { get; set; } // "[1, 2, 3]"
-}
-```
-
-Now SmartConfig knows how to deserialize the list.
