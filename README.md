@@ -227,8 +227,8 @@ This data-store requries only the name of the root key.
 const string sampleConfigKey = @"Software\SmartConfig\SampleConfig";
 
 Configuration.Builder()
-    .From(RegistryStore.CreateForCurrentUser(SampleConfig))
-    .Select(typeof(FullConfig));
+    .From(RegistryStore.CreateForCurrentUser(sampleConfigKey))
+    .Select(typeof(SampleConfig));
 ```
 
 
