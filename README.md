@@ -112,7 +112,7 @@ Other formats are `RGB`, `ARGB` and `RGBA`. The `#` prefix means hexadecimal and
 
 The `DecimalColorFormatter` allows you to use colors defined as `126, 24, 33`.
 
-`SmartCofig` won't colors as names but it can parse them. This means if the value is `blue` it'll be parse correctly.
+`SmartCofig` won't save colors as names but it can parse them. This means if the value is `blue` it'll be parse correctly.
 
 ### _Can is store collections natively without JSON?_
 
