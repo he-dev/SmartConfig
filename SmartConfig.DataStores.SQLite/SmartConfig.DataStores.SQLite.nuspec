@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>SmartConfig.DataStores.SQLite</id>
-    <version>9.0.1</version>
+    <version>9.0.2</version>
     <title>SmartConfig.DataStores.SQLite</title>
     <authors>he-dev</authors>
     <owners>he-dev</owners>
@@ -16,12 +16,12 @@
     <tags>.NET C# Config Configuration Settings Framework Tool Utility</tags>
     <dependencies>
       <dependency id="Newtonsoft.Json" version="9.0.1" />
-      <dependency id="Reusable.Core" version="2.12.1" />
-      <dependency id="Reusable.Fuse" version="2.12.1" />
-      <dependency id="Reusable.TypeConversion" version="2.12.1" />
+      <dependency id="Reusable.Core" version="2.13.2" />
+      <dependency id="Reusable.Fuse" version="2.13.2" />
+      <dependency id="Reusable.TypeConversion" version="2.13.2" />
       <dependency id="System.Collections.Immutable" version="1.3.1" />
       <dependency id="System.Data.SQLite.Core" version="1.0.104.0" />
-      <dependency id="SmartConfig.Core" version="9.0.1" />
+      <dependency id="SmartConfig.Core" version="9.0.2" />
     </dependencies>
   </metadata>
   <files>
