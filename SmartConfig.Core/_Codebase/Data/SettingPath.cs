@@ -1,5 +1,4 @@
-﻿using Reusable.Fuse;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,7 +14,8 @@ namespace SmartConfig.Data
 
         public SettingPath(IEnumerable<string> names)
         {
-            Names = names.Validate(nameof(names)).IsNotNull().IsTrue(x => x.Any()).Value.ToList();
+            Names = (names ?? throw new ArgumentNullException(nameof(names))).ToList();
+            if (!Names.Any()) throw new ArgumentException(nameof(names), "Names must not be empty.");
         }
 
         public SettingPath(params string[] names) : this((IEnumerable<string>)names) { }

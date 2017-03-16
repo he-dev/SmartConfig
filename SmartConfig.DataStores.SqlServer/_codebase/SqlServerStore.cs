@@ -6,7 +6,6 @@ using System.Linq;
 using Reusable;
 using Reusable.Data;
 using SmartConfig.Data;
-using Reusable.Fuse;
 using SmartConfig.Collections;
 
 namespace SmartConfig.DataStores.SqlServer
@@ -19,18 +18,14 @@ namespace SmartConfig.DataStores.SqlServer
         private readonly SettingCommandFactory _settingCommandFactory;
 
         public SqlServerStore(string nameOrConnectionString, Action<TableMetadataBuilder<SqlDbType>> buildTableConfiguration = null) : base(new[] { typeof(string) })
-        {
-            nameOrConnectionString.Validate(nameof(nameOrConnectionString)).IsNotNullOrEmpty();
-
-            ConnectionString = nameOrConnectionString;
+        {            
+            ConnectionString = nameOrConnectionString.NonEmptyOrNull() ?? throw new ArgumentNullException(nameof(nameOrConnectionString)); ;
 
             var connectionStringName = nameOrConnectionString.GetConnectionStringName();
             if (!string.IsNullOrEmpty(connectionStringName))
             {
-                ConnectionString = new AppConfigRepository().GetConnectionString(connectionStringName);
+                ConnectionString = new AppConfigRepository().GetConnectionString(connectionStringName).NonEmptyOrNull() ?? throw new ArgumentNullException(nameof(nameOrConnectionString)); ;
             }
-
-            ConnectionString.Validate(nameof(nameOrConnectionString)).IsNotNullOrEmpty();
 
             var tableMetadataBuilder = TableMetadataBuilder<SqlDbType>.Create()
                 .SchemaName("dbo")

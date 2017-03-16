@@ -8,7 +8,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using Reusable;
-using Reusable.Fuse;
 using SmartConfig.Collections;
 using SmartConfig.Data;
 
@@ -37,11 +36,8 @@ namespace SmartConfig.DataStores.Registry
                 typeof(string)
             })
         {
-            baseKey.Validate(nameof(baseKey)).IsNotNull();
-            subKey.Validate(nameof(subKey)).IsNotNullOrEmpty();
-
-            _baseKey = baseKey;
-            _baseSubKeyName = subKey;
+            _baseKey = baseKey ?? throw new ArgumentNullException(nameof(baseKey));
+            _baseSubKeyName = subKey.NonEmptyOrNull() ?? throw new ArgumentNullException(nameof(subKey));
         }
 
         public override IEnumerable<Setting> ReadSettings(Setting setting)

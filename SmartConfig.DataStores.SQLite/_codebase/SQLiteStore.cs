@@ -5,7 +5,6 @@ using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 using Reusable;
-using Reusable.Fuse;
 using SmartConfig.Data;
 using Reusable.Data;
 using SmartConfig.Collections;
@@ -21,17 +20,13 @@ namespace SmartConfig.DataStores.SQLite
 
         public SQLiteStore(string nameOrConnectionString, Action<TableMetadataBuilder<DbType>> tableConfigBuilder = null) : base(new[] { typeof(string) })
         {
-            nameOrConnectionString.Validate(nameof(nameOrConnectionString)).IsNotNullOrEmpty();
-
-            ConnectionString = nameOrConnectionString;
+            ConnectionString = nameOrConnectionString.NonEmptyOrNull() ?? throw new ArgumentNullException(nameof(nameOrConnectionString));
 
             var connectionStringName = nameOrConnectionString.GetConnectionStringName();
             if (!string.IsNullOrEmpty(connectionStringName))
             {
-                ConnectionString = new AppConfigRepository().GetConnectionString(connectionStringName);
+                ConnectionString = (new AppConfigRepository().GetConnectionString(connectionStringName)).NonEmptyOrNull() ?? throw new ArgumentNullException(nameof(nameOrConnectionString)); ;
             }
-
-            ConnectionString.Validate(nameof(nameOrConnectionString)).IsNotNullOrEmpty();
 
             var settingTableConfigBuilder =
                 TableMetadataBuilder<DbType>.Create()
@@ -56,13 +51,13 @@ namespace SmartConfig.DataStores.SQLite
         public Encoding DataEncoding
         {
             get { return _dataEncoding; }
-            set { _dataEncoding = value.Validate(nameof(DataEncoding)).IsNotNull().Value; }
+            set { _dataEncoding = value ?? throw new ArgumentNullException(nameof(DataEncoding)); }
         }
 
         public Encoding SettingEncoding
         {
             get { return _settingEncoding; }
-            set { _settingEncoding = value.Validate(nameof(SettingEncoding)).IsNotNull().Value; }
+            set { _settingEncoding = value ?? throw new ArgumentNullException(nameof(SettingEncoding)); }
         }
 
         public override IEnumerable<Setting> ReadSettings(Setting setting)
@@ -92,7 +87,7 @@ namespace SmartConfig.DataStores.SQLite
 
         protected override void WriteSettings(ICollection<IGrouping<Setting, Setting>> settings)
         {
-            
+
 
             void DeleteObsoleteSettings(SQLiteConnection connection, SQLiteTransaction transaction, IGrouping<Setting, Setting> obsoleteSettings)
             {

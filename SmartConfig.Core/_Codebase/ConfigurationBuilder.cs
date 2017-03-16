@@ -9,7 +9,6 @@ using SmartConfig.Data;
 using SmartConfig.Data.Annotations;
 using SmartConfig.Services;
 using Reusable.TypeConversion;
-using Reusable.Fuse;
 
 namespace SmartConfig
 {
@@ -35,41 +34,41 @@ namespace SmartConfig
 
         public ConfigurationBuilder From(DataStore dataStore)
         {
-            _dataStore = dataStore.Validate(nameof(dataStore)).IsNotNull("You need to specify a data store.").Value;
+            _dataStore = dataStore ?? throw new ArgumentNullException(nameof(dataStore));
             return this;
         }
 
         public ConfigurationBuilder Where(string name, object value)
         {
-            name.Validate(nameof(name)).IsNotNullOrEmpty("You need to specify the namespace.");
-            value.Validate(nameof(value)).IsNotNull("You need to specify the namespace value.");
-            _tags.Add(name, value);
+            _tags.Add(
+                name ?? throw new ArgumentNullException(nameof(name)), 
+                value ?? throw new ArgumentNullException(nameof(value))
+            );
             return this;
         }
 
         public ConfigurationBuilder Where<T>(Expression<Func<T>> expression)
         {
-            expression.Validate(nameof(expression)).IsNotNull();
-            var memberExpression = (expression.Body as MemberExpression).Validate().IsNotNull($"The expression must be a {nameof(MemberExpression)}.").Value;
+            var memberExpression = 
+                ((expression ?? throw new ArgumentNullException(nameof(expression))).Body as MemberExpression) 
+                ?? throw new ArgumentException(nameof(expression), $"The expression must be a {nameof(MemberExpression)}.");
             return Where(memberExpression.Member.Name, expression.Compile()());
         }
 
         public ConfigurationBuilder Where(IDictionary<string, object> tags)
         {
-            tags.Validate(nameof(tags)).IsNotNull("You need to specify the tags.");
-            _tags = new TagCollection(tags);
+            _tags = new TagCollection(tags ?? throw new ArgumentNullException(nameof(tags)));
             return this;
         }
 
         public Configuration Select(Type configType, Func<TypeConverter, TypeConverter> configureConverter)
         {
-            _configType = configType.Validate(nameof(configType))
-                .IsNotNull($"You need to specify the \"{nameof(configType)}\".")
-                .IsTrue(x => x.IsStatic(), $"Config type \"{configType.FullName}\" must be static.")
-                .IsTrue(x => x.HasAttribute<SmartConfigAttribute>(), $"Config type \"{configType.FullName}\" muss be decorated with the {nameof(SmartConfigAttribute)}.")
-                .Value;
+            if (configType == null) throw new ArgumentNullException(nameof(configType));
+            if (!configType.IsStatic()) throw new ArgumentException(nameof(configType), $"Config type \"{configType.FullName}\" must be static.");
+            if (!configType.HasAttribute<SmartConfigAttribute>()) throw new ArgumentException(nameof(configType), $"Config type \"{configType.FullName}\" muss be decorated with the {nameof(SmartConfigAttribute)}.");
+            if (configureConverter == null) throw new ArgumentNullException(nameof(configureConverter));
 
-            configureConverter.Validate(nameof(configType)).IsNotNull();
+            _configType = configType;
 
             AddCustomConverters(configType);
 

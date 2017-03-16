@@ -1,7 +1,6 @@
 using System;
 using System.Linq.Expressions;
 using Reusable.Collections;
-using Reusable.Fuse;
 
 namespace SmartConfig.Data
 {
@@ -37,8 +36,7 @@ namespace SmartConfig.Data
 
         public TableMetadataBuilder<TDbType> Column<T>(Expression<Func<T>> expression, TDbType sqlDbType, int length)
         {
-            expression.Validate(nameof(expression)).IsNotNull();
-            var memberExpression = (expression.Body as MemberExpression).Validate().IsNotNull($"The expression must be a {nameof(MemberExpression)}.").Value;
+            var memberExpression = ((expression ?? throw new ArgumentNullException(nameof(expression))).Body as MemberExpression) ?? throw new ArgumentException(nameof(expression), $"The expression must be a {nameof(MemberExpression)}.");
             return Column(memberExpression.Member.Name, sqlDbType, length);
         }
 

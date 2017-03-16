@@ -53,7 +53,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Data
                 {
                     new SqlServerStore(null);
                 })
-                .Verify().Throws<ValidationException>();
+                .Verify().Throws<ArgumentNullException>();
         }
 
         [TestMethod]
@@ -63,7 +63,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Data
                 {
                     new SqlServerStore(null);
                 })
-                .Verify().Throws<ValidationException>();
+                .Verify().Throws<ArgumentNullException>();
         }
 
         [TestMethod]
@@ -74,7 +74,7 @@ namespace SmartConfig.DataStores.SqlServer.Tests.Data
                     new SqlServerStore("name=bar");
 
                 })
-                .Verify().Throws<ValidationException>();
+                .Verify().Throws<ArgumentNullException>();
         }
     }
 }

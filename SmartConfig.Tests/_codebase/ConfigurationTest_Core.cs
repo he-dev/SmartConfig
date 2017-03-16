@@ -122,7 +122,7 @@ namespace SmartConfig.Core.Tests
 
         [TestMethod]
         [TestCategory("Exceptions")]
-        [ExpectedException(typeof(ValidationException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void Load_ConfigTypeNotStatic_ValidationException()
         {
             Configuration.Builder()
@@ -132,7 +132,7 @@ namespace SmartConfig.Core.Tests
 
         [TestMethod]
         [TestCategory("Exceptions")]
-        [ExpectedException(typeof(ValidationException))]
+        [ExpectedException(typeof(ArgumentNullException))]
         public void Load_TagNull_ValidationException()
         {
             Configuration.Builder()
@@ -159,7 +159,7 @@ namespace SmartConfig.Core.Tests
 
         [TestMethod]
         [TestCategory("Exceptions")]
-        [ExpectedException(typeof(ValidationException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void Load_ConfigTypeNotDecorated_ValidationException()
         {
             Configuration.Builder()
@@ -169,7 +169,7 @@ namespace SmartConfig.Core.Tests
 
         [TestMethod]
         [TestCategory("Exceptions")]
-        [ExpectedException(typeof(ValidationException))]
+        [ExpectedException(typeof(ArgumentNullException))]
         public void Load_TagNameNull_ValidationException()
         {
             Configuration.Builder()
@@ -179,7 +179,7 @@ namespace SmartConfig.Core.Tests
 
         [TestMethod]
         [TestCategory("Exceptions")]
-        [ExpectedException(typeof(ValidationException))]
+        [ExpectedException(typeof(ArgumentNullException))]
         public void Load_TagNameEmpty_ValidationException()
         {
             Configuration.Builder()

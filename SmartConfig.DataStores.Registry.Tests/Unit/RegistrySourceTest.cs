@@ -20,7 +20,7 @@ namespace SmartConfig.DataStores.Registry.Tests.Unit
             {
                 new RegistryStore(null, null);                
             })
-            .Verify().Throws<ValidationException>();
+            .Verify().Throws<ArgumentNullException>();
         }
 
         [TestMethod]
@@ -30,7 +30,7 @@ namespace SmartConfig.DataStores.Registry.Tests.Unit
             {
                 new RegistryStore(Microsoft.Win32.Registry.CurrentUser, null);
             })
-            .Verify().Throws<ValidationException>();
+            .Verify().Throws<ArgumentNullException>();
         }
     }    
 }
