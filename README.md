@@ -1,13 +1,11 @@
 
-# discontinued
+# SmartConfig
 
-I have discontinued this framework. Now I'm working on a similar but more powerful one. See [ConfigWhiz](https://github.com/he-dev/Reusable/blob/master/Reusable.ConfigWhiz.Core/README.md)
+`SmartConfig` is now a part of my [Reusable](https://github.com/he-dev/Reusable) repository and can be found [here](https://github.com/he-dev/Reusable/tree/master/Reusable.SmartConfig.Core).
 
 ---
 
-# SmartConfig v9.0.2
-
-With SmartConfig you can setup a strongly typed configuration within a few minutes.
+This version is obsolete.
 
 ---
 
